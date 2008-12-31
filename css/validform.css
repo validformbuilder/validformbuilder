@@ -1,0 +1,240 @@
+/**
+ * ValidForm standard CSS. 
+ * Do not modify directly! You can overrule the styles in a separate file.
+ *
+ * @version 0.1
+ */
+ 
+* {
+	margin: 0;
+	padding: 0;
+}
+ 
+form {
+	margin: 0;
+	padding: 0;
+}
+
+fieldset {
+	border: 0;
+}
+
+form h3,
+legend 
+{
+	font: bold 14px Arial, Helvetica, sans-serif;
+	color: #666;
+	padding: 15px 0 5px 0;
+}
+
+form div {
+	clear: none;
+	*height: 1%;
+	margin: 7px 0 0 0;
+	padding: 1px 3px;
+	overflow: auto;
+}
+
+form label {
+	display: block;
+	float: left;
+	width: 130px;
+	padding: 2px 7px 2px 3px;
+	margin: 0 5px 0px 0;
+	font: normal 12px Arial, Helvetica, sans-serif;
+	color: #333;
+	text-align: right;
+}
+
+form fieldset.vf__disabled label {
+	color: #aaa;
+}
+
+form fieldset fieldset {
+	clear: none;
+	margin: 0pt;
+	padding: 0pt;
+	xwidth: 195px;
+}
+
+form fieldset fieldset.vf__list label {
+	float: none;
+	text-align: left;
+	font-weight: normal !important;
+	padding: 2px 0 5px 0;
+	width: auto;
+}
+
+form fieldset fieldset.vf__area {
+	border: 1px solid #ccc;
+	clear: none;
+	display: block;
+	margin: 2px 0 15px 0;
+	padding: 6px 8px 10px 8px;
+}
+
+form fieldset fieldset.vf__area legend {
+	margin-left: 10px;
+	padding: 0 5px 0 8px;
+	font: normal 12px Arial, Helvetica, sans-serif;
+}
+
+form fieldset fieldset.vf__area legend label {
+	margin: 0;
+	padding: 0;
+	float: none;
+	display: inline;
+}
+
+form fieldset.vf__disabled legend label {
+	color: #333;
+}
+
+form fieldset fieldset input {
+	margin-right: 2px;
+}
+
+form .vf__hide {
+	display: none;
+}
+
+form .vf__notes {
+	background-color: #eee;
+	border: 1px solid #ddd;
+	color: #666;
+	display: inline;
+	float: right;
+	height: auto;
+	margin: 8px 5px 8px 8px;
+	padding: 5px 7px 7px 7px;
+	width: 108px;
+	font-size: 11px;
+}
+
+form .vf__notes h4 {
+	color: #333;
+	font-size: 11px;
+	font-weight: bold;
+	margin-bottom: 2px;
+}
+
+form .vf__required label {
+	font-weight: bold;
+}
+
+form .vf__navigation {
+	padding: 10px;
+}
+
+form .vf__tip {
+	color: #666;
+	display: block;
+	font-size: 10px;
+	margin: 0pt 0pt 2px 143px;
+	padding: 1px 3px;
+}
+
+input.vf__text,
+input.vf__text_tiny,
+input.vf__text_small,
+input.vf__text_large,
+input.vf__button,
+select.vf__one,
+select.vf__multiple,
+textarea.vf__text
+{
+	font: normal 12px Arial, Helvetica, sans-serif;
+	color: #666;
+	padding: 2px;
+	width: 147px;  
+	background-color: #fff;
+	border: 1px solid #ccc;
+}
+
+fieldset.vf__disabled input.vf__text,
+fieldset.vf__disabled input.vf__text_tiny,
+fieldset.vf__disabled input.vf__text_small,
+fieldset.vf__disabled input.vf__text_large,
+fieldset.vf__disabled input.vf__button,
+fieldset.vf__disabled select.vf__one,
+fieldset.vf__disabled select.vf__multiple,
+fieldset.vf__disabled textarea.vf__text
+{
+	border: 1px solid #ddd;
+	color: #aaa;
+}
+
+input.vf__text_tiny {
+	width: 40px;
+}
+
+input.vf__text_small {
+	width: 80px;
+}
+
+textarea.vf__text {
+	width: 435px;
+	height: 120px;
+}
+
+input.vf__button {
+	float: right;
+	width: auto;
+	border: 1px solid #ccc;
+	padding: 3px 6px;
+	font: normal 12px Arial, Helvetica, sans-serif;
+	color: #000;
+	cursor: pointer;
+	background-color: #efefef;
+	text-decoration: none;
+}
+
+select.vf__one {
+	width: 240px;
+	margin: 0; 
+}
+
+select.vf__multiple {
+	width: 204px;
+	height: 84px;
+	font: normal 12px Arial, Helvetica, sans-serif;
+}
+
+input.vf__checkbox, 
+input.vf__radiobutton
+{
+	display: inline;
+	height: auto;
+	width: auto;
+	border: none;
+	padding: 0;
+}
+
+form div.vf__main_error {
+	width: auto;
+	padding: 5px 0;
+  	margin: 0 0 10px 0;
+  	border: 3px solid #f00;
+}
+
+form div.vf__main_error p {
+	font: bold 12px Arial, Helvetica, sans-serif;
+  	color: #666;
+  	margin: 0 7px 2px 7px;
+}
+
+form div.vf__error {
+	background-color: #fff;
+	border-color: #f00;
+	border-style: solid;
+	border-width: 3px 1px 1px 1px;
+	padding: 5px 3px;
+}
+
+
+form p.vf__error {
+	background-color: #fff;
+	color: #b82828;
+	margin:0pt 0pt 0pt 143px;
+	padding: 0 3px 5px 3px;
+}
