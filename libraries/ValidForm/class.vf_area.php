@@ -23,7 +23,7 @@
  *
  * @package ValidForm
  * @author Felix Langfeldt
- * @version 0.1
+ * @version 0.2
  */
   
 require_once('class.classdynamic.php');
@@ -52,10 +52,15 @@ class VF_Area extends ClassDynamic {
 			case VFORM_EMAIL:
 			case VFORM_PASSWORD:
 			case VFORM_SIMPLEURL:
-			case VFORM_CAPTCHA:
+			case VFORM_CUSTOM:
 				if (!array_key_exists("class", $meta)) $meta["class"] = "vf__text";
 				
 				$objField = new VF_Text($name, $type, $label, $validationRules, $errorHandlers, $meta);
+				break;
+			case VFORM_CAPTCHA:
+				if (!array_key_exists("class", $meta)) $meta["class"] = "vf__text_small";
+				
+				$objField = new VF_Captcha($name, $type, $label, $validationRules, $errorHandlers, $meta);
 				break;
 			case VFORM_CURRENCY:
 			case VFORM_DATE:
