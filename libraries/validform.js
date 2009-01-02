@@ -22,7 +22,7 @@
  *
  * @package ValidFormBuilder
  * @author Felix Langfeldt
- * @version 0.1
+ * @version 0.2
  */
 
 function ValidFormValidator(strFormId) {
@@ -266,6 +266,10 @@ ValidForm.prototype.validate = function() {
 			
 			//*** Check if the element is part of an area.
 			var objArea = $("#" + objElement.id).parent().parent("fieldset.vf__area");
+			if (objArea.length == 0) {
+				//*** Group within an area.
+				objArea = $("input[name='" + objElement.id + "']").parent().parent().parent().parent("fieldset.vf__area");
+			}
 			if (objArea.length > 0) {
 				var objChecker = $("legend :checkbox", objArea);
 				if (objChecker.length > 0) {
