@@ -23,7 +23,7 @@
  *
  * @package ValidForm
  * @author Felix Langfeldt
- * @version 0.2
+ * @version 0.3
  */
  
 require_once('class.phpcaptcha.php');
@@ -54,15 +54,15 @@ class VF_Validator {
 
 		if (array_key_exists($checkType, self::$checks)) {
 			if (empty(self::$checks[$checkType])) {
+				$blnReturn = TRUE;
+			} else {
 				switch ($checkType) {
 					case VFORM_CAPTCHA:
 						$blnReturn = PhpCaptcha::Validate(ValidForm::get($value));
 						break;
 					default:
-						$blnReturn = TRUE;
+						$blnReturn = preg_match(self::$checks[$checkType], $value);
 				}
-			} else {
-				$blnReturn = preg_match(self::$checks[$checkType], $value);
 			}
 		} else {
 			$blnReturn = preg_match($checkType, $value);
