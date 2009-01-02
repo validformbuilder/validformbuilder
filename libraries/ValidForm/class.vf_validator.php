@@ -23,15 +23,15 @@
  *
  * @package ValidForm
  * @author Felix Langfeldt
- * @version 0.1
+ * @version 0.2
  */
  
 require_once('class.phpcaptcha.php');
 
 class VF_Validator {
 	static $checks = array(
-		VFORM_STRING => '/^[-a-zàáâãäåæçèéêëìíîïðñòóôõöøùúûüý€0-9\s*\.\'",_()|& ]*$/i',
-		VFORM_TEXT => '/^[-a-zàáâãäåæçèéêëìíîïðñòóôõöøùúûüý€0-9\s*\.\'"_,?#@^*!&() ]*$/i',
+		VFORM_STRING => '/^[-a-zàáâãäåæçèéêëìíîïðñòóôõöøùúûüý€0-9\s*\.\'\/",_()|& ]*$/i',
+		VFORM_TEXT => '/^[-a-zàáâãäåæçèéêëìíîïðñòóôõöøùúûüý€0-9\s*\.\'\/"_,?#@^*!&() ]*$/i',
 		VFORM_NUMERIC => '/^[0-9,\.]*$/i',
 		VFORM_INTEGER => '/^[0-9]*$/i',
 		VFORM_WORD => '/^[-a-zàáâãäåæçèéêëìíîïðñòóôõöøùúûüý€0-9_]*$/i',
