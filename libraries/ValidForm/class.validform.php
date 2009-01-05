@@ -254,6 +254,20 @@ class ValidForm extends ClassDynamic {
 		return $objFields;
 	}
 	
+	public function getValidField($id) {
+		$objReturn = NULL;
+		
+		$objFields = $this->getFields();
+		foreach ($objFields as $objField) {
+			if ($objField->getId() == $id) {
+				$objReturn = $objField;
+				break;
+			}
+		}
+		
+		return $objReturn;
+	}
+	
 	public function isValid() {
 		return $this->__validate();
 	}

@@ -111,6 +111,10 @@ form .vf__notes {
 	font-size: 11px;
 }
 
+form .vf__notes p {
+	margin: 0;
+}
+
 form .vf__notes h4 {
 	color: #333;
 	font-size: 11px;
