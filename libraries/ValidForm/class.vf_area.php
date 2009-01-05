@@ -50,12 +50,16 @@ class VF_Area extends ClassDynamic {
 			case VFORM_STRING:
 			case VFORM_WORD:
 			case VFORM_EMAIL:
-			case VFORM_PASSWORD:
 			case VFORM_SIMPLEURL:
 			case VFORM_CUSTOM:
 				if (!array_key_exists("class", $meta)) $meta["class"] = "vf__text";
 				
 				$objField = new VF_Text($name, $type, $label, $validationRules, $errorHandlers, $meta);
+				break;
+			case VFORM_PASSWORD:
+				if (!array_key_exists("class", $meta)) $meta["class"] = "vf__text";
+				
+				$objField = new VF_Password($name, $type, $label, $validationRules, $errorHandlers, $meta);
 				break;
 			case VFORM_CAPTCHA:
 				if (!array_key_exists("class", $meta)) $meta["class"] = "vf__text_small";
