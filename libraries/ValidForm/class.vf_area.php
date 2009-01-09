@@ -23,7 +23,7 @@
  *
  * @package ValidForm
  * @author Felix Langfeldt
- * @version 0.2
+ * @version 0.2.0
  */
   
 require_once('class.classdynamic.php');

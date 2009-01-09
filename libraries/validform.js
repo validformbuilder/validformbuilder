@@ -22,7 +22,7 @@
  *
  * @package ValidFormBuilder
  * @author Felix Langfeldt
- * @version 0.2
+ * @version 0.2.0
  */
 
 function ValidFormValidator(strFormId) {

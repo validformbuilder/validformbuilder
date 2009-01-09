@@ -23,7 +23,7 @@
  *
  * @package ValidForm
  * @author Felix Langfeldt
- * @version 0.1
+ * @version 0.1.0
  */
   
 require_once('class.vf_element.php');

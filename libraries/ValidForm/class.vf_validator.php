@@ -23,7 +23,7 @@
  *
  * @package ValidForm
  * @author Felix Langfeldt
- * @version 0.3
+ * @version 0.3.0
  */
  
 require_once('class.phpcaptcha.php');
