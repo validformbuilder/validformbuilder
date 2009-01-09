@@ -20,7 +20,7 @@
 
 require_once('libraries/ValidForm/class.phpcaptcha.php');
 
-$arrFonts = array('libraries/ValidForm/fonts/ARIALN.TTF');
+$arrFonts = array('libraries/ValidForm/fonts/Folks-Normal.ttf');
 $intWidth = (array_key_exists("php_captcha_width", $_SESSION)) ? $_SESSION["php_captcha_width"] : 200;
 $intHeight = (array_key_exists("php_captcha_height", $_SESSION)) ? $_SESSION["php_captcha_height"] : 60;
 $intLength = (array_key_exists("php_captcha_length", $_SESSION)) ? $_SESSION["php_captcha_length"] : 5;
