@@ -20,6 +20,7 @@ require_once('class.classdynamic.php');
 class VF_Paragraph extends ClassDynamic {
 	protected $__header;
 	protected $__body;
+	protected $__id;
 	
 	public function __construct($header = NULL, $body = NULL) {
 		$this->__header = $header;

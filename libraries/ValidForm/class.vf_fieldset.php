@@ -25,7 +25,7 @@ class VF_Fieldset extends ClassDynamic {
 	public function __construct($header = NULL, $noteHeader = NULL, $noteBody = NULL) {
 		$this->__header = $header;
 		
-		if (!is_null($noteHeader) || !is_null($noteBody)) {
+		if (!empty($noteHeader) || !empty($noteBody)) {
 			$this->__note = new VF_Note($noteHeader, $noteBody);
 		}
 	}
