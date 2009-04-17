@@ -25,7 +25,7 @@ class VF_Validator {
 		VFORM_INTEGER => '/^[0-9]*$/i',
 		VFORM_WORD => '/^[-a-zàáâãäåæçèéêëìíîïðñòóôõöøùúûüý€0-9_]*$/i',
 		VFORM_EMAIL => '/^[^@\s]+@([-a-z0-9]+\.)+[a-z]{2,}$/i',
-		VFORM_PASSWORD => '/^[-A-Z0-9\.\'"_!@#$%^&*?]*$/i',
+		VFORM_PASSWORD => '/^[-A-Z0-9\.\'"_!@#()$%^&*?]*$/i',
 		VFORM_SIMPLEURL => '/^[-A-Z0-9]+\.[-A-Z0-9]+/i',
 		VFORM_FILE => '/^[-a-zàáâãäåæçèéêëìíîïðñòóôõöøùúûüý0-9\.\':"\\_\/ ]*$/i',
 		VFORM_BOOLEAN => '/^[on]*$/i',
