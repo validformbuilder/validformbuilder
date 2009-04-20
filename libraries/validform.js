@@ -112,30 +112,30 @@ function ValidForm(strFormId, strMainAlert) {
 ValidForm.prototype.init = function() {
 	var __this = this;
 
-	$("#" + this.id + " fieldset.vf__disabled").each(function(){
+	jQuery("#" + this.id + " fieldset.vf__disabled").each(function(){
 		var fieldset = this;
 		
-		$("input, select, textarea", fieldset).attr("disabled", "disabled");
-		$("legend input", fieldset)
+		jQuery("input, select, textarea", fieldset).attr("disabled", "disabled");
+		jQuery("legend input", fieldset)
 			.removeAttr("disabled")
 			.bind("click", function(){
 				if (this.checked) {
-					$("input, select, textarea", fieldset).removeAttr("disabled");
-					$(fieldset).removeClass("vf__disabled");
+					jQuery("input, select, textarea", fieldset).removeAttr("disabled");
+					jQuery(fieldset).removeClass("vf__disabled");
 				} else {
-					$("input, select, textarea", fieldset).attr("disabled", "disabled");
-					$("legend input", fieldset).removeAttr("disabled");
-					$(fieldset).addClass("vf__disabled");
+					jQuery("input, select, textarea", fieldset).attr("disabled", "disabled");
+					jQuery("legend input", fieldset).removeAttr("disabled");
+					jQuery(fieldset).addClass("vf__disabled");
 					
 					//*** Remove errors.
-					$("div.vf__error", fieldset).each(function(){
-						$(this).removeClass("vf__error").find("p.vf__error").remove();
+					jQuery("div.vf__error", fieldset).each(function(){
+						jQuery(this).removeClass("vf__error").find("p.vf__error").remove();
 					});
 				}
 			});
 	});
 	
-	$("#" + this.id).bind("submit", function(){		
+	jQuery("#" + this.id).bind("submit", function(){		
 		return __this.validate();
 	});
 };
@@ -240,7 +240,7 @@ ValidForm.prototype.validate = function() {
 	
 	//*** Set the form object.
 	try {
-		objDOMForm = $("#" + this.id);
+		objDOMForm = jQuery("#" + this.id);
 	} catch(e) {
 		alert("An error occured while calling the Form.\nMessage: " + e.message);
 		this.valid = false;
@@ -254,13 +254,13 @@ ValidForm.prototype.validate = function() {
 			var objElement = this.elements[strElement];
 			
 			//*** Check if the element is part of an area.
-			var objArea = $("#" + objElement.id).parent().parent("fieldset.vf__area");
+			var objArea = jQuery("#" + objElement.id).parent().parent("fieldset.vf__area");
 			if (objArea.length == 0) {
 				//*** Group within an area.
-				objArea = $("input[name='" + objElement.id + "']").parent().parent().parent().parent("fieldset.vf__area");
+				objArea = jQuery("input[name='" + objElement.id + "']").parent().parent().parent().parent("fieldset.vf__area");
 			}
 			if (objArea.length > 0) {
-				var objChecker = $("legend :checkbox", objArea);
+				var objChecker = jQuery("legend :checkbox", objArea);
 				if (objChecker.length > 0) {
 					if (objChecker.get(0).checked) {
 						if (!objElement.validate()) {
@@ -295,20 +295,20 @@ ValidFormElement.prototype.validate = function() {
 };
 
 ValidFormValidator.prototype.removeMain = function() {
-	$("#" + this.id + " div.vf__main_error").remove();
+	jQuery("#" + this.id + " div.vf__main_error").remove();
 }
 
 ValidFormValidator.prototype.showMain = function() {
 	if (this.mainAlert != "") {
-		$("#" + this.id).prepend("<div class=\"vf__main_error\"><p>" + this.mainAlert + "</p></div>");
+		jQuery("#" + this.id).prepend("<div class=\"vf__main_error\"><p>" + this.mainAlert + "</p></div>");
 	}
 	
 	//*** Jump to the first error.
-	$.scrollTo($("div.vf__error:first"), 500);
+	jQuery.scrollTo(jQuery("div.vf__error:first"), 500);
 }
 
 ValidFormFieldValidator.prototype.validate = function(value) {
-	var objElement = $("#" + this.id);
+	var objElement = jQuery("#" + this.id);
 	var value = objElement.val();
 	
 	this.removeAlert();
@@ -358,7 +358,7 @@ ValidFormFieldValidator.prototype.validate = function(value) {
 			return blnReturn;
 		}
 	} catch(e) {
-		var objElements = $("input[name='" + this.id + "']");
+		var objElements = jQuery("input[name='" + this.id + "']");
 		if (objElements.length > 0) {
 			var objValidElements = objElements.filter(":checked");
 			value = objValidElements.val();
@@ -400,18 +400,18 @@ ValidFormFieldValidator.prototype.validate = function(value) {
 }
 
 ValidFormFieldValidator.prototype.removeAlert = function() {
-	var objElement = $("#" + this.id);
+	var objElement = jQuery("#" + this.id);
 	if (objElement.length == 0) {
-		objElement = $("input[name='" + this.id + "']:first").parent().parent();
+		objElement = jQuery("input[name='" + this.id + "']:first").parent().parent();
 	}
 	
 	objElement.parent("div").removeClass("vf__error").find("p.vf__error").remove();
 }
 
 ValidFormFieldValidator.prototype.showAlert = function(strAlert) {
-	var objElement = $("#" + this.id);
+	var objElement = jQuery("#" + this.id);
 	if (objElement.length == 0) {
-		objElement = $("input[name='" + this.id + "']:first").parent().parent();
+		objElement = jQuery("input[name='" + this.id + "']:first").parent().parent();
 	}
 	
 	objElement.parent("div").addClass("vf__error").prepend("<p class=\"vf__error\">" + strAlert + "</p>");

@@ -12,7 +12,7 @@
  *
  * @package ValidForm
  * @author Felix Langfeldt
- * @version 0.1.0
+ * @version 0.1.1
  */
   
 require_once('class.vf_element.php');
@@ -62,7 +62,7 @@ class VF_Group extends VF_Element {
 				break;
 		}
 		
-		return "objForm.addElement('{$name}', '{$name}', {$strCheck}, {$strRequired}, {$intMaxLength}, {$intMinLength}, '{$this->__validator->getFieldHint()}', '{$this->__validator->getTypeError()}', '{$this->__validator->getRequiredError()}', '{$this->__validator->getHintError()}', '{$strMinLengthError}', '{$strMaxLengthError}');\n";
+		return "objForm.addElement('{$name}', '{$name}', {$strCheck}, {$strRequired}, {$intMaxLength}, {$intMinLength}, '" . addslashes($this->__validator->getFieldHint()) . "', '" . addslashes($this->__validator->getTypeError()) . "', '" . addslashes($this->__validator->getRequiredError()) . "', '" . addslashes($this->__validator->getHintError()) . "', '{$strMinLengthError}', '{$strMaxLengthError}');\n";
 	}
 	
 	public function addField($label, $value, $checked = FALSE, $meta = array()) {

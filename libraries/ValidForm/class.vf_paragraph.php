@@ -12,7 +12,7 @@
  *
  * @package ValidForm
  * @author Felix Langfeldt
- * @version 0.1.1
+ * @version 0.1.2
  */
   
 require_once('class.classdynamic.php');
@@ -31,10 +31,12 @@ class VF_Paragraph extends ClassDynamic {
 		$strOutput = "<div>\n";
 		
 		if (!empty($this->__header)) $strOutput .= "<h3>{$this->__header}</h3>\n";
-		if (preg_match("/<p.*?>/", $this->__body) > 0) {
-			$strOutput .= "{$this->__body}\n";
-		} else {
-			$strOutput .= "<p>{$this->__body}</p>\n";
+		if (!empty($this->__body)) {
+			if (preg_match("/<p.*?>/", $this->__body) > 0) {
+				$strOutput .= "{$this->__body}\n";
+			} else {
+				$strOutput .= "<p>{$this->__body}</p>\n";
+			}
 		}
 		$strOutput .= "</div>\n";
 		
