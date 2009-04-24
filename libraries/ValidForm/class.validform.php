@@ -56,6 +56,7 @@ class ValidForm extends ClassDynamic {
 	private $__description;
 	private $__action;
 	private $__elements = array();	
+	private $__jsEvents = array();	
 	private $__submitLabel;	
 	protected $__mainalert;	
 	protected $__requiredstyle;	
@@ -193,6 +194,10 @@ class ValidForm extends ClassDynamic {
 		$objFieldset->addField($objArea);
 		
 		return $objArea;
+	}
+	
+	public function addJSEvent($strEvent, $strMethod) {
+		$this->__jsEvents[$strEvent] = $strMethod;
 	}
 	
 	public function toHtml() {
@@ -333,10 +338,16 @@ class ValidForm extends ClassDynamic {
 	private function __toJS() {
 		$strReturn = "";
 		
+		//*** Form.
 		$strReturn .= "var objForm = new ValidForm(\"{$this->__name}\", \"{$this->__mainalert}\");\n";
 		foreach ($this->__elements as $element) {
 			$strReturn .= $element->toJS();
 		}
+		
+		//*** Form Events.
+		foreach ($this->__jsEvents as $event => $method) {
+			$strReturn .= "objForm.addEvent(\"{$event}\", {$method});\n";
+		}		
 		
 		return $strReturn;
 	}

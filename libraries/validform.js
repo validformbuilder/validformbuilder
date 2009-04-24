@@ -11,7 +11,7 @@
  *
  * @package ValidFormBuilder
  * @author Felix Langfeldt
- * @version 0.2.0
+ * @version 0.2.1
  */
 
 function ValidFormValidator(strFormId) {
@@ -107,6 +107,8 @@ function ValidForm(strFormId, strMainAlert) {
 	this.validator = new ValidFormValidator(this.id);
 	this.validator.mainAlert = strMainAlert;
 	this.init();
+	this.events = [];
+	this.customEvents = ["afterValidate"];
 }
 
 ValidForm.prototype.init = function() {
@@ -226,6 +228,14 @@ ValidForm.prototype.addElement = function() {
 	}
 };
 
+ValidForm.prototype.addEvent = function(strEvent, callback){
+	if (this.inArray(this.customEvents, strEvent)) {
+		this.events[strEvent] = callback;
+	} else {
+		jQuery("#" + this.id).bind(strEvent, callback);
+	}
+}
+
 ValidForm.prototype.validate = function() {
 	/*************************/
 	/* validate function     *********************************************/
@@ -285,6 +295,11 @@ ValidForm.prototype.validate = function() {
 	
 	if (!this.valid) {
 		this.validator.showMain();
+	}
+	
+	if (typeof this.events["afterValidate"] == "function") {
+		var callback = this.events["afterValidate"];
+		callback();
 	}
 		
 	return this.valid;
