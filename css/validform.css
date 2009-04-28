@@ -216,7 +216,7 @@ input.vf__radiobutton
 
 form div.vf__main_error {
 	width: auto;
-	padding: 5px 0;
+	padding: 5px;
   	margin: 0 0 10px 0;
   	border: 3px solid #f00;
 }
