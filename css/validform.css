@@ -2,7 +2,7 @@
  * ValidForm standard CSS. 
  * Do not modify directly! You can overrule the styles in a separate file.
  *
- * @version 0.1
+ * @version 0.2
  */
  
 * {
@@ -10,24 +10,24 @@
 	padding: 0;
 }
  
-form {
+form.validform {
 	margin: 0;
 	padding: 0;
 }
 
-fieldset {
+form.validform fieldset {
 	border: 0;
 }
 
-form h3,
-legend 
+form.validform h3,
+form.validform legend 
 {
 	font: bold 14px Arial, Helvetica, sans-serif;
 	color: #666;
 	padding: 15px 0 5px 0;
 }
 
-form div {
+form.validform div {
 	clear: none;
 	*height: 1%;
 	margin: 7px 0 0 0;
@@ -35,7 +35,7 @@ form div {
 	overflow: auto;
 }
 
-form label {
+form.validform label {
 	display: block;
 	float: left;
 	width: 130px;
@@ -46,18 +46,18 @@ form label {
 	text-align: right;
 }
 
-form fieldset.vf__disabled label {
+form.validform fieldset.vf__disabled label {
 	color: #aaa;
 }
 
-form fieldset fieldset {
+form.validform fieldset fieldset {
 	clear: none;
 	margin: 0pt;
 	padding: 0pt;
 	xwidth: 195px;
 }
 
-form fieldset fieldset.vf__list label {
+form.validform fieldset fieldset.vf__list label {
 	float: none;
 	text-align: left;
 	font-weight: normal !important;
@@ -65,7 +65,7 @@ form fieldset fieldset.vf__list label {
 	width: auto;
 }
 
-form fieldset fieldset.vf__area {
+form.validform fieldset fieldset.vf__area {
 	border: 1px solid #ccc;
 	clear: none;
 	display: block;
@@ -73,32 +73,32 @@ form fieldset fieldset.vf__area {
 	padding: 6px 8px 10px 8px;
 }
 
-form fieldset fieldset.vf__area legend {
+form.validform fieldset fieldset.vf__area legend {
 	margin-left: 10px;
 	padding: 0 5px 0 8px;
 	font: normal 12px Arial, Helvetica, sans-serif;
 }
 
-form fieldset fieldset.vf__area legend label {
+form.validform fieldset fieldset.vf__area legend label {
 	margin: 0;
 	padding: 0;
 	float: none;
 	display: inline;
 }
 
-form fieldset.vf__disabled legend label {
+form.validform fieldset.vf__disabled legend label {
 	color: #333;
 }
 
-form fieldset fieldset input {
+form.validform fieldset fieldset input {
 	margin-right: 2px;
 }
 
-form .vf__hide {
+form.validform .vf__hide {
 	display: none;
 }
 
-form .vf__notes {
+form.validform .vf__notes {
 	background-color: #eee;
 	border: 1px solid #ddd;
 	color: #666;
@@ -111,26 +111,26 @@ form .vf__notes {
 	font-size: 11px;
 }
 
-form .vf__notes p {
+form.validform .vf__notes p {
 	margin: 0;
 }
 
-form .vf__notes h4 {
+form.validform .vf__notes h4 {
 	color: #333;
 	font-size: 11px;
 	font-weight: bold;
 	margin-bottom: 2px;
 }
 
-form .vf__required label {
+form.validform .vf__required label {
 	font-weight: bold;
 }
 
-form .vf__navigation {
+form.validform .vf__navigation {
 	padding: 10px;
 }
 
-form .vf__tip {
+form.validform .vf__tip {
 	color: #666;
 	display: block;
 	font-size: 10px;
@@ -214,20 +214,20 @@ input.vf__radiobutton
 	padding: 0;
 }
 
-form div.vf__main_error {
+form.validform div.vf__main_error {
 	width: auto;
 	padding: 5px;
   	margin: 0 0 10px 0;
   	border: 3px solid #f00;
 }
 
-form div.vf__main_error p {
+form.validform div.vf__main_error p {
 	font: bold 12px Arial, Helvetica, sans-serif;
   	color: #666;
   	margin: 0 7px 2px 7px;
 }
 
-form div.vf__error {
+form.validform div.vf__error {
 	background-color: #fff;
 	border-color: #f00;
 	border-style: solid;
@@ -236,7 +236,7 @@ form div.vf__error {
 }
 
 
-form p.vf__error {
+form.validform p.vf__error {
 	background-color: #fff;
 	color: #b82828;
 	margin:0pt 0pt 0pt 143px;

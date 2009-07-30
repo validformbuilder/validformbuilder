@@ -12,7 +12,7 @@
  *
  * @package ValidForm
  * @author Felix Langfeldt
- * @version 0.1.0
+ * @version 0.1.2
  */
  
 require_once('class.vf_fieldset.php');
@@ -209,7 +209,7 @@ class ValidForm extends ClassDynamic {
 		$strOutput .= "// ]]>\n";
 		$strOutput .= "</script>\n";
 		
-		$strOutput .= "<form id=\"{$this->__name}\" method=\"post\" action=\"{$this->__action}\">\n";
+		$strOutput .= "<form id=\"{$this->__name}\" method=\"post\" action=\"{$this->__action}\" class=\"validform\">\n";
 		
 		//*** Main error.
 		if ($this->isSubmitted() && !empty($this->__mainalert)) $strOutput .= "<div class=\"vf__main_error\"><p>{$this->__mainalert}</p></div>\n";
@@ -291,7 +291,7 @@ class ValidForm extends ClassDynamic {
 								}
 
 								$strSet .= "<tr>";
-								$strSet .= "<td>{$objSubField->getLabel()} &nbsp;&nbsp;&nbsp;</td><td>: <b>{$strValue}</b></td>\n";
+								$strSet .= "<td>{$objSubField->getLabel()} &nbsp;&nbsp;&nbsp;</td><td>: <b>" . nl2br($strValue) . "</b></td>\n";
 								$strSet .= "</tr>";
 							}
 						} else {
@@ -302,7 +302,7 @@ class ValidForm extends ClassDynamic {
 							}
 
 							$strSet .= "<tr>";
-							$strSet .= "<td>{$objField->getLabel()} &nbsp;&nbsp;&nbsp;</td><td>: <b>{$strValue}</b></td>\n";
+							$strSet .= "<td>{$objField->getLabel()} &nbsp;&nbsp;&nbsp;</td><td>: <b>" . nl2br($strValue) . "</b></td>\n";
 							$strSet .= "</tr>";
 						}
 					}

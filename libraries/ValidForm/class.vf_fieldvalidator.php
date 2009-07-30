@@ -12,7 +12,7 @@
  *
  * @package ValidForm
  * @author Felix Langfeldt
- * @version 0.1.0
+ * @version 0.1.1
  */
  
 require_once('class.classdynamic.php');
@@ -25,6 +25,7 @@ class VF_FieldValidator extends ClassDynamic {
 	protected $__validvalue;
 	protected $__minlength;
 	protected $__maxlength;
+	protected $__matchwith;
 	protected $__required = FALSE;
 	protected $__maxfiles = 1;
 	protected $__maxsize = 3000;
@@ -32,6 +33,7 @@ class VF_FieldValidator extends ClassDynamic {
 	protected $__validation;
 	protected $__minlengtherror = "The input is too short. The minimum is %s characters.";
 	protected $__maxlengtherror = "The input is too long. The maximum is %s characters.";
+	protected $__matchwitherror = "The values do not match.";
 	protected $__requirederror = "This field is required.";
 	protected $__typeerror;
 	protected $__maxfileserror = "Too many files selected. The maximum is %s files.";
@@ -119,7 +121,6 @@ class VF_FieldValidator extends ClassDynamic {
 				}
 			} else if ($this->__minlength > 0
 					&& strlen($value) < $this->__minlength) {
-					echo 'sdfsdfsdf';
 				$this->__validvalue = NULL;
 				$this->__error = sprintf($this->__minlengtherror, $this->__minlength);
 			}
@@ -136,6 +137,15 @@ class VF_FieldValidator extends ClassDynamic {
 					&& strlen($value) > $this->__maxlength) {
 				$this->__validvalue = NULL;
 				$this->__error = sprintf($this->__maxlengtherror, $this->__maxlength);
+			}
+		}
+		
+		//*** Check matching values.
+		if (empty($this->__error)) {
+			if (!empty($this->__matchwith) && is_array($value)) {
+				
+			} else if (!empty($this->__matchwith)) {
+				
 			}
 		}
 		

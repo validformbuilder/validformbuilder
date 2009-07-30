@@ -39,7 +39,7 @@ class VF_Text extends VF_Element {
 	
 	public function toJS() {
 		$strCheck = $this->__validator->getCheck();
-		$strCheck = (empty($strCheck)) ? "''" : $strCheck;
+		$strCheck = (empty($strCheck)) ? "''" : addslashes($strCheck);
 		$strRequired = ($this->__validator->getRequired()) ? "true" : "false";;
 		$intMaxLength = ($this->__validator->getMaxLength() > 0) ? $this->__validator->getMaxLength() : "null";
 		$intMinLength = ($this->__validator->getMinLength() > 0) ? $this->__validator->getMinLength() : "null";
