@@ -291,7 +291,7 @@ class ValidForm extends ClassDynamic {
 								}
 
 								$strSet .= "<tr>";
-								$strSet .= "<td>{$objSubField->getLabel()} &nbsp;&nbsp;&nbsp;</td><td>: <b>" . nl2br($strValue) . "</b></td>\n";
+								$strSet .= "<td valign=\"top\">{$objSubField->getLabel()} &nbsp;&nbsp;&nbsp;</td><td valign=\"top\">: <b>" . nl2br($strValue) . "</b></td>\n";
 								$strSet .= "</tr>";
 							}
 						} else {
@@ -302,7 +302,7 @@ class ValidForm extends ClassDynamic {
 							}
 
 							$strSet .= "<tr>";
-							$strSet .= "<td>{$objField->getLabel()} &nbsp;&nbsp;&nbsp;</td><td>: <b>" . nl2br($strValue) . "</b></td>\n";
+							$strSet .= "<td valign=\"top\">{$objField->getLabel()} &nbsp;&nbsp;&nbsp;</td><td valign=\"top\">: <b>" . nl2br($strValue) . "</b></td>\n";
 							$strSet .= "</tr>";
 						}
 					}
