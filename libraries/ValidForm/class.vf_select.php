@@ -19,7 +19,7 @@ require_once('class.vf_element.php');
 
 class VF_Select extends VF_Element {
 	protected $__options = array();
-
+	
 	public function toHtml($submitted = FALSE) {
 		$blnError = ($submitted && !$this->__validator->validate()) ? TRUE : FALSE;
 		
@@ -61,6 +61,13 @@ class VF_Select extends VF_Element {
 		array_push($this->__options, $objOption);
 		
 		return $objOption;
+	}
+	
+	public function addGroup($label) {
+		$objGroup = new VF_SelectGroup($label);
+		array_push($this->__options, $objGroup);
+		
+		return $objGroup;
 	}
 	
 }
