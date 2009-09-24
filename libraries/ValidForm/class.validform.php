@@ -22,6 +22,7 @@ require_once('class.vf_password.php');
 require_once('class.vf_textarea.php');
 require_once('class.vf_checkbox.php');
 require_once('class.vf_select.php');
+require_once('class.vf_selectgroup.php');
 require_once('class.vf_selectoption.php');
 require_once('class.vf_file.php');
 require_once('class.vf_paragraph.php');
