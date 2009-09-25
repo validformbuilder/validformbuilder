@@ -29,6 +29,7 @@ require_once('class.vf_paragraph.php');
 require_once('class.vf_group.php');
 require_once('class.vf_groupfield.php');
 require_once('class.vf_area.php');
+require_once('class.vf_multifield.php');
 require_once('class.vf_captcha.php');
 require_once('class.vf_fieldvalidator.php');
 require_once('class.classdynamic.php');
@@ -88,7 +89,7 @@ class ValidForm extends ClassDynamic {
 		return $objFieldSet;
 	}
 	
-	public function addField($name, $label, $type, $validationRules = array(), $errorHandlers = array(), $meta = array()) {
+	public function addField($name, $label, $type, $validationRules = array(), $errorHandlers = array(), $meta = array(), $blnJustRender = FALSE) {
 		switch ($type) {
 			case VFORM_STRING:
 			case VFORM_WORD:
@@ -152,15 +153,17 @@ class ValidForm extends ClassDynamic {
 		}
 		
 		//*** Fieldset already defined?
-		if (count($this->__elements) == 0) {
+		if (count($this->__elements) == 0 && !$blnJustRender) {
 			$objFieldSet = new VF_Fieldset();
 			array_push($this->__elements, $objFieldSet);
 		}
 		
 		$objField->setRequiredStyle($this->__requiredstyle);
 		
-		$objFieldset = $this->__elements[count($this->__elements) - 1];
-		$objFieldset->addField($objField);
+		if (!$blnJustRender) {
+			$objFieldset = $this->__elements[count($this->__elements) - 1];
+			$objFieldset->addField($objField);
+		}
 		
 		return $objField;
 	}
@@ -189,12 +192,31 @@ class ValidForm extends ClassDynamic {
 			array_push($this->__elements, $objFieldSet);
 		}
 		
+		$objArea->setForm($this);
 		$objArea->setRequiredStyle($this->__requiredstyle);
 		
 		$objFieldset = $this->__elements[count($this->__elements) - 1];
 		$objFieldset->addField($objArea);
 		
 		return $objArea;
+	}
+	
+	public function addMultiField($label = NULL, $meta = array()) {
+		$objField = new VF_MultiField($label, $meta);
+		
+		//*** Fieldset already defined?
+		if (count($this->__elements) == 0) {
+			$objFieldSet = new VF_Fieldset();
+			array_push($this->__elements, $objFieldSet);
+		}
+				
+		$objField->setForm($this);
+		$objField->setRequiredStyle($this->__requiredstyle);
+		
+		$objFieldset = $this->__elements[count($this->__elements) - 1];
+		$objFieldset->addField($objField);
+		
+		return $objField;
 	}
 	
 	public function addJSEvent($strEvent, $strMethod) {
@@ -278,23 +300,42 @@ class ValidForm extends ClassDynamic {
 
 					if ((!empty($strValue) && $hideEmpty) || (!$hideEmpty && !is_null($strValue))) {
 						if ($objField->hasFields()) {
-							$strSet .= "<tr>";
-							$strSet .= "<td colspan=\"2\"><b>{$objField->getLabel()}</b></td>\n";
-							$strSet .= "</tr>";
-
-							foreach ($objField->getFields() as $objSubField) {
-								$strValue = (is_array($objSubField->getValue())) ? implode(", ", $objSubField->getValue()) : $objSubField->getValue();
-
-								switch ($objSubField->getType()) {
-									case VFORM_BOOLEAN:
-										$strValue = ($strValue == 1) ? "yes" : "no";
-										break;
-								}
-
-								$strSet .= "<tr>";
-								$strSet .= "<td valign=\"top\">{$objSubField->getLabel()} &nbsp;&nbsp;&nbsp;</td><td valign=\"top\">: <b>" . nl2br($strValue) . "</b></td>\n";
-								$strSet .= "</tr>";
-							}
+							switch (get_class($objField)) {
+								case "VF_MultiField":
+									$strValue = "";
+									
+									$intCount = 0;
+									$objSubFields = $objField->getFields();
+									foreach ($objSubFields as $objSubField) {
+										$intCount++;
+										$strValue .= (is_array($objSubField->getValue())) ? implode(", ", $objSubField->getValue()) : $objSubField->getValue();
+										$strValue .= (count($objSubFields) > $intCount) ? " - " : "";
+									}									
+									
+									$strSet .= "<tr>";
+									$strSet .= "<td valign=\"top\">{$objField->getLabel()} &nbsp;&nbsp;&nbsp;</td><td valign=\"top\">: <b>" . nl2br($strValue) . "</b></td>\n";
+									$strSet .= "</tr>";
+									
+									break;									
+								default:
+									$strSet .= "<tr>";
+									$strSet .= "<td colspan=\"2\"><b>{$objField->getLabel()}</b></td>\n";
+									$strSet .= "</tr>";
+		
+									foreach ($objField->getFields() as $objSubField) {
+										$strValue = (is_array($objSubField->getValue())) ? implode(", ", $objSubField->getValue()) : $objSubField->getValue();
+		
+										switch ($objSubField->getType()) {
+											case VFORM_BOOLEAN:
+												$strValue = ($strValue == 1) ? "yes" : "no";
+												break;
+										}
+		
+										$strSet .= "<tr>";
+										$strSet .= "<td valign=\"top\">{$objSubField->getLabel()} &nbsp;&nbsp;&nbsp;</td><td valign=\"top\">: <b>" . nl2br($strValue) . "</b></td>\n";
+										$strSet .= "</tr>";
+									}		
+							}							
 						} else {
 							switch ($objField->getType()) {
 								case VFORM_BOOLEAN:

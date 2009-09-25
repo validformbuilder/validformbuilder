@@ -46,7 +46,7 @@ class VF_Captcha extends VF_Element {
 		$this->__validator = new VF_FieldValidator($name, $type, $validationRules, $errorHandlers, $this->__hint);
 	}
 
-	public function toHtml($submitted = FALSE) {		
+	public function toHtml($submitted = FALSE, $blnSimpleLayout = FALSE) {		
 		$strClass = ($this->__validator->getRequired()) ? "vf__required" : "vf__optional";
 		$strOutput = "<div class=\"{$strClass}\">\n";
 								

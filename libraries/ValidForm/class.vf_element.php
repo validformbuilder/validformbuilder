@@ -28,7 +28,7 @@ class VF_Element extends ClassDynamic {
 	protected $__default;
 	protected $__requiredstyle;
 	protected $__validator;
-	protected $__reservedMeta = array("tip", "hint", "default", "width", "height", "length");
+	protected $__reservedMeta = array("tip", "hint", "default", "width", "height", "length", "start", "end");
 
 	public function __construct($name, $type, $label = "", $validationRules = array(), $errorHandlers = array(), $meta = array()) {
 		if (is_null($validationRules)) $validationRules = array();
@@ -47,7 +47,7 @@ class VF_Element extends ClassDynamic {
 		$this->__validator = new VF_FieldValidator($name, $type, $validationRules, $errorHandlers, $this->__hint);		
 	}
 	
-	public function toHtml($submitted = FALSE) {
+	public function toHtml($submitted = FALSE, $blnSimpleLayout = FALSE) {
 		return "Field type not defined.";
 	}
 	

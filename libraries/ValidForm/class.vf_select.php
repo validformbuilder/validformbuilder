@@ -19,27 +19,49 @@ require_once('class.vf_element.php');
 
 class VF_Select extends VF_Element {
 	protected $__options = array();
-	
-	public function toHtml($submitted = FALSE) {
-		$blnError = ($submitted && !$this->__validator->validate()) ? TRUE : FALSE;
+
+	public function toHtml($submitted = FALSE, $blnSimpleLayout = FALSE) {
+		$strOutput = "";
 		
-		$strClass = ($this->__validator->getRequired()) ? "vf__required" : "vf__optional";
-		$strClass = ($blnError) ? $strClass . " vf__error" : $strClass;		
-		$strOutput = "<div class=\"{$strClass}\">\n";
+		if (!$blnSimpleLayout) {
+			$blnError = ($submitted && !$this->__validator->validate()) ? TRUE : FALSE;
+			
+			$strClass = ($this->__validator->getRequired()) ? "vf__required" : "vf__optional";
+			$strClass = ($blnError) ? $strClass . " vf__error" : $strClass;		
+			$strOutput .= "<div class=\"{$strClass}\">\n";
+			
+			if ($blnError) $strOutput .= "<p class=\"vf__error\">{$this->__validator->getError()}</p>";
+					
+			$strLabel = (!empty($this->__requiredstyle) && $this->__validator->getRequired()) ? sprintf($this->__requiredstyle, $this->__label) : $this->__label;
+			$strOutput .= "<label for=\"{$this->__id}\">{$strLabel}</label>\n";
+		}
 		
-		if ($blnError) $strOutput .= "<p class=\"vf__error\">{$this->__validator->getError()}</p>";
-				
-		$strLabel = (!empty($this->__requiredstyle) && $this->__validator->getRequired()) ? sprintf($this->__requiredstyle, $this->__label) : $this->__label;
-		$strOutput .= "<label for=\"{$this->__id}\">{$strLabel}</label>\n";
 		$strOutput .= "<select name=\"{$this->__name}\" id=\"{$this->__id}\" {$this->__getMetaString()}>\n";
 		
+		if (count($this->__options) == 0) {
+			if (isset($this->__meta["start"]) && is_int($this->__meta["start"]) && isset($this->__meta["end"]) && is_int($this->__meta["end"])) {
+				if ($this->__meta["start"] < $this->__meta["end"]) {
+					for ($intCount = $this->__meta["start"]; $intCount <= $this->__meta["end"]; $intCount++) {
+						$this->addField($intCount, $intCount);
+					}
+				} else {
+					for ($intCount = $this->__meta["start"]; $intCount >= $this->__meta["end"]; $intCount--) {
+						$this->addField($intCount, $intCount);
+					}
+				}
+			}
+		}
+
 		foreach ($this->__options as $option) {
 			$strOutput .= $option->toHtml($this->__getValue($submitted));
 		}
 		
 		$strOutput .= "</select>\n";
-		if (!empty($this->__tip)) $strOutput .= "<small class=\"vf__tip\">{$this->__tip}</small>\n";
-		$strOutput .= "</div>\n";
+		
+		if (!$blnSimpleLayout) {
+			if (!empty($this->__tip)) $strOutput .= "<small class=\"vf__tip\">{$this->__tip}</small>\n";
+			$strOutput .= "</div>\n";
+		}
 		
 		return $strOutput;
 	}

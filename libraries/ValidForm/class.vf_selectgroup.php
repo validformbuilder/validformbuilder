@@ -8,11 +8,11 @@
  ***************************/
  
 /**
- * VF_SelectOption class
+ * VF_SelectGroup class
  *
  * @package ValidForm
  * @author Robin van Baalen
- * @version 0.1.1
+ * @version 0.1.2
  */
   
 require_once('class.classdynamic.php');
@@ -20,18 +20,15 @@ require_once('class.classdynamic.php');
 class VF_SelectGroup extends ClassDynamic {
 	protected $__options = array();
 	protected $__label;
-	protected $__selected;
 	
-	public function __construct($label, $selected = false) {
+	public function __construct($label) {
 		$this->__label = $label;
-		$this->__selected = $selected;
 	}
 	
-	public function toHtml() {
-		
+	public function toHtml($value = NULL) {		
 		$strOutput = "<optgroup label=\"{$this->__label}\">\n";
 		foreach ($this->__options as $option) {
-			$strOutput .= $option->toHtml($this->__selected);
+			$strOutput .= $option->toHtml($value);
 		}
 		$strOutput .= "</optgroup>\n";
 		

@@ -19,20 +19,28 @@ require_once('class.vf_element.php');
 
 class VF_Text extends VF_Element {
 
-	public function toHtml($submitted = FALSE) {
-		$blnError = ($submitted && !$this->__validator->validate()) ? TRUE : FALSE;
+	public function toHtml($submitted = FALSE, $blnSimpleLayout = FALSE) {
+		$strOutput = "";
 		
-		$strClass = ($this->__validator->getRequired()) ? "vf__required" : "vf__optional";
-		$strClass = ($blnError) ? $strClass . " vf__error" : $strClass;
-		$strOutput = "<div class=\"{$strClass}\">\n";
-		
-		if ($blnError) $strOutput .= "<p class=\"vf__error\">{$this->__validator->getError()}</p>";
+		if (!$blnSimpleLayout) {
+			$blnError = ($submitted && !$this->__validator->validate()) ? TRUE : FALSE;
+			
+			$strClass = ($this->__validator->getRequired()) ? "vf__required" : "vf__optional";
+			$strClass = ($blnError) ? $strClass . " vf__error" : $strClass;
+			$strOutput = "<div class=\"{$strClass}\">\n";
+			
+			if ($blnError) $strOutput .= "<p class=\"vf__error\">{$this->__validator->getError()}</p>";
+			
+			$strLabel = (!empty($this->__requiredstyle) && $this->__validator->getRequired()) ? sprintf($this->__requiredstyle, $this->__label) : $this->__label;
+			$strOutput .= "<label for=\"{$this->__id}\">{$strLabel}</label>\n";
+		}
 				
-		$strLabel = (!empty($this->__requiredstyle) && $this->__validator->getRequired()) ? sprintf($this->__requiredstyle, $this->__label) : $this->__label;
-		$strOutput .= "<label for=\"{$this->__id}\">{$strLabel}</label>\n";
 		$strOutput .= "<input type=\"text\" value=\"{$this->__getValue($submitted)}\" name=\"{$this->__name}\" id=\"{$this->__id}\" {$this->__getMetaString()} />\n";
-		if (!empty($this->__tip)) $strOutput .= "<small class=\"vf__tip\">{$this->__tip}</small>\n";
-		$strOutput .= "</div>\n";
+		
+		if (!$blnSimpleLayout) {
+			if (!empty($this->__tip)) $strOutput .= "<small class=\"vf__tip\">{$this->__tip}</small>\n";
+			$strOutput .= "</div>\n";
+		}
 		
 		return $strOutput;
 	}
