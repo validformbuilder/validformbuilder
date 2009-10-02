@@ -29,7 +29,7 @@ form.validform legend
 
 form.validform div {
 	clear: none;
-	*height: 1%;
+	height: 1%;
 	margin: 7px 0 0 0;
 	padding: 1px 3px;
 	overflow: auto;
@@ -54,7 +54,6 @@ form.validform fieldset fieldset {
 	clear: none;
 	margin: 0pt;
 	padding: 0pt;
-	xwidth: 195px;
 }
 
 form.validform fieldset fieldset.vf__list label {
