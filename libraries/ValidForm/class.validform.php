@@ -70,7 +70,7 @@ class ValidForm extends ClassDynamic {
 		 */
 		$this->__name = (is_null($name)) ? $this->__generateName() : $name;
 		$this->__description = $description;
-		$this->__action = $_SERVER["REQUEST_URI"];
+		$this->__action = $_SERVER["PHP_SELF"];
 	}
 	
 	public function setSubmitLabel($label) {

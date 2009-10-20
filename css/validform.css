@@ -32,7 +32,6 @@ form.validform div {
 	height: 1%;
 	margin: 7px 0 0 0;
 	padding: 1px 3px;
-	overflow: auto;
 }
 
 form.validform label {
