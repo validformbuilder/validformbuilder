@@ -63,14 +63,14 @@ class ValidForm extends ClassDynamic {
 	protected $__mainalert;	
 	protected $__requiredstyle;	
 	
-	public function __construct($name = NULL, $description = NULL) {
+	public function __construct($name = NULL, $description = NULL, $action = NULL) {
 		/**
 		 * Class constructor
 		 * @param string|null $name the name/id of the form
 		 */
 		$this->__name = (is_null($name)) ? $this->__generateName() : $name;
 		$this->__description = $description;
-		$this->__action = $_SERVER["PHP_SELF"];
+		$this->__action = (is_null($action)) ? $_SERVER["PHP_SELF"] : $action;
 	}
 	
 	public function setSubmitLabel($label) {
