@@ -43,6 +43,17 @@ class VF_Area extends ClassDynamic {
 		return $objField;
 	}
 	
+	public function addMultiField($label = NULL, $meta = array()) {
+		$objField = new VF_MultiField($label, $meta);
+		
+		$objField->setForm($this->__form);
+		$objField->setRequiredStyle($this->__requiredstyle);
+		
+		array_push($this->__fields, $objField);
+		
+		return $objField;
+	}
+	
 	public function toHtml($submitted = FALSE) {
 		$value = ValidForm::get($this->__name);
 		$strChecked = ($this->__active && $this->__checked && is_null($value) && !$submitted) ? " checked=\"checked\"" : "";
@@ -90,6 +101,14 @@ class VF_Area extends ClassDynamic {
 	public function getValue() {
 		$value = ValidForm::get($this->__name);
 		return (($this->__active && !empty($value)) || !$this->__active) ? TRUE : FALSE;
+	}
+	
+	public function getId() {
+		return null;
+	}
+	
+	public function getType() {
+		return 0;
 	}
 	
 	public function hasFields() {

@@ -7,6 +7,7 @@
  * This software is released under the MIT License <http://www.opensource.org/licenses/mit-license.php>
  ***************************/
 
+session_start();
 require_once('libraries/ValidForm/class.phpcaptcha.php');
 
 $arrFonts = array('libraries/ValidForm/fonts/Folks-Normal.ttf');

@@ -100,6 +100,14 @@ class VF_MultiField extends ClassDynamic {
 		return TRUE;
 	}
 	
+	public function getId() {
+		return null;
+	}
+	
+	public function getType() {
+		return 0;
+	}
+	
 	public function hasFields() {
 		return (count($this->__fields) > 0) ? TRUE : FALSE;
 	}

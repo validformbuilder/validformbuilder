@@ -12,7 +12,7 @@
  *
  * @package ValidForm
  * @author Felix Langfeldt
- * @version 0.1.2
+ * @version 0.1.3
  */
  
 require_once('class.vf_fieldset.php');
@@ -70,7 +70,12 @@ class ValidForm extends ClassDynamic {
 		 */
 		$this->__name = (is_null($name)) ? $this->__generateName() : $name;
 		$this->__description = $description;
-		$this->__action = (is_null($action)) ? $_SERVER["PHP_SELF"] : $action;
+		
+		if (is_null($action)) {
+			$this->__action = (isset($_SERVER['REQUEST_URI'])) ? parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) : $_SERVER['PHP_SELF'];
+		} else {
+			$this->__action = $action;
+		}
 	}
 	
 	public function setSubmitLabel($label) {
@@ -263,7 +268,13 @@ class ValidForm extends ClassDynamic {
 		foreach ($this->__elements as $objFieldset) {
 			foreach ($objFieldset->getFields() as $objField) {
 				if (is_object($objField)) {
-					array_push($objFields, $objField);
+					if ($objField->hasFields()) {
+						foreach ($objField->getFields() as $objSubField) {
+							if (is_object($objSubField)) array_push($objFields, $objSubField);
+						}
+					} else {
+						array_push($objFields, $objField);
+					}
 				}
 			}
 		}
