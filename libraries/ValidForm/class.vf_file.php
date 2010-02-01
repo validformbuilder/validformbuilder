@@ -39,7 +39,7 @@ class VF_File extends VF_Element {
 
 		//*** Fixing an unusual uploading bug.
 		$strMaxFileSize = ini_get("upload_max_filesize");
-		$strOutput .= "<input type=\"hidden\" name=\"MAX_FILE_SIZE\" value=\"{$strMaxFileSize}\" />"
+		$strOutput .= "<input type=\"hidden\" name=\"MAX_FILE_SIZE\" value=\"{$strMaxFileSize}\" />";
 		
 		if (!$blnSimpleLayout) {
 			if (!empty($this->__tip)) $strOutput .= "<small class=\"vf__tip\">{$this->__tip}</small>\n";
