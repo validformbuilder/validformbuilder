@@ -237,7 +237,7 @@ class ValidForm extends ClassDynamic {
 		$strOutput .= "// ]]>\n";
 		$strOutput .= "</script>\n";
 		
-		$strOutput .= "<form id=\"{$this->__name}\" method=\"post\" action=\"{$this->__action}\" class=\"validform\">\n";
+		$strOutput .= "<form id=\"{$this->__name}\" method=\"post\" enctype=\"multipart/form-data\" action=\"{$this->__action}\" class=\"validform\">\n";
 		
 		//*** Main error.
 		if ($this->isSubmitted() && !empty($this->__mainalert)) $strOutput .= "<div class=\"vf__main_error\"><p>{$this->__mainalert}</p></div>\n";
