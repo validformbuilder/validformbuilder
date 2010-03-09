@@ -70,6 +70,7 @@ class ValidForm extends ClassDynamic {
 		 */
 		$this->__name = (is_null($name)) ? $this->__generateName() : $name;
 		$this->__description = $description;
+		$this->__submitLabel = "Submit";
 		
 		if (is_null($action)) {
 			$this->__action = (isset($_SERVER['REQUEST_URI'])) ? parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) : $_SERVER['PHP_SELF'];
@@ -78,13 +79,13 @@ class ValidForm extends ClassDynamic {
 		}
 	}
 	
-	public function setSubmitLabel($label = NULL) {
+	public function setSubmitLabel($label) {
 		/**
 		 * Set the label of the forms submit button.
 		 * @param string $label label of the button
 		 */
 		 
-		$this->__submitLabel = (is_null($label)) ? "Submit" : $label;
+		$this->__submitLabel = $label;
 	}
 	
 	public function addFieldset($label, $noteHeader = NULL, $noteBody = NULL) {
