@@ -78,13 +78,13 @@ class ValidForm extends ClassDynamic {
 		}
 	}
 	
-	public function setSubmitLabel($label) {
+	public function setSubmitLabel($label = NULL) {
 		/**
 		 * Set the label of the forms submit button.
 		 * @param string $label label of the button
 		 */
 		 
-		 $this->__submitLabel = $label;
+		$this->__submitLabel = (is_null($label)) ? "Submit" : $label;
 	}
 	
 	public function addFieldset($label, $noteHeader = NULL, $noteBody = NULL) {
