@@ -12,7 +12,7 @@
  *
  * @package ValidForm
  * @author Felix Langfeldt
- * @version 0.1.3
+ * @version 0.1.4
  */
  
 require_once('class.vf_fieldset.php');
