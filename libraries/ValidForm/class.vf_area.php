@@ -56,7 +56,7 @@ class VF_Area extends ClassDynamic {
 	
 	public function toHtml($submitted = FALSE) {
 		$value = ValidForm::get($this->__name);
-		$strChecked = ($this->__active && $this->__checked && is_null($value) && !$submitted) ? " checked=\"checked\"" : "";
+		$strChecked = ($this->__active && $this->__checked && empty($value) && !$submitted) ? " checked=\"checked\"" : "";
 		$strChecked = ($this->__active && !empty($value)) ? " checked=\"checked\"" : $strChecked;
 		
 		$strClass = (array_key_exists("class", $this->__meta)) ? $this->__meta["class"] : "";
