@@ -47,7 +47,7 @@ class VF_Group extends VF_Element {
 	public function toJS() {
 		$strCheck = $this->__validator->getCheck();
 		$strCheck = (empty($strCheck)) ? "''" : $strCheck;
-		$strRequired = ($this->__validator->getRequired()) ? "true" : "false";;
+		$strRequired = ($this->__validator->getRequired()) ? "true" : "false";
 		$intMaxLength = ($this->__validator->getMaxLength() > 0) ? $this->__validator->getMaxLength() : "null";
 		$intMinLength = ($this->__validator->getMinLength() > 0) ? $this->__validator->getMinLength() : "null";
 		$strMaxLengthError = sprintf($this->__validator->getMaxLengthError(), $intMaxLength);
