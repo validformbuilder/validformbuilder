@@ -11,7 +11,7 @@
  *
  * @package ValidFormBuilder
  * @author Felix Langfeldt
- * @version 0.2.1
+ * @version 0.2.2
  */
 
 function ValidFormValidator(strFormId) {
@@ -365,7 +365,7 @@ ValidFormFieldValidator.prototype.validate = function(value) {
 		}
 		
 		//*** Check specific types using regular expression.
-		if(typeof this.check != "function") {
+		if(typeof this.check != "function" && typeof this.check != "object") {
 			return true;
 		} else {
 			blnReturn = this.check.test(value);
