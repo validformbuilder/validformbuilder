@@ -12,7 +12,7 @@
  *
  * @package ValidForm
  * @author Felix Langfeldt
- * @version 0.1.1
+ * @version 0.1.2
  */
   
 require_once('class.vf_element.php');
@@ -21,6 +21,7 @@ class VF_Captcha extends VF_Element {
 	protected $__width = 200;
 	protected $__height = 60;
 	protected $__length = 5;
+	protected $__path = "/";
 	protected $__textfield;
 	
 	public function __construct($name, $type, $label = "", $validationRules = array(), $errorHandlers = array(), $meta = array()) {		
@@ -35,7 +36,8 @@ class VF_Captcha extends VF_Element {
 		$this->__meta = $meta;
 		$this->__width = (array_key_exists("width", $meta)) ? $meta["width"] : $this->__width;
 		$this->__height = (array_key_exists("height", $meta)) ? $meta["height"] : $this->__height;
-		$this->__length = (array_key_exists("length", $meta)) ? $meta["length"] : $this->__length;		
+		$this->__length = (array_key_exists("length", $meta)) ? $meta["length"] : $this->__length;	
+		$this->__path = (array_key_exists("path", $meta)) ? $meta["path"] : $this->__path;			
 		
 		$_SESSION['php_captcha_width'] = $this->__width;
 		$_SESSION['php_captcha_height'] = $this->__height;
@@ -52,7 +54,7 @@ class VF_Captcha extends VF_Element {
 								
 		$strLabel = (!empty($this->__requiredstyle) && $this->__validator->getRequired()) ? sprintf($this->__requiredstyle, $this->__label) : $this->__label;
 		$strOutput .= "<label>{$strLabel}</label>\n";
-		$strOutput .= "<a onclick=\"var cancelClick = false; if (document.images) {  var img = new Image();  var d = new Date();  img.src = this.href + ((this.href.indexOf('?') == -1) ? '?' : '&amp;') + d.getTime();  document.images['{$this->__id}_img'].src = img.src;  cancelClick = true;} return !cancelClick;\" href=\"vf_captcha.php\"><img width=\"{$this->__width}\" height=\"{$this->__height}\" alt=\"Click to view another image\" id=\"{$this->__id}_img\" src=\"vf_captcha.php\"/></a>\n";
+		$strOutput .= "<a onclick=\"var cancelClick = false; if (document.images) {  var img = new Image();  var d = new Date();  img.src = this.href + ((this.href.indexOf('?') == -1) ? '?' : '&amp;') + d.getTime();  document.images['{$this->__id}_img'].src = img.src;  cancelClick = true;} return !cancelClick;\" href=\"{$this->__path}vf_captcha.php\"><img width=\"{$this->__width}\" height=\"{$this->__height}\" alt=\"Click to view another image\" id=\"{$this->__id}_img\" src=\"{$this->__path}vf_captcha.php\"/></a>\n";
 		$strOutput .= "</div>\n";
 		
 		$this->__textfield->setRequiredStyle($this->__requiredstyle);

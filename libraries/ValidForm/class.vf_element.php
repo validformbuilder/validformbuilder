@@ -12,7 +12,7 @@
  *
  * @package ValidForm
  * @author Felix Langfeldt
- * @version 0.1.0
+ * @version 0.1.1
  */
  
 require_once('class.classdynamic.php');
@@ -28,7 +28,7 @@ class VF_Element extends ClassDynamic {
 	protected $__default;
 	protected $__requiredstyle;
 	protected $__validator;
-	protected $__reservedMeta = array("tip", "hint", "default", "width", "height", "length", "start", "end");
+	protected $__reservedMeta = array("tip", "hint", "default", "width", "height", "length", "start", "end", "path");
 
 	public function __construct($name, $type, $label = "", $validationRules = array(), $errorHandlers = array(), $meta = array()) {
 		if (is_null($validationRules)) $validationRules = array();
