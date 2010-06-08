@@ -12,7 +12,7 @@
  *
  * @package ValidForm
  * @author Felix Langfeldt
- * @version 0.1.5
+ * @version 0.1.6
  */
  
 require_once('class.vf_fieldset.php');
@@ -344,7 +344,9 @@ class ValidForm extends ClassDynamic {
 												break;
 										}
 										
-										if (empty($strLabel) && empty($strValue)) {			
+										if (empty($strLabel) && empty($strValue)) {	
+											//*** Skip the field.
+										} else {
 											$strSet .= "<tr>";
 											$strSet .= "<td valign=\"top\">{$objSubField->getLabel()} &nbsp;&nbsp;&nbsp;</td><td valign=\"top\">: <b>" . nl2br($strValue) . "</b></td>\n";
 											$strSet .= "</tr>";
