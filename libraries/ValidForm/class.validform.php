@@ -12,7 +12,7 @@
  *
  * @package ValidForm
  * @author Felix Langfeldt
- * @version 0.1.4
+ * @version 0.1.5
  */
  
 require_once('class.vf_fieldset.php');
@@ -335,6 +335,7 @@ class ValidForm extends ClassDynamic {
 									$strSet .= "</tr>";
 		
 									foreach ($objField->getFields() as $objSubField) {
+										$strLabel = $objSubField->getLabel();
 										$strValue = (is_array($objSubField->getValue())) ? implode(", ", $objSubField->getValue()) : $objSubField->getValue();
 		
 										switch ($objSubField->getType()) {
@@ -342,22 +343,30 @@ class ValidForm extends ClassDynamic {
 												$strValue = ($strValue == 1) ? "yes" : "no";
 												break;
 										}
-		
-										$strSet .= "<tr>";
-										$strSet .= "<td valign=\"top\">{$objSubField->getLabel()} &nbsp;&nbsp;&nbsp;</td><td valign=\"top\">: <b>" . nl2br($strValue) . "</b></td>\n";
-										$strSet .= "</tr>";
+										
+										if (empty($strLabel) && empty($strValue)) {			
+											$strSet .= "<tr>";
+											$strSet .= "<td valign=\"top\">{$objSubField->getLabel()} &nbsp;&nbsp;&nbsp;</td><td valign=\"top\">: <b>" . nl2br($strValue) . "</b></td>\n";
+											$strSet .= "</tr>";
+										}
 									}		
 							}							
 						} else {
+							$strLabel = $objField->getLabel();
+										
 							switch ($objField->getType()) {
 								case VFORM_BOOLEAN:
 									$strValue = ($strValue == 1) ? "yes" : "no";
 									break;
 							}
-
-							$strSet .= "<tr>";
-							$strSet .= "<td valign=\"top\">{$objField->getLabel()} &nbsp;&nbsp;&nbsp;</td><td valign=\"top\">: <b>" . nl2br($strValue) . "</b></td>\n";
-							$strSet .= "</tr>";
+										
+							if (empty($strLabel) && empty($strValue)) {
+								//*** Skip the field.
+							} else {	
+								$strSet .= "<tr>";
+								$strSet .= "<td valign=\"top\">{$objField->getLabel()} &nbsp;&nbsp;&nbsp;</td><td valign=\"top\">: <b>" . nl2br($strValue) . "</b></td>\n";
+								$strSet .= "</tr>";
+							}
 						}
 					}
 				}
