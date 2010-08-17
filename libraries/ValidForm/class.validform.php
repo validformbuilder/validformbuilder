@@ -229,14 +229,22 @@ class ValidForm extends ClassDynamic {
 		$this->__jsEvents[$strEvent] = $strMethod;
 	}
 	
-	public function toHtml() {
-		$strOutput = "<script type=\"text/javascript\">\n";
-		$strOutput .= "// <![CDATA[\n";
-		$strOutput .= "$(function(){\n";
-		$strOutput .= $this->__toJS();		
-		$strOutput .= "});\n";
-		$strOutput .= "// ]]>\n";
-		$strOutput .= "</script>\n";
+	public function toHtml($blnClientSide = true) {
+		$strOutput = "";
+		
+		if ($blnClientSide) {
+			$strOutput .= "<script type=\"text/javascript\">\n";
+			$strOutput .= "// <![CDATA[\n";
+			$strOutput .= "function {$this->__name}_init() {\n";
+			$strOutput .= $this->__toJS();	
+			$strOutput .= "};\n";
+			$strOutput .= "\n";
+			$strOutput .= "$(function(){\n";
+			$strOutput .= "{$this->__name}_init();\n";		
+			$strOutput .= "});\n";
+			$strOutput .= "// ]]>\n";
+			$strOutput .= "</script>\n";
+		}
 		
 		$strOutput .= "<form id=\"{$this->__name}\" method=\"post\" enctype=\"multipart/form-data\" action=\"{$this->__action}\" class=\"validform\">\n";
 		
