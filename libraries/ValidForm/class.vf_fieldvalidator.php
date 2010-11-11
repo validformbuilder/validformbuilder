@@ -175,6 +175,7 @@ class VF_FieldValidator extends ClassDynamic {
 	
 		switch ($this->__type) {
 			case VFORM_CUSTOM:
+			case VFORM_CUSTOM_TEXT:
 				$strReturn = $this->__validation;
 				break;
 			default:

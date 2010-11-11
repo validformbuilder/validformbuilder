@@ -52,7 +52,8 @@ define('VFORM_PARAGRAPH', 15);
 define('VFORM_CURRENCY', 16);
 define('VFORM_DATE', 17);
 define('VFORM_CUSTOM', 18);
-define('VFORM_HTML', 19);
+define('VFORM_CUSTOM_TEXT', 19);
+define('VFORM_HTML', 20);
 
 class ValidForm extends ClassDynamic {
 	private $__name;
@@ -126,6 +127,7 @@ class ValidForm extends ClassDynamic {
 				$objField = new VF_Text($name, $type, $label, $validationRules, $errorHandlers, $meta);
 				break;
 			case VFORM_HTML:
+			case VFORM_CUSTOM_TEXT:
 			case VFORM_TEXT:
 				if (!array_key_exists("class", $meta)) $meta["class"] = "vf__text";
 				if (!array_key_exists("rows", $meta)) $meta["rows"] = "5";
