@@ -39,7 +39,7 @@ class VF_Select extends VF_Element {
 		$strOutput .= "<select name=\"{$this->__name}\" id=\"{$this->__id}\" {$this->__getMetaString()}>\n";
 		
 		if (count($this->__options) == 0) {
-			if (isset($this->__meta["start"]) && is_int($this->__meta["start"]) && isset($this->__meta["end"]) && is_int($this->__meta["end"])) {
+			if (isset($this->__meta["start"]) && is_numeric($this->__meta["start"]) && isset($this->__meta["end"]) && is_numeric($this->__meta["end"])) {
 				if ($this->__meta["start"] < $this->__meta["end"]) {
 					for ($intCount = $this->__meta["start"]; $intCount <= $this->__meta["end"]; $intCount++) {
 						$this->addField($intCount, $intCount);
