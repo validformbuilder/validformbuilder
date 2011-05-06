@@ -77,6 +77,19 @@ function ValidFormElement(strFormId, strElementName, strElementId, strValidation
 	
 	if (ValidFormElement.arguments.length > 7) {
 		this.validator.hint = ValidFormElement.arguments[7];
+		
+		var __this = this;
+		if (this.validator.hint != "") {
+			jQuery("#" + this.id).bind("focus", function(){
+				if (jQuery(this).val() == __this.validator.hint) {
+					jQuery(this).val("");
+				}
+			}).bind("blur", function(){
+				if (jQuery(this).val() == "") {
+					jQuery(this).val(__this.validator.hint);
+				}
+			});
+		}
 	}
 	
 	if (ValidFormElement.arguments.length > 8) {
@@ -419,8 +432,15 @@ ValidFormFieldValidator.prototype.removeAlert = function() {
 	if (objElement.length == 0) {
 		objElement = jQuery("input[name='" + this.id + "']:first").parent().parent();
 	}
-	
-	objElement.parent("div").removeClass("vf__error").find("p.vf__error").remove();
+
+	if (objElement.parent("div").hasClass("vf__multifielditem")) {
+		objElement.parent("div").removeClass("vf__error");
+		if (objElement.parent("div").find(".vf__error").length == 0) {
+			objElement.parent("div").parent("div").removeClass("vf__error").find("p.vf__error").remove();
+		}
+	} else {
+		objElement.parent("div").removeClass("vf__error").find("p.vf__error").remove();
+	}
 }
 
 ValidFormFieldValidator.prototype.showAlert = function(strAlert) {
@@ -429,7 +449,14 @@ ValidFormFieldValidator.prototype.showAlert = function(strAlert) {
 		objElement = jQuery("input[name='" + this.id + "']:first").parent().parent();
 	}
 	
-	objElement.parent("div").addClass("vf__error").prepend("<p class=\"vf__error\">" + strAlert + "</p>");
+	if (objElement.parent("div").hasClass("vf__multifielditem")) {
+		objElement.parent("div").addClass("vf__error");
+		if (!objElement.parent("div").parent("div").hasClass("vf__error")) {
+			objElement.parent("div").parent("div").addClass("vf__error").prepend("<p class=\"vf__error\">" + strAlert + "</p>");
+		}
+	} else {
+		objElement.parent("div").addClass("vf__error").prepend("<p class=\"vf__error\">" + strAlert + "</p>");
+	}
 }
 
 /**

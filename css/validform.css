@@ -28,11 +28,17 @@ form.validform legend
 	padding: 15px 0 5px 0;
 }
 
-form.validform div {
+form.validform div.vf__multifield,
+form.validform div.vf__optional,
+form.validform div.vf__required {
 	clear: none;
 	height: 1%;
 	margin: 7px 0 0 0;
 	padding: 1px 3px;
+}
+
+form.validform div.vf__multifield {
+	overflow: auto;
 }
 
 form.validform label {
@@ -240,4 +246,24 @@ form.validform p.vf__error {
 	color: #b82828;
 	margin:0pt 0pt 0pt 143px;
 	padding: 0 3px 5px 3px;
+}
+
+form.validform div.vf__multifielditem {
+	float: left;
+	margin: 0 3px;
+}
+
+form.validform div.vf__multifielditem .vf__tip {
+	margin-left: 0;
+}
+
+form.validform div.vf__multifield div.vf__error {
+	border: none;
+	padding: 0;
+}
+
+form.validform div.vf__multifield .vf__error input,
+form.validform div.vf__multifield .vf__error select 
+{
+	border: 1px solid #f00;
 }

@@ -33,6 +33,8 @@ class VF_File extends VF_Element {
 			
 			$strLabel = (!empty($this->__requiredstyle) && $this->__validator->getRequired()) ? sprintf($this->__requiredstyle, $this->__label) : $this->__label;
 			$strOutput .= "<label for=\"{$this->__id}\">{$strLabel}</label>\n";
+		} else {
+			$strOutput = "<div class=\"vf__multifielditem\">\n";
 		}
 		
 		$strOutput .= "<input type=\"file\" value=\"{$this->__getValue($submitted)}\" name=\"{$this->__name}\" id=\"{$this->__id}\" {$this->__getMetaString()} />\n";
@@ -41,10 +43,8 @@ class VF_File extends VF_Element {
 		$strMaxFileSize = ini_get("upload_max_filesize");
 		$strOutput .= "<input type=\"hidden\" name=\"MAX_FILE_SIZE\" value=\"{$strMaxFileSize}\" />";
 		
-		if (!$blnSimpleLayout) {
-			if (!empty($this->__tip)) $strOutput .= "<small class=\"vf__tip\">{$this->__tip}</small>\n";
-			$strOutput .= "</div>\n";
-		}
+		if (!empty($this->__tip)) $strOutput .= "<small class=\"vf__tip\">{$this->__tip}</small>\n";
+		$strOutput .= "</div>\n";
 		
 		return $strOutput;
 	}

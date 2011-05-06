@@ -33,14 +33,14 @@ class VF_Text extends VF_Element {
 			
 			$strLabel = (!empty($this->__requiredstyle) && $this->__validator->getRequired()) ? sprintf($this->__requiredstyle, $this->__label) : $this->__label;
 			$strOutput .= "<label for=\"{$this->__id}\">{$strLabel}</label>\n";
+		} else {
+			$strOutput = "<div class=\"vf__multifielditem\">\n";
 		}
 				
 		$strOutput .= "<input type=\"text\" value=\"{$this->__getValue($submitted)}\" name=\"{$this->__name}\" id=\"{$this->__id}\" {$this->__getMetaString()} />\n";
 		
-		if (!$blnSimpleLayout) {
-			if (!empty($this->__tip)) $strOutput .= "<small class=\"vf__tip\">{$this->__tip}</small>\n";
-			$strOutput .= "</div>\n";
-		}
+		if (!empty($this->__tip)) $strOutput .= "<small class=\"vf__tip\">{$this->__tip}</small>\n";
+		$strOutput .= "</div>\n";
 		
 		return $strOutput;
 	}

@@ -20,17 +20,25 @@ require_once('class.vf_element.php');
 class VF_Password extends VF_Element {
 
 	public function toHtml($submitted = FALSE, $blnSimpleLayout = FALSE) {
-		$blnError = ($submitted && !$this->__validator->validate()) ? TRUE : FALSE;
+		$strOutput = "";
 		
-		$strClass = ($this->__validator->getRequired()) ? "vf__required" : "vf__optional";
-		$strClass = ($blnError) ? $strClass . " vf__error" : $strClass;
-		$strOutput = "<div class=\"{$strClass}\">\n";
+		if (!$blnSimpleLayout) {
+			$blnError = ($submitted && !$this->__validator->validate()) ? TRUE : FALSE;
+			
+			$strClass = ($this->__validator->getRequired()) ? "vf__required" : "vf__optional";
+			$strClass = ($blnError) ? $strClass . " vf__error" : $strClass;
+			$strOutput = "<div class=\"{$strClass}\">\n";
+			
+			if ($blnError) $strOutput .= "<p class=\"vf__error\">{$this->__validator->getError()}</p>";
+					
+			$strLabel = (!empty($this->__requiredstyle) && $this->__validator->getRequired()) ? sprintf($this->__requiredstyle, $this->__label) : $this->__label;
+			$strOutput .= "<label for=\"{$this->__id}\">{$strLabel}</label>\n";
+		} else {
+			$strOutput = "<div class=\"vf__multifielditem\">\n";
+		}
 		
-		if ($blnError) $strOutput .= "<p class=\"vf__error\">{$this->__validator->getError()}</p>";
-				
-		$strLabel = (!empty($this->__requiredstyle) && $this->__validator->getRequired()) ? sprintf($this->__requiredstyle, $this->__label) : $this->__label;
-		$strOutput .= "<label for=\"{$this->__id}\">{$strLabel}</label>\n";
 		$strOutput .= "<input type=\"password\" value=\"{$this->__getValue($submitted)}\" name=\"{$this->__name}\" id=\"{$this->__id}\" {$this->__getMetaString()} />\n";
+		
 		if (!empty($this->__tip)) $strOutput .= "<small class=\"vf__tip\">{$this->__tip}</small>\n";
 		$strOutput .= "</div>\n";
 		

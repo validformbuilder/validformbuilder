@@ -29,7 +29,7 @@ class VF_MultiField extends ClassDynamic {
 		$this->__meta = $meta;
 	}
 	
-	public function addField($name, $type, $validationRules = array(), $errorHandlers = array(), $meta = array()) {
+	public function addField($name, $label, $type, $validationRules = array(), $errorHandlers = array(), $meta = array()) {
 		$objField = $this->__form->addField($name, "", $type, $validationRules, $errorHandlers, $meta, TRUE);
 		
 		array_push($this->__fields, $objField);
