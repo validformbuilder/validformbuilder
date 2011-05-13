@@ -36,6 +36,7 @@ class VF_FieldValidator extends ClassDynamic {
 	protected $__matchwitherror = "The values do not match.";
 	protected $__requirederror = "This field is required.";
 	protected $__typeerror;
+	protected $__overrideerror;
 	protected $__maxfileserror = "Too many files selected. The maximum is %s files.";
 	protected $__maxsizeerror = "The filesize is too big. The maximum is %s KB.";
 	protected $__filetypeerror = "Invalid file types selected. Only types of %s are permitted.";
@@ -63,7 +64,11 @@ class VF_FieldValidator extends ClassDynamic {
 	}
 	
 	public function getValue() {
-		$strReturn = (array_key_exists($this->__fieldname, $_REQUEST)) ? $_REQUEST[$this->__fieldname] : NULL;
+		if (isset($this->__overrideerror)) {
+			$strReturn = NULL;
+		} else {
+			$strReturn = (array_key_exists($this->__fieldname, $_REQUEST)) ? $_REQUEST[$this->__fieldname] : NULL;
+		}
 		
 		return $strReturn;
 	}
@@ -167,7 +172,17 @@ class VF_FieldValidator extends ClassDynamic {
 			}
 		}
 		
+		//*** Override error.
+		if (isset($this->__overrideerror)) {
+			$this->__validvalue = NULL;
+			$this->__error = $this->__overrideerror;
+		}
+		
 		return (is_null($this->__validvalue)) ? FALSE : TRUE;
+	}
+	
+	public function setError($strError) {
+		$this->__overrideerror = $strError;
 	}
 	
 	public function getCheck() {

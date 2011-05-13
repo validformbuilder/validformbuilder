@@ -51,6 +51,11 @@ class VF_Element extends ClassDynamic {
 		return "Field type not defined.";
 	}
 	
+	public function setError($strError) {
+		//*** Override the validator message.
+		$this->__validator->setError($strError);
+	}
+	
 	public function toJS() {
 		return "alert('Field type not defined.');\n";
 	}
