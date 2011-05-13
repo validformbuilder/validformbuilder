@@ -104,17 +104,17 @@ class ValidForm extends ClassDynamic {
 			case VFORM_EMAIL:
 			case VFORM_SIMPLEURL:
 			case VFORM_CUSTOM:
-				if (!array_key_exists("class", $meta)) $meta["class"] = "vf__text";
+				$meta["class"] = (!isset($meta["class"])) ? "vf__text" : $meta["class"] . " vf__text";
 				
 				$objField = new VF_Text($name, $type, $label, $validationRules, $errorHandlers, $meta);
 				break;
 			case VFORM_PASSWORD:
-				if (!array_key_exists("class", $meta)) $meta["class"] = "vf__text";
+				$meta["class"] = (!isset($meta["class"])) ? "vf__text" : $meta["class"] . " vf__text";
 				
 				$objField = new VF_Password($name, $type, $label, $validationRules, $errorHandlers, $meta);
 				break;
 			case VFORM_CAPTCHA:
-				if (!array_key_exists("class", $meta)) $meta["class"] = "vf__text_small";
+				$meta["class"] = (!isset($meta["class"])) ? "vf__text_small" : $meta["class"] . " vf__text_small";
 				
 				$objField = new VF_Captcha($name, $type, $label, $validationRules, $errorHandlers, $meta);
 				break;
@@ -122,38 +122,37 @@ class ValidForm extends ClassDynamic {
 			case VFORM_DATE:
 			case VFORM_NUMERIC:
 			case VFORM_INTEGER:
-				if (!array_key_exists("class", $meta)) $meta["class"] = "vf__text_small";
+				$meta["class"] = (!isset($meta["class"])) ? "vf__text_small" : $meta["class"] . " vf__text_small";
 				
 				$objField = new VF_Text($name, $type, $label, $validationRules, $errorHandlers, $meta);
 				break;
 			case VFORM_HTML:
 			case VFORM_CUSTOM_TEXT:
 			case VFORM_TEXT:
-				if (!array_key_exists("class", $meta)) $meta["class"] = "vf__text";
-				if (!array_key_exists("rows", $meta)) $meta["rows"] = "5";
-				if (!array_key_exists("cols", $meta)) $meta["cols"] = "21";
+				$meta["class"] = (!isset($meta["class"])) ? "vf__text" : $meta["class"] . " vf__text";
+				if (!isset($meta["rows"])) $meta["rows"] = "5";
+				if (!isset($meta["cols"])) $meta["cols"] = "21";
 				
 				$objField = new VF_Textarea($name, $type, $label, $validationRules, $errorHandlers, $meta);
 				break;
 			case VFORM_FILE:
-				if (!array_key_exists("class", $meta)) $meta["class"] = "vf__file";
+				$meta["class"] = (!isset($meta["class"])) ? "vf__file" : $meta["class"] . " vf__file";
 				
 				$objField = new VF_File($name, $type, $label, $validationRules, $errorHandlers, $meta);
 				break;
 			case VFORM_BOOLEAN:
-				if (!array_key_exists("class", $meta)) $meta["class"] = "vf__checkbox";
+				$meta["class"] = (!isset($meta["class"])) ? "vf__checkbox" : $meta["class"] . " vf__checkbox";
 				
 				$objField = new VF_Checkbox($name, $type, $label, $validationRules, $errorHandlers, $meta);
 				break;
 			case VFORM_RADIO_LIST:
 			case VFORM_CHECK_LIST:
-				if (!array_key_exists("class", $meta)) $meta["class"] = "vf__radiobutton";
+				$meta["class"] = (!isset($meta["class"])) ? "vf__radiobutton" : $meta["class"] . " vf__radiobutton";
 				
 				$objField = new VF_Group($name, $type, $label, $validationRules, $errorHandlers, $meta);
 				break;
 			case VFORM_SELECT_LIST:
-				if (!array_key_exists("class", $meta)) $meta["class"] = "vf__one";
-				if (array_key_exists("multiple", $meta)) $meta["class"] = "vf__multiple";
+				$meta["class"] = (!isset($meta["class"])) ? (!isset($meta["multiple"])) ? "vf__one" : "vf__multiple" : (!isset($meta["multiple"])) ? $meta["class"] . " vf__one" :  $meta["class"] . " vf__multiple";
 				
 				$objField = new VF_Select($name, $type, $label, $validationRules, $errorHandlers, $meta);
 				break;
