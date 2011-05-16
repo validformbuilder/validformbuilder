@@ -250,7 +250,7 @@ form.validform p.vf__error {
 
 form.validform div.vf__multifielditem {
 	float: left;
-	margin: 0 3px;
+	margin: 0 6px 0 0;
 }
 
 form.validform div.vf__multifielditem .vf__tip {
