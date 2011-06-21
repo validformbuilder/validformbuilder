@@ -272,33 +272,34 @@ ValidForm.prototype.validate = function() {
 	if (objDOMForm) {		
 		//*** Reset main error notifications.
 		this.validator.removeMain();
-						
 		for (var strElement in this.elements) {
 			var objElement = this.elements[strElement];
-			
-			//*** Check if the element is part of an area.
-			var objArea = jQuery("#" + objElement.id).parent().parent("fieldset.vf__area");
-			if (objArea.length == 0) {
-				//*** Group within an area.
-				objArea = jQuery("input[name='" + objElement.id + "']").parent().parent().parent().parent("fieldset.vf__area");
-			}
-			if (objArea.length > 0) {
-				var objChecker = jQuery("legend :checkbox", objArea);
-				if (objChecker.length > 0) {
-					if (objChecker.get(0).checked) {
+			if (((strSelector !== null) && ($(strSelector).has($("#" + objElement.id)).length > 0)) || (strSelector == null)) {
+				
+				//*** Check if the element is part of an area.
+				var objArea = jQuery("#" + objElement.id).parent().parent("fieldset.vf__area");
+				if (objArea.length == 0) {
+					//*** Group within an area.
+					objArea = jQuery("input[name='" + objElement.id + "']").parent().parent().parent().parent("fieldset.vf__area");
+				}
+				if (objArea.length > 0) {
+					var objChecker = jQuery("legend :checkbox", objArea);
+					if (objChecker.length > 0) {
+						if (objChecker.get(0).checked) {
+							if (!objElement.validate()) {
+								this.valid = false;
+							}
+						}
+					} else {
 						if (!objElement.validate()) {
 							this.valid = false;
-						}
+						} 
 					}
 				} else {
 					if (!objElement.validate()) {
 						this.valid = false;
-					}
+					} 
 				}
-			} else {
-				if (!objElement.validate()) {
-					this.valid = false;
-				}	
 			}
 		}				
 	} else {
