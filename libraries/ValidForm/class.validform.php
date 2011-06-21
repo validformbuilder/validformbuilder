@@ -227,7 +227,7 @@ class ValidForm extends ClassDynamic {
 		$strOutput = "";
 		
 		if ($blnClientSide) {
-			$this->__toJS();
+			$strOutput .= $this->__toJS();
 		}
 		
 		$strOutput .= "<form id=\"{$this->__name}\" method=\"post\" enctype=\"multipart/form-data\" action=\"{$this->__action}\" class=\"validform\">\n";
