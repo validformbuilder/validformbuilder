@@ -66,7 +66,7 @@ class VF_MultiField extends ClassDynamic {
 		if ($blnError) $strOutput .= $strError;
 				
 		$strLabel = (!empty($this->__requiredstyle) && $blnRequired) ? sprintf($this->__requiredstyle, $this->__label) : $this->__label;
-		$strOutput .= "<label for=\"{$strId}\">{$strLabel}</label>\n";
+		if($this->__label !== "") $strOutput .= "<label for=\"{$strId}\">{$strLabel}</label>\n";
 		
 		foreach ($this->__fields as $field) {
 			$strOutput .= $field->toHtml($submitted, TRUE);
