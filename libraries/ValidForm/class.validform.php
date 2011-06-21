@@ -239,7 +239,8 @@ class ValidForm extends ClassDynamic {
 			$strOutput .= "<script type=\"text/javascript\">\n";
 			$strOutput .= "// <![CDATA[\n";
 			$strOutput .= "function {$this->__name}_init() {\n";
-			$strOutput .= $this->__toJS();	
+			$strOutput .= $this->__toJS();
+			$strOutput .= "$(\"#{$this->__name}\").data(\"formElement\", objForm);";
 			$strOutput .= "};\n";
 			$strOutput .= "\n";
 			$strOutput .= "$(function(){\n";
