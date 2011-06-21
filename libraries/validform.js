@@ -16,7 +16,7 @@
 
 function ValidFormValidator(strFormId) {
 	/****************************/
-	/* ValidFormValidator Class ********************************************/
+	/* ValidFormValidator Class ******************************************/
 	/* 
 	/* Display class used to push alerts regarding form validation 
 	/* to the browser.
@@ -28,7 +28,7 @@ function ValidFormValidator(strFormId) {
 
 function ValidFormFieldValidator(strElementId) {
 	/****************************/
-	/* ValidFormValidator Class ********************************************/
+	/* ValidFormValidator Class ******************************************/
 	/* 
 	/* Display class used to push alerts regarding form validation 
 	/* to the browser.
