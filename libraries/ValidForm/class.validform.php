@@ -61,7 +61,7 @@ class ValidForm extends ClassDynamic {
 	private $__action;
 	private $__elements = array();	
 	private $__jsEvents = array();	
-	private $__submitLabel;	
+	private $__submitlabel;
 	protected $__mainalert;	
 	protected $__requiredstyle;	
 	
@@ -72,22 +72,13 @@ class ValidForm extends ClassDynamic {
 		 */
 		$this->__name = (is_null($name)) ? $this->__generateName() : $name;
 		$this->__description = $description;
-		$this->__submitLabel = "Submit";
+		$this->__submitlabel = "Submit";
 		
 		if (is_null($action)) {
 			$this->__action = (isset($_SERVER['REQUEST_URI'])) ? parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) : $_SERVER['PHP_SELF'];
 		} else {
 			$this->__action = $action;
 		}
-	}
-	
-	public function setSubmitLabel($label) {
-		/**
-		 * Set the label of the forms submit button.
-		 * @param string $label label of the button
-		 */
-		 
-		$this->__submitLabel = $label;
 	}
 	
 	public function addFieldset($label, $noteHeader = NULL, $noteBody = NULL) {
@@ -236,18 +227,7 @@ class ValidForm extends ClassDynamic {
 		$strOutput = "";
 		
 		if ($blnClientSide) {
-			$strOutput .= "<script type=\"text/javascript\">\n";
-			$strOutput .= "// <![CDATA[\n";
-			$strOutput .= "function {$this->__name}_init() {\n";
-			$strOutput .= $this->__toJS();
-			$strOutput .= "$(\"#{$this->__name}\").data(\"formElement\", objForm);";
-			$strOutput .= "};\n";
-			$strOutput .= "\n";
-			$strOutput .= "$(function(){\n";
-			$strOutput .= "{$this->__name}_init();\n";		
-			$strOutput .= "});\n";
-			$strOutput .= "// ]]>\n";
-			$strOutput .= "</script>\n";
+			$this->__toJS();
 		}
 		
 		$strOutput .= "<form id=\"{$this->__name}\" method=\"post\" enctype=\"multipart/form-data\" action=\"{$this->__action}\" class=\"validform\">\n";
@@ -262,7 +242,7 @@ class ValidForm extends ClassDynamic {
 		}
 		
 		$strOutput .= "<div class=\"vf__navigation\">\n<input type=\"hidden\" name=\"vf__dispatch\" value=\"{$this->__name}\" />\n";
-		$strOutput .= "<input type=\"submit\" value=\"{$this->__submitLabel}\" class=\"vf__button\" />\n</div>\n</form>\n";
+		$strOutput .= "<input type=\"submit\" value=\"{$this->__submitlabel}\" class=\"vf__button\" />\n</div>\n</form>\n";
 	
 		return $strOutput;
 	}
@@ -414,17 +394,31 @@ class ValidForm extends ClassDynamic {
 	
 	private function __toJS() {
 		$strReturn = "";
+		$strJs = "";
 		
 		//*** Form.
 		$strReturn .= "var objForm = new ValidForm(\"{$this->__name}\", \"{$this->__mainalert}\");\n";
 		foreach ($this->__elements as $element) {
-			$strReturn .= $element->toJS();
+			$strJs .= $element->toJS();
 		}
 		
 		//*** Form Events.
 		foreach ($this->__jsEvents as $event => $method) {
-			$strReturn .= "objForm.addEvent(\"{$event}\", {$method});\n";
-		}		
+			$strJs .= "objForm.addEvent(\"{$event}\", {$method});\n";
+		}
+
+		$strReturn .= "<script type=\"text/javascript\">\n";
+		$strReturn .= "// <![CDATA[\n";
+		$strReturn .= "function {$this->__name}_init() {\n";
+		$strReturn .= $strJs;
+		$strReturn .= "$(\"#{$this->__name}\").data(\"vf__formElement\", objForm);";
+		$strReturn .= "};\n";
+		$strReturn .= "\n";
+		$strReturn .= "$(function(){\n";
+		$strReturn .= "{$this->__name}_init();\n";		
+		$strReturn .= "});\n";
+		$strReturn .= "// ]]>\n";
+		$strReturn .= "</script>\n";
 		
 		return $strReturn;
 	}
