@@ -85,7 +85,7 @@ function ValidFormElement(strFormId, strElementName, strElementId, strValidation
 					jQuery(this).val("");
 				}
 			}).bind("blur", function(){
-				if (jQuery(this).val() == "") {
+				if (jQuery(this).val() == "" && __this.validator.required) {
 					jQuery(this).val(__this.validator.hint);
 				}
 			});
