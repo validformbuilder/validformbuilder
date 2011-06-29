@@ -61,7 +61,7 @@ class ValidForm extends ClassDynamic {
 	private $__action;
 	private $__elements = array();	
 	private $__jsEvents = array();	
-	private $__submitlabel;
+	protected $__submitlabel;
 	protected $__mainalert;	
 	protected $__requiredstyle;	
 	
