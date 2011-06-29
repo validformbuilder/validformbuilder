@@ -35,8 +35,8 @@ class VF_SelectGroup extends ClassDynamic {
 		return $strOutput;
 	}
 	
-	public function addField($value, $label, $selected = FALSE) {
-		$objOption = new VF_SelectOption($value, $label, $selected);
+	public function addField($label, $value, $selected = FALSE) {
+		$objOption = new VF_SelectOption($label, $value, $selected);
 		array_push($this->__options, $objOption);
 		
 		return $objOption;
