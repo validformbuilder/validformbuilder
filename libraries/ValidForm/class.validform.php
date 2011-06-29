@@ -397,7 +397,6 @@ class ValidForm extends ClassDynamic {
 		$strJs = "";
 		
 		//*** Form.
-		$strReturn .= "var objForm = new ValidForm(\"{$this->__name}\", \"{$this->__mainalert}\");\n";
 		foreach ($this->__elements as $element) {
 			$strJs .= $element->toJS();
 		}
@@ -410,6 +409,7 @@ class ValidForm extends ClassDynamic {
 		$strReturn .= "<script type=\"text/javascript\">\n";
 		$strReturn .= "// <![CDATA[\n";
 		$strReturn .= "function {$this->__name}_init() {\n";
+		$strReturn .= "var objForm = new ValidForm(\"{$this->__name}\", \"{$this->__mainalert}\");\n";
 		$strReturn .= $strJs;
 		$strReturn .= "$(\"#{$this->__name}\").data(\"vf__formElement\", objForm);";
 		$strReturn .= "};\n";
