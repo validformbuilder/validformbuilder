@@ -54,6 +54,7 @@ define('VFORM_DATE', 17);
 define('VFORM_CUSTOM', 18);
 define('VFORM_CUSTOM_TEXT', 19);
 define('VFORM_HTML', 20);
+define('VFORM_URL', 21);
 
 class ValidForm extends ClassDynamic {
 	private $__name;
@@ -93,6 +94,7 @@ class ValidForm extends ClassDynamic {
 			case VFORM_STRING:
 			case VFORM_WORD:
 			case VFORM_EMAIL:
+			case VFORM_URL:
 			case VFORM_SIMPLEURL:
 			case VFORM_CUSTOM:
 				$meta["class"] = (!isset($meta["class"])) ? "vf__text" : $meta["class"] . " vf__text";
