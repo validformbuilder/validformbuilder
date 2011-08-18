@@ -249,7 +249,7 @@ ValidForm.prototype.addEvent = function(strEvent, callback){
 	}
 }
 
-ValidForm.prototype.validate = function() {
+ValidForm.prototype.validate = function(strSelector) {
 	/*************************/
 	/* validate function     *********************************************/
 	/* 
@@ -260,6 +260,7 @@ ValidForm.prototype.validate = function() {
 	this.valid = true;
 	var arrMultiElements = new Array();
 	var objDOMForm;
+	var strSelector = strSelector || null;
 	
 	//*** Set the form object.
 	try {
@@ -274,8 +275,8 @@ ValidForm.prototype.validate = function() {
 		this.validator.removeMain();
 		for (var strElement in this.elements) {
 			var objElement = this.elements[strElement];
+			
 			if (((strSelector !== null) && ($(strSelector).has($("#" + objElement.id)).length > 0)) || (strSelector == null)) {
-				
 				//*** Check if the element is part of an area.
 				var objArea = jQuery("#" + objElement.id).parent().parent("fieldset.vf__area");
 				if (objArea.length == 0) {
@@ -298,7 +299,7 @@ ValidForm.prototype.validate = function() {
 				} else {
 					if (!objElement.validate()) {
 						this.valid = false;
-					} 
+					}	
 				}
 			}
 		}				
