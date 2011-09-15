@@ -11,7 +11,7 @@
  *
  * @package ValidFormBuilder
  * @author Felix Langfeldt
- * @version 0.2.2
+ * @version 0.2.3
  */
 
 function ValidFormValidator(strFormId) {
@@ -314,7 +314,7 @@ ValidForm.prototype.validate = function(strSelector) {
 	
 	if (typeof this.events["afterValidate"] == "function") {
 		var callback = this.events["afterValidate"];
-		callback();
+		callback(this);
 	}
 		
 	return this.valid;
