@@ -261,6 +261,7 @@ ValidForm.prototype.validate = function(strSelector) {
 	var arrMultiElements = new Array();
 	var objDOMForm;
 	var strSelector = strSelector || null;
+	var blnReturn = false;
 	
 	//*** Set the form object.
 	try {
@@ -312,12 +313,13 @@ ValidForm.prototype.validate = function(strSelector) {
 		this.validator.showMain();
 	}
 	
-	if (typeof this.events["afterValidate"] == "function") {
-		var callback = this.events["afterValidate"];
-		callback(this);
+	if (typeof this.events.afterValidate == "function") {
+		blnReturn = this.events.afterValidate(this);
+	} else {
+		blnReturn = this.valid;
 	}
 		
-	return this.valid;
+	return blnReturn;
 }
 
 ValidFormElement.prototype.validate = function() {	
