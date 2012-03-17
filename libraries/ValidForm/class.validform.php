@@ -144,8 +144,20 @@ class ValidForm extends ClassDynamic {
 				
 				$objField = new VF_Group($name, $type, $label, $validationRules, $errorHandlers, $meta);
 				break;
-			case VFORM_SELECT_LIST:
-				$meta["class"] = (!isset($meta["class"])) ? (!isset($meta["multiple"])) ? "vf__one" : "vf__multiple" : (!isset($meta["multiple"])) ? $meta["class"] . " vf__one" :  $meta["class"] . " vf__multiple";
+			case VFORM_SELECT_LIST:		
+				if (!isset($meta["class"])) {
+					if (!isset($meta["multiple"])) {
+						$meta["class"] = "vf__one";
+					} else {
+						$meta["class"] = "vf__multiple";
+					}
+				} else {
+					if (!isset($meta["multiple"])) {
+						$meta["class"] .= " vf__one";
+					} else {
+						$meta["class"] .= " vf__multiple";
+					}
+				}
 				
 				$objField = new VF_Select($name, $type, $label, $validationRules, $errorHandlers, $meta);
 				break;

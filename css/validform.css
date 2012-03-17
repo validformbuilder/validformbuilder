@@ -143,6 +143,10 @@ form.validform .vf__tip {
 	padding: 1px 3px;
 }
 
+form.validform .vf__area .vf__tip {
+	margin-left: 134px;
+}
+
 input.vf__text,
 input.vf__text_tiny,
 input.vf__text_small,

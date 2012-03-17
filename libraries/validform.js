@@ -155,8 +155,6 @@ ValidForm.prototype.init = function() {
 	});
 };
 
-
-
 ValidForm.prototype.inArray = function(arrToSearch, value) {
 	var i;
 	for (i=0; i < arrToSearch.length; i++) {
