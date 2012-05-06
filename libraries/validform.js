@@ -223,7 +223,6 @@ ValidForm.prototype.init = function() {
 };
 
 ValidForm.prototype.attachAreaEvents = function(objActiveTrigger) {
-	console.log(objActiveTrigger);
 	objActiveTrigger.unbind("click").bind("click", function(){
 		var fieldset = jQuery(objActiveTrigger).parentsUntil(".vf__area").parent(".vf__area");
 		if (this.checked) {
