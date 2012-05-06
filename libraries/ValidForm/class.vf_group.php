@@ -1,22 +1,30 @@
 <?php
 /***************************
- * This file is part of ValidForm Builder - build valid and secure web forms quickly
- * <http://code.google.com/p/validformbuilder/>
- * Copyright (c) 2009 Felix Langfeldt
+ * ValidForm Builder - build valid and secure web forms quickly
+ * 
+ * Copyright (c) 2009-2012, Felix Langfeldt <flangfeldt@felix-it.com>.
+ * All rights reserved.
  * 
  * This software is released under the MIT License <http://www.opensource.org/licenses/mit-license.php>
+ * 
+ * @package    ValidForm
+ * @author     Felix Langfeldt <flangfeldt@felix-it.com>
+ * @copyright  2009-2012 Felix Langfeldt <flangfeldt@felix-it.com>
+ * @license    http://www.opensource.org/licenses/mit-license.php
+ * @link       http://code.google.com/p/validformbuilder/
  ***************************/
- 
-/**
- * VF_Group class
- *
- * @package ValidForm
- * @author Felix Langfeldt
- * @version 0.1.1
- */
   
 require_once('class.vf_element.php');
 
+/**
+ * 
+ * Group Class
+ * 
+ * @package ValidForm
+ * @author Felix Langfeldt
+ * @version Release: 0.2.1
+ *
+ */
 class VF_Group extends VF_Element {
 	protected $__fields = array();
 
@@ -30,7 +38,7 @@ class VF_Group extends VF_Element {
 		if ($blnError) $strOutput .= "<p class=\"vf__error\">{$this->__validator->getError()}</p>";
 		
 		$strLabel = (!empty($this->__requiredstyle) && $this->__validator->getRequired()) ? sprintf($this->__requiredstyle, $this->__label) : $this->__label;
-		$strOutput .= "<label>{$strLabel}</label>\n";
+		$strOutput .= "<label{$this->__getLabelMetaString()}>{$strLabel}</label>\n";
 		$strOutput .= "<fieldset class=\"vf__list\">\n";
 		
 		foreach ($this->__fields as $field) {

@@ -1,22 +1,30 @@
 <?php
 /***************************
- * This file is part of ValidForm Builder - build valid and secure web forms quickly
- * <http://code.google.com/p/validformbuilder/>
- * Copyright (c) 2009 Felix Langfeldt
+ * ValidForm Builder - build valid and secure web forms quickly
+ * 
+ * Copyright (c) 2009-2012, Felix Langfeldt <flangfeldt@felix-it.com>.
+ * All rights reserved.
  * 
  * This software is released under the MIT License <http://www.opensource.org/licenses/mit-license.php>
+ * 
+ * @package    ValidForm
+ * @author     Felix Langfeldt <flangfeldt@felix-it.com>
+ * @copyright  2009-2012 Felix Langfeldt <flangfeldt@felix-it.com>
+ * @license    http://www.opensource.org/licenses/mit-license.php
+ * @link       http://code.google.com/p/validformbuilder/
  ***************************/
- 
-/**
- * VF_Text class
- *
- * @package ValidForm
- * @author Felix Langfeldt
- * @version 0.1.1
- */
   
 require_once('class.vf_element.php');
 
+/**
+ * 
+ * Text Class
+ * 
+ * @package ValidForm
+ * @author Felix Langfeldt
+ * @version Release: 0.2.1
+ *
+ */
 class VF_Text extends VF_Element {
 
 	public function toHtml($submitted = FALSE, $blnSimpleLayout = FALSE) {
@@ -40,7 +48,12 @@ class VF_Text extends VF_Element {
 		$strOutput .= "<input type=\"text\" value=\"{$this->__getValue($submitted)}\" name=\"{$this->__name}\" id=\"{$this->__id}\" {$this->__getMetaString()} />\n";
 		
 		if (!empty($this->__tip)) $strOutput .= "<small class=\"vf__tip\">{$this->__tip}</small>\n";
+							
 		$strOutput .= "</div>\n";
+		
+		if (!$blnSimpleLayout && $this->__dynamic && !empty($this->__dynamicLabel)) {
+			$strOutput .= "<div class=\"vf__dynamic\"><a href=\"#\" data-target-id=\"{$this->__id}\" data-target-name=\"{$this->__name}\">{$this->__dynamicLabel}</a><input type=\"hidden\" id=\"{$this->__id}_dynamic\" name=\"{$this->__name}_dynamic\" value=\"0\" /></div>\n";
+		}
 		
 		return $strOutput;
 	}

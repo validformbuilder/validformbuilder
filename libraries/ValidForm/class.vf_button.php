@@ -18,61 +18,44 @@ require_once('class.classdynamic.php');
 
 /**
  * 
- * Paragraph Class
+ * Button Class
  * 
  * @package ValidForm
  * @author Felix Langfeldt
- * @version Release: 0.2.1
+ * @version Release: 0.2.0
  *
  */
-class VF_Paragraph extends ClassDynamic {
-	protected $__header;
-	protected $__body;
+class VF_Button extends ClassDynamic {
 	protected $__id;
+	protected $__label;
+	protected $__type;
+	protected $__class;
+	protected $__disabled;
 	
-	public function __construct($header = NULL, $body = NULL) {
-		$this->__header = $header;
-		$this->__body = $body;
+	public function __construct($label, $meta = array()) {
+		$this->__label = $label;
+		$this->__type = (isset($meta["type"])) ? $meta["type"] : "submit";
+		$this->__class = (isset($meta["class"])) ? $meta["class"] : "vf__button";
+		$this->__disabled = (isset($meta["disabled"])) ? $meta["disabled"] : "";
 	}
-	
-	public function toHtml($submitted = FALSE) {
-		$strOutput = "<div>\n";
-		
-		if (!empty($this->__header)) $strOutput .= "<h3>{$this->__header}</h3>\n";
-		if (!empty($this->__body)) {
-			if (preg_match("/<p.*?>/", $this->__body) > 0) {
-				$strOutput .= "{$this->__body}\n";
-			} else {
-				$strOutput .= "<p>{$this->__body}</p>\n";
-			}
-		}
-		$strOutput .= "</div>\n";
-		
-		return $strOutput;
+
+	public function toHtml($submitted = FALSE) {					
+		$strDisabled = (!empty($this->__disabled)) ? "disabled=\"disabled\"" : ""; 	
+		$strReturn = "<input type=\"{$this->__type}\" value=\"{$this->__label}\" class=\"{$this->__class}\" $strDisabled />\n";
+				
+		return $strReturn;
 	}
 	
 	public function toJS() {
-		return NULL;
+		return null;
 	}
 	
 	public function isValid() {
 		return TRUE;
 	}
 	
-	public function isDynamic() {
-		return FALSE;
-	}
-	
-	public function getValue() {
-		return NULL;
-	}
-	
 	public function hasFields() {
 		return FALSE;
-	}
-	
-	public function getFields() {
-		return array();
 	}
 	
 }

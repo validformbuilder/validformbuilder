@@ -1,23 +1,31 @@
 <?php
 /***************************
- * This file is part of ValidForm Builder - build valid and secure web forms quickly
- * <http://code.google.com/p/validformbuilder/>
- * Copyright (c) 2009 Felix Langfeldt
+ * ValidForm Builder - build valid and secure web forms quickly
+ * 
+ * Copyright (c) 2009-2012, Felix Langfeldt <flangfeldt@felix-it.com>.
+ * All rights reserved.
  * 
  * This software is released under the MIT License <http://www.opensource.org/licenses/mit-license.php>
+ * 
+ * @package    ValidForm
+ * @author     Felix Langfeldt <flangfeldt@felix-it.com>
+ * @copyright  2009-2012 Felix Langfeldt <flangfeldt@felix-it.com>
+ * @license    http://www.opensource.org/licenses/mit-license.php
+ * @link       http://code.google.com/p/validformbuilder/
  ***************************/
- 
-/**
- * VF_FieldValidator class
- *
- * @package ValidForm
- * @author Felix Langfeldt
- * @version 0.1.1
- */
  
 require_once('class.classdynamic.php');
 require_once('class.vf_validator.php');
 
+/**
+ * 
+ * FieldValidator Class
+ * 
+ * @package ValidForm
+ * @author Felix Langfeldt
+ * @version Release: 0.2.1
+ *
+ */
 class VF_FieldValidator extends ClassDynamic {
 	protected $__fieldname;
 	protected $__type;
@@ -63,18 +71,19 @@ class VF_FieldValidator extends ClassDynamic {
 		$this->__fieldhint = $fieldHint;
 	}
 	
-	public function getValue() {
+	public function getValue($intDynamicPosition = 0) {
 		if (isset($this->__overrideerror)) {
 			$strReturn = NULL;
 		} else {
-			$strReturn = (array_key_exists($this->__fieldname, $_REQUEST)) ? $_REQUEST[$this->__fieldname] : NULL;
+			$strFieldName = ($intDynamicPosition > 0) ? $this->__fieldname . "_" . $intDynamicPosition : $this->__fieldname;
+			$strReturn = (array_key_exists($strFieldName, $_REQUEST)) ? $_REQUEST[$strFieldName] : NULL;
 		}
 		
 		return $strReturn;
 	}
 	
-	public function validate() {
-		$value = $this->getValue();
+	public function validate($intDynamicPosition = 0) {
+		$value = $this->getValue($intDynamicPosition);
 		
 		//*** Check "required" option.
 		if (is_array($value)) {
@@ -101,8 +110,9 @@ class VF_FieldValidator extends ClassDynamic {
 					$this->__validvalue = NULL;
 					$this->__error = $this->__requirederror;
 				} else {
-					$this->__validvalue = "";
-					return TRUE;
+					$this->__validvalue = NULL;
+					
+					if (empty($this->__matchwith)) return TRUE;
 				}
 			}
 		}
@@ -147,10 +157,17 @@ class VF_FieldValidator extends ClassDynamic {
 		
 		//*** Check matching values.
 		if (empty($this->__error)) {
-			if (!empty($this->__matchwith) && is_array($value)) {
+			if (!empty($this->__matchwith)) {
+				$matchValue = $this->__matchwith->getValue();
+				if (empty($matchValue)) $matchValue = NULL;
+				if (empty($value)) $value = NULL;
 				
-			} else if (!empty($this->__matchwith)) {
-				
+				if ($matchValue !== $value) {
+					$this->__validvalue = NULL;
+					$this->__error = $this->__matchwitherror;
+				} else if (is_null($value)) {
+					return TRUE;
+				}
 			}
 		}
 		

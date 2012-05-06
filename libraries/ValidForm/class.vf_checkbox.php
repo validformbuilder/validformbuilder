@@ -1,22 +1,30 @@
 <?php
 /***************************
- * This file is part of ValidForm Builder - build valid and secure web forms quickly
- * <http://code.google.com/p/validformbuilder/>
- * Copyright (c) 2009 Felix Langfeldt
+ * ValidForm Builder - build valid and secure web forms quickly
+ * 
+ * Copyright (c) 2009-2012, Felix Langfeldt <flangfeldt@felix-it.com>.
+ * All rights reserved.
  * 
  * This software is released under the MIT License <http://www.opensource.org/licenses/mit-license.php>
+ * 
+ * @package    ValidForm
+ * @author     Felix Langfeldt <flangfeldt@felix-it.com>
+ * @copyright  2009-2012 Felix Langfeldt <flangfeldt@felix-it.com>
+ * @license    http://www.opensource.org/licenses/mit-license.php
+ * @link       http://code.google.com/p/validformbuilder/
  ***************************/
- 
-/**
- * VF_Checkbox class
- *
- * @package ValidForm
- * @author Felix Langfeldt
- * @version 0.1.1
- */
   
 require_once('class.vf_element.php');
 
+/**
+ * 
+ * Checkbox Class
+ * 
+ * @package ValidForm
+ * @author Felix Langfeldt
+ * @version Release: 0.2.1
+ *
+ */
 class VF_Checkbox extends VF_Element {
 
 	public function toHtml($submitted = FALSE, $blnSimpleLayout = FALSE) {
@@ -51,9 +59,9 @@ class VF_Checkbox extends VF_Element {
 		return "objForm.addElement('{$this->__id}', '{$this->__name}', {$strCheck}, {$strRequired}, {$intMaxLength}, {$intMinLength}, '" . addslashes($this->__validator->getFieldHint()) . "', '" . addslashes($this->__validator->getTypeError()) . "', '" . addslashes($this->__validator->getRequiredError()) . "', '" . addslashes($this->__validator->getHintError()) . "', '{$strMinLengthError}', '{$strMaxLengthError}');\n";
 	}
 	
-	public function getValue() {
-		$strValue = $this->__validator->getValidValue();
-		return (!empty($strValue)) ? TRUE : FALSE;
+	public function getValue($intDynamicPosition = 0) {
+		$varValue = parent::getValue($intDynamicPosition);
+		return (!empty($varValue)) ? TRUE : FALSE;
 	}
 	
 }

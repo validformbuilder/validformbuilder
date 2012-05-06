@@ -1,35 +1,48 @@
 <?php
 /***************************
- * This file is part of ValidForm Builder - build valid and secure web forms quickly
- * <http://code.google.com/p/validformbuilder/>
- * Copyright (c) 2009 Felix Langfeldt
+ * ValidForm Builder - build valid and secure web forms quickly
+ * 
+ * Copyright (c) 2009-2012, Felix Langfeldt <flangfeldt@felix-it.com>.
+ * All rights reserved.
  * 
  * This software is released under the MIT License <http://www.opensource.org/licenses/mit-license.php>
+ * 
+ * @package    ValidForm
+ * @author     Felix Langfeldt <flangfeldt@felix-it.com>
+ * @copyright  2009-2012 Felix Langfeldt <flangfeldt@felix-it.com>
+ * @license    http://www.opensource.org/licenses/mit-license.php
+ * @link       http://code.google.com/p/validformbuilder/
  ***************************/
- 
-/**
- * VF_MultiField class
- *
- * @package ValidForm
- * @author Felix Langfeldt
- * @version 0.2.0
- */
   
 require_once('class.classdynamic.php');
 
+/**
+ * 
+ * MultiField Class
+ * 
+ * @package ValidForm
+ * @author Felix Langfeldt
+ * @version Release: 0.2.1
+ *
+ */
 class VF_MultiField extends ClassDynamic {
 	protected $__label;
 	protected $__meta;
 	protected $__form;
+	protected $__dynamic;
+	protected $__dynamicLabel;
 	protected $__requiredstyle;
 	protected $__fields = array();
 	
 	public function __construct($label, $meta = array()) {
 		$this->__label = $label;
 		$this->__meta = $meta;
+		
+		$this->__dynamic = (array_key_exists("dynamic", $meta)) ? $meta["dynamic"] : NULL;
+		$this->__dynamicLabel = (array_key_exists("dynamicLabel", $meta)) ? $meta["dynamicLabel"] : NULL;
 	}
 	
-	public function addField($name, $label, $type, $validationRules = array(), $errorHandlers = array(), $meta = array()) {
+	public function addField($name, $type, $validationRules = array(), $errorHandlers = array(), $meta = array()) {
 		$objField = $this->__form->addField($name, "", $type, $validationRules, $errorHandlers, $meta, TRUE);
 		
 		array_push($this->__fields, $objField);
@@ -68,12 +81,25 @@ class VF_MultiField extends ClassDynamic {
 		$strLabel = (!empty($this->__requiredstyle) && $blnRequired) ? sprintf($this->__requiredstyle, $this->__label) : $this->__label;
 		if($this->__label !== "") $strOutput .= "<label for=\"{$strId}\">{$strLabel}</label>\n";
 		
+		$arrFields = array();
 		foreach ($this->__fields as $field) {
 			$strOutput .= $field->toHtml($submitted, TRUE);
+			
+			$arrFields[$field->getId()] = $field->getName();
 		}
 		
 		if (!empty($this->__tip)) $strOutput .= "<small class=\"vf__tip\">{$this->__tip}</small>\n";
 		$strOutput .= "</div>\n";
+		
+		if ($this->__dynamic && !empty($this->__dynamicLabel)) {
+			$strOutput .= "<div class=\"vf__dynamic\"><a href=\"#\" data-target-id=\"" . implode("|", array_keys($arrFields)) . "\" data-target-name=\"" . implode("|", array_values($arrFields)) . "\">{$this->__dynamicLabel}</a>";
+			
+			foreach ($arrFields as $key => $value) {
+				$strOutput .= "<input type=\"hidden\" id=\"{$key}_dynamic\" name=\"{$value}_dynamic\" value=\"0\" />";
+			}
+			
+			$strOutput .= "</div>";
+		}
 		
 		return $strOutput;
 	}
@@ -90,6 +116,23 @@ class VF_MultiField extends ClassDynamic {
 	
 	public function isValid() {
 		return $this->__validate();
+	}
+	
+	public function isDynamic() {
+		return ($this->__dynamic) ? true : false;
+	}
+	
+	public function getDynamicCount() {
+		$intReturn = 0;
+		
+		$objSubFields = $this->getFields();
+		$objSubField = (count($objSubFields) > 0) ? current($objSubFields) : NULL;
+		
+		if (is_object($objSubField)) {
+			$intReturn = $objSubField->getDynamicCount();
+		}
+		
+		return $intReturn;
 	}
 	
 	public function getFields() {

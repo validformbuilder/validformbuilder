@@ -271,3 +271,16 @@ form.validform div.vf__multifield .vf__error select
 {
 	border: 1px solid #f00;
 }
+
+form.validform div.vf__dynamic {
+	margin: 0 0 15px 148px;	
+}
+
+form.validform div.vf__dynamic a {
+	font: normal 12px Arial, Helvetica, sans-serif;	
+}
+
+form.validform div.vf__dynamic a.vf__disabled {
+	color: #aaa;
+	cursor: default;
+}

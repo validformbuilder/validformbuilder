@@ -13,41 +13,44 @@
  * @license    http://www.opensource.org/licenses/mit-license.php
  * @link       http://code.google.com/p/validformbuilder/
  ***************************/
-
+  
 require_once('class.classdynamic.php');
 
 /**
  * 
- * SelectGroup Class
+ * String Class
  * 
  * @package ValidForm
- * @author Robin van Baalen
- * @version Release: 0.2.1
+ * @author Felix Langfeldt
+ * @version Release: 0.2.0
  *
  */
-class VF_SelectGroup extends ClassDynamic {
-	protected $__options = array();
-	protected $__label;
+class VF_String extends ClassDynamic {
+	protected $__id;
+	protected $__body;
 	
-	public function __construct($label) {
-		$this->__label = $label;
+	public function __construct($bodyString) {
+		$this->__body = $bodyString;
+	}
+		
+	public function toHtml($submitted = FALSE) {
+		return $this->__body;
 	}
 	
-	public function toHtml($value = NULL) {		
-		$strOutput = "<optgroup label=\"{$this->__label}\">\n";
-		foreach ($this->__options as $option) {
-			$strOutput .= $option->toHtml($value);
-		}
-		$strOutput .= "</optgroup>\n";
-		
-		return $strOutput;
+	public function toJS() {
+		return;
 	}
 	
-	public function addField($label, $value, $selected = FALSE) {
-		$objOption = new VF_SelectOption($label, $value, $selected);
-		array_push($this->__options, $objOption);
-		
-		return $objOption;
+	public function isValid() {
+		return TRUE;
+	}
+	
+	public function hasFields() {
+		return FALSE;
+	}
+	
+	public function getValue() {
+		return;
 	}
 	
 }

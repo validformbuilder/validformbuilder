@@ -1,17 +1,24 @@
 /***************************
- * This file is part of ValidForm Builder - build valid and secure web forms quickly
- * <http://code.google.com/p/validformbuilder/>
- * Copyright (c) 2009 Felix Langfeldt
+ * ValidForm Builder - build valid and secure web forms quickly
+ * 
+ * Copyright (c) 2009-2012, Felix Langfeldt <flangfeldt@felix-it.com>.
+ * All rights reserved.
  * 
  * This software is released under the MIT License <http://www.opensource.org/licenses/mit-license.php>
+ * 
+ * @package    ValidForm
+ * @author     Felix Langfeldt <flangfeldt@felix-it.com>
+ * @copyright  2009-2012 Felix Langfeldt <flangfeldt@felix-it.com>
+ * @license    http://www.opensource.org/licenses/mit-license.php
+ * @link       http://code.google.com/p/validformbuilder/
  ***************************/
 
 /**
  * ValidForm class
  *
- * @package ValidFormBuilder
+ * @package ValidForm
  * @author Felix Langfeldt
- * @version 0.2.3
+ * @version 0.2.4
  */
 
 function ValidFormValidator(strFormId) {
@@ -131,27 +138,116 @@ ValidForm.prototype.init = function() {
 		var fieldset = this;
 		
 		jQuery("input, select, textarea", fieldset).attr("disabled", "disabled");
+		jQuery(".vf__dynamic a", fieldset).addClass("vf__disabled");
 		jQuery("legend input", fieldset)
-			.removeAttr("disabled")
-			.bind("click", function(){
-				if (this.checked) {
-					jQuery("input, select, textarea", fieldset).removeAttr("disabled");
-					jQuery(fieldset).removeClass("vf__disabled");
-				} else {
-					jQuery("input, select, textarea", fieldset).attr("disabled", "disabled");
-					jQuery("legend input", fieldset).removeAttr("disabled");
-					jQuery(fieldset).addClass("vf__disabled");
-					
-					//*** Remove errors.
-					jQuery("div.vf__error", fieldset).each(function(){
-						jQuery(this).removeClass("vf__error").find("p.vf__error").remove();
-					});
-				}
-			});
+			.removeAttr("disabled");
+		
+		__this.attachAreaEvents(jQuery("legend input", fieldset));
 	});
 	
 	jQuery("#" + this.id).bind("submit", function(){		
 		return __this.validate();
+	});
+	
+	//*** Dynamic duplication.
+	jQuery(".vf__dynamic a").bind("click", function() {
+		if (!jQuery(this).hasClass("vf__disabled")) {
+			//*** Update dynamic field counter.
+			var self = this;
+			var counter = jQuery(this).parent().find("input");
+			counter.val(parseInt(counter.val()) + 1);
+			
+			var copy = jQuery(this).parent().prev().clone();
+			
+			//*** Clear values.
+			var ids = jQuery(this).data("target-id").split("|");
+			var names = jQuery(this).data("target-name").split("|");
+			
+			jQuery.each(names, function(index, value){
+				//*** Fix every field in an area or multifield.
+				var search = (counter.val() == 1) ? value : value + "_" + (counter.val() - 1);
+				copy.find("[name='" + search + "']").each(function(){
+					if (jQuery(this).attr("type") == "radio" || 
+							jQuery(this).attr("type") == "checkbox") {
+						//*** Radio buttons and checkboxes have to be treated differently.
+						var fieldId;
+						if (counter.val() == 1) {
+							fieldId = jQuery(this).attr("id");
+						} else {
+							var arrFieldId = jQuery(this).attr("id").split("_");
+							arrFieldId.pop();
+							fieldId = arrFieldId.join("_");
+						}
+						
+						jQuery(this)
+							.removeAttr("checked")
+							.attr("name", value + "_" + counter.val())
+							.attr("id", fieldId + "_" + counter.val())
+							.parent("label").attr("for", fieldId + "_" + counter.val());
+					} else {
+						//*** Normal fields (input, textare) are easy.
+						jQuery(this)
+							.attr("value", "")
+							.attr("name", value + "_" + counter.val())
+							.attr("id", ids[index] + "_" + counter.val())
+							.prev("label").attr("for", ids[index] + "_" + counter.val());
+					}
+				});
+				
+				//*** Add fields to the form.
+				var objOriginal = __this.getElement(value);
+				var objCopy = jQuery.extend(new ValidFormElement(), objOriginal);
+				objCopy.id = ids[index] + "_" + counter.val();
+				objCopy.name = value + "_" + counter.val();
+				objCopy.validator = jQuery.extend(new ValidFormFieldValidator(), objOriginal.validator);
+				objCopy.validator.id = objCopy.id;
+				objCopy.validator.required = false;
+				__this.addElement(objCopy);
+			});
+			
+			//*** Fix click event on active areas.
+			if (copy.hasClass("vf__area")) {
+				var copiedTrigger = jQuery("legend input", copy);
+				if (copiedTrigger.length > 0) {
+					copiedTrigger.attr("id", copiedTrigger.attr("id") + "_" + counter.val());
+					copiedTrigger.attr("name", copiedTrigger.attr("name") + "_" + counter.val());
+					copiedTrigger.parent("label").attr("for", copiedTrigger.attr("id"));
+					
+					__this.attachAreaEvents(copiedTrigger);
+				}
+			}
+			
+			//*** Remove styling.
+			copy.removeClass("vf__required").removeClass("vf__error").addClass("vf__optional");
+			copy.find("p.vf__error").remove();
+			copy.find(".vf__error").removeClass("vf__error");
+			
+			jQuery(this).parent().before(copy);
+		}
+		
+		return false;
+	});
+};
+
+ValidForm.prototype.attachAreaEvents = function(objActiveTrigger) {
+	console.log(objActiveTrigger);
+	objActiveTrigger.unbind("click").bind("click", function(){
+		var fieldset = jQuery(objActiveTrigger).parentsUntil(".vf__area").parent(".vf__area");
+		if (this.checked) {
+			jQuery("input, select, textarea", fieldset).removeAttr("disabled");
+			jQuery(".vf__dynamic a", fieldset).removeClass("vf__disabled");
+			jQuery(fieldset).removeClass("vf__disabled");
+		} else {
+			jQuery("input, select, textarea", fieldset).attr("disabled", "disabled");
+			jQuery(".vf__dynamic a", fieldset).addClass("vf__disabled");
+			jQuery("legend input", fieldset).removeAttr("disabled");
+			jQuery(fieldset).addClass("vf__disabled");
+			
+			//*** Remove errors.
+			jQuery("div.vf__error", fieldset).each(function(){
+				jQuery(this).removeClass("vf__error").find("p.vf__error").remove();
+			});
+		}
 	});
 };
 
@@ -239,11 +335,32 @@ ValidForm.prototype.addElement = function() {
 	}
 };
 
+ValidForm.prototype.getElement = function(strElementName){
+	var objReturn = null;
+	
+	for (var strElement in this.elements) {
+		if (strElement == strElementName) {
+			objReturn = this.elements[strElement];
+			break;
+		}
+	}
+	
+	return objReturn;
+};
+
 ValidForm.prototype.addEvent = function(strEvent, callback){
 	if (this.inArray(this.customEvents, strEvent)) {
 		this.events[strEvent] = callback;
 	} else {
 		jQuery("#" + this.id).bind(strEvent, callback);
+	}
+}
+
+ValidForm.prototype.reset = function() {
+	this.validator.removeMain();
+	for (var strElement in this.elements) {
+		var objElement = this.elements[strElement];
+		objElement.reset();
 	}
 }
 
@@ -275,13 +392,9 @@ ValidForm.prototype.validate = function(strSelector) {
 		for (var strElement in this.elements) {
 			var objElement = this.elements[strElement];
 			
-			if (((strSelector !== null) && ($(strSelector).has($("#" + objElement.id)).length > 0)) || (strSelector == null)) {
+			if (((strSelector !== null) && (jQuery(strSelector).has(jQuery("#" + objElement.id)).length > 0)) || (strSelector == null)) {
 				//*** Check if the element is part of an area.
-				var objArea = jQuery("#" + objElement.id).parent().parent("fieldset.vf__area");
-				if (objArea.length == 0) {
-					//*** Group within an area.
-					objArea = jQuery("input[name='" + objElement.id + "']").parent().parent().parent().parent("fieldset.vf__area");
-				}
+				var objArea = jQuery("#" + objElement.id).parentsUntil(".vf__area").parent(".vf__area");
 				if (objArea.length > 0) {
 					var objChecker = jQuery("legend :checkbox", objArea);
 					if (objChecker.length > 0) {
@@ -312,7 +425,7 @@ ValidForm.prototype.validate = function(strSelector) {
 	}
 	
 	if (typeof this.events.afterValidate == "function") {
-		blnReturn = this.events.afterValidate(this);
+		blnReturn = this.events.afterValidate(this, strSelector);
 	} else {
 		blnReturn = this.valid;
 	}
@@ -322,6 +435,13 @@ ValidForm.prototype.validate = function(strSelector) {
 
 ValidFormElement.prototype.validate = function() {	
 	return this.validator.validate();
+};
+
+ValidFormElement.prototype.reset = function() {	
+	this.validator.removeAlert();
+	
+	var objElement = jQuery("#" + this.id);
+	objElement.val("");
 };
 
 ValidFormValidator.prototype.removeMain = function() {

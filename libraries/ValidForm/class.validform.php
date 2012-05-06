@@ -1,20 +1,20 @@
 <?php
 /***************************
  * ValidForm Builder - build valid and secure web forms quickly
- * <http://code.google.com/p/validformbuilder/>
- * Copyright (c) 2009 Felix Langfeldt
+ * 
+ * Copyright (c) 2009-2012, Felix Langfeldt <flangfeldt@felix-it.com>.
+ * All rights reserved.
  * 
  * This software is released under the MIT License <http://www.opensource.org/licenses/mit-license.php>
+ * 
+ * @package    ValidForm
+ * @author     Felix Langfeldt <flangfeldt@felix-it.com>
+ * @copyright  2009-2012 Felix Langfeldt <flangfeldt@felix-it.com>
+ * @license    http://www.opensource.org/licenses/mit-license.php
+ * @link       http://code.google.com/p/validformbuilder/
  ***************************/
  
-/**
- * ValidForm class
- *
- * @package ValidForm
- * @author Felix Langfeldt
- * @version 0.1.6
- */
- 
+require_once('class.classdynamic.php');
 require_once('class.vf_fieldset.php');
 require_once('class.vf_note.php');
 require_once('class.vf_text.php');
@@ -32,7 +32,6 @@ require_once('class.vf_area.php');
 require_once('class.vf_multifield.php');
 require_once('class.vf_captcha.php');
 require_once('class.vf_fieldvalidator.php');
-require_once('class.classdynamic.php');
 
 define('VFORM_STRING', 1);
 define('VFORM_TEXT', 2);
@@ -56,24 +55,39 @@ define('VFORM_CUSTOM_TEXT', 19);
 define('VFORM_HTML', 20);
 define('VFORM_URL', 21);
 
+/**
+ * 
+ * ValidForm Builder base class
+ * 
+ * @package ValidForm
+ * @author Felix Langfeldt
+ * @version Release: 0.2.6
+ *
+ */
 class ValidForm extends ClassDynamic {
-	private $__name;
 	private $__description;
+	private $__meta;
 	private $__action;
 	private $__elements = array();	
 	private $__jsEvents = array();	
-	protected $__submitlabel;
+	private $__submitLabel;
+	protected $__name;
 	protected $__mainalert;	
 	protected $__requiredstyle;	
 	
-	public function __construct($name = NULL, $description = NULL, $action = NULL) {
-		/**
-		 * Class constructor
-		 * @param string|null $name the name/id of the form
-		 */
+	/**
+	 * 
+	 * Create an instance of the ValidForm Builder
+	 * @param string|null $name The name and id of the form in the HTML DOM and JavaScript.
+	 * @param string|null $description Desriptive text which is displayed above the form.
+	 * @param string|null $action Form action. If left empty the form will post to itself.
+	 * @param array $meta Array with meta data. The array gets directly parsed into the form tag with the keys as attribute names and the values as values.
+	 */
+	public function __construct($name = NULL, $description = NULL, $action = NULL, $meta = array()) {
 		$this->__name = (is_null($name)) ? $this->__generateName() : $name;
 		$this->__description = $description;
-		$this->__submitlabel = "Submit";
+		$this->__submitLabel = "Submit";
+		$this->__meta = $meta;
 		
 		if (is_null($action)) {
 			$this->__action = (isset($_SERVER['REQUEST_URI'])) ? parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) : $_SERVER['PHP_SELF'];
@@ -82,11 +96,59 @@ class ValidForm extends ClassDynamic {
 		}
 	}
 	
-	public function addFieldset($label, $noteHeader = NULL, $noteBody = NULL) {
-		$objFieldSet = new VF_Fieldset($label, $noteHeader, $noteBody);
+	/**
+	 * 
+	 * Set the label of the forms submit button.
+	 * @param string label of the button
+	 */
+	public function setSubmitLabel($label) {
+		$this->__submitLabel = $label;
+	}
+
+	/**
+	 *
+	 * Get the label of the forms submit button.
+	 */
+	public function getSubmitLabel() {
+		return $this->__submitLabel;
+	}
+	
+	/**
+	 * 
+	 * Insert an HTML block into the form
+	 * @param string $html
+	 */
+	public function addHtml($html) {
+		$objString = new VF_String($html);
+		array_push($this->__elements, $objString);
+		
+		return $objString;
+	}
+	
+	/**
+	 * 
+	 * Set the navigation of the form. Overides the default navigation (submit button). 
+	 * @param array $meta Array with meta data. Only the "style" attribute is supported as of now
+	 */
+	public function addNavigation($meta = array()) {
+		$objNavigation = new VF_Navigation($meta);
+		array_push($this->__elements, $objNavigation);
+		
+		return $objNavigation;
+	}
+	
+	public function addFieldset($label, $noteHeader = NULL, $noteBody = NULL, $options = array()) {
+		$objFieldSet = new VF_Fieldset($label, $noteHeader, $noteBody, $options);
 		array_push($this->__elements, $objFieldSet);
 		
 		return $objFieldSet;
+	}
+	
+	public function addHiddenField($name, $type, $meta = array()) {
+		$objField = new VF_Hidden($name, $type, $meta);
+		array_push($this->__elements, $objField);
+		
+		return $objField;
 	}
 	
 	public function addField($name, $label, $type, $validationRules = array(), $errorHandlers = array(), $meta = array(), $blnJustRender = FALSE) {
@@ -144,7 +206,7 @@ class ValidForm extends ClassDynamic {
 				
 				$objField = new VF_Group($name, $type, $label, $validationRules, $errorHandlers, $meta);
 				break;
-			case VFORM_SELECT_LIST:		
+			case VFORM_SELECT_LIST:
 				if (!isset($meta["class"])) {
 					if (!isset($meta["multiple"])) {
 						$meta["class"] = "vf__one";
@@ -244,19 +306,36 @@ class ValidForm extends ClassDynamic {
 			$strOutput .= $this->__toJS();
 		}
 		
-		$strOutput .= "<form id=\"{$this->__name}\" method=\"post\" enctype=\"multipart/form-data\" action=\"{$this->__action}\" class=\"validform\">\n";
+		$strClass = "validform";
+		
+		if (is_array($this->__meta)) {
+			if (isset($this->__meta["class"])) {
+				$strClass .= " " . $this->__meta["class"];
+			}
+		}
+		
+		$strOutput .= "<form id=\"{$this->__name}\" method=\"post\" enctype=\"multipart/form-data\" action=\"{$this->__action}\" class=\"{$strClass}\">\n";
 		
 		//*** Main error.
 		if ($this->isSubmitted() && !empty($this->__mainalert)) $strOutput .= "<div class=\"vf__main_error\"><p>{$this->__mainalert}</p></div>\n";
 		
 		if (!empty($this->__description)) $strOutput .= "<div class=\"vf__description\"><p>{$this->__description}</p></div>\n";
 		
+		$blnNavigation = false;
 		foreach ($this->__elements as $element) {
 			$strOutput .= $element->toHtml($this->isSubmitted());
+			
+			if (get_class($element) == "VF_Navigation") {
+				$blnNavigation = true;
+			}
 		}
 		
-		$strOutput .= "<div class=\"vf__navigation\">\n<input type=\"hidden\" name=\"vf__dispatch\" value=\"{$this->__name}\" />\n";
-		$strOutput .= "<input type=\"submit\" value=\"{$this->__submitlabel}\" class=\"vf__button\" />\n</div>\n</form>\n";
+		if (!$blnNavigation) {
+			$strOutput .= "<div class=\"vf__navigation\">\n<input type=\"hidden\" name=\"vf__dispatch\" value=\"{$this->__name}\" />\n";
+			$strOutput .= "<input type=\"submit\" value=\"{$this->__submitLabel}\" class=\"vf__button\" />\n</div>\n";
+		}
+		
+		$strOutput .= "</form>";
 	
 		return $strOutput;
 	}
@@ -320,73 +399,49 @@ class ValidForm extends ClassDynamic {
 						if ($objField->hasFields()) {
 							switch (get_class($objField)) {
 								case "VF_MultiField":
-									$strValue = "";
-									
-									$intCount = 0;
-									$objSubFields = $objField->getFields();
-									foreach ($objSubFields as $objSubField) {
-										$intCount++;
-										$strValue .= (is_array($objSubField->getValue())) ? implode(", ", $objSubField->getValue()) : $objSubField->getValue();
-										$strValue .= (count($objSubFields) > $intCount) ? " - " : "";
-									}									
-									
-									$strSet .= "<tr>";
-									$strSet .= "<td valign=\"top\">{$objField->getLabel()} &nbsp;&nbsp;&nbsp;</td><td valign=\"top\">: <b>" . nl2br($strValue) . "</b></td>\n";
-									$strSet .= "</tr>";
+									$strSet .= $this->multiFieldAsHtml($objField, $hideEmpty);
 									
 									break;									
 								default:
-									$strSet .= "<tr>";
-									$strSet .= "<td colspan=\"2\"><b>{$objField->getLabel()}</b></td>\n";
-									$strSet .= "</tr>";
-		
-									foreach ($objField->getFields() as $objSubField) {
-										$strLabel = $objSubField->getLabel();
-										$strValue = (is_array($objSubField->getValue())) ? implode(", ", $objSubField->getValue()) : $objSubField->getValue();
-		
-										switch ($objSubField->getType()) {
-											case VFORM_BOOLEAN:
-												$strValue = ($strValue == 1) ? "yes" : "no";
-												break;
-										}
-										
-										if (empty($strLabel) && empty($strValue)) {	
-											//*** Skip the field.
-										} else {
-											$strSet .= "<tr>";
-											$strSet .= "<td valign=\"top\">{$objSubField->getLabel()} &nbsp;&nbsp;&nbsp;</td><td valign=\"top\">: <b>" . nl2br($strValue) . "</b></td>\n";
-											$strSet .= "</tr>";
-										}
-									}		
+									$strSet .= $this->areaAsHtml($objField, $hideEmpty);
 							}							
 						} else {
-							$strLabel = $objField->getLabel();
+							$strSet .= $this->fieldAsHtml($objField, $hideEmpty);
+						}
+					}
+					
+					if ($objField->isDynamic()) {
+						$intDynamicCount = $objField->getDynamicCount();
+						
+						if ($intDynamicCount > 0) {
+							for ($intCount = 1; $intCount <= $intDynamicCount; $intCount++) {
+								switch (get_class($objField)) {
+									case "VF_MultiField":
+										$strSet .= $this->multiFieldAsHtml($objField, $hideEmpty, $intCount);
 										
-							switch ($objField->getType()) {
-								case VFORM_BOOLEAN:
-									$strValue = ($strValue == 1) ? "yes" : "no";
-									break;
-							}
+										break;
 										
-							if (empty($strLabel) && empty($strValue)) {
-								//*** Skip the field.
-							} else {	
-								$strSet .= "<tr>";
-								$strSet .= "<td valign=\"top\">{$objField->getLabel()} &nbsp;&nbsp;&nbsp;</td><td valign=\"top\">: <b>" . nl2br($strValue) . "</b></td>\n";
-								$strSet .= "</tr>";
+									case "VF_Area":
+										$strSet .= $this->areaAsHtml($objField, $hideEmpty, $intCount);
+										
+										break;
+										
+									default:
+										$strSet .= $this->fieldAsHtml($objField, $hideEmpty, $intCount);
+								}
 							}
 						}
 					}
-				}
+ 				}
 			}
 			
 			$strHeader = $objFieldset->getHeader();
 			if (!empty($strHeader) && !empty($strSet)) {
 				$strOutput .= "<tr>";
-				$strOutput .= "<td colspan=\"2\">&nbsp;</td>\n";
+				$strOutput .= "<td colspan=\"3\">&nbsp;</td>\n";
 				$strOutput .= "</tr>";			
 				$strOutput .= "<tr>";
-				$strOutput .= "<td colspan=\"2\"><b>{$strHeader}</b></td>\n";
+				$strOutput .= "<td colspan=\"3\"><b>{$strHeader}</b></td>\n";
 				$strOutput .= "</tr>";
 			}
 			
@@ -396,6 +451,85 @@ class ValidForm extends ClassDynamic {
 		$strOutput .= "</table>";
 		
 		return $strOutput;
+	}
+	
+	private function areaAsHtml($objField, $hideEmpty = FALSE, $intDynamicCount = 0) {
+		$strReturn = "";
+		$strSet = "";
+
+		foreach ($objField->getFields() as $objSubField) {										
+			switch (get_class($objSubField)) {
+				case "VF_MultiField":
+					$strSet .= $this->multiFieldAsHtml($objSubField, $hideEmpty, $intDynamicCount);
+					
+					break;	
+				default:														
+					$strSet .= $this->fieldAsHtml($objSubField, $hideEmpty, $intDynamicCount);
+			}
+		}	
+		
+		if (!empty($strSet)) {
+			$strReturn = "<tr>";
+			$strReturn .= "<td colspan=\"3\" style=\"white-space:nowrap\"><b>{$objField->getLabel()}</b></td>\n";
+			$strReturn .= "</tr>";
+			$strReturn .= $strSet;
+		}
+		
+		return $strReturn;
+	}
+	
+	private function multiFieldAsHtml($objField, $hideEmpty = FALSE, $intDynamicCount = 0) {
+		$strReturn = "";
+		
+		if ($objField->hasFields()) {
+			$strValue = "";
+			$objSubFields = $objField->getFields();
+			
+			$intCount = 0;
+			foreach ($objSubFields as $objSubField) {	
+				$intCount++;
+											
+				$varValue = $objSubField->getValue($intDynamicCount);											
+				$strValue .= (is_array($varValue)) ? implode(", ", $varValue) : $varValue;
+				$strValue .= (count($objSubFields) > $intCount) ? " " : "";
+			}
+			
+			$strValue = trim($strValue);
+			
+			if ((!empty($strValue) && $hideEmpty) || (!$hideEmpty && !is_null($strValue))) {													
+				$strReturn .= "<tr>";
+				$strReturn .= "<td valign=\"top\" style=\"white-space:nowrap\">{$objField->getLabel()} &nbsp;&nbsp;&nbsp;</td><td valign=\"top\">: <b>" . nl2br($strValue) . "</b></td>\n";
+				$strReturn .= "</tr>";
+			}
+		}
+		
+		return $strReturn;
+	}
+	
+	private function fieldAsHtml($objField, $hideEmpty = FALSE, $intDynamicCount = 0) {
+		$strReturn = "";
+		
+		$strLabel = $objField->getLabel();					
+		$varValue = ($intDynamicCount > 0) ? $objField->getValue($intDynamicCount) : $objField->getValue();
+		$strValue = (is_array($varValue)) ? implode(", ", $varValue) : $varValue;
+
+		if ((!empty($strValue) && $hideEmpty) || (!$hideEmpty && !is_null($strValue))) {
+			switch ($objField->getType()) {
+				case VFORM_BOOLEAN:
+					$strValue = ($strValue == 1) ? "yes" : "no";
+					break;
+			}
+			
+			if (empty($strLabel) && empty($strValue)) {	
+				//*** Skip the field.
+			} else {
+				$strReturn .= "<tr>";
+				$strReturn .= "<td valign=\"top\">{$objField->getLabel()} &nbsp;&nbsp;&nbsp;</td><td valign=\"top\">: <b>" . nl2br($strValue) . "</b></td>\n";
+				$strReturn .= "</tr>";
+			}
+		}
+		
+		return $strReturn;
 	}
 		
 	public static function get($param, $replaceEmpty = "") {

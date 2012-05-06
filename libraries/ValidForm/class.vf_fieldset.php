@@ -1,29 +1,41 @@
 <?php
 /***************************
- * This file is part of ValidForm Builder - build valid and secure web forms quickly
- * <http://code.google.com/p/validformbuilder/>
- * Copyright (c) 2009 Felix Langfeldt
+ * ValidForm Builder - build valid and secure web forms quickly
+ * 
+ * Copyright (c) 2009-2012, Felix Langfeldt <flangfeldt@felix-it.com>.
+ * All rights reserved.
  * 
  * This software is released under the MIT License <http://www.opensource.org/licenses/mit-license.php>
+ * 
+ * @package    ValidForm
+ * @author     Felix Langfeldt <flangfeldt@felix-it.com>
+ * @copyright  2009-2012 Felix Langfeldt <flangfeldt@felix-it.com>
+ * @license    http://www.opensource.org/licenses/mit-license.php
+ * @link       http://code.google.com/p/validformbuilder/
  ***************************/
- 
-/**
- * VF_Fieldset class
- *
- * @package ValidForm
- * @author Felix Langfeldt
- * @version 0.1.0
- */
   
 require_once('class.classdynamic.php');
 
+/**
+ * 
+ * Fieldset Class
+ * 
+ * @package ValidForm
+ * @author Felix Langfeldt
+ * @version Release: 0.2.1
+ *
+ */
 class VF_Fieldset extends ClassDynamic {
 	protected $__header;
 	protected $__note;
+	protected $__class;
+	protected $__style;
 	protected $__fields = array();
 	
-	public function __construct($header = NULL, $noteHeader = NULL, $noteBody = NULL) {
+	public function __construct($header = NULL, $noteHeader = NULL, $noteBody = NULL, $meta = array()) {
 		$this->__header = $header;
+		$this->__class = (isset($meta["class"])) ? $meta["class"] : "";
+		$this->__style = (isset($meta["style"])) ? $meta["style"] : "";
 		
 		if (!empty($noteHeader) || !empty($noteBody)) {
 			$this->__note = new VF_Note($noteHeader, $noteBody);
@@ -35,7 +47,9 @@ class VF_Fieldset extends ClassDynamic {
 	}
 	
 	public function toHtml($submitted = FALSE) {
-		$strOutput = "<fieldset>\n";
+		$strClass = (!empty($this->__class)) ? " class=\"{$this->__class}\"" : ""; 
+		$strStyle = (!empty($this->__style)) ? " style=\"{$this->__style}\"" : ""; 
+		$strOutput = "<fieldset{$strClass}{$strStyle}>\n";
 		if (!empty($this->__header)) $strOutput .= "<legend><span>{$this->__header}</span></legend>\n";
 		
 		if (is_object($this->__note)) $strOutput .= $this->__note->toHtml();
