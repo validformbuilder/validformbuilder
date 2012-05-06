@@ -1,9 +1,21 @@
-/**
+/***************************
+ * ValidForm Builder - build valid and secure web forms quickly
+ * 
+ * Copyright (c) 2009-2012, Felix Langfeldt <flangfeldt@felix-it.com>.
+ * All rights reserved.
+ 
  * ValidForm standard CSS. 
  * Do not modify directly! You can overrule the styles in a separate file.
- *
- * @version 0.2
- */
+ * 
+ * This software is released under the GNU GPL v2 License <http://www.gnu.org/licenses/old-licenses/gpl-2.0.html>
+ * 
+ * @package    ValidForm
+ * @author     Felix Langfeldt <flangfeldt@felix-it.com>
+ * @copyright  2009-2012 Felix Langfeldt <flangfeldt@felix-it.com>
+ * @license    http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU GPL v2
+ * @link       http://code.google.com/p/validformbuilder/
+ * @version	   Release: 0.2.1
+ ***************************/
  
 * {
 	margin: 0;
