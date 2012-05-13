@@ -22,7 +22,7 @@ require_once('class.vf_element.php');
  * 
  * @package ValidForm
  * @author Felix Langfeldt
- * @version Release: 0.2.1
+ * @version Release: 0.2.3
  *
  */
 class VF_File extends VF_Element {
@@ -44,12 +44,12 @@ class VF_File extends VF_Element {
 		} else {
 			$strOutput = "<div class=\"vf__multifielditem\">\n";
 		}
-		
-		$strOutput .= "<input type=\"file\" value=\"{$this->__getValue($submitted)}\" name=\"{$this->__name}\" id=\"{$this->__id}\" {$this->__getMetaString()} />\n";
 
 		//*** Fixing an unusual uploading bug.
-		$strMaxFileSize = ini_get("upload_max_filesize");
-		$strOutput .= "<input type=\"hidden\" name=\"MAX_FILE_SIZE\" value=\"{$strMaxFileSize}\" />";
+		$intMaxFileSize = $this->return_bytes(ini_get("upload_max_filesize"));
+		$strOutput .= "<input type=\"hidden\" name=\"MAX_FILE_SIZE\" value=\"{$intMaxFileSize}\" />";
+		
+		$strOutput .= "<input type=\"file\" value=\"{$this->__getValue($submitted)}\" name=\"{$this->__name}[]\" id=\"{$this->__id}\" {$this->__getMetaString()} />\n";
 		
 		if (!empty($this->__tip)) $strOutput .= "<small class=\"vf__tip\">{$this->__tip}</small>\n";
 		$strOutput .= "</div>\n";
@@ -59,14 +59,22 @@ class VF_File extends VF_Element {
 	
 	public function toJS() {
 		$strCheck = $this->__validator->getCheck();
-		$strCheck = (empty($strCheck)) ? "''" : str_replace("'", "\\'", $strCheck);
+		$strCheck = (empty($strCheck)) ? "''" : str_replace('\\\\', "\\\\\\\\", $strCheck);
+		$strCheck = str_replace("'", "\\'", $strCheck);
 		$strRequired = ($this->__validator->getRequired()) ? "true" : "false";;
 		$intMaxLength = ($this->__validator->getMaxLength() > 0) ? $this->__validator->getMaxLength() : "null";
 		$intMinLength = ($this->__validator->getMinLength() > 0) ? $this->__validator->getMinLength() : "null";
-		$strMaxLengthError = sprintf($this->__validator->getMaxLengthError(), $intMaxLength);
-		$strMinLengthError = sprintf($this->__validator->getMinLengthError(), $intMinLength);
 		
-		return "objForm.addElement('{$this->__id}', '{$this->__name}', {$strCheck}, {$strRequired}, {$intMaxLength}, {$intMinLength}, '" . addslashes($this->__validator->getFieldHint()) . "', '" . addslashes($this->__validator->getTypeError()) . "', '" . addslashes($this->__validator->getRequiredError()) . "', '" . addslashes($this->__validator->getHintError()) . "', '{$strMinLengthError}', '{$strMaxLengthError}');\n";
+		return "objForm.addElement('{$this->__id}', '{$this->__name}', {$strCheck}, {$strRequired}, {$intMaxLength}, {$intMinLength}, '" . addslashes($this->__validator->getFieldHint()) . "', '" . addslashes($this->__validator->getTypeError()) . "', '" . addslashes($this->__validator->getRequiredError()) . "', '" . addslashes($this->__validator->getHintError()) . "', '" . addslashes($this->__validator->getMinLengthError()) . "', '" . addslashes($this->__validator->getMaxLengthError()) . "');\n";
+	}
+	
+	private function return_bytes($strSize) {
+	    switch (strtolower(substr($strSize, -1))) {
+	        case 'm': return (int)$strSize * 1048576;
+	        case 'k': return (int)$strSize * 1024;
+	        case 'g': return (int)$strSize * 1073741824;
+	        default: return $strSize;
+	    }
 	}
 	
 }

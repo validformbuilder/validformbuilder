@@ -22,7 +22,7 @@ require_once('class.vf_element.php');
  * 
  * @package ValidForm
  * @author Felix Langfeldt
- * @version Release: 0.2.0
+ * @version Release: 0.2.1
  *
  */
 class VF_Hidden extends VF_Element {
@@ -51,6 +51,10 @@ class VF_Hidden extends VF_Element {
 	
 	public function toJS() {
 		return "";
+	}
+	
+	public function hasFields() {
+		return FALSE;
 	}
 	
 }

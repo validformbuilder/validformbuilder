@@ -22,7 +22,7 @@ require_once('class.vf_element.php');
  * 
  * @package ValidForm
  * @author Felix Langfeldt
- * @version Release: 0.2.1
+ * @version Release: 0.2.2
  *
  */
 class VF_GroupField extends VF_Element {
@@ -45,7 +45,7 @@ class VF_GroupField extends VF_Element {
 		
 		$labelMeta = (isset($meta['labelStyle'])) ? array("style" => $meta['labelStyle']) : array();
 		if (isset($meta['labelClass'])) $labelMeta["class"] = $meta['labelClass'];
-		$this->__labelMeta = $labelMeta;
+		$this->__labelmeta = $labelMeta;
 	}
 	
 	public function toHtml($value = NULL, $submitted = FALSE) {

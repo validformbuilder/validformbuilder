@@ -22,7 +22,7 @@ require_once('class.classdynamic.php');
  *
  * @package ValidForm
  * @author Felix Langfeldt
- * @version 0.2.1
+ * @version 0.2.2
  *
  */
 class VF_Element extends ClassDynamic {
@@ -32,7 +32,7 @@ class VF_Element extends ClassDynamic {
 	protected $__tip;
 	protected $__type;
 	protected $__meta;
-	protected $__labelMeta;
+	protected $__labelmeta;
 	protected $__hint;
 	protected $__default;
 	protected $__dynamic;
@@ -54,7 +54,7 @@ class VF_Element extends ClassDynamic {
 		$this->__label = $label;
 		$this->__type = $type;
 		$this->__meta = $meta;
-		$this->__labelMeta = $labelMeta;
+		$this->__labelmeta = $labelMeta;
 		$this->__tip = (array_key_exists("tip", $meta)) ? $meta["tip"] : NULL;
 		$this->__hint = (array_key_exists("hint", $meta)) ? $meta["hint"] : NULL;
 		$this->__default = (array_key_exists("default", $meta)) ? $meta["default"] : NULL;
@@ -155,8 +155,8 @@ class VF_Element extends ClassDynamic {
 	protected function __getLabelMetaString() {
 		$strOutput = "";
 		
-		if (is_array($this->__labelMeta)) {
-			foreach ($this->__labelMeta as $key => $value) {
+		if (is_array($this->__labelmeta)) {
+			foreach ($this->__labelmeta as $key => $value) {
 				if (!in_array($key, $this->__reservedMeta)) {
 					$strOutput .= " {$key}=\"{$value}\"";
 				}

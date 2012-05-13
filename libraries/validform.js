@@ -11,7 +11,7 @@
  * @copyright  2009-2012 Felix Langfeldt <flangfeldt@felix-it.com>
  * @license    http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU GPL v2
  * @link       http://code.google.com/p/validformbuilder/
- * @version    Release: 0.2.4
+ * @version    Release: 0.2.5
  ***************************/
 
 function ValidFormValidator(strFormId) {
@@ -121,7 +121,7 @@ function ValidForm(strFormId, strMainAlert) {
 	this.validator.mainAlert = strMainAlert;
 	this.init();
 	this.events = [];
-	this.customEvents = ["afterValidate"];
+	this.customEvents = ["afterValidate", "afterDynamicChange"];
 }
 
 ValidForm.prototype.init = function() {
@@ -216,6 +216,11 @@ ValidForm.prototype.init = function() {
 			copy.find(".vf__error").removeClass("vf__error");
 			
 			jQuery(this).parent().before(copy);
+			
+			//*** Call custom event if set.
+			if (typeof __this.events.afterDynamicChange == "function") {
+				__this.events.afterDynamicChange(__this);
+			}
 		}
 		
 		return false;
@@ -482,12 +487,12 @@ ValidFormFieldValidator.prototype.validate = function(value) {
 		
 		//*** Check if the length of the value is within the range.
 		if (this.minLength > 0 && value.length < this.minLength) {
-			this.showAlert(this.minLengthError);
+			this.showAlert(sprintf(this.minLengthError, this.minLength));
 			return false;
 		}
 		
 		if (this.maxLength > 0 && value.length > this.maxLength) {
-			this.showAlert(this.maxLengthError);
+			this.showAlert(sprintf(this.maxLengthError, this.maxLength));
 			return false;
 		}
 		
@@ -515,12 +520,12 @@ ValidFormFieldValidator.prototype.validate = function(value) {
 
 			//*** Check if the length of the value is within the range.
 			if (this.minLength > 0 && objValidElements.length < this.minLength) {
-				this.showAlert(this.minLengthError);
+				this.showAlert(sprintf(this.minLengthError, this.minLength));
 				return false;
 			}
 			
 			if (this.maxLength > 0 && objValidElements.length > this.maxLength) {
-				this.showAlert(this.maxLengthError);
+				this.showAlert(sprintf(this.maxLengthError, this.maxLength));
 				return false;
 			}
 
@@ -584,3 +589,11 @@ ValidFormFieldValidator.prototype.showAlert = function(strAlert) {
  * http://flesler.blogspot.com/2007/10/jqueryscrollto.html
  */
 ;(function(h){var m=h.scrollTo=function(b,c,g){h(window).scrollTo(b,c,g)};m.defaults={axis:'y',duration:1};m.window=function(b){return h(window).scrollable()};h.fn.scrollable=function(){return this.map(function(){var b=this.parentWindow||this.defaultView,c=this.nodeName=='#document'?b.frameElement||b:this,g=c.contentDocument||(c.contentWindow||c).document,i=c.setInterval;return c.nodeName=='IFRAME'||i&&h.browser.safari?g.body:i?g.documentElement:this})};h.fn.scrollTo=function(r,j,a){if(typeof j=='object'){a=j;j=0}if(typeof a=='function')a={onAfter:a};a=h.extend({},m.defaults,a);j=j||a.speed||a.duration;a.queue=a.queue&&a.axis.length>1;if(a.queue)j/=2;a.offset=n(a.offset);a.over=n(a.over);return this.scrollable().each(function(){var k=this,o=h(k),d=r,l,e={},p=o.is('html,body');switch(typeof d){case'number':case'string':if(/^([+-]=)?\d+(px)?$/.test(d)){d=n(d);break}d=h(d,this);case'object':if(d.is||d.style)l=(d=h(d)).offset()}h.each(a.axis.split(''),function(b,c){var g=c=='x'?'Left':'Top',i=g.toLowerCase(),f='scroll'+g,s=k[f],t=c=='x'?'Width':'Height',v=t.toLowerCase();if(l){e[f]=l[i]+(p?0:s-o.offset()[i]);if(a.margin){e[f]-=parseInt(d.css('margin'+g))||0;e[f]-=parseInt(d.css('border'+g+'Width'))||0}e[f]+=a.offset[i]||0;if(a.over[i])e[f]+=d[v]()*a.over[i]}else e[f]=d[i];if(/^\d+$/.test(e[f]))e[f]=e[f]<=0?0:Math.min(e[f],u(t));if(!b&&a.queue){if(s!=e[f])q(a.onAfterFirst);delete e[f]}});q(a.onAfter);function q(b){o.animate(e,j,a.easing,b&&function(){b.call(this,r,a)})};function u(b){var c='scroll'+b,g=k.ownerDocument;return p?Math.max(g.documentElement[c],g.body[c]):k[c]}}).end()};function n(b){return typeof b=='object'?b:{top:b,left:b}}})(jQuery);
+
+/**
+ * sprintf() for JavaScript 0.7-beta1
+ * http://www.diveintojavascript.com/projects/javascript-sprintf
+ * Copyright (c) Alexandru Marasteanu <alexaholic [at) gmail (dot] com>
+ * All rights reserved.
+ */
+var sprintf=function(){function a(a){return Object.prototype.toString.call(a).slice(8,-1).toLowerCase()}function b(a,b){for(var c=[];b>0;c[--b]=a){}return c.join("")}var c=function(){if(!c.cache.hasOwnProperty(arguments[0])){c.cache[arguments[0]]=c.parse(arguments[0])}return c.format.call(null,c.cache[arguments[0]],arguments)};c.format=function(c,d){var e=1,f=c.length,g="",h,i=[],j,k,l,m,n,o;for(j=0;j<f;j++){g=a(c[j]);if(g==="string"){i.push(c[j])}else if(g==="array"){l=c[j];if(l[2]){h=d[e];for(k=0;k<l[2].length;k++){if(!h.hasOwnProperty(l[2][k])){throw sprintf('[sprintf] property "%s" does not exist',l[2][k])}h=h[l[2][k]]}}else if(l[1]){h=d[l[1]]}else{h=d[e++]}if(/[^s]/.test(l[8])&&a(h)!="number"){throw sprintf("[sprintf] expecting number but found %s",a(h))}switch(l[8]){case"b":h=h.toString(2);break;case"c":h=String.fromCharCode(h);break;case"d":h=parseInt(h,10);break;case"e":h=l[7]?h.toExponential(l[7]):h.toExponential();break;case"f":h=l[7]?parseFloat(h).toFixed(l[7]):parseFloat(h);break;case"o":h=h.toString(8);break;case"s":h=(h=String(h))&&l[7]?h.substring(0,l[7]):h;break;case"u":h=Math.abs(h);break;case"x":h=h.toString(16);break;case"X":h=h.toString(16).toUpperCase();break}h=/[def]/.test(l[8])&&l[3]&&h>=0?"+"+h:h;n=l[4]?l[4]=="0"?"0":l[4].charAt(1):" ";o=l[6]-String(h).length;m=l[6]?b(n,o):"";i.push(l[5]?h+m:m+h)}}return i.join("")};c.cache={};c.parse=function(a){var b=a,c=[],d=[],e=0;while(b){if((c=/^[^\x25]+/.exec(b))!==null){d.push(c[0])}else if((c=/^\x25{2}/.exec(b))!==null){d.push("%")}else if((c=/^\x25(?:([1-9]\d*)\$|\(([^\)]+)\))?(\+)?(0|'[^$])?(-)?(\d+)?(?:\.(\d+))?([b-fosuxX])/.exec(b))!==null){if(c[2]){e|=1;var f=[],g=c[2],h=[];if((h=/^([a-z_][a-z_\d]*)/i.exec(g))!==null){f.push(h[1]);while((g=g.substring(h[0].length))!==""){if((h=/^\.([a-z_][a-z_\d]*)/i.exec(g))!==null){f.push(h[1])}else if((h=/^\[(\d+)\]/.exec(g))!==null){f.push(h[1])}else{throw"[sprintf] huh?"}}}else{throw"[sprintf] huh?"}c[2]=f}else{e|=2}if(e===3){throw"[sprintf] mixing positional and named placeholders is not (yet) supported"}d.push(c)}else{throw"[sprintf] huh?"}b=b.substring(c[0].length)}return d};return c}();var vsprintf=function(a,b){b.unshift(a);return sprintf.apply(null,b)};

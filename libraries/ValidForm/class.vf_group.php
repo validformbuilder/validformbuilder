@@ -22,7 +22,7 @@ require_once('class.vf_element.php');
  * 
  * @package ValidForm
  * @author Felix Langfeldt
- * @version Release: 0.2.1
+ * @version Release: 0.2.2
  *
  */
 class VF_Group extends VF_Element {
@@ -58,8 +58,6 @@ class VF_Group extends VF_Element {
 		$strRequired = ($this->__validator->getRequired()) ? "true" : "false";
 		$intMaxLength = ($this->__validator->getMaxLength() > 0) ? $this->__validator->getMaxLength() : "null";
 		$intMinLength = ($this->__validator->getMinLength() > 0) ? $this->__validator->getMinLength() : "null";
-		$strMaxLengthError = sprintf($this->__validator->getMaxLengthError(), $intMaxLength);
-		$strMinLengthError = sprintf($this->__validator->getMinLengthError(), $intMinLength);
 		
 		switch ($this->__type) {
 			case VFORM_RADIO_LIST:
@@ -70,7 +68,7 @@ class VF_Group extends VF_Element {
 				break;
 		}
 		
-		return "objForm.addElement('{$name}', '{$name}', {$strCheck}, {$strRequired}, {$intMaxLength}, {$intMinLength}, '" . addslashes($this->__validator->getFieldHint()) . "', '" . addslashes($this->__validator->getTypeError()) . "', '" . addslashes($this->__validator->getRequiredError()) . "', '" . addslashes($this->__validator->getHintError()) . "', '{$strMinLengthError}', '{$strMaxLengthError}');\n";
+		return "objForm.addElement('{$name}', '{$name}', {$strCheck}, {$strRequired}, {$intMaxLength}, {$intMinLength}, '" . addslashes($this->__validator->getFieldHint()) . "', '" . addslashes($this->__validator->getTypeError()) . "', '" . addslashes($this->__validator->getRequiredError()) . "', '" . addslashes($this->__validator->getHintError()) . "', '" . addslashes($this->__validator->getMinLengthError()) . "', '" . addslashes($this->__validator->getMaxLengthError()) . "');\n";
 	}
 	
 	public function addField($label, $value, $checked = FALSE, $meta = array()) {

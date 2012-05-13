@@ -23,7 +23,7 @@ require_once('class.vf_validator.php');
  * 
  * @package ValidForm
  * @author Felix Langfeldt
- * @version Release: 0.2.1
+ * @version Release: 0.2.2
  *
  */
 class VF_FieldValidator extends ClassDynamic {
@@ -83,6 +83,8 @@ class VF_FieldValidator extends ClassDynamic {
 	}
 	
 	public function validate($intDynamicPosition = 0) {
+		$this->__error = "";
+		
 		$value = $this->getValue($intDynamicPosition);
 		
 		//*** Check "required" option.

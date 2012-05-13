@@ -22,7 +22,7 @@ require_once('class.classdynamic.php');
  * 
  * @package ValidForm
  * @author Felix Langfeldt
- * @version Release: 0.2.1
+ * @version Release: 0.2.2
  *
  */
 class VF_Fieldset extends ClassDynamic {
@@ -75,6 +75,10 @@ class VF_Fieldset extends ClassDynamic {
 	
 	public function isValid() {
 		return $this->__validate();
+	}
+	
+	public function hasFields() {
+		return (count($this->__fields) > 0) ? TRUE : FALSE;
 	}
 	
 	public function getFields() {

@@ -22,7 +22,7 @@ require_once('class.phpcaptcha.php');
  * 
  * @package ValidForm
  * @author Felix Langfeldt
- * @version Release: 0.3.1
+ * @version Release: 0.3.2
  *
  */
 class VF_Validator {
@@ -37,7 +37,7 @@ class VF_Validator {
 		VFORM_PASSWORD => '/^[-A-Z0-9.\'"_!@#()$%^&*?]*$/i',
 		VFORM_SIMPLEURL => '/^[-A-Z0-9]+\.[-A-Z0-9]+/i',
 		VFORM_URL => '/^http(s)?:\/\/[a-z0-9-]+(.[a-z0-9-]+)*(:[0-9]+)?(\/.*)?$/i',
-		VFORM_FILE => '/^[-a-zàáâãäåæçèéêëìíîïðñòóôõöøùúûüýß0-9.\':"\\_\/ ]*$/i',
+		VFORM_FILE => '/^[-a-zàáâãäåæçèéêëìíîïðñòóôõöøùúûüýß0-9.\':"\\\\_\/ ]*$/i',
 		VFORM_BOOLEAN => '/^[on]*$/i',
 		VFORM_CAPTCHA => '/^[-a-z]*$/i',
 		VFORM_RADIO_LIST => '',

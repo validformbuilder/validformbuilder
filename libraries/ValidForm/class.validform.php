@@ -61,7 +61,7 @@ define('VFORM_URL', 21);
  * 
  * @package ValidForm
  * @author Felix Langfeldt
- * @version Release: 0.2.6
+ * @version Release: 0.2.7
  *
  */
 class ValidForm extends ClassDynamic {
@@ -352,16 +352,30 @@ class ValidForm extends ClassDynamic {
 		$objFields = array();
 		
 		foreach ($this->__elements as $objFieldset) {
-			foreach ($objFieldset->getFields() as $objField) {
-				if (is_object($objField)) {
-					if ($objField->hasFields()) {
-						foreach ($objField->getFields() as $objSubField) {
-							if (is_object($objSubField)) array_push($objFields, $objSubField);
+			if ($objFieldset->hasFields()) {
+				foreach ($objFieldset->getFields() as $objField) {
+					if (is_object($objField)) {
+						if ($objField->hasFields()) {
+							foreach ($objField->getFields() as $objSubField) {
+								if (is_object($objSubField)) {
+									if ($objSubField->hasFields()) {
+										foreach ($objSubField->getFields() as $objSubSubField) {
+											if (is_object($objSubSubField)) {
+												array_push($objFields, $objSubSubField);
+											}
+										}
+									} else {
+										array_push($objFields, $objSubField);
+									}
+								}
+							}
+						} else {
+							array_push($objFields, $objField);
 						}
-					} else {
-						array_push($objFields, $objField);
 					}
 				}
+			} else {
+				array_push($objFields, $objFieldset);
 			}
 		}
 		

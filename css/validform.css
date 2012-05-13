@@ -103,6 +103,10 @@ form.validform fieldset fieldset.vf__area legend label {
 	display: inline;
 }
 
+form.validform .vf__area p.vf__error {
+	margin-left: 133px;
+}
+
 form.validform fieldset.vf__disabled legend label {
 	color: #333;
 }
