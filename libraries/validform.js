@@ -11,7 +11,7 @@
  * @copyright  2009-2012 Felix Langfeldt <flangfeldt@felix-it.com>
  * @license    http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU GPL v2
  * @link       http://code.google.com/p/validformbuilder/
- * @version    Release: 0.2.5
+ * @version    Release: 0.2.6
  ***************************/
 
 function ValidFormValidator(strFormId) {
@@ -391,7 +391,7 @@ ValidForm.prototype.validate = function(strSelector) {
 			
 			if (((strSelector !== null) && (jQuery(strSelector).has(jQuery("#" + objElement.id)).length > 0)) || (strSelector == null)) {
 				//*** Check if the element is part of an area.
-				var objArea = jQuery("#" + objElement.id).parentsUntil(".vf__area").parent(".vf__area");
+				var objArea = jQuery("[name='" + objElement.name + "']").parentsUntil(".vf__area").parent(".vf__area");
 				if (objArea.length > 0) {
 					var objChecker = jQuery("legend :checkbox", objArea);
 					if (objChecker.length > 0) {
