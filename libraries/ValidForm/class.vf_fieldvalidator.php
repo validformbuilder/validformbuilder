@@ -177,6 +177,7 @@ class VF_FieldValidator extends ClassDynamic {
 		if (empty($this->__error)) {
 			switch ($this->__type) {
 				case VFORM_CUSTOM:
+				case VFORM_CUSTOM_TEXT:
 					$blnValidType = VF_Validator::validate($this->__validation, $value);
 					break;
 				default:

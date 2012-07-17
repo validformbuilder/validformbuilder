@@ -45,7 +45,7 @@ class VF_Validator {
 		VFORM_SELECT_LIST => '',
 		VFORM_PARAGRAPH => '',
 		VFORM_CURRENCY => '',
-		VFORM_DATE => '/^(\d{2}\/\d{2}\/\d{4})$/i',
+		VFORM_DATE => '/^(\d{2}\/\d{2}\/\d{4})$/i'
 	);
 	
 	public static function validate($checkType, $value) {
@@ -64,7 +64,11 @@ class VF_Validator {
 				}
 			}
 		} else {
-			$blnReturn = preg_match($checkType, $value);
+			if (empty($checkType)) {
+				$blnReturn = TRUE; // No custom validation set.
+			} else {
+				$blnReturn = preg_match($checkType, $value); // Use custom validation
+			}
 		}
 
 		return $blnReturn;
