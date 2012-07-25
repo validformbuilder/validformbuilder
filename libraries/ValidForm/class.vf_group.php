@@ -27,7 +27,6 @@ require_once('class.vf_element.php');
  */
 class VF_Group extends VF_Element {
 	protected $__fields;
-	protected $__allowedTriggerFields;
 
 	public function __construct($name, $type, $label = "", $validationRules = array(), $errorHandlers = array(), $meta = array()) {
 		$this->__fields = new VF_Collection();

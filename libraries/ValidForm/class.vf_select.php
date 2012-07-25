@@ -26,7 +26,13 @@ require_once('class.vf_element.php');
  *
  */
 class VF_Select extends VF_Element {
-	protected $__options = array();
+	protected $__options;
+
+	public function __construct($name, $type, $label = "", $validationRules = array(), $errorHandlers = array(), $meta = array()) {
+		$this->__options = new VF_Collection();
+
+		parent::__construct($name, $type, $label, $validationRules, $errorHandlers, $meta);
+	}
 
 	public function toHtml($submitted = FALSE, $blnSimpleLayout = FALSE) {
 		$strOutput = "";
@@ -86,14 +92,14 @@ class VF_Select extends VF_Element {
 	
 	public function addField($value, $label, $selected = FALSE) {
 		$objOption = new VF_SelectOption($value, $label, $selected);
-		array_push($this->__options, $objOption);
+		$this->__options->addObject($objOption);
 		
 		return $objOption;
 	}
 	
 	public function addGroup($label) {
 		$objGroup = new VF_SelectGroup($label);
-		array_push($this->__options, $objGroup);
+		$this->__options->addObject($objGroup);
 		
 		return $objGroup;
 	}

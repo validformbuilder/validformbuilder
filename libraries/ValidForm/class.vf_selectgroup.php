@@ -26,11 +26,12 @@ require_once('class.classdynamic.php');
  *
  */
 class VF_SelectGroup extends ClassDynamic {
-	protected $__options = array();
 	protected $__label;
+	protected $__options;
 	
 	public function __construct($label) {
 		$this->__label = $label;
+		$this->__options = new VF_Collection();
 	}
 	
 	public function toHtml($value = NULL) {		
@@ -45,7 +46,7 @@ class VF_SelectGroup extends ClassDynamic {
 	
 	public function addField($label, $value, $selected = FALSE) {
 		$objOption = new VF_SelectOption($label, $value, $selected);
-		array_push($this->__options, $objOption);
+		$this->__options->addObject($objOption);
 		
 		return $objOption;
 	}

@@ -26,24 +26,25 @@ require_once('class.classdynamic.php');
  *
  */
 class VF_Navigation extends ClassDynamic {
-	protected $__fields = array();
+	protected $__fields;
 	protected $__meta;
 	
 	public function __construct($meta = array()) {
 		$this->__meta = $meta;
+		$this->__fields = new VF_Collection();
 	}
 	
 	public function addButton($label, $options = array()) {
 		$objButton = new VF_Button($label, $options);
 		
-		array_push($this->__fields, $objButton);
+		$this->__fields->addObject($objButton);
 		
 		return $objButton;
 	}
 	
 	public function addHtml($html) {
 		$objString = new VF_String($html);
-		array_push($this->__fields, $objString);
+		$this->__fields->addObject($objString);
 		
 		return $objString;
 	}
@@ -96,7 +97,7 @@ class VF_Navigation extends ClassDynamic {
 	}
 	
 	public function hasFields() {
-		return (count($this->__fields) > 0) ? TRUE : FALSE;
+		return ($this->__fields->count() > 0) ? TRUE : FALSE;
 	}
 	
 }
