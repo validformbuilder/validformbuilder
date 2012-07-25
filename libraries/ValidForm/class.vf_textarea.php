@@ -27,6 +27,14 @@ require_once('class.vf_element.php');
  */
 class VF_Textarea extends VF_Element {
 
+	public function __construct($name, $type, $label = "", $validationRules = array(), $errorHandlers = array(), $meta = array()) {
+		$meta["class"] = (!isset($meta["class"])) ? "vf__text" : $meta["class"] . " vf__text";
+		if (!isset($meta["rows"])) $meta["rows"] = "5";
+		if (!isset($meta["cols"])) $meta["cols"] = "21";
+
+		parent::__construct($name, $type, $label, $validationRules, $errorHandlers, $meta);
+	}
+
 	public function toHtml($submitted = FALSE, $blnSimpleLayout = FALSE) {
 		$blnError = ($submitted && !$this->__validator->validate()) ? TRUE : FALSE;
 		
@@ -36,6 +44,22 @@ class VF_Textarea extends VF_Element {
 		
 		if ($blnError) $strOutput .= "<p class=\"vf__error\">{$this->__validator->getError()}</p>";
 				
+		$strLabel = (!empty($this->__requiredstyle) && $this->__validator->getRequired()) ? sprintf($this->__requiredstyle, $this->__label) : $this->__label;
+		$strOutput .= "<label for=\"{$this->__id}\"{$this->__getLabelMetaString()}>{$strLabel}</label>\n";
+		$strOutput .= "<textarea name=\"{$this->__name}\" id=\"{$this->__id}\" {$this->__getMetaString()}>{$this->__getValue($submitted)}</textarea>\n";
+		if (!empty($this->__tip)) $strOutput .= "<small class=\"vf__tip\">{$this->__tip}</small>\n";
+		$strOutput .= "</div>\n";
+		
+		return $strOutput;
+	}
+
+	public function toList($submitted = FALSE, $blnSimpleLayout = FALSE) {
+		$blnError = ($submitted && !$this->__validator->validate()) ? TRUE : FALSE;
+		
+		$strClass = ($this->__validator->getRequired()) ? "vf__required" : "vf__optional";
+		$strClass = ($blnError) ? $strClass . " vf__error" : $strClass;		
+		$strOutput = "<div class=\"{$strClass} vf__triggerfield\">\n";
+		
 		$strLabel = (!empty($this->__requiredstyle) && $this->__validator->getRequired()) ? sprintf($this->__requiredstyle, $this->__label) : $this->__label;
 		$strOutput .= "<label for=\"{$this->__id}\"{$this->__getLabelMetaString()}>{$strLabel}</label>\n";
 		$strOutput .= "<textarea name=\"{$this->__name}\" id=\"{$this->__id}\" {$this->__getMetaString()}>{$this->__getValue($submitted)}</textarea>\n";

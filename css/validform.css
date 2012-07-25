@@ -74,6 +74,29 @@ form.validform fieldset fieldset {
 	padding: 0pt;
 }
 
+form.validform fieldset fieldset.vf__list div.vf__required,
+form.validform fieldset fieldset.vf__list div.vf__optional {
+	margin-left: 14px;
+	margin-top: 0;
+}
+form.validform fieldset fieldset.vf__list div.vf__required > label,
+form.validform fieldset fieldset.vf__list div.vf__optional > label {
+	padding-top: 0;
+}
+form.validform fieldset fieldset.vf__list .vf__error {
+	border: none;
+	margin-top: 0;
+}
+form.validform fieldset fieldset.vf__list .vf__error p.vf__error {
+	margin-left: 0;
+	padding-left: 0;
+	padding-bottom: 0;
+	font: normal 12px Arial, Helvetica, sans-serif;
+}
+form.validform fieldset fieldset.vf__list .vf__error textarea,
+form.validform fieldset fieldset.vf__list .vf__error input {
+	border: 1px #f00 solid;
+}
 form.validform fieldset fieldset.vf__list label {
 	float: none;
 	text-align: left;

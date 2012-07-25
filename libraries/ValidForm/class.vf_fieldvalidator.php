@@ -86,7 +86,7 @@ class VF_FieldValidator extends ClassDynamic {
 		$this->__error = "";
 		
 		$value = $this->getValue($intDynamicPosition);
-		
+
 		//*** Check "required" option.
 		if (is_array($value)) {
 			$blnEmpty = TRUE;
@@ -181,6 +181,7 @@ class VF_FieldValidator extends ClassDynamic {
 					$blnValidType = VF_Validator::validate($this->__validation, $value);
 					break;
 				default:
+				//echo $this->__type;
 					$blnValidType = VF_Validator::validate($this->__type, ($this->__type == VFORM_CAPTCHA) ? $this->__fieldname : $value);
 			}
 

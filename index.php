@@ -68,7 +68,7 @@ $objForm->addField("pass2", "Repass", VFORM_PASSWORD,
     )
 );
 
-$objText = new VF_Text("remarks2", VFORM_TEXT, $label = "Anders, namelijk:", 
+$objText = new VF_Textarea("remarks2", VFORM_TEXT, $label = "Anders, namelijk:", 
 	array(
         "maxLength" => 2000
     ), 

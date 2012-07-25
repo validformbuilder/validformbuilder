@@ -26,7 +26,14 @@ require_once('class.vf_element.php');
  *
  */
 class VF_Group extends VF_Element {
-	protected $__fields = array();
+	protected $__fields;
+	protected $__allowedTriggerFields;
+
+	public function __construct($name, $type, $label = "", $validationRules = array(), $errorHandlers = array(), $meta = array()) {
+		$this->__fields = new VF_Collection();
+
+		parent::__construct($name, $type, $label, $validationRules, $errorHandlers, $meta);
+	}
 
 	public function toHtml($submitted = FALSE, $blnSimpleLayout = FALSE) {
 		$blnError = ($submitted && !$this->__validator->validate()) ? TRUE : FALSE;
@@ -42,7 +49,14 @@ class VF_Group extends VF_Element {
 		$strOutput .= "<fieldset class=\"vf__list\">\n";
 		
 		foreach ($this->__fields as $field) {
-			$strOutput .= $field->toHtml($this->__getValue($submitted), $submitted);
+			switch ($field->getType()) {
+				case VFORM_TEXT:
+					$strOutput .= $field->toList($this->__getValue($submitted), $submitted);
+				break;
+				default:
+					$strOutput .= $field->toHtml($this->__getValue($submitted), $submitted);
+				break;
+			}
 		}
 		
 		$strOutput .= "</fieldset>\n";
@@ -59,6 +73,8 @@ class VF_Group extends VF_Element {
 		$intMaxLength = ($this->__validator->getMaxLength() > 0) ? $this->__validator->getMaxLength() : "null";
 		$intMinLength = ($this->__validator->getMinLength() > 0) ? $this->__validator->getMinLength() : "null";
 		
+		$strOutput = "";
+		
 		switch ($this->__type) {
 			case VFORM_RADIO_LIST:
 				$name = $this->__name;
@@ -67,26 +83,56 @@ class VF_Group extends VF_Element {
 				$name = (strpos($this->__name, "[]") === FALSE) ? $this->__name . "[]" : $this->__name;
 				break;
 		}
+
+		$strOutput .= "objForm.addElement('{$name}', '{$name}', {$strCheck}, {$strRequired}, {$intMaxLength}, {$intMinLength}, '" . addslashes($this->__validator->getFieldHint()) . "', '" . addslashes($this->__validator->getTypeError()) . "', '" . addslashes($this->__validator->getRequiredError()) . "', '" . addslashes($this->__validator->getHintError()) . "', '" . addslashes($this->__validator->getMinLengthError()) . "', '" . addslashes($this->__validator->getMaxLengthError()) . "');\n";
+
+		// Check if there is a non-checkbox/radiobutton field in the group
+		$blnHasTriggerField = false;
+		foreach ($this->__fields as $objField) {
+			if ($objField->getType() == VFORM_TEXT) {
+				$strOutput .= $objField->toJs();
+				$strOutput .= "objForm.addTriggerField('{$objField->getId()}');\n";
+			}
+		}
 		
-		return "objForm.addElement('{$name}', '{$name}', {$strCheck}, {$strRequired}, {$intMaxLength}, {$intMinLength}, '" . addslashes($this->__validator->getFieldHint()) . "', '" . addslashes($this->__validator->getTypeError()) . "', '" . addslashes($this->__validator->getRequiredError()) . "', '" . addslashes($this->__validator->getHintError()) . "', '" . addslashes($this->__validator->getMinLengthError()) . "', '" . addslashes($this->__validator->getMaxLengthError()) . "');\n";
+		return $strOutput;
+	}
+
+	public function getName() {
+		switch ($this->__type) {
+			case VFORM_RADIO_LIST:
+				$name = $this->__name;
+				break;
+			case VFORM_CHECK_LIST:
+				$name = (strpos($this->__name, "[]") === FALSE) ? $this->__name . "[]" : $this->__name;
+				break;
+		}
+
+		return $name;
 	}
 	
 	public function addField($label, $value, $checked = FALSE, $meta = array()) {
 		switch ($this->__type) {
 			case VFORM_RADIO_LIST:
 				$type = "radio";
-				$name = $this->__name;
+				$name = $this->getName();
 				break;
 			case VFORM_CHECK_LIST:
 				$type = "checkbox";
-				$name = (strpos($this->__name, "[]") === FALSE) ? $this->__name . "[]" : $this->__name;
+				$name = $this->getName();
 				break;
 		}
 	
 		$objField = new VF_GroupField($this->getRandomId($this->__name), $name, $type, $label, $value, $checked, $meta);
-		array_push($this->__fields, $objField);
+		$this->__fields->addObject($objField);
 		
 		return $objField;
+	}
+
+	public function addFieldObject($objField) {
+		$objField->setName($this->getName());
+		$objField->setId($this->getRandomId($objField->getName()));
+		$this->__fields->addObject($objField);
 	}
 	
 }

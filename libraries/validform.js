@@ -258,6 +258,19 @@ ValidForm.prototype.inArray = function(arrToSearch, value) {
 	return false;
 };
 
+ValidForm.prototype.addTriggerField = function(strFieldId) {
+	var $options = $("#" + strFieldId).parent().parent().find(":checkbox, :radio");
+
+	$("#" + strFieldId).on("keyup blur focus", function () {
+
+		if ($(this).val().length > 0) {
+			$options.attr("disabled", "disabled");
+		} else if ($(this).val().length <= 0) {
+			$options.removeAttr("disabled");
+		}
+	});
+}
+
 ValidForm.prototype.addElement = function() {
 	if (arguments.length > 0 && typeof(arguments[0]) == "object") {
 		this.elements[arguments[0].name] = arguments[0];

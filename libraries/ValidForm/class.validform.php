@@ -15,6 +15,7 @@
  ***************************/
  
 require_once('class.classdynamic.php');
+require_once('class.vf_collection.php');
 require_once('class.vf_fieldset.php');
 require_once('class.vf_note.php');
 require_once('class.vf_text.php');
@@ -68,7 +69,7 @@ class ValidForm extends ClassDynamic {
 	private $__description;
 	private $__meta;
 	private $__action;
-	private $__elements = array();	
+	private $__elements;	
 	private $__jsEvents = array();	
 	private $__submitLabel;
 	protected $__name;
@@ -88,6 +89,8 @@ class ValidForm extends ClassDynamic {
 		$this->__description = $description;
 		$this->__submitLabel = "Submit";
 		$this->__meta = $meta;
+
+		$this->__elements = new VF_Collection();
 		
 		if (is_null($action)) {
 			$this->__action = (isset($_SERVER['REQUEST_URI'])) ? parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) : $_SERVER['PHP_SELF'];
@@ -120,7 +123,7 @@ class ValidForm extends ClassDynamic {
 	 */
 	public function addHtml($html) {
 		$objString = new VF_String($html);
-		array_push($this->__elements, $objString);
+		$this->__elements->addObject($objString);
 		
 		return $objString;
 	}
@@ -132,21 +135,22 @@ class ValidForm extends ClassDynamic {
 	 */
 	public function addNavigation($meta = array()) {
 		$objNavigation = new VF_Navigation($meta);
-		array_push($this->__elements, $objNavigation);
+		$this->__elements->addObject($objNavigation);
 		
 		return $objNavigation;
 	}
 	
 	public function addFieldset($label, $noteHeader = NULL, $noteBody = NULL, $options = array()) {
 		$objFieldSet = new VF_Fieldset($label, $noteHeader, $noteBody, $options);
-		array_push($this->__elements, $objFieldSet);
+		$this->__elements->addObject($objFieldSet);
+
 		
 		return $objFieldSet;
 	}
 	
 	public function addHiddenField($name, $type, $meta = array()) {
 		$objField = new VF_Hidden($name, $type, $meta);
-		array_push($this->__elements, $objField);
+		$this->__elements->addObject($objField);
 		
 		return $objField;
 	}
@@ -184,10 +188,6 @@ class ValidForm extends ClassDynamic {
 			case VFORM_HTML:
 			case VFORM_CUSTOM_TEXT:
 			case VFORM_TEXT:
-				$meta["class"] = (!isset($meta["class"])) ? "vf__text" : $meta["class"] . " vf__text";
-				if (!isset($meta["rows"])) $meta["rows"] = "5";
-				if (!isset($meta["cols"])) $meta["cols"] = "21";
-				
 				$objField = new VF_Textarea($name, $type, $label, $validationRules, $errorHandlers, $meta);
 				break;
 			case VFORM_FILE:
@@ -229,15 +229,19 @@ class ValidForm extends ClassDynamic {
 		}
 		
 		//*** Fieldset already defined?
-		if (count($this->__elements) == 0 && !$blnJustRender) {
+		if ($this->__elements->count() == 0 && !$blnJustRender) {
 			$objFieldSet = new VF_Fieldset();
-			array_push($this->__elements, $objFieldSet);
+			$this->__elements->addObject($objFieldSet);
 		}
 		
 		$objField->setRequiredStyle($this->__requiredstyle);
 		
 		if (!$blnJustRender) {
-			$objFieldset = $this->__elements[count($this->__elements) - 1];
+			// This:
+			// $objFieldset = $this->__elements[count($this->__elements) - 1];
+			// Equals this?:
+			
+			$objFieldset = $this->__elements->rewind()->current();
 			$objFieldset->addField($objField);
 		}
 		
@@ -250,10 +254,11 @@ class ValidForm extends ClassDynamic {
 		//*** Fieldset already defined?
 		if (count($this->__elements) == 0) {
 			$objFieldSet = new VF_Fieldset();
-			array_push($this->__elements, $objFieldSet);
+			$this->__elements->addObject($objFieldSet);
 		}
 		
-		$objFieldset = $this->__elements[count($this->__elements) - 1];
+		// $objFieldset = $this->__elements[count($this->__elements) - 1];
+		$objFieldset = $this->__elements->rewind()->current();
 		$objFieldset->addField($objParagraph);
 		
 		return $objParagraph;
@@ -263,15 +268,16 @@ class ValidForm extends ClassDynamic {
 		$objArea = new VF_Area($label, $active, $name, $checked, $meta);
 		
 		//*** Fieldset already defined?
-		if (count($this->__elements) == 0) {
+		if ($this->__elements->count() == 0) {
 			$objFieldSet = new VF_Fieldset();
-			array_push($this->__elements, $objFieldSet);
+			$this->__elements->addObject($objFieldSet);
 		}
 		
 		$objArea->setForm($this);
 		$objArea->setRequiredStyle($this->__requiredstyle);
 		
-		$objFieldset = $this->__elements[count($this->__elements) - 1];
+		//$objFieldset = $this->__elements[count($this->__elements) - 1];
+		$objFieldset = $this->__elements->rewind()->current();
 		$objFieldset->addField($objArea);
 		
 		return $objArea;
@@ -281,15 +287,16 @@ class ValidForm extends ClassDynamic {
 		$objField = new VF_MultiField($label, $meta);
 		
 		//*** Fieldset already defined?
-		if (count($this->__elements) == 0) {
+		if ($this->__elements->count() == 0) {
 			$objFieldSet = new VF_Fieldset();
-			array_push($this->__elements, $objFieldSet);
+			$this->__elements->addObject($objFieldSet);
 		}
 				
 		$objField->setForm($this);
 		$objField->setRequiredStyle($this->__requiredstyle);
 		
-		$objFieldset = $this->__elements[count($this->__elements) - 1];
+		//$objFieldset = $this->__elements[count($this->__elements) - 1];
+		$objFieldset = $this->__elements->rewind()->current();
 		$objFieldset->addField($objField);
 		
 		return $objField;
@@ -349,7 +356,7 @@ class ValidForm extends ClassDynamic {
 	}
 	
 	public function getFields() {
-		$objFields = array();
+		$objFields = new VF_Collection();
 		
 		foreach ($this->__elements as $objFieldset) {
 			if ($objFieldset->hasFields()) {
@@ -361,21 +368,21 @@ class ValidForm extends ClassDynamic {
 									if ($objSubField->hasFields()) {
 										foreach ($objSubField->getFields() as $objSubSubField) {
 											if (is_object($objSubSubField)) {
-												array_push($objFields, $objSubSubField);
+												$objFields->addObject($objSubSubField);
 											}
 										}
 									} else {
-										array_push($objFields, $objSubField);
+										$objFields->addObject($objSubField);
 									}
 								}
 							}
 						} else {
-							array_push($objFields, $objField);
+							$objFields->addObject($objField);
 						}
 					}
 				}
 			} else {
-				array_push($objFields, $objFieldset);
+				$objFields->addObject($objFieldset);
 			}
 		}
 		
