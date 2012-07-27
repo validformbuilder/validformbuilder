@@ -34,6 +34,7 @@ class VF_FieldValidator extends ClassDynamic {
 	protected $__minlength;
 	protected $__maxlength;
 	protected $__matchwith;
+	protected $__targetfield;
 	protected $__required = FALSE;
 	protected $__maxfiles = 1;
 	protected $__maxsize = 3000;
@@ -91,12 +92,27 @@ class VF_FieldValidator extends ClassDynamic {
 		if (is_array($value)) {
 			$blnEmpty = TRUE;
 			foreach ($value as $valueItem) {
+				if (is_object($this->__targetfield)) {
+					
+					if ($valueItem == $this->__targetfield->getName()) {
+						// Validate target field and set error/validvalue
+						$this->__targetfield->getValidator()->validate();
+						$this->__error = $this->__targetfield->getValidator()->getError();
+						$this->__validvalue = $this->__targetfield->getValidator()->getValidValue();
+						// print_r($this->__targetfield->getValidator());
+
+						if(!empty($this->__validvalue)) {
+							$blnEmpty = FALSE;
+						}
+					}
+				}
+
 				if (!empty($valueItem)) {
 					$blnEmpty = FALSE;
 					break;
 				}
 			}
-			
+
 			if ($blnEmpty) {
 				if ($this->__required) {
 					$this->__validvalue = NULL;

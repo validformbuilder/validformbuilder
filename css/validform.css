@@ -78,7 +78,9 @@ form.validform fieldset fieldset.vf__list div.vf__required,
 form.validform fieldset fieldset.vf__list div.vf__optional {
 	margin-left: 14px;
 	margin-top: 0;
+	padding-top: 0;
 }
+
 form.validform fieldset fieldset.vf__list div.vf__required > label,
 form.validform fieldset fieldset.vf__list div.vf__optional > label {
 	padding-top: 0;
@@ -90,7 +92,7 @@ form.validform fieldset fieldset.vf__list .vf__error {
 form.validform fieldset fieldset.vf__list .vf__error p.vf__error {
 	margin-left: 0;
 	padding-left: 0;
-	padding-bottom: 0;
+	padding-bottom: 3px;
 	font: normal 12px Arial, Helvetica, sans-serif;
 }
 form.validform fieldset fieldset.vf__list .vf__error textarea,

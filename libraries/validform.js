@@ -258,17 +258,37 @@ ValidForm.prototype.inArray = function(arrToSearch, value) {
 	return false;
 };
 
-ValidForm.prototype.addTriggerField = function(strFieldId) {
-	var $options = $("#" + strFieldId).parent().parent().find(":checkbox, :radio");
+ValidForm.prototype.addTrigger = function(strTriggerId, strTargetId) {
+	var $trigger 	= $("#" + strTriggerId);
+	var $target 	= $("#" + strTargetId);
+	var blnIsOption	= $trigger.is("option");
 
-	$("#" + strFieldId).on("keyup blur focus", function () {
-
-		if ($(this).val().length > 0) {
-			$options.attr("disabled", "disabled");
-		} else if ($(this).val().length <= 0) {
-			$options.removeAttr("disabled");
+	var toggleTrigger = function () {
+		if ($trigger.is((blnIsOption) ? ":selected" : ":checked")) {
+			$target.parent().show();
+		} else {
+			$target.parent().hide();
 		}
-	});
+	}
+
+	if ($trigger.is(":checkbox") || $trigger.is(":radio")) {
+		$("input[name='" + $trigger.attr("name") + "']").on("change", function () {
+			toggleTrigger();
+		});
+		toggleTrigger();
+
+		// Store the triggerfield
+		$target.data("vf_triggerField", $trigger);
+
+	} else if (blnIsOption) {
+		// Select option
+
+		// Store the triggerfield
+		$target.data("vf_triggerField", $trigger);
+
+	} else {
+		throw new Error("Invalid Trigger type in addTrigger. Trigger should be a checkbox, radiobutton or selectlist option.");
+	}
 }
 
 ValidForm.prototype.addElement = function() {
@@ -467,6 +487,11 @@ ValidFormValidator.prototype.showMain = function() {
 	jQuery.scrollTo(jQuery("div.vf__error:first"), 500);
 }
 
+/**
+ * Element validator
+ * @param  {mixed} value Value of the element
+ * @return {boolean}       True if value is valid, false if not.
+ */
 ValidFormFieldValidator.prototype.validate = function(value) {
 	var objElement = jQuery("#" + this.id);
 	var value = objElement.val();
@@ -489,8 +514,15 @@ ValidFormFieldValidator.prototype.validate = function(value) {
 			this.showAlert(this.requiredError);
 			return false;
 		} else if (!this.required && value == "") {
+			var objTrigger = objElement.data("vf_triggerField");
+			if (typeof objTrigger !== "undefined") {
+				if (objTrigger[0].checked) {
+					this.showAlert(this.requiredError);
+					return false;
+				}
+			}
 			return true;
-		}
+		} 
 
 		//*** Value is the same as hint value.
 		if (this.hint && value == this.hint) {

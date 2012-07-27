@@ -27,6 +27,7 @@ require_once('class.vf_element.php');
  */
 class VF_Group extends VF_Element {
 	protected $__fields;
+	protected $__targetfield = null;
 
 	public function __construct($name, $type, $label = "", $validationRules = array(), $errorHandlers = array(), $meta = array()) {
 		$this->__fields = new VF_Collection();
@@ -35,6 +36,8 @@ class VF_Group extends VF_Element {
 	}
 
 	public function toHtml($submitted = FALSE, $blnSimpleLayout = FALSE) {
+		$arrOptions = func_get_args();
+
 		$blnError = ($submitted && !$this->__validator->validate()) ? TRUE : FALSE;
 		
 		$strClass = ($this->__validator->getRequired()) ? "vf__required" : "vf__optional";
@@ -48,14 +51,8 @@ class VF_Group extends VF_Element {
 		$strOutput .= "<fieldset class=\"vf__list\">\n";
 		
 		foreach ($this->__fields as $field) {
-			switch ($field->getType()) {
-				case VFORM_TEXT:
-					$strOutput .= $field->toList($this->__getValue($submitted), $submitted);
-				break;
-				default:
-					$strOutput .= $field->toHtml($this->__getValue($submitted), $submitted);
-				break;
-			}
+			$blnLabel = ($field->getType() == "checkbox" || $field->getType() == "radio") ? true : false;
+			$strOutput .= $field->toHtml($this->__getValue($submitted), $submitted, $blnLabel, false);
 		}
 		
 		$strOutput .= "</fieldset>\n";
@@ -66,13 +63,12 @@ class VF_Group extends VF_Element {
 	}
 	
 	public function toJS() {
+		$strOutput = "";
 		$strCheck = $this->__validator->getCheck();
 		$strCheck = (empty($strCheck)) ? "''" : str_replace("'", "\\'", $strCheck);
 		$strRequired = ($this->__validator->getRequired()) ? "true" : "false";
 		$intMaxLength = ($this->__validator->getMaxLength() > 0) ? $this->__validator->getMaxLength() : "null";
 		$intMinLength = ($this->__validator->getMinLength() > 0) ? $this->__validator->getMinLength() : "null";
-		
-		$strOutput = "";
 		
 		switch ($this->__type) {
 			case VFORM_RADIO_LIST:
@@ -85,20 +81,16 @@ class VF_Group extends VF_Element {
 
 		$strOutput .= "objForm.addElement('{$name}', '{$name}', {$strCheck}, {$strRequired}, {$intMaxLength}, {$intMinLength}, '" . addslashes($this->__validator->getFieldHint()) . "', '" . addslashes($this->__validator->getTypeError()) . "', '" . addslashes($this->__validator->getRequiredError()) . "', '" . addslashes($this->__validator->getHintError()) . "', '" . addslashes($this->__validator->getMinLengthError()) . "', '" . addslashes($this->__validator->getMaxLengthError()) . "');\n";
 
-		// Check if there is a non-checkbox/radiobutton field in the group
-		$blnHasTriggerField = false;
-		foreach ($this->__fields as $objField) {
-			if ($objField->getType() == VFORM_TEXT) {
-				$strOutput .= $objField->toJs();
-				$strOutput .= "objForm.addTriggerField('{$objField->getId()}');\n";
-			}
+		if (is_object($this->__targetfield)) {
+			$strOutput .= $this->__targetfield->toJs();
 		}
 		
 		return $strOutput;
 	}
 
-	public function getName() {
-		switch ($this->__type) {
+	public function getName($blnPlain = false) {
+		$type = ($blnPlain) ? VFORM_RADIO_LIST : $this->__type;
+		switch ($type) {
 			case VFORM_RADIO_LIST:
 				$name = $this->__name;
 				break;
@@ -128,10 +120,24 @@ class VF_Group extends VF_Element {
 		return $objField;
 	}
 
-	public function addFieldObject($objField) {
-		$objField->setName($this->getName());
-		$objField->setId($this->getRandomId($objField->getName()));
-		$this->__fields->addObject($objField);
+	public function addFieldObject($objTarget, $checked = false) {
+		// Add checkbox
+		$objTrigger = $this->addField($objTarget->getLabel(), $this->getName(true) . "_triggerfield", $checked);
+
+		// Set the defaults on the target element
+		$objTarget->setName($this->getName(true) . "_triggerfield");
+		$objTarget->setId($this->getRandomId($objTarget->getName()));
+
+		// Set the trigger field.
+		$objTarget->setTrigger($objTrigger);
+
+		// This group has a trigger element.
+		$this->__targetfield = $objTarget;
+
+		// Add to validator
+		$this->__validator->setTargetField($objTarget);
+
+		$this->__fields->addObject($objTarget);
 	}
 	
 }
