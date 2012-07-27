@@ -26,8 +26,6 @@ require_once('class.vf_element.php');
  *
  */
 class VF_Textarea extends VF_Element {
-	protected $__triggerfield = null;
-
 	public function __construct($name, $type, $label = "", $validationRules = array(), $errorHandlers = array(), $meta = array()) {
 		$meta["class"] = (!isset($meta["class"])) ? "vf__text" : $meta["class"] . " vf__text";
 		if (!isset($meta["rows"])) $meta["rows"] = "5";
@@ -55,27 +53,6 @@ class VF_Textarea extends VF_Element {
 		
 		return $strOutput;
 	}
-
-	/**
-	 * Link a field to this element. If the trigger field is selected / checked, this element will become enabled.
-	 * @param vf_element $objField ValidForm Builder field element
-	 */
-	public function setTrigger($objField) {
-		$this->__triggerfield = $objField;
-	}
-
-	/**
-	 * Check if this element has a triggerfield.
-	 * @return boolean [description]
-	 */
-	private function hasTrigger() {
-		return is_object($this->__triggerfield);
-	}
-
-	public function setName($strName) {
-		parent::setName($strName);
-		$this->__validator->setFieldName($strName);
-	}
 	
 	public function toJS() {
 		$strOutput = "";
@@ -88,7 +65,7 @@ class VF_Textarea extends VF_Element {
 		$strOutput = "objForm.addElement('{$this->__id}', '{$this->__name}', {$strCheck}, {$strRequired}, {$intMaxLength}, {$intMinLength}, '" . addslashes($this->__validator->getFieldHint()) . "', '" . addslashes($this->__validator->getTypeError()) . "', '" . addslashes($this->__validator->getRequiredError()) . "', '" . addslashes($this->__validator->getHintError()) . "', '" . addslashes($this->__validator->getMinLengthError()) . "', '" . addslashes($this->__validator->getMaxLengthError()) . "');\n";
 
 		if ($this->hasTrigger()) {
-			$strOutput .= "objForm.addTrigger('{$this->__triggerfield->getId()}', '{$this->__id}');\n";
+			$strOutput .= $this->addTriggerJs();
 		}
 		
 		return $strOutput;

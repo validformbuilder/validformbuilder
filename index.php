@@ -69,7 +69,7 @@ $objForm->addField("pass2", "Repass", VFORM_PASSWORD,
 );
 
 $objTextarea = new VF_Textarea("remarks2", VFORM_TEXT, "Anders, namelijk:", 
-	array(
+    array(
         "maxLength" => 2000
     ), 
     array(
@@ -78,7 +78,7 @@ $objTextarea = new VF_Textarea("remarks2", VFORM_TEXT, "Anders, namelijk:",
         "required" => "Dit veld is verplicht."
     ),
     array(
-    	"labelClass" => "vf__triggerfield"
+        "labelClass" => "vf__triggerfield"
     )
 );
 $objCheckboxes = $objForm->addField("why-support", "Why do you want support?", VFORM_CHECK_LIST,
@@ -92,9 +92,53 @@ $objCheckboxes = $objForm->addField("why-support", "Why do you want support?", V
     $objCheckboxes->addField("Dit is een keuze", "i-dunno");
     $objCheckboxes->addField("Ik zou hier voor kiezen", "bored");  // HTML output: <option value="bored" selected="selected">I got bored.</option>
     $objCheckboxes->addField("Ik weet het niet zeker", "fun");
-    $objCheckboxes->addField("Dit gaat hem worden", "just-because");
     $objCheckboxes->addFieldObject($objTextarea);
-    $objCheckboxes->addField("Dit gaat hem worden", "just-because");
+
+$objText = new VF_Text("text", VFORM_TEXT, "Anders, namelijk:", 
+    array(
+        "maxLength" => 2000
+    ), 
+    array(
+        "maxLength" => "Your input is too long. A maximum of %s characters is OK.", 
+        "type" => "Enter only characters, punctuation, numbers and spaces",
+        "required" => "Dit veld is verplicht."
+    ),
+    array(
+        "labelClass" => "vf__triggerfield"
+    )
+);
+$objCheckboxes = $objForm->addField("source", "How did you get here?", VFORM_CHECK_LIST,
+        array(
+                "required" => true
+        ),
+        array(
+                "required" => "No value selected."
+        )
+);
+    $objCheckboxes->addField("Dit is een keuze", "i-dunno");
+    $objCheckboxes->addField("Ik zou hier voor kiezen", "bored");  // HTML output: <option value="bored" selected="selected">I got bored.</option>
+    $objCheckboxes->addField("Ik weet het niet zeker", "fun");
+    $objCheckboxes->addFieldObject($objText);
+    $objCheckboxes->addField("Ik weet het niet..", "somehow");
+    $objCheckboxes->addField("Ik weet het..", "someho");
+
+$objMulti = new VF_Password("hallo-secret", VFORM_PASSWORD, "Anders, namelijk:",
+    array(
+        "labelClass" => "awesome-multi-field"
+    )
+);
+
+$objCheckboxes = $objForm->addField("file", "Wanneer ben je jarig?", VFORM_SELECT_LIST,
+        array(
+                "required" => true
+        ),
+        array(
+                "required" => "No value selected."
+        )
+);
+    $objCheckboxes->addField("Vandaag", "i-dunno");
+    $objCheckboxes->addField("Morgen", "bored");  // HTML output: <option value="bored" selected="selected">I got bored.</option>
+    $objCheckboxes->addFieldObject($objMulti);
 
 //*** Setting the main alert.
 

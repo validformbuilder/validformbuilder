@@ -87,7 +87,13 @@ class VF_Select extends VF_Element {
 		$intMaxLength = ($this->__validator->getMaxLength() > 0) ? $this->__validator->getMaxLength() : "null";
 		$intMinLength = ($this->__validator->getMinLength() > 0) ? $this->__validator->getMinLength() : "null";
 		
-		return "objForm.addElement('{$this->__id}', '{$this->__name}', {$strCheck}, {$strRequired}, {$intMaxLength}, {$intMinLength}, '" . addslashes($this->__validator->getFieldHint()) . "', '" . addslashes($this->__validator->getTypeError()) . "', '" . addslashes($this->__validator->getRequiredError()) . "', '" . addslashes($this->__validator->getHintError()) . "', '" . addslashes($this->__validator->getMinLengthError()) . "', '" . addslashes($this->__validator->getMaxLengthError()) . "');\n";
+		$strOutput = "objForm.addElement('{$this->__id}', '{$this->__name}', {$strCheck}, {$strRequired}, {$intMaxLength}, {$intMinLength}, '" . addslashes($this->__validator->getFieldHint()) . "', '" . addslashes($this->__validator->getTypeError()) . "', '" . addslashes($this->__validator->getRequiredError()) . "', '" . addslashes($this->__validator->getHintError()) . "', '" . addslashes($this->__validator->getMinLengthError()) . "', '" . addslashes($this->__validator->getMaxLengthError()) . "');\n";
+
+		if (is_object($this->__targetfield)) {
+			$strOutput .= $this->__targetfield->toJs($this->__id);
+		}
+
+		return $strOutput;
 	}
 	
 	public function addField($value, $label, $selected = FALSE) {
@@ -95,6 +101,26 @@ class VF_Select extends VF_Element {
 		$this->__options->addObject($objOption);
 		
 		return $objOption;
+	}
+
+	public function addFieldObject($objTarget, $checked = false) {
+		// Add checkbox
+		$objTrigger = $this->addField($objTarget->getLabel(), $this->getName(true) . "_triggerfield", $checked);
+
+		// Set the defaults on the target element
+		$objTarget->setName($this->getName(true) . "_triggerfield");
+		$objTarget->setId($this->getRandomId($objTarget->getName()));
+
+		// Set the trigger field.
+		$objTarget->setTrigger($objTrigger);
+
+		// This group has a trigger element.
+		$this->__targetfield = $objTarget;
+
+		// Add to validator
+		$this->__validator->setTargetField($objTarget);
+
+		$this->__options->addObject($objTarget);
 	}
 	
 	public function addGroup($label) {

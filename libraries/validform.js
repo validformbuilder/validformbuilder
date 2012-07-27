@@ -282,7 +282,11 @@ ValidForm.prototype.addTrigger = function(strTriggerId, strTargetId) {
 
 	} else if (blnIsOption) {
 		// Select option
-
+		$("input[name='" + $trigger.attr("name") + "']").on("change", function () {
+			toggleTrigger();
+		});
+		toggleTrigger();
+		
 		// Store the triggerfield
 		$target.data("vf_triggerField", $trigger);
 

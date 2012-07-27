@@ -25,7 +25,7 @@ require_once('class.classdynamic.php');
  * @version Release: 0.2.1
  *
  */
-class VF_SelectOption extends ClassDynamic {
+class VF_SelectOption extends VF_Element {
 	protected $__label;
 	protected $__value;
 	protected $__selected;

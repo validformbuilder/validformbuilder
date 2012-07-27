@@ -39,7 +39,9 @@ class VF_Element extends ClassDynamic {
 	protected $__dynamicLabel;
 	protected $__requiredstyle;
 	protected $__validator;
-	protected $__reservedMeta = array("tip", "hint", "default", "width", "height", "length", "start", "end", "path", "labelStyle", "labelClass", "labelRange", "valueRange", "dynamic", "dynamicLabel");
+	protected $__targetfield = null;
+	protected $__triggerfield = null;
+	protected $__reservedMeta = array("tip", "hint", "default", "width", "height", "length", "start", "end", "path", "labelStyle", "labelClass", "labelRange", "valueRange", "dynamic", "dynamicLabel", "matchWith");
 
 	public function __construct($name, $type, $label = "", $validationRules = array(), $errorHandlers = array(), $meta = array()) {
 		if (is_null($validationRules)) $validationRules = array();
@@ -118,6 +120,41 @@ class VF_Element extends ClassDynamic {
 	
 	public function hasFields() {
 		return FALSE;
+	}
+
+	/**
+	 * Add javascript code for trigger fields. This code executed by the element's toJs() method.
+	 */
+	public function addTriggerJs($strId = null) {
+		$strId = (!is_null($strId)) ? $strId : $this->__triggerfield->getId();
+		return "objForm.addTrigger('{$this->__triggerfield->getId()}', '{$this->__id}');\n";
+	}
+
+	/**
+	 * Link a field to this element. If the trigger field is selected / checked, this element will become enabled.
+	 * @param vf_element $objField ValidForm Builder field element
+	 */
+	public function setTrigger($objField) {
+		$this->__triggerfield = $objField;
+	}
+
+	/**
+	 * Check if this element has a triggerfield.
+	 * @return boolean True if a triggerfield is set, false if not.
+	 */
+	public function hasTrigger() {
+		return is_object($this->__triggerfield);
+	}
+
+	/**
+	 * If an element's name is updated, also update the name in it's corresponding validator.
+	 * @param string $strName The new name
+	 */
+	public function setName($strName) {
+		parent::setName($strName);
+		if (is_object($this->__validator)) {
+			$this->__validator->setFieldName($strName);
+		}
 	}
 	
 	protected function __getValue($submitted = FALSE) {

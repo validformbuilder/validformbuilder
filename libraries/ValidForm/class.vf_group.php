@@ -27,7 +27,6 @@ require_once('class.vf_element.php');
  */
 class VF_Group extends VF_Element {
 	protected $__fields;
-	protected $__targetfield = null;
 
 	public function __construct($name, $type, $label = "", $validationRules = array(), $errorHandlers = array(), $meta = array()) {
 		$this->__fields = new VF_Collection();
@@ -36,8 +35,6 @@ class VF_Group extends VF_Element {
 	}
 
 	public function toHtml($submitted = FALSE, $blnSimpleLayout = FALSE) {
-		$arrOptions = func_get_args();
-
 		$blnError = ($submitted && !$this->__validator->validate()) ? TRUE : FALSE;
 		
 		$strClass = ($this->__validator->getRequired()) ? "vf__required" : "vf__optional";
@@ -52,7 +49,7 @@ class VF_Group extends VF_Element {
 		
 		foreach ($this->__fields as $field) {
 			$blnLabel = ($field->getType() == "checkbox" || $field->getType() == "radio") ? true : false;
-			$strOutput .= $field->toHtml($this->__getValue($submitted), $submitted, $blnLabel, false);
+			$strOutput .= $field->toHtml($this->__getValue($submitted), $submitted, $blnLabel);
 		}
 		
 		$strOutput .= "</fieldset>\n";
