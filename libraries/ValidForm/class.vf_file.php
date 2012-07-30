@@ -40,7 +40,7 @@ class VF_File extends VF_Element {
 			if ($blnError) $strOutput .= "<p class=\"vf__error\">{$this->__validator->getError()}</p>";
 			
 			$strLabel = (!empty($this->__requiredstyle) && $this->__validator->getRequired()) ? sprintf($this->__requiredstyle, $this->__label) : $this->__label;
-			$strOutput .= "<label for=\"{$this->__id}\">{$strLabel}</label>\n";
+			if (!empty($this->__label)) $strOutput .= "<label for=\"{$this->__id}\">{$strLabel}</label>\n";
 		} else {
 			$strOutput = "<div class=\"vf__multifielditem\">\n";
 		}

@@ -37,7 +37,7 @@ class VF_Textarea extends VF_Element {
 		if ($blnError) $strOutput .= "<p class=\"vf__error\">{$this->__validator->getError()}</p>";
 				
 		$strLabel = (!empty($this->__requiredstyle) && $this->__validator->getRequired()) ? sprintf($this->__requiredstyle, $this->__label) : $this->__label;
-		$strOutput .= "<label for=\"{$this->__id}\"{$this->__getLabelMetaString()}>{$strLabel}</label>\n";
+		if (!empty($this->__label)) $strOutput .= "<label for=\"{$this->__id}\"{$this->__getLabelMetaString()}>{$strLabel}</label>\n";
 		$strOutput .= "<textarea name=\"{$this->__name}\" id=\"{$this->__id}\" {$this->__getMetaString()}>{$this->__getValue($submitted)}</textarea>\n";
 		if (!empty($this->__tip)) $strOutput .= "<small class=\"vf__tip\">{$this->__tip}</small>\n";
 		$strOutput .= "</div>\n";

@@ -38,7 +38,7 @@ class VF_Group extends VF_Element {
 		if ($blnError) $strOutput .= "<p class=\"vf__error\">{$this->__validator->getError()}</p>";
 		
 		$strLabel = (!empty($this->__requiredstyle) && $this->__validator->getRequired()) ? sprintf($this->__requiredstyle, $this->__label) : $this->__label;
-		$strOutput .= "<label{$this->__getLabelMetaString()}>{$strLabel}</label>\n";
+		if (!empty($this->__label)) $strOutput .= "<label{$this->__getLabelMetaString()}>{$strLabel}</label>\n";
 		$strOutput .= "<fieldset class=\"vf__list\">\n";
 		
 		foreach ($this->__fields as $field) {
