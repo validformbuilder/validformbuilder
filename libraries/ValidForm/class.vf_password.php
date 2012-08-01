@@ -41,9 +41,8 @@ class VF_Password extends VF_Element {
 			
 			if ($blnLabel) {
 				$strLabel = (!empty($this->__requiredstyle) && $this->__validator->getRequired()) ? sprintf($this->__requiredstyle, $this->__label) : $this->__label;
-				$strOutput .= "<label for=\"{$this->__id}\"{$this->__getLabelMetaString()}>{$strLabel}</label>\n";
-				
-			}		
+				if (!empty($this->__label)) $strOutput .= "<label for=\"{$this->__id}\"{$this->__getLabelMetaString()}>{$strLabel}</label>\n";
+			}
 		} else {
 			$strOutput = "<div class=\"vf__multifielditem\">\n";
 		}

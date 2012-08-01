@@ -61,7 +61,7 @@ class VF_Captcha extends VF_Element {
 		$strOutput = "<div class=\"{$strClass}\">\n";
 								
 		$strLabel = (!empty($this->__requiredstyle) && $this->__validator->getRequired()) ? sprintf($this->__requiredstyle, $this->__label) : $this->__label;
-		$strOutput .= "<label>{$strLabel}</label>\n";
+		if (!empty($this->__label)) $strOutput .= "<label>{$strLabel}</label>\n";
 		$strOutput .= "<a onclick=\"var cancelClick = false; if (document.images) {  var img = new Image();  var d = new Date();  img.src = this.href + ((this.href.indexOf('?') == -1) ? '?' : '&amp;') + d.getTime();  document.images['{$this->__id}_img'].src = img.src;  cancelClick = true;} return !cancelClick;\" href=\"{$this->__path}vf_captcha.php\"><img width=\"{$this->__width}\" height=\"{$this->__height}\" alt=\"Click to view another image\" id=\"{$this->__id}_img\" src=\"{$this->__path}vf_captcha.php\"/></a>\n";
 		$strOutput .= "</div>\n";
 		
