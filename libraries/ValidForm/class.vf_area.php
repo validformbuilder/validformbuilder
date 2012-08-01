@@ -53,7 +53,7 @@ class VF_Area extends ClassDynamic {
 	public function addField($name, $label, $type, $validationRules = array(), $errorHandlers = array(), $meta = array()) {
 		$objField = $this->__form->addField($name, $label, $type, $validationRules, $errorHandlers, $meta, TRUE);
 				
-		array_push($this->__fields, $objField);
+		$this->__fields->addObject($objField);
 		
 		return $objField;
 	}
