@@ -241,7 +241,7 @@ class ValidForm extends ClassDynamic {
 			// $objFieldset = $this->__elements[count($this->__elements) - 1];
 			// Equals this?:
 			
-			$objFieldset = $this->__elements->rewind()->current();
+			$objFieldset = $this->__elements->getLast();
 			$objFieldset->addField($objField);
 		}
 		
@@ -258,7 +258,7 @@ class ValidForm extends ClassDynamic {
 		}
 		
 		// $objFieldset = $this->__elements[count($this->__elements) - 1];
-		$objFieldset = $this->__elements->rewind()->current();
+		$objFieldset = $this->__elements->getLast();
 		$objFieldset->addField($objParagraph);
 		
 		return $objParagraph;
@@ -277,7 +277,7 @@ class ValidForm extends ClassDynamic {
 		$objArea->setRequiredStyle($this->__requiredstyle);
 		
 		//$objFieldset = $this->__elements[count($this->__elements) - 1];
-		$objFieldset = $this->__elements->rewind()->current();
+		$objFieldset = $this->__elements->getLast();
 		$objFieldset->addField($objArea);
 		
 		return $objArea;
@@ -296,7 +296,7 @@ class ValidForm extends ClassDynamic {
 		$objField->setRequiredStyle($this->__requiredstyle);
 		
 		//$objFieldset = $this->__elements[count($this->__elements) - 1];
-		$objFieldset = $this->__elements->rewind()->current();
+		$objFieldset = $this->__elements->getLast();
 		$objFieldset->addField($objField);
 		
 		return $objField;

@@ -80,42 +80,6 @@ class VF_Collection implements Iterator {
 		shuffle($this->collection);
     }
 
-    /**
-     * Get an element of the collection selected by property value.
-     */
-    public function getByPropertyValue($strSearchProperty, $strSearchValue) {
-    	$objReturn = null;
-    	
-    	foreach ($this->collection as $objElement) {
-    		$strProperty = "get{$strSearchProperty}";
-    		if (is_callable(array($objElement, $strProperty))) {
-    			if ($objElement->$strProperty() == $strSearchValue) {
-    				$objReturn = $objElement;
-    				break;
-    			}
-    		}
-    	}
-    	
-    	return $objReturn;
-    }
-
-    /**
-     * Get the value of a property of a specific element, selected by property value. 
-     */
-    public function getValueByValue($strSearchProperty, $strSearchValue, $strResultProperty = "value") {
-    	$strReturn = "";
-    	
-    	$objElement = $this->getByPropertyValue($strSearchProperty, $strSearchValue);
-    	if (is_object($objElement)) {
-    		$strProperty = "get{$strResultProperty}";
-    		if (is_callable(array($objElement, $strProperty))) {
-    			$strReturn = $objElement->$strProperty();
-    		}
-    	}
-    	
-    	return $strReturn;
-    }
-
 	/**
 	 * Get the item count.
 	 */
@@ -163,6 +127,19 @@ class VF_Collection implements Iterator {
 	 */
     public function isLast() {
         return key($this->collection) == (count($this->collection) - 1);
+    }
+
+    /**
+     * Get last element in collection
+     * @return mixed Returns last element in collection, null if collection is empty
+     */
+    public function getLast() {
+        $varReturn = null;
+        if (count($this->collection) > 0) {
+            $varReturn = $this->collection[$this->count() - 1];
+        }
+
+        return $varReturn;
     }
 
 	/**
