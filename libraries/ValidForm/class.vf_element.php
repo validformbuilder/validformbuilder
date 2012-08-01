@@ -47,6 +47,9 @@ class VF_Element extends ClassDynamic {
 		if (is_null($validationRules)) $validationRules = array();
 		if (is_null($errorHandlers)) $errorHandlers = array();
 		if (is_null($meta)) $meta = array();
+
+		// Set meta class
+		$this->setClass($type, $meta);
 		
 		$labelMeta = (isset($meta['labelStyle'])) ? array("style" => $meta['labelStyle']) : array();
 		if (isset($meta['labelClass'])) $labelMeta["class"] = $meta['labelClass'];
@@ -64,6 +67,62 @@ class VF_Element extends ClassDynamic {
 		$this->__dynamicLabel = (array_key_exists("dynamicLabel", $meta)) ? $meta["dynamicLabel"] : NULL;
 		
 		$this->__validator = new VF_FieldValidator($name, $type, $validationRules, $errorHandlers, $this->__hint);		
+	}
+
+	protected function setClass($type, &$meta) {
+		$strClass = "";
+		switch ($type) {
+			case VFORM_STRING:
+			case VFORM_WORD:
+			case VFORM_EMAIL:
+			case VFORM_URL:
+			case VFORM_SIMPLEURL:
+			case VFORM_CUSTOM:	
+			case VFORM_CURRENCY:
+			case VFORM_DATE:
+			case VFORM_NUMERIC:
+			case VFORM_INTEGER:
+			case VFORM_PASSWORD:
+				$meta["class"] = (!isset($meta["class"])) ? "vf__text" : $meta["class"] . " vf__text";
+				break;
+			case VFORM_CAPTCHA:
+				$meta["class"] = (!isset($meta["class"])) ? "vf__text_small" : $meta["class"] . " vf__text_small";
+				break;
+			case VFORM_HTML:
+			case VFORM_CUSTOM_TEXT:
+			case VFORM_TEXT:
+				$meta["class"] = (!isset($meta["class"])) ? "vf__text" : $meta["class"] . " vf__text";
+				break;
+			case VFORM_FILE:
+				$meta["class"] = (!isset($meta["class"])) ? "vf__file" : $meta["class"] . " vf__file";
+				break;
+			case VFORM_BOOLEAN:
+				$meta["class"] = (!isset($meta["class"])) ? "vf__checkbox" : $meta["class"] . " vf__checkbox";
+				break;
+			case VFORM_RADIO_LIST:
+			case VFORM_CHECK_LIST:
+				$meta["class"] = (!isset($meta["class"])) ? "vf__radiobutton" : $meta["class"] . " vf__radiobutton";
+				break;
+			case VFORM_SELECT_LIST:
+				if (!isset($meta["class"])) {
+					if (!isset($meta["multiple"])) {
+						$meta["class"] = "vf__one";
+					} else {
+						$meta["class"] = "vf__multiple";
+					}
+				} else {
+					if (!isset($meta["multiple"])) {
+						$meta["class"] .= " vf__one";
+					} else {
+						$meta["class"] .= " vf__multiple";
+					}
+				}
+				break;
+		}
+
+		if (!empty($strClass)) {
+			$meta["class"] = (isset($meta["class"])) ? $meta["class"] .= " " . $strClass : $strClass;
+		}
 	}
 	
 	public function toHtml($submitted = FALSE, $blnSimpleLayout = FALSE) {

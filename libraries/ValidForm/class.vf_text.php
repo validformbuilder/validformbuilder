@@ -26,7 +26,7 @@ require_once('class.vf_element.php');
  *
  */
 class VF_Text extends VF_Element {
-
+	
 	public function toHtml($submitted = FALSE, $blnSimpleLayout = FALSE, $blnLabel = true, $blnDisplayErrors = true) {
 		$strOutput = "";
 		

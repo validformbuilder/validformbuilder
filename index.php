@@ -1,9 +1,9 @@
 <?php
 
-require_once("libraries/ValidForm/class.validform.php");
+require_once("libraries/ValidForm/class.validwizard.php");
 error_reporting(E_ALL);
 
-$objForm = new ValidForm("contactForm", "Required fields are printed in bold.");
+$objForm = new ValidWizard("contactForm", "Required fields are printed in bold.");
 //*** A 'name' field, field type is string.
 $test1 = $objForm->addField("name", "Your name", VFORM_STRING, 
     array(
@@ -44,6 +44,7 @@ $test3 = $objForm->addField("remarks", "Remarks", VFORM_TEXT,
     )
 );
 
+$objForm->addPage("hallO");
 //*** Passfield matching
 $objPass = $objForm->addField("pass1", "Password", VFORM_PASSWORD, 
     array(
@@ -128,7 +129,7 @@ $objMulti = new VF_Password("hallo-secret", VFORM_PASSWORD, "Anders, namelijk:",
     )
 );
 
-$objCheckboxes = $objForm->addField("file", "Wanneer ben je jarig?", VFORM_SELECT_LIST,
+$objCheckboxes = $objForm->addField("file", "Wanneer ben je jarig?", VFORM_CHECK_LIST,
         array(
                 "required" => true
         ),

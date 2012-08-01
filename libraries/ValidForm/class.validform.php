@@ -33,6 +33,7 @@ require_once('class.vf_area.php');
 require_once('class.vf_multifield.php');
 require_once('class.vf_captcha.php');
 require_once('class.vf_fieldvalidator.php');
+require_once('class.vf_page.php');
 
 define('VFORM_STRING', 1);
 define('VFORM_TEXT', 2);
@@ -66,12 +67,12 @@ define('VFORM_URL', 21);
  *
  */
 class ValidForm extends ClassDynamic {
-	private $__description;
-	private $__meta;
-	private $__action;
-	private $__elements;	
-	private $__jsEvents = array();	
-	private $__submitLabel;
+	protected $__description;
+	protected $__meta;
+	protected $__action;
+	protected $__submitLabel;
+	protected $__jsEvents = array();	
+	protected $__elements;	
 	protected $__name;
 	protected $__mainalert;	
 	protected $__requiredstyle;	
@@ -154,36 +155,27 @@ class ValidForm extends ClassDynamic {
 		
 		return $objField;
 	}
-	
-	public function addField($name, $label, $type, $validationRules = array(), $errorHandlers = array(), $meta = array(), $blnJustRender = FALSE) {
+
+	protected function renderField($name, $label, $type, $validationRules, $errorHandlers, $meta, $blnJustRender) {
+		$objField = null;
 		switch ($type) {
 			case VFORM_STRING:
 			case VFORM_WORD:
 			case VFORM_EMAIL:
 			case VFORM_URL:
 			case VFORM_SIMPLEURL:
-			case VFORM_CUSTOM:
-				$meta["class"] = (!isset($meta["class"])) ? "vf__text" : $meta["class"] . " vf__text";
-				
-				$objField = new VF_Text($name, $type, $label, $validationRules, $errorHandlers, $meta);
-				break;
-			case VFORM_PASSWORD:
-				$meta["class"] = (!isset($meta["class"])) ? "vf__text" : $meta["class"] . " vf__text";
-				
-				$objField = new VF_Password($name, $type, $label, $validationRules, $errorHandlers, $meta);
-				break;
-			case VFORM_CAPTCHA:
-				$meta["class"] = (!isset($meta["class"])) ? "vf__text_small" : $meta["class"] . " vf__text_small";
-				
-				$objField = new VF_Captcha($name, $type, $label, $validationRules, $errorHandlers, $meta);
-				break;
+			case VFORM_CUSTOM:	
 			case VFORM_CURRENCY:
 			case VFORM_DATE:
 			case VFORM_NUMERIC:
-			case VFORM_INTEGER:
-				$meta["class"] = (!isset($meta["class"])) ? "vf__text_small" : $meta["class"] . " vf__text_small";
-				
+			case VFORM_INTEGER:				
 				$objField = new VF_Text($name, $type, $label, $validationRules, $errorHandlers, $meta);
+				break;
+			case VFORM_PASSWORD:
+				$objField = new VF_Password($name, $type, $label, $validationRules, $errorHandlers, $meta);
+				break;
+			case VFORM_CAPTCHA:
+				$objField = new VF_Captcha($name, $type, $label, $validationRules, $errorHandlers, $meta);
 				break;
 			case VFORM_HTML:
 			case VFORM_CUSTOM_TEXT:
@@ -191,58 +183,39 @@ class ValidForm extends ClassDynamic {
 				$objField = new VF_Textarea($name, $type, $label, $validationRules, $errorHandlers, $meta);
 				break;
 			case VFORM_FILE:
-				$meta["class"] = (!isset($meta["class"])) ? "vf__file" : $meta["class"] . " vf__file";
-				
 				$objField = new VF_File($name, $type, $label, $validationRules, $errorHandlers, $meta);
 				break;
 			case VFORM_BOOLEAN:
-				$meta["class"] = (!isset($meta["class"])) ? "vf__checkbox" : $meta["class"] . " vf__checkbox";
-				
 				$objField = new VF_Checkbox($name, $type, $label, $validationRules, $errorHandlers, $meta);
 				break;
 			case VFORM_RADIO_LIST:
 			case VFORM_CHECK_LIST:
-				$meta["class"] = (!isset($meta["class"])) ? "vf__radiobutton" : $meta["class"] . " vf__radiobutton";
-				
 				$objField = new VF_Group($name, $type, $label, $validationRules, $errorHandlers, $meta);
 				break;
 			case VFORM_SELECT_LIST:
-				if (!isset($meta["class"])) {
-					if (!isset($meta["multiple"])) {
-						$meta["class"] = "vf__one";
-					} else {
-						$meta["class"] = "vf__multiple";
-					}
-				} else {
-					if (!isset($meta["multiple"])) {
-						$meta["class"] .= " vf__one";
-					} else {
-						$meta["class"] .= " vf__multiple";
-					}
-				}
-				
 				$objField = new VF_Select($name, $type, $label, $validationRules, $errorHandlers, $meta);
 				break;
 			default:
 				$objField = new VF_Element($name, $type, $label, $validationRules, $errorHandlers, $meta);
 				break;
 		}
+
+		return $objField;
+	}
+	
+	public function addField($name, $label, $type, $validationRules = array(), $errorHandlers = array(), $meta = array(), $blnJustRender = FALSE) {
+		$objField = $this->renderField($name, $label, $type, $validationRules, $errorHandlers, $meta, $blnJustRender);
 		
 		//*** Fieldset already defined?
 		if ($this->__elements->count() == 0 && !$blnJustRender) {
-			$objFieldSet = new VF_Fieldset();
-			$this->__elements->addObject($objFieldSet);
+			$this->addFieldset(null);
 		}
 		
 		$objField->setRequiredStyle($this->__requiredstyle);
 		
 		if (!$blnJustRender) {
-			// This:
-			// $objFieldset = $this->__elements[count($this->__elements) - 1];
-			// Equals this?:
-			
-			$objFieldset = $this->__elements->getLast();
-			$objFieldset->addField($objField);
+			$objElement = $this->__elements->getLast();
+			$objElement->addField($objField);
 		}
 		
 		return $objField;

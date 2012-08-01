@@ -115,18 +115,38 @@ function ValidFormElement(strFormId, strElementName, strElementId, strValidation
 
 function ValidForm(strFormId, strMainAlert) {
 	this.id = strFormId;
-	this.elements = new Object();
+	this.elements = {};
+	this.pages = [];
 	this.valid = false;
 	this.validator = new ValidFormValidator(this.id);
 	this.validator.mainAlert = strMainAlert;
-	this.init();
 	this.events = [];
 	this.customEvents = ["afterValidate", "afterDynamicChange"];
+
+	// Initialize ValidForm class
+	this.init();
 }
 
 ValidForm.prototype.init = function() {
 	var __this = this;
 
+	// Handle disabled elements and make sure all sub-elements are disabled as well.
+	__this.traverseDisabledElements();
+	
+	// This is where the magic happens: onSubmit; validate form.
+	jQuery("#" + this.id).bind("submit", function(){		
+		return __this.validate();
+	});
+	
+	// Dynamic duplication logic.
+	__this.dynamicDuplication();
+};
+
+ValidForm.prototype.addPage = function (strPageId) {
+	this.pages.push(strPageId);
+}
+
+ValidForm.prototype.traverseDisabledElements = function () {
 	jQuery("#" + this.id + " fieldset.vf__disabled").each(function(){
 		var fieldset = this;
 		
@@ -137,12 +157,9 @@ ValidForm.prototype.init = function() {
 		
 		__this.attachAreaEvents(jQuery("legend input", fieldset));
 	});
-	
-	jQuery("#" + this.id).bind("submit", function(){		
-		return __this.validate();
-	});
-	
-	//*** Dynamic duplication.
+}
+
+ValidForm.prototype.dynamicDuplication = function () {
 	jQuery(".vf__dynamic a").bind("click", function() {
 		if (!jQuery(this).hasClass("vf__disabled")) {
 			//*** Update dynamic field counter.
@@ -225,7 +242,7 @@ ValidForm.prototype.init = function() {
 		
 		return false;
 	});
-};
+}
 
 ValidForm.prototype.attachAreaEvents = function(objActiveTrigger) {
 	objActiveTrigger.unbind("click").bind("click", function(){
@@ -291,7 +308,7 @@ ValidForm.prototype.addTrigger = function(strTriggerId, strTargetId) {
 		$target.data("vf_triggerField", $trigger);
 
 	} else {
-		throw new Error("Invalid Trigger type in addTrigger. Trigger should be a checkbox, radiobutton or selectlist option.");
+		throw new Error("Invalid Trigger type in addTrigger. Trigger should be a checkbox, radiobutton or selectlist option : '" + strTriggerId + "'.");
 	}
 }
 
@@ -407,7 +424,7 @@ ValidForm.prototype.validate = function(strSelector) {
 	/*********************************************************************/
 	
 	this.valid = true;
-	var arrMultiElements = new Array();
+	var arrMultiElements = [];
 	var objDOMForm;
 	var strSelector = strSelector || null;
 	var blnReturn = false;
