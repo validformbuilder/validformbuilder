@@ -79,7 +79,7 @@ class VF_MultiField extends ClassDynamic {
 		if ($blnError) $strOutput .= $strError;
 				
 		$strLabel = (!empty($this->__requiredstyle) && $blnRequired) ? sprintf($this->__requiredstyle, $this->__label) : $this->__label;
-		if(!empty($this->__label) $strOutput .= "<label for=\"{$strId}\">{$strLabel}</label>\n";
+		if(!empty($this->__label)) $strOutput .= "<label for=\"{$strId}\">{$strLabel}</label>\n";
 		
 		$arrFields = array();
 		foreach ($this->__fields as $field) {
