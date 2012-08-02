@@ -51,7 +51,7 @@ class VF_Navigation extends ClassDynamic {
 	
 	public function toHtml($submitted = FALSE) {
 		$strStyle = (isset($this->__meta["style"])) ? " style=\"{$this->__meta['style']}\"" : "";
-		$strReturn = "<div class=\"vf__navigation\"{$strStyle}>\n";
+		$strReturn = "<div class=\"vf__navigation vf__cf\"{$strStyle}>\n";
 		
 		foreach ($this->__fields as $field) {
 			$strReturn .= $field->toHtml($submitted);

@@ -380,10 +380,11 @@ class ValidForm extends ClassDynamic {
 		return $this->__validate();
 	}
 	
-	public function valuesAsHtml($hideEmpty = FALSE) {
+	public function valuesAsHtml($hideEmpty = FALSE, $collection = null) {
 		$strOutput = "<table border=\"0\" cellspacing=\"0\" cellpadding=\"0\">";
-		
-		foreach ($this->__elements as $objFieldset) {			
+		$collection = (!is_null($collection)) ? $collection : $this->__elements;
+
+		foreach ($collection as $objFieldset) {
 			$strSet = "";
 			foreach ($objFieldset->getFields() as $objField) {
 				if (is_object($objField)) {
@@ -546,6 +547,10 @@ class ValidForm extends ClassDynamic {
 		//*** Form Events.
 		foreach ($this->__jsEvents as $event => $method) {
 			$strJs .= "objForm.addEvent(\"{$event}\", {$method});\n";
+		}
+
+		if ($this->__pageCount > 1) {
+			$strJs .= "objForm.hashChange();\n";
 		}
 
 		$strReturn .= "<script type=\"text/javascript\">\n";

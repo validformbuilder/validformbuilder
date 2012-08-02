@@ -27,7 +27,7 @@ require_once("class.validform.php");
  */
 class ValidWizard extends ValidForm {
 	private $__nextlabel;
-	private $__pageCount = 1;
+	public $__pageCount = 1;
 	private $__objCurrentPage;
 	
 	/**
@@ -48,8 +48,8 @@ class ValidWizard extends ValidForm {
 		return $this->__elements->current();
 	}
 
-	public function addPage($header = "", $meta = array()) {
-		$objPage = new VF_Page($header, $meta);
+	public function addPage($id, $header = "", $meta = array()) {
+		$objPage = new VF_Page($id, $header, $meta);
 		$this->__elements->addObject($objPage);
 
 		$this->__objCurrentPage = $objPage;
@@ -74,6 +74,16 @@ class ValidWizard extends ValidForm {
 		}
 		
 		return $objField;
+	}
+
+	public function valuesAsHtml($hideEmpty = false) {
+		foreach ($this->__elements as $objPage) {
+			$strOutput = "<div>";
+			$strOutput .= parent::valuesAsHtml($hideEmpty, $objPage->getFields());
+			$strOutput .= "</div>";
+		}
+
+		return $strOutput;
 	}
 	
 }

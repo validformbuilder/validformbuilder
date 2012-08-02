@@ -31,28 +31,33 @@ class VF_Page extends ClassDynamic {
 	protected $__elements;
 	protected $__header;
 	protected $__id;
+	protected $__isOverview;
 	
 	public function __construct($id = "", $header = "", $meta = array()) {
 		$this->__header = $header;
 		$this->__class = (isset($meta["class"])) ? $meta["class"] : "";
 		$this->__style = (isset($meta["style"])) ? $meta["style"] : "";
-		$this->__id = (empty($id)) ? $this->getRandomId("vf__wizardpage") : $id;
+		$this->__id = (empty($id)) ? $this->getRandomId("vf__page") : $id;
+		$this->__isOverview = (isset($meta["overview"])) ? $meta["overview"] : false;
 
 		$this->__elements = new VF_Collection();
 	}
 	
 	public function toHtml($submitted = FALSE) {
-		$strClass = (!empty($this->__class)) ? " class=\"{$this->__class} vf__wizardpage\"" : "class=\"vf__wizardpage\""; 
+		$strClass = (!empty($this->__class)) ? " class=\"{$this->__class} vf__page\"" : "class=\"vf__page\""; 
 		$strStyle = (!empty($this->__style)) ? " style=\"{$this->__style}\"" : ""; 
 		$strId		= " id=\"{$this->__id}\"";
 		$strOutput = "<div {$strClass}{$strStyle}{$strId}>\n";
 		if (!empty($this->__header)) $strOutput .= "<h2>{$this->__header}</h2>\n";
 		
-		foreach ($this->__elements as $field) {
-			$strOutput .= $field->toHtml($submitted);
+		if (!$this->__isOverview) {
+			foreach ($this->__elements as $field) {
+				$strOutput .= $field->toHtml($submitted);
+			}
 		}
-		
+
 		$strOutput .= "</div>\n";
+
 	
 		return $strOutput;
 	}
@@ -68,7 +73,11 @@ class VF_Page extends ClassDynamic {
 	}
 	
 	public function toJS() {
-		$strReturn = "objForm.addPage('" . $this->getId() . "');\n";
+		if ($this->__isOverview) {
+			$strReturn = "objForm.addOverviewPage('" . $this->getId() . "');\n";
+		} else {
+			$strReturn = "objForm.addPage('" . $this->getId() . "');\n";
+		}
 		
 		foreach ($this->__elements as $field) {
 			$strReturn .= $field->toJS();

@@ -69,6 +69,7 @@ $objForm->addField("pass2", "Repass", VFORM_PASSWORD,
     )
 );
 
+$objForm->addPage("hallaaaa");
 $objTextarea = new VF_Textarea("remarks2", VFORM_TEXT, "Anders, namelijk:", 
     array(
         "maxLength" => 2000
@@ -141,16 +142,15 @@ $objCheckboxes = $objForm->addField("file", "Wanneer ben je jarig?", VFORM_CHECK
     $objCheckboxes->addField("Morgen", "bored");  // HTML output: <option value="bored" selected="selected">I got bored.</option>
     $objCheckboxes->addFieldObject($objMulti);
 
-//*** Setting the main alert.
-
-//$objForm->setMainAlert("One or more errors occurred. Check the marked fields and try again.");
+// Add overview page
+//$objForm->addPage("overview", "Controleren & Bevestigen", array("overview" => true));
 
 //*** As this method already states, it sets the submit button's label.
 $objForm->setSubmitLabel("Send");
 
 if ($objForm->isSubmitted() && $objForm->isValid()) {
-    echo "cool";
-    // print_r($_POST);
+    // echo "cool";
+    $strOutput = $objForm->valuesAsHtml();
     // echo "<hr />";
 } else {
     $strOutput = $objForm->toHtml();
@@ -176,6 +176,7 @@ if ($objForm->isSubmitted() && $objForm->isValid()) {
 		echo $strOutput;
 	?>
 
+<script src="/libraries/hash.js"></script>
 <script src="/libraries/validform.js"></script>
 </body>
 </html>
