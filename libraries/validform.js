@@ -146,6 +146,16 @@ ValidForm.prototype.addPage = function (strPageId) {
 	this.pages.push(strPageId);
 }
 
+ValidForm.prototype.nextPage = function () {
+	var currentPage = null;
+	for (i in this.pages) {
+		var $objPage = $("#" + this.pages[i]);
+		if ($objPage.is(":visible")) {
+			
+		} 
+	}
+}
+
 ValidForm.prototype.traverseDisabledElements = function () {
 	jQuery("#" + this.id + " fieldset.vf__disabled").each(function(){
 		var fieldset = this;
