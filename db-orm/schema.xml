@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database name="validformtest" defaultIdMethod="native">
+  <behavior name="auto_add_pk">   
+  	<parameter name="name" value="id" />
+    <parameter name="autoIncrement" value="true" />
+    <parameter name="type" value="BIGINT" />
+  </behavior>
+  <table name="dbform" phpName="DBForm">
+  	<vendor type="mysql">
+  	  <parameter name="Engine" value="InnoDB"/>
+  	  <parameter name="Charset" value="utf8"/>
+  	  <parameter name="Collate" value="utf8_general_ci"/>
+  	</vendor>
+    <column name="name" type="VARCHAR" required="true"/>
+    <column name="serialized" type="LONGVARCHAR" required="true"/>
+    <column name="is_complete" type="TINYINT" required="true" defaultValue="0"/>
+    <behavior name="timestampable" />
+  </table>
+</database>

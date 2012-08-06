@@ -381,7 +381,7 @@ class ValidForm extends ClassDynamic {
 	}
 	
 	public function valuesAsHtml($hideEmpty = FALSE, $collection = null) {
-		$strOutput = "<table border=\"0\" cellspacing=\"0\" cellpadding=\"0\">";
+		$strOutput = "\t<table border=\"0\" cellspacing=\"0\" cellpadding=\"0\">\n";
 		$collection = (!is_null($collection)) ? $collection : $this->__elements;
 
 		foreach ($collection as $objFieldset) {
@@ -458,7 +458,7 @@ class ValidForm extends ClassDynamic {
 					$strSet .= $this->multiFieldAsHtml($objSubField, $hideEmpty, $intDynamicCount);
 					
 					break;	
-				default:														
+				default:								
 					$strSet .= $this->fieldAsHtml($objSubField, $hideEmpty, $intDynamicCount);
 			}
 		}	

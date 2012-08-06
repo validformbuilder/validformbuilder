@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+  <log>
+    <type>file</type>
+    <name>/Users/Robin/Sites/sandbox/www/uboss/triggerfield/logs/propel.log</name>
+    <ident>propel-validformtest</ident>
+    <level>7</level>
+  </log>
+  <propel>
+    <datasources default="validformtest">
+      <datasource id="validformtest">
+        <adapter>mysql</adapter>
+        <connection>
+          <dsn>mysql:host=localhost;dbname=validformtest;charset=utf8</dsn>
+          <user>root</user>
+          <password></password>
+          <settings>
+      		<setting id="charset">utf8</setting>
+     	  </settings>
+        </connection>
+      </datasource>
+    </datasources>
+  </propel>
+</config>

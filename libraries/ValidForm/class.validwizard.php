@@ -77,10 +77,13 @@ class ValidWizard extends ValidForm {
 	}
 
 	public function valuesAsHtml($hideEmpty = false) {
+		$strOutput = "";
 		foreach ($this->__elements as $objPage) {
-			$strOutput = "<div>";
-			$strOutput .= parent::valuesAsHtml($hideEmpty, $objPage->getFields());
-			$strOutput .= "</div>";
+			$strHeader = $objPage->getHeader();
+			$strOutput .= "\n<div id='{$objPage->getId()}'>\n";
+			if (!empty($strHeader)) $strOutput .= "<h2>{$strHeader}</h2>\n";
+			$strOutput .= parent::valuesAsHtml($hideEmpty, $objPage->getFields()) . "\n";
+			$strOutput .= "</div>\n";
 		}
 
 		return $strOutput;

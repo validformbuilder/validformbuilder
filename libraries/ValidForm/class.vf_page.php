@@ -73,11 +73,11 @@ class VF_Page extends ClassDynamic {
 	}
 	
 	public function toJS() {
-		if ($this->__isOverview) {
-			$strReturn = "objForm.addOverviewPage('" . $this->getId() . "');\n";
-		} else {
-			$strReturn = "objForm.addPage('" . $this->getId() . "');\n";
-		}
+		// if ($this->__isOverview) {
+		// 	$strReturn = "objForm.addOverviewPage('" . $this->getId() . "');\n";
+		// } else {
+			$strReturn = "objForm.addPage('" . $this->getId() . "', true);\n";
+		// }
 		
 		foreach ($this->__elements as $field) {
 			$strReturn .= $field->toJS();

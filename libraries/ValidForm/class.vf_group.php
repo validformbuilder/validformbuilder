@@ -67,16 +67,10 @@ class VF_Group extends VF_Element {
 		$intMaxLength = ($this->__validator->getMaxLength() > 0) ? $this->__validator->getMaxLength() : "null";
 		$intMinLength = ($this->__validator->getMinLength() > 0) ? $this->__validator->getMinLength() : "null";
 		
-		switch ($this->__type) {
-			case VFORM_RADIO_LIST:
-				$name = $this->__name;
-				break;
-			case VFORM_CHECK_LIST:
-				$name = (strpos($this->__name, "[]") === FALSE) ? $this->__name . "[]" : $this->__name;
-				break;
-		}
+		$id 	= $this->getId();
+		$name 	= $this->getName();
 
-		$strOutput .= "objForm.addElement('{$name}', '{$name}', {$strCheck}, {$strRequired}, {$intMaxLength}, {$intMinLength}, '" . addslashes($this->__validator->getFieldHint()) . "', '" . addslashes($this->__validator->getTypeError()) . "', '" . addslashes($this->__validator->getRequiredError()) . "', '" . addslashes($this->__validator->getHintError()) . "', '" . addslashes($this->__validator->getMinLengthError()) . "', '" . addslashes($this->__validator->getMaxLengthError()) . "');\n";
+		$strOutput .= "objForm.addElement('{$id}', '{$name}', {$strCheck}, {$strRequired}, {$intMaxLength}, {$intMinLength}, '" . addslashes($this->__validator->getFieldHint()) . "', '" . addslashes($this->__validator->getTypeError()) . "', '" . addslashes($this->__validator->getRequiredError()) . "', '" . addslashes($this->__validator->getHintError()) . "', '" . addslashes($this->__validator->getMinLengthError()) . "', '" . addslashes($this->__validator->getMaxLengthError()) . "');\n";
 
 		if (is_object($this->__targetfield)) {
 			$strOutput .= $this->__targetfield->toJs();
@@ -85,15 +79,22 @@ class VF_Group extends VF_Element {
 		return $strOutput;
 	}
 
+	public function getId() {
+		return (strpos($this->__id, "[]") !== FALSE) ? str_replace("[]", "", $this->__id) : $this->__id;
+	}
+
 	public function getName($blnPlain = false) {
-		$type = ($blnPlain) ? VFORM_RADIO_LIST : $this->__type;
-		switch ($type) {
-			case VFORM_RADIO_LIST:
-				$name = $this->__name;
-				break;
-			case VFORM_CHECK_LIST:
-				$name = (strpos($this->__name, "[]") === FALSE) ? $this->__name . "[]" : $this->__name;
-				break;
+		if ($blnPlain) {
+			$name = $this->__name;
+		} else {
+			switch ($this->__type) {
+				case VFORM_RADIO_LIST:
+					$name = $this->__name;
+					break;
+				case VFORM_CHECK_LIST:
+					$name = (strpos($this->__name, "[]") === FALSE) ? $this->__name . "[]" : $this->__name;
+					break;
+			}
 		}
 
 		return $name;
