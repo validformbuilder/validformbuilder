@@ -206,6 +206,8 @@ ValidForm.prototype.addPage = function (strPageId, blnIsOverview) {
 	if (this.pages.length > 1) {
 		$page.hide();
 		$("#" + __this.id).find(".vf__navigation").hide();
+
+		this.addPreviousButton(strPageId);
 	}
 
 	// If this is the first page, check if _hash exists and set 
@@ -230,12 +232,21 @@ ValidForm.prototype.addPage = function (strPageId, blnIsOverview) {
 	});
 }
 
-ValidForm.prototype.addPreviousButton = function ($objParent, strPageId) {
+ValidForm.prototype.addPreviousButton = function (strPageId) {
+	var __this			= this;
 	var $page 			= $("#" + strPageId);
 	var prevLabel 		= $page.data("prev-label");
 	var prevLabel 		= (typeof prevLabel == "undefined") ? "Previous" : prevLabel;
 
-	$objParent.before($("<a href='#' id='prev_" + strPageId + "' class='vf__button vf__previous'>" + prevLabel + "</a>"))
+	var $pagenav = $page.find(".vf__pagenavigation");
+	var $nav = ($pagenav.length > 0) ? $pagenav : $page.find(".vf__navigation");
+
+	$nav.append($("<a href='#' id='prev_" + strPageId + "' class='vf__button vf__previous'>" + prevLabel + "</a>"));
+
+	$("#prev_" + strPageId).on("click", function () {
+		__this.previousPage();
+		return false;
+	});
 }
 
 ValidForm.prototype.getPages = function () {
@@ -263,8 +274,6 @@ ValidForm.prototype.nextPage = function () {
 		var currentPage = $(".vf__page:first");
 	}
 
-	console.log(currentPage);
-
 	if (this.validate("#" + currentPage.attr("id"))) {
 
 		currentPage.hide();
@@ -277,6 +286,23 @@ ValidForm.prototype.nextPage = function () {
 		if (typeof _hash == "object" && typeof _hash.set == "function") {
 			_hash.set(this.hashPrefix, this.currentPage.index());
 		}
+	}
+}
+
+ValidForm.prototype.previousPage = function () {
+	if (typeof this.customEvents.beforePreviousPage == "function") {
+		this.customEvents.beforePreviousPage(this.id);
+	}
+
+	this.currentPage.hide();
+
+	// Set the next page as the new current page.
+	this.currentPage = this.currentPage.prev(".vf__page");
+	this.showPage(this.currentPage);
+
+	// Try to update the current hash if hash-based navigation is enabled
+	if (typeof _hash == "object" && typeof _hash.set == "function") {
+		_hash.set(this.hashPrefix, this.currentPage.index());
 	}
 }
 
@@ -305,10 +331,6 @@ ValidForm.prototype.addPageNavigation = function (strPageId) {
 	var nextLabel 		= $page.data("next-label");
 	var nextLabel 		= (typeof nextLabel == "undefined") ? "Next" : nextLabel;
 	var $nextNavigation = $("<div class='vf__pagenavigation vf__cf'><a href='#' id='next_" + strPageId + "' class='vf__button'>" + nextLabel + "</a></div>");
-
-	if (__this.pages.length > 1) {
-		__this.addPreviousButton($("#next_" + strPageId));
-	}
 
 	$("#" + strPageId).append($nextNavigation);
 
@@ -617,8 +639,6 @@ ValidForm.prototype.validate = function(strSelector) {
 		alert("An error occured while calling the Form.\nMessage: " + e.message);
 		this.valid = false;
 	}
-
-	console.log(strSelector);
 	
 	if (objDOMForm) {		
 		//*** Reset main error notifications.
