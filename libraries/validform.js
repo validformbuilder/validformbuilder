@@ -122,7 +122,7 @@ function ValidForm(strFormId, strMainAlert, blnAllowPreviousPage) {
 	this.validator = new ValidFormValidator(this.id);
 	this.validator.mainAlert = strMainAlert;
 	this.events = [];
-	this.customEvents = ["afterValidate", "afterDynamicChange", "afterNextPage", "beforeNextPage"];
+	this.customEvents = ["afterValidate", "afterDynamicChange", "afterNextPage", "beforeNextPage", "afterShowPage", "beforeShowPage"];
 	this.hashPageIndex = 1;
 	this.hashPrefix = "vf_page";
 	this.allowPreviousPage = (typeof blnAllowPreviousPage !== "undefined") ? blnAllowPreviousPage : true;
@@ -215,10 +215,14 @@ ValidForm.prototype.addPage = function (strPageId, blnIsOverview) {
 	this.addPageNavigation(strPageId);
 
 	// If this is not the first page, hide it.
-	if (this.pages.length > 1) {
-		$page.hide();
-		$("#" + __this.id).find(".vf__navigation").hide();
+	$page.hide();
+	$("#" + __this.id).find(".vf__navigation").hide();
 
+	if (this.pages.length == 1) {
+		this.showPage($page);
+	}
+
+	if (this.pages.length > 1) {
 		this.addPreviousButton(strPageId);
 	}
 
@@ -267,9 +271,8 @@ ValidForm.prototype.getPages = function () {
 }
 
 ValidForm.prototype.nextPage = function () {
-	console.log(this.customEvents.beforeNextPage);
-	if (typeof this.customEvents.beforeNextPage == "function") {
-		this.customEvents.beforeNextPage(this);
+	if (typeof this.events.beforeNextPage == "function") {
+		this.events.beforeNextPage(this);
 	}
 
 	// Get the current page, fallback on first occurance of vf__page
@@ -294,8 +297,8 @@ ValidForm.prototype.nextPage = function () {
 				_hash.set(this.hashPrefix, $("#" + this.id + " .vf__page").index(this.currentPage) + 1);
 			}
 
-			if (typeof this.customEvents.afterNextPage == "function") {
-				this.customEvents.afterNextPage(this);
+			if (typeof this.events.afterNextPage == "function") {
+				this.events.afterNextPage(this);
 			}
 		}
 	}
@@ -310,8 +313,8 @@ ValidForm.prototype.isLastPage = function () {
 }
 
 ValidForm.prototype.previousPage = function () {
-	if (typeof this.customEvents.beforePreviousPage == "function") {
-		this.customEvents.beforePreviousPage(this.id);
+	if (typeof this.events.beforePreviousPage == "function") {
+		this.events.beforePreviousPage(this);
 	}
 
 	this.currentPage.hide();
@@ -324,11 +327,25 @@ ValidForm.prototype.previousPage = function () {
 	if (typeof _hash == "object" && typeof _hash.set == "function") {
 		_hash.set(this.hashPrefix, $("#" + this.id + " .vf__page").index(this.currentPage) + 1);
 	}
+
+	if (typeof this.events.afterPreviousPage == "function") {
+		this.events.afterPreviousPage(this);
+	}
 }
 
 ValidForm.prototype.showPage = function ($objPage) {
+	var __this = this;
+
 	if (typeof $objPage == "object" && $objPage instanceof jQuery) {
-		$objPage.show();
+		if (typeof this.events.beforeShowPage == "function") {
+			this.events.beforeShowPage($objPage);
+		}
+
+		$objPage.show(0, function () {
+			if (typeof __this.events.afterShowPage == "function") {
+				__this.events.afterShowPage($objPage);
+			}
+		});
 
 		// Check if this is the last page. 
 		// If that is the case, set the 'next button'-label the submit button value to

@@ -564,9 +564,13 @@ class ValidForm extends ClassDynamic {
 		$strReturn .= "$(\"#{$this->__name}\").data(\"vf__formElement\", objForm);";
 		$strReturn .= "};\n";
 		$strReturn .= "\n";
-		$strReturn .= "$(function(){\n";
+		$strReturn .= "try {\n";
+		$strReturn .= "jQuery(function(){\n";
 		$strReturn .= "{$this->__name}_init();\n";		
 		$strReturn .= "});\n";
+		$strReturn .= "} catch (e) {\n";
+		$strReturn .= "alert('Exception caught while initiating ValidForm:\\n\\n' + e.message);\n";
+		$strReturn .= "}\n";
 		$strReturn .= "// ]]>\n";
 		$strReturn .= "</script>\n";
 		
