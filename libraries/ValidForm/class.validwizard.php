@@ -30,6 +30,7 @@ class ValidWizard extends ValidForm {
 	protected $__confirmlabel;
 	private $__nextlabel;
 	private $__objCurrentPage;
+	private $__uniqueid;
 	
 	/**
 	 * 
@@ -42,6 +43,8 @@ class ValidWizard extends ValidForm {
 	public function __construct($name = NULL, $description = NULL, $action = NULL, $meta = array()) {
 		parent::__construct($name, $description, $action, $meta);
 
+		$this->__setUniqueId();
+
 		$this->__confirmlabel = (isset($meta["confirmLabel"])) ? $meta["confirmLabel"] : "Confirm";
 	}
 
@@ -51,7 +54,12 @@ class ValidWizard extends ValidForm {
 		return $this->__elements->current();
 	}
 
-	public function addPage($id, $header = "", $meta = array()) {
+	public function addPage($id = "", $header = "", $meta = array()) {
+		if ($this->__elements->count() == 0) {
+			// Add unique id field.
+			$this->addHiddenField("vf__uniqueid", VFORM_STRING, array("default" => $this->generateId()));
+		}
+
 		$objPage = new VF_Page($id, $header, $meta);
 		$this->__elements->addObject($objPage);
 
@@ -82,11 +90,13 @@ class ValidWizard extends ValidForm {
 	public function valuesAsHtml($hideEmpty = false) {
 		$strOutput = "";
 		foreach ($this->__elements as $objPage) {
-			$strHeader = $objPage->getHeader();
-			$strOutput .= "\n<div id='{$objPage->getId()}'>\n";
-			if (!empty($strHeader)) $strOutput .= "<h2>{$strHeader}</h2>\n";
-			$strOutput .= parent::valuesAsHtml($hideEmpty, $objPage->getFields()) . "\n";
-			$strOutput .= "</div>\n";
+			if (get_class($objPage) == "VF_Page") {
+				$strHeader = $objPage->getHeader();
+				$strOutput .= "\n<div id='{$objPage->getId()}'>\n";
+				if (!empty($strHeader)) $strOutput .= "<h2>{$strHeader}</h2>\n";
+				$strOutput .= parent::valuesAsHtml($hideEmpty, $objPage->getFields()) . "\n";
+				$strOutput .= "</div>\n";
+			}
 		}
 
 		return $strOutput;
@@ -106,15 +116,15 @@ class ValidWizard extends ValidForm {
 		}
 	}
 
-	public function confirm() {
+	public function confirm($strUniqueId) {
 		$strOutput = "";
 		$strName = $this->__name . "_confirmed";
 
-		$strOutput .= "<form id=\"{$this->__name}\" method=\"post\" enctype=\"multipart/form-data\" action=\"{$this->__action}\" class=\"{$strClass}\">\n";
+		$strOutput .= "<form id=\"{$this->__name}\" method=\"post\" enctype=\"multipart/form-data\" action=\"{$this->__action}\" class=\"validform\">\n";
 		$strOutput .= "<div class='vf__confirm'>";
 		$strOutput .= $this->valuesAsHtml();
 		$strOutput .= "</div>";
-		$strOutput .= "<div class=\"vf__navigation\">\n<input type=\"hidden\" name=\"vf__dispatch\" value=\"{$strName}\" />\n";
+		$strOutput .= "<div class=\"vf__navigation\">\n<input type=\"hidden\" name=\"vf__dispatch\" value=\"{$strName}\" />\n<input type=\"hidden\" name=\"vf__uniqueid\" value=\"{$this->getValidField("vf__uniqueid")->getValue()}\" />\n";
 		$strOutput .= "<input type=\"submit\" value=\"{$this->__confirmlabel}\" class=\"vf__button\" />\n</div>\n";
 		$strOutput .= "</form>";
 
@@ -147,6 +157,29 @@ class ValidWizard extends ValidForm {
 		} else {
 			return parent::isValid();
 		}
+	}
+
+	public function generateId($intLength = 8) {
+		$strChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+		$strReturn = '';
+		
+		srand((double)microtime()*1000000);
+
+		for ($i = 1; $i <= $intLength; $i++) {
+			$intNum = rand() % (strlen($strChars) - 1);
+			$strTmp = substr($strChars, $intNum, 1);
+			$strReturn .= $strTmp;
+		}
+
+		return $strReturn;
+	}
+
+	public function getUniqueId() {
+		return $this->__uniqueid;
+	}
+
+	private function __setUniqueId() {
+		$this->__uniqueid = $this->generateId();
 	}
 }
 
