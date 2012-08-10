@@ -30,10 +30,11 @@ class VF_FieldValidator extends ClassDynamic {
 	protected $__fieldname;
 	protected $__type;
 	protected $__fieldhint;
-	protected $__validvalue;
+	protected $__validvalue = null;
 	protected $__minlength;
 	protected $__maxlength;
 	protected $__matchwith;
+	protected $__targetfield;
 	protected $__required = FALSE;
 	protected $__maxfiles = 1;
 	protected $__maxsize = 3000;
@@ -76,7 +77,7 @@ class VF_FieldValidator extends ClassDynamic {
 			$strReturn = NULL;
 		} else {
 			$strFieldName = ($intDynamicPosition > 0) ? $this->__fieldname . "_" . $intDynamicPosition : $this->__fieldname;
-			$strReturn = (array_key_exists($strFieldName, $_REQUEST)) ? $_REQUEST[$strFieldName] : NULL;
+			$strReturn = (array_key_exists($strFieldName, $_REQUEST)) ? $_REQUEST[$strFieldName] : $this->__validvalue;
 		}
 		
 		return $strReturn;
@@ -86,17 +87,32 @@ class VF_FieldValidator extends ClassDynamic {
 		$this->__error = "";
 		
 		$value = $this->getValue($intDynamicPosition);
-		
+
 		//*** Check "required" option.
 		if (is_array($value)) {
 			$blnEmpty = TRUE;
 			foreach ($value as $valueItem) {
+				if (is_object($this->__targetfield)) {
+					
+					if ($valueItem == $this->__targetfield->getName()) {
+						// Validate target field and set error/validvalue
+						$this->__targetfield->getValidator()->validate();
+						$this->__error = $this->__targetfield->getValidator()->getError();
+						$this->__validvalue = $this->__targetfield->getValidator()->getValidValue();
+						// print_r($this->__targetfield->getValidator());
+
+						if(!empty($this->__validvalue)) {
+							$blnEmpty = FALSE;
+						}
+					}
+				}
+
 				if (!empty($valueItem)) {
 					$blnEmpty = FALSE;
 					break;
 				}
 			}
-			
+
 			if ($blnEmpty) {
 				if ($this->__required) {
 					$this->__validvalue = NULL;
@@ -181,6 +197,7 @@ class VF_FieldValidator extends ClassDynamic {
 					$blnValidType = VF_Validator::validate($this->__validation, $value);
 					break;
 				default:
+				//echo $this->__type;
 					$blnValidType = VF_Validator::validate($this->__type, ($this->__type == VFORM_CAPTCHA) ? $this->__fieldname : $value);
 			}
 

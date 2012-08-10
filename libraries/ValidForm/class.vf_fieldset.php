@@ -30,12 +30,14 @@ class VF_Fieldset extends ClassDynamic {
 	protected $__note;
 	protected $__class;
 	protected $__style;
-	protected $__fields = array();
+	protected $__fields;
 	
 	public function __construct($header = NULL, $noteHeader = NULL, $noteBody = NULL, $meta = array()) {
 		$this->__header = $header;
 		$this->__class = (isset($meta["class"])) ? $meta["class"] : "";
 		$this->__style = (isset($meta["style"])) ? $meta["style"] : "";
+
+		$this->__fields = new VF_Collection();
 		
 		if (!empty($noteHeader) || !empty($noteBody)) {
 			$this->__note = new VF_Note($noteHeader, $noteBody);
@@ -43,7 +45,7 @@ class VF_Fieldset extends ClassDynamic {
 	}
 	
 	public function addField($field) {
-		array_push($this->__fields, $field);
+		$this->__fields->addObject($field);
 	}
 	
 	public function toHtml($submitted = FALSE) {
@@ -78,7 +80,7 @@ class VF_Fieldset extends ClassDynamic {
 	}
 	
 	public function hasFields() {
-		return (count($this->__fields) > 0) ? TRUE : FALSE;
+		return ($this->__fields->count() > 0) ? TRUE : FALSE;
 	}
 	
 	public function getFields() {

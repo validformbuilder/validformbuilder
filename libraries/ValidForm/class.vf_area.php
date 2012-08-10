@@ -35,7 +35,7 @@ class VF_Area extends ClassDynamic {
 	protected $__dynamic;
 	protected $__dynamicLabel;
 	protected $__requiredstyle;
-	protected $__fields = array();
+	protected $__fields;
 	
 	public function __construct($label, $active = FALSE, $name = NULL, $checked = FALSE, $meta = array()) {
 		$this->__label = $label;
@@ -43,6 +43,8 @@ class VF_Area extends ClassDynamic {
 		$this->__name = $name;
 		$this->__checked = $checked;
 		$this->__meta = $meta;
+
+		$this->__fields = new VF_Collection();
 		
 		$this->__dynamic = (array_key_exists("dynamic", $meta)) ? $meta["dynamic"] : NULL;
 		$this->__dynamicLabel = (array_key_exists("dynamicLabel", $meta)) ? $meta["dynamicLabel"] : NULL;
@@ -51,7 +53,7 @@ class VF_Area extends ClassDynamic {
 	public function addField($name, $label, $type, $validationRules = array(), $errorHandlers = array(), $meta = array()) {
 		$objField = $this->__form->addField($name, $label, $type, $validationRules, $errorHandlers, $meta, TRUE);
 				
-		array_push($this->__fields, $objField);
+		$this->__fields->addObject($objField);
 		
 		return $objField;
 	}
@@ -62,7 +64,7 @@ class VF_Area extends ClassDynamic {
 		$objField->setForm($this->__form);
 		$objField->setRequiredStyle($this->__requiredstyle);
 		
-		array_push($this->__fields, $objField);
+		$this->__fields->addObject($objField);
 		
 		return $objField;
 	}

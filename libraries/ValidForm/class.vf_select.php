@@ -26,7 +26,13 @@ require_once('class.vf_element.php');
  *
  */
 class VF_Select extends VF_Element {
-	protected $__options = array();
+	protected $__options;
+
+	public function __construct($name, $type, $label = "", $validationRules = array(), $errorHandlers = array(), $meta = array()) {
+		$this->__options = new VF_Collection();
+
+		parent::__construct($name, $type, $label, $validationRules, $errorHandlers, $meta);
+	}
 
 	public function toHtml($submitted = FALSE, $blnSimpleLayout = FALSE) {
 		$strOutput = "";
@@ -48,7 +54,7 @@ class VF_Select extends VF_Element {
 		
 		$strOutput .= "<select name=\"{$this->__name}\" id=\"{$this->__id}\" {$this->__getMetaString()}>\n";
 		
-		if (count($this->__options) == 0) {
+		if ($this->__options->count() == 0) {
 			if (isset($this->__meta["start"]) && is_numeric($this->__meta["start"]) && isset($this->__meta["end"]) && is_numeric($this->__meta["end"])) {
 				if ($this->__meta["start"] < $this->__meta["end"]) {
 					for ($intCount = $this->__meta["start"]; $intCount <= $this->__meta["end"]; $intCount++) {
@@ -81,19 +87,45 @@ class VF_Select extends VF_Element {
 		$intMaxLength = ($this->__validator->getMaxLength() > 0) ? $this->__validator->getMaxLength() : "null";
 		$intMinLength = ($this->__validator->getMinLength() > 0) ? $this->__validator->getMinLength() : "null";
 		
-		return "objForm.addElement('{$this->__id}', '{$this->__name}', {$strCheck}, {$strRequired}, {$intMaxLength}, {$intMinLength}, '" . addslashes($this->__validator->getFieldHint()) . "', '" . addslashes($this->__validator->getTypeError()) . "', '" . addslashes($this->__validator->getRequiredError()) . "', '" . addslashes($this->__validator->getHintError()) . "', '" . addslashes($this->__validator->getMinLengthError()) . "', '" . addslashes($this->__validator->getMaxLengthError()) . "');\n";
+		$strOutput = "objForm.addElement('{$this->__id}', '{$this->__name}', {$strCheck}, {$strRequired}, {$intMaxLength}, {$intMinLength}, '" . addslashes($this->__validator->getFieldHint()) . "', '" . addslashes($this->__validator->getTypeError()) . "', '" . addslashes($this->__validator->getRequiredError()) . "', '" . addslashes($this->__validator->getHintError()) . "', '" . addslashes($this->__validator->getMinLengthError()) . "', '" . addslashes($this->__validator->getMaxLengthError()) . "');\n";
+
+		if (is_object($this->__targetfield)) {
+			$strOutput .= $this->__targetfield->toJs($this->__id);
+		}
+
+		return $strOutput;
 	}
 	
 	public function addField($value, $label, $selected = FALSE) {
 		$objOption = new VF_SelectOption($value, $label, $selected);
-		array_push($this->__options, $objOption);
+		$this->__options->addObject($objOption);
 		
 		return $objOption;
+	}
+
+	public function addFieldObject($objTarget, $checked = false) {
+		// Add checkbox
+		$objTrigger = $this->addField($objTarget->getLabel(), $this->getName(true) . "_triggerfield", $checked);
+
+		// Set the defaults on the target element
+		$objTarget->setName($this->getName(true) . "_triggerfield");
+		$objTarget->setId($this->getRandomId($objTarget->getName()));
+
+		// Set the trigger field.
+		$objTarget->setTrigger($objTrigger);
+
+		// This group has a trigger element.
+		$this->__targetfield = $objTarget;
+
+		// Add to validator
+		$this->__validator->setTargetField($objTarget);
+
+		$this->__options->addObject($objTarget);
 	}
 	
 	public function addGroup($label) {
 		$objGroup = new VF_SelectGroup($label);
-		array_push($this->__options, $objGroup);
+		$this->__options->addObject($objGroup);
 		
 		return $objGroup;
 	}

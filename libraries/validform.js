@@ -26,7 +26,7 @@ function ValidFormValidator(strFormId) {
 	this.mainAlert			= "";
 }
 
-function ValidFormFieldValidator(strElementId) {
+function ValidFormFieldValidator(strElementId, strElementName) {
 	/****************************/
 	/* ValidFormValidator Class ******************************************/
 	/* 
@@ -35,6 +35,7 @@ function ValidFormFieldValidator(strElementId) {
 	/*********************************************************************/
 	
 	this.id 				= strElementId;
+	this.name 				= strElementName;
 	this.check				= null;
 	this.typeError			= "";
 	this.required			= false;
@@ -57,7 +58,7 @@ function ValidFormElement(strFormId, strElementName, strElementId, strValidation
 	this.formId					= strFormId;
 	this.id 					= strElementId;
 	this.name 					= strElementName;
-	this.validator 				= new ValidFormFieldValidator(strElementId);
+	this.validator 				= new ValidFormFieldValidator(strElementId, strElementName);
 	this.validator.check 		= strValidation;
 	this.validator.required		= false;
 	this.validator.minLength	= null;
@@ -113,20 +114,259 @@ function ValidFormElement(strFormId, strElementName, strElementId, strValidation
 	}
 }
 
-function ValidForm(strFormId, strMainAlert) {
+function ValidForm(strFormId, strMainAlert, blnAllowPreviousPage) {
 	this.id = strFormId;
-	this.elements = new Object();
+	this.elements = {};
+	this.pages = [];
 	this.valid = false;
 	this.validator = new ValidFormValidator(this.id);
 	this.validator.mainAlert = strMainAlert;
-	this.init();
 	this.events = [];
-	this.customEvents = ["afterValidate", "afterDynamicChange"];
+	this.customEvents = ["afterValidate", "afterDynamicChange", "afterNextPage", "beforeNextPage"];
+	this.hashPageIndex = 1;
+	this.hashPrefix = "vf_page";
+	this.allowPreviousPage = (typeof blnAllowPreviousPage !== "undefined") ? blnAllowPreviousPage : true;
+
+	// Initialize ValidForm class
+	this.init();
 }
 
+/**
+ * Initialize ValidForm Builder client side after all elements are added to the collection.
+ */
 ValidForm.prototype.init = function() {
 	var __this = this;
 
+	// Handle disabled elements and make sure all sub-elements are disabled as well.
+	this.traverseDisabledElements();
+	
+	// This is where the magic happens: onSubmit; validate form.
+	jQuery("#" + this.id).bind("submit", function(){	
+		if (__this.pages.length > 1) {
+			// Validation has been done on each page individually. 
+			// No need to re-validate here.
+			return true; 
+		} else {
+			return __this.validate();
+		}
+	});
+	
+	// Dynamic duplication logic.
+	this.dynamicDuplication();
+};
+
+/**
+ * This function handles the hashchange and hashupdated events if the _hash library is included.<br />
+ * This is an optional library and hashChange won't work if _hash is not initiated before <br />
+ * loading validform.js
+ */
+ValidForm.prototype.hashChange = function () {
+	if (typeof _hash == "object") {
+		var __this = this;
+
+		$(window).on("hashset hashupdated", function (e, updatedHashIndex) {
+			var pageIndex = _hash.get(__this.hashPageIndex);
+			var valid = true;
+
+			if ($("#" + __this.id).has(".vf__error").length > 0) {
+				var $error 	= $(".vf__error:first");
+				var $page 	= $error.parentsUntil(".vf__page").parent();
+
+				_hash.set(__this.hashPrefix, $("#" + __this.id + " .vf__page").index($page) + 1);
+			}
+
+			// If the page set by a hash is valid and it's index is within 
+			// the maximum number of pages, show that page and set this.currentPage.
+			if (pageIndex <= __this.pages.length && valid) {
+				var $newPage = $("#" + __this.pages[pageIndex - 1]);
+
+				if (!$newPage.is(":visible")) {
+					// Do a page switch
+					if (typeof __this.currentPage == "object") {
+						__this.currentPage.hide();
+					} else {
+						$("#" + __this.id + " .vf__page:first").hide();
+					}
+
+					__this.currentPage = __this.showPage($newPage);
+				}
+			// Show first page by force, hash page index is not a valid index for the this.pages array.
+			} else if (pageIndex > __this.pages.length) {
+				_hash.set(__this.hashPrefix, 1);
+				__this.currentPage = __this.showPage($("#" + __this.id + " .vf__page:first"));
+			}
+		});
+
+		$(window).trigger("hashset");
+	}
+}
+
+ValidForm.prototype.addPage = function (strPageId, blnIsOverview) {
+	var __this = this;
+	var $page = $("#" + strPageId);
+
+	// Set the data attribute if this is an overview page.
+	$page.data("vf__overview", (blnIsOverview) ? blnIsOverview : false);
+
+	// Add page to the pages collection
+	this.pages.push(strPageId);
+
+	// Add next / prev navigation
+	this.addPageNavigation(strPageId);
+
+	// If this is not the first page, hide it.
+	if (this.pages.length > 1) {
+		$page.hide();
+		$("#" + __this.id).find(".vf__navigation").hide();
+
+		this.addPreviousButton(strPageId);
+	}
+
+	$("#" + strPageId).on("keyup", function (e) {
+		if (event.keyCode == 13) {
+			var target;
+			if (e.target) target = $(e.target);
+			else if (e.srcElement) target = $(e.srcElement);
+
+			if (!target.is("textarea")) {
+				// Simulate submit
+				$(this).find("#next_" + $(this).attr("id")).trigger("click", [true]);
+			}
+		}
+	});
+}
+
+ValidForm.prototype.addPreviousButton = function (strPageId) {
+	var __this			= this;
+	var $page 			= $("#" + strPageId);
+	var prevLabel 		= $page.data("prev-label");
+	var prevLabel 		= (typeof prevLabel == "undefined") ? "&larr; Previous" : prevLabel;
+
+	var $pagenav = $page.find(".vf__pagenavigation");
+	var $nav = ($pagenav.length > 0) ? $pagenav : $page.find(".vf__navigation");
+
+	$nav.append($("<a href='#' id='prev_" + strPageId + "' class='vf__button vf__previous'>" + prevLabel + "</a>"));
+
+	$("#prev_" + strPageId).on("click", function () {
+		__this.previousPage();
+		return false;
+	});
+}
+
+ValidForm.prototype.getPages = function () {
+	var __this 		= this;
+	var objReturn 	= {};
+
+	for (i in this.pages) {
+		if (this.pages.hasOwnProperty(i)) {
+			objReturn[this.pages[i]] = $("#" + __this.pages[i]);
+		}
+	}
+
+	return objReturn;
+}
+
+ValidForm.prototype.nextPage = function () {
+	if (typeof this.customEvents.beforeNextPage == "function") {
+		this.customEvents.beforeNextPage(this.id);
+	}
+
+	// Get the current page, fallback on first occurance of vf__page
+	if (typeof this.currentPage == "object" && this.currentPage instanceof jQuery) {
+		var currentPage = this.currentPage;
+	} else {
+		var currentPage = $("#" + this.id + " .vf__page:first");
+	}
+
+	console.log("NEXT current:", currentPage)
+
+	if (this.validate("#" + currentPage.attr("id"))) {
+		if (this.isLastPage()) {
+			$("#" + this.id).trigger("submit");
+		} else {
+			currentPage.hide();
+
+			// Set the next page as the new current page.
+			this.currentPage = currentPage.next(".vf__page");
+			this.showPage(this.currentPage);
+
+			// Try to update the current hash if hash-based navigation is enabled
+			if (typeof _hash == "object" && typeof _hash.set == "function") {
+				_hash.set(this.hashPrefix, $("#" + this.id + " .vf__page").index(this.currentPage) + 1);
+			}
+		}
+	}
+}
+
+ValidForm.prototype.isLastPage = function () {
+	if (typeof this.currentPage == "undefined") {
+		return false;
+	} else {
+		return (this.pages.length == ($("#" + this.id + " .vf__page").index(this.currentPage) + 1));
+	}
+}
+
+ValidForm.prototype.previousPage = function () {
+	if (typeof this.customEvents.beforePreviousPage == "function") {
+		this.customEvents.beforePreviousPage(this.id);
+	}
+
+	this.currentPage.hide();
+
+	// Set the next page as the new current page.
+	this.currentPage = this.currentPage.prev(".vf__page");
+	this.showPage(this.currentPage);
+
+	// Try to update the current hash if hash-based navigation is enabled
+	if (typeof _hash == "object" && typeof _hash.set == "function") {
+		_hash.set(this.hashPrefix, $("#" + this.id + " .vf__page").index(this.currentPage) + 1);
+	}
+}
+
+ValidForm.prototype.showPage = function ($objPage) {
+	if (typeof $objPage == "object" && $objPage instanceof jQuery) {
+		$objPage.show();
+
+		// Check if this is the last page. 
+		// If that is the case, set the 'next button'-label the submit button value to
+		// simulate a submit button
+		var pageIndex = $("#" + this.id + " .vf__page").index($objPage);
+		if (pageIndex == this.pages.length) {
+			$("#next_" + this.pages[pageIndex - 1]).text($("#" + this.id).find("input[type='submit']").val());
+		} else {
+			$("#" + this.id).find(".vf__navigation").hide();
+		}
+	} else {
+		throw new Error("Invalid object passed to ValidForm.showPage().");
+	}
+
+	return $objPage;
+}
+
+ValidForm.prototype.addPageNavigation = function (strPageId) {
+	var __this 			= this;
+	var $page 			= $("#" + strPageId);
+	var nextLabel 		= $page.data("next-label");
+	var nextLabel 		= (typeof nextLabel == "undefined") ? "Next &rarr;" : nextLabel;
+	var $nextNavigation = $("<div class='vf__pagenavigation vf__cf'><a href='#' id='next_" + strPageId + "' class='vf__button'>" + nextLabel + "</a></div>");
+
+	$("#" + strPageId).append($nextNavigation);
+
+	$("#next_" + strPageId).on("click", function () {
+		__this.nextPage();
+
+
+		return false;
+	});
+}
+
+ValidForm.prototype.matchfields = function (strSecondFieldId, strFirstFieldId, strMatchError) {
+	var objElement = this.getElement($("#" + strSecondFieldId).attr("name"));
+	objElement.validator.matchWith = this.getElement($("#" + strFirstFieldId).attr("name"));
+	objElement.validator.matchError = strMatchError;
+}
+
+ValidForm.prototype.traverseDisabledElements = function () {
 	jQuery("#" + this.id + " fieldset.vf__disabled").each(function(){
 		var fieldset = this;
 		
@@ -137,12 +377,11 @@ ValidForm.prototype.init = function() {
 		
 		__this.attachAreaEvents(jQuery("legend input", fieldset));
 	});
-	
-	jQuery("#" + this.id).bind("submit", function(){		
-		return __this.validate();
-	});
-	
-	//*** Dynamic duplication.
+}
+
+ValidForm.prototype.dynamicDuplication = function () {
+	var __this = this;
+
 	jQuery(".vf__dynamic a").bind("click", function() {
 		if (!jQuery(this).hasClass("vf__disabled")) {
 			//*** Update dynamic field counter.
@@ -225,7 +464,7 @@ ValidForm.prototype.init = function() {
 		
 		return false;
 	});
-};
+}
 
 ValidForm.prototype.attachAreaEvents = function(objActiveTrigger) {
 	objActiveTrigger.unbind("click").bind("click", function(){
@@ -257,6 +496,43 @@ ValidForm.prototype.inArray = function(arrToSearch, value) {
 	}
 	return false;
 };
+
+ValidForm.prototype.addTrigger = function(strTriggerId, strTargetId) {
+	var $trigger 	= $("#" + strTriggerId);
+	var $target 	= $("#" + strTargetId);
+	var blnIsOption	= $trigger.is("option");
+
+	var toggleTrigger = function () {
+		if ($trigger.is((blnIsOption) ? ":selected" : ":checked")) {
+			$target.parent().show();
+		} else {
+			$target.parent().hide();
+		}
+	}
+
+	if ($trigger.is(":checkbox") || $trigger.is(":radio")) {
+		$("input[name='" + $trigger.attr("name") + "']").on("change", function () {
+			toggleTrigger();
+		});
+		toggleTrigger();
+
+		// Store the triggerfield
+		$target.data("vf_triggerField", $trigger);
+
+	} else if (blnIsOption) {
+		// Select option
+		$("input[name='" + $trigger.attr("name") + "']").on("change", function () {
+			toggleTrigger();
+		});
+		toggleTrigger();
+		
+		// Store the triggerfield
+		$target.data("vf_triggerField", $trigger);
+
+	} else {
+		throw new Error("Invalid Trigger type in addTrigger. Trigger should be a checkbox, radiobutton or selectlist option : '" + strTriggerId + "'.");
+	}
+}
 
 ValidForm.prototype.addElement = function() {
 	if (arguments.length > 0 && typeof(arguments[0]) == "object") {
@@ -370,7 +646,7 @@ ValidForm.prototype.validate = function(strSelector) {
 	/*********************************************************************/
 	
 	this.valid = true;
-	var arrMultiElements = new Array();
+	var arrMultiElements = [];
 	var objDOMForm;
 	var strSelector = strSelector || null;
 	var blnReturn = false;
@@ -389,7 +665,8 @@ ValidForm.prototype.validate = function(strSelector) {
 		for (var strElement in this.elements) {
 			var objElement = this.elements[strElement];
 			
-			if (((strSelector !== null) && (jQuery(strSelector).has(jQuery("#" + objElement.id)).length > 0)) || (strSelector == null)) {
+			if (((strSelector !== null) && (jQuery(strSelector).has(jQuery("[name='" + objElement.name + "']")).length > 0)) 
+				|| (strSelector == null)) {
 				//*** Check if the element is part of an area.
 				var objArea = jQuery("[name='" + objElement.name + "']").parentsUntil(".vf__area").parent(".vf__area");
 				if (objArea.length > 0) {
@@ -454,6 +731,11 @@ ValidFormValidator.prototype.showMain = function() {
 	jQuery.scrollTo(jQuery("div.vf__error:first"), 500);
 }
 
+/**
+ * Element validator
+ * @param  {mixed} value Value of the element
+ * @return {boolean}       True if value is valid, false if not.
+ */
 ValidFormFieldValidator.prototype.validate = function(value) {
 	var objElement = jQuery("#" + this.id);
 	var value = objElement.val();
@@ -464,6 +746,7 @@ ValidFormFieldValidator.prototype.validate = function(value) {
 		var objDOMElement = objElement.get(0);
 		/*** Redirect to error handler if a checkbox or radio is found.
 				This is done for cross-browser functionality. */
+
 		switch (objDOMElement.type) {
 			case 'checkbox':
 			case 'radiobutton':
@@ -476,6 +759,27 @@ ValidFormFieldValidator.prototype.validate = function(value) {
 			this.showAlert(this.requiredError);
 			return false;
 		} else if (!this.required && value == "") {
+			// If the triggerfield is checked, the targetfield (objElement) becomes required. 
+			// But ONLY if the triggerfield is checked.
+			var objTrigger = objElement.data("vf_triggerField");
+			if (typeof objTrigger !== "undefined") {
+				if (objTrigger[0].checked) {
+					this.showAlert(this.requiredError);
+					return false;
+				}
+			}
+
+			// Check if field values match
+			if (typeof this.matchWith == "object") {
+				if (this.matchWith.validate()) {
+					if ($("#" + this.matchWith.id).val() != value) {
+						this.matchWith.validator.showAlert(this.matchError);
+						this.showAlert(this.matchError);
+						return false;
+					}
+				}
+			}
+
 			return true;
 		}
 
@@ -505,7 +809,7 @@ ValidFormFieldValidator.prototype.validate = function(value) {
 			return blnReturn;
 		}
 	} catch(e) {
-		var objElements = jQuery("input[name='" + this.id + "']");
+		var objElements = jQuery("input[name='" + this.name + "']");
 		if (objElements.length > 0) {
 			var objValidElements = objElements.filter(":checked");
 			value = objValidElements.val();
@@ -549,7 +853,7 @@ ValidFormFieldValidator.prototype.validate = function(value) {
 ValidFormFieldValidator.prototype.removeAlert = function() {
 	var objElement = jQuery("#" + this.id);
 	if (objElement.length == 0) {
-		objElement = jQuery("input[name='" + this.id + "']:first").parent().parent();
+		objElement = jQuery("input[name='" + this.name + "']:first").parent().parent();
 	}
 
 	if (objElement.parent("div").hasClass("vf__multifielditem")) {
@@ -565,7 +869,7 @@ ValidFormFieldValidator.prototype.removeAlert = function() {
 ValidFormFieldValidator.prototype.showAlert = function(strAlert) {
 	var objElement = jQuery("#" + this.id);
 	if (objElement.length == 0) {
-		objElement = jQuery("input[name='" + this.id + "']:first").parent().parent();
+		objElement = jQuery("input[name='" + this.name + "']:first").parent().parent();
 	}
 	
 	if (objElement.parent("div").hasClass("vf__multifielditem")) {

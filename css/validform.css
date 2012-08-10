@@ -17,9 +17,23 @@
  * @version	   Release: 0.2.1
  ***************************/
  
+/*A little reset rule*/
 * {
 	margin: 0;
 	padding: 0;
+}
+
+/*The famous micro clearfix*/
+.vf__cf:before,
+.vf__cf:after {
+    content: " ";
+    display: table;
+}
+.vf__cf:after {
+    clear: both;
+}
+.vf__cf {
+    *zoom: 1;
 }
  
 form.validform {
@@ -74,6 +88,31 @@ form.validform fieldset fieldset {
 	padding: 0pt;
 }
 
+form.validform fieldset fieldset.vf__list div.vf__required,
+form.validform fieldset fieldset.vf__list div.vf__optional {
+	margin-left: 14px;
+	margin-top: 0;
+	padding-top: 0;
+}
+
+form.validform fieldset fieldset.vf__list div.vf__required > label,
+form.validform fieldset fieldset.vf__list div.vf__optional > label {
+	padding-top: 0;
+}
+form.validform fieldset fieldset.vf__list .vf__error {
+	border: none;
+	margin-top: 0;
+}
+form.validform fieldset fieldset.vf__list .vf__error p.vf__error {
+	margin-left: 0;
+	padding-left: 0;
+	padding-bottom: 3px;
+	font: normal 12px Arial, Helvetica, sans-serif;
+}
+form.validform fieldset fieldset.vf__list .vf__error textarea,
+form.validform fieldset fieldset.vf__list .vf__error input {
+	border: 1px #f00 solid;
+}
 form.validform fieldset fieldset.vf__list label {
 	float: none;
 	text-align: left;
@@ -147,6 +186,7 @@ form.validform .vf__required label {
 	font-weight: bold;
 }
 
+form.validform .vf__pagenavigation,
 form.validform .vf__navigation {
 	padding: 10px;
 }
@@ -168,6 +208,7 @@ input.vf__text_tiny,
 input.vf__text_small,
 input.vf__text_large,
 input.vf__button,
+a.vf__button,
 select.vf__one,
 select.vf__multiple,
 textarea.vf__text
@@ -185,6 +226,7 @@ fieldset.vf__disabled input.vf__text_tiny,
 fieldset.vf__disabled input.vf__text_small,
 fieldset.vf__disabled input.vf__text_large,
 fieldset.vf__disabled input.vf__button,
+fieldset.vf__disabled a.vf__button,
 fieldset.vf__disabled select.vf__one,
 fieldset.vf__disabled select.vf__multiple,
 fieldset.vf__disabled textarea.vf__text
@@ -206,6 +248,7 @@ textarea.vf__text {
 	height: 120px;
 }
 
+a.vf__button,
 input.vf__button {
 	float: right;
 	width: auto;
