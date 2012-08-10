@@ -279,7 +279,7 @@ class ValidForm extends ClassDynamic {
 		$this->__jsEvents[$strEvent] = $strMethod;
 	}
 	
-	public function toHtml($blnClientSide = true) {
+	public function toHtml($blnClientSide = true, $blnForceSubmitted = false) {
 		$strOutput = "";
 		
 		if ($blnClientSide) {
@@ -303,7 +303,7 @@ class ValidForm extends ClassDynamic {
 		
 		$blnNavigation = false;
 		foreach ($this->__elements as $element) {
-			$strOutput .= $element->toHtml($this->isSubmitted());
+			$strOutput .= $element->toHtml($this->isSubmitted($blnForceSubmitted));
 			
 			if (get_class($element) == "VF_Navigation") {
 				$blnNavigation = true;
@@ -320,8 +320,14 @@ class ValidForm extends ClassDynamic {
 		return $strOutput;
 	}
 	
-	public function isSubmitted() {		
-		if (ValidForm::get("vf__dispatch") == $this->__name) {
+	/**
+	 * Check if the form is submitted by validating the value of the hidden
+	 * vf__dispatch field.
+	 * @param  boolean $blnForce 	Fake isSubmitted to true to force field values.
+	 * @return boolean              [description]
+	 */
+	public function isSubmitted($blnForce = false) {
+		if (ValidForm::get("vf__dispatch") == $this->__name || $blnForce) {
 			return TRUE;
 		} else {
 			return FALSE;

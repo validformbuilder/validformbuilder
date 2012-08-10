@@ -26,8 +26,9 @@ require_once("class.validform.php");
  *
  */
 class ValidWizard extends ValidForm {
-	private $__nextlabel;
 	public $__pageCount = 1;
+	protected $__confirmlabel;
+	private $__nextlabel;
 	private $__objCurrentPage;
 	
 	/**
@@ -40,6 +41,8 @@ class ValidWizard extends ValidForm {
 	 */
 	public function __construct($name = NULL, $description = NULL, $action = NULL, $meta = array()) {
 		parent::__construct($name, $description, $action, $meta);
+
+		$this->__confirmlabel = (isset($meta["confirmLabel"])) ? $meta["confirmLabel"] : "Confirm";
 	}
 
 	public function getPage($intIndex) {
@@ -89,6 +92,62 @@ class ValidWizard extends ValidForm {
 		return $strOutput;
 	}
 	
+	/**
+	 * Check if the form is confirmed by validating the value of the hidden
+	 * vf__dispatch field.
+	 * @param  boolean $blnForce 	Fake isConfirmed to true to force field values.
+	 * @return boolean              [description]
+	 */
+	public function isConfirmed($blnForce = false) {
+		if (ValidForm::get("vf__dispatch") == $this->__name . "_confirmed" || $blnForce) {
+			return TRUE;
+		} else {
+			return FALSE;
+		}
+	}
+
+	public function confirm() {
+		$strOutput = "";
+		$strName = $this->__name . "_confirmed";
+
+		$strOutput .= "<form id=\"{$this->__name}\" method=\"post\" enctype=\"multipart/form-data\" action=\"{$this->__action}\" class=\"{$strClass}\">\n";
+		$strOutput .= "<div class='vf__confirm'>";
+		$strOutput .= $this->valuesAsHtml();
+		$strOutput .= "</div>";
+		$strOutput .= "<div class=\"vf__navigation\">\n<input type=\"hidden\" name=\"vf__dispatch\" value=\"{$strName}\" />\n";
+		$strOutput .= "<input type=\"submit\" value=\"{$this->__confirmlabel}\" class=\"vf__button\" />\n</div>\n";
+		$strOutput .= "</form>";
+
+		return $strOutput;
+	}
+
+	/**
+	 * Validate all form fields until and including the fields in the given page object
+	 * @param  string 	$objPage 	The page object
+	 * @return boolean         		True if all fields validate, false if not.
+	 */
+	public function validateUntil($strPageId) {
+		$blnValid = true;
+		foreach ($this->__elements as $objPage) {
+			if (!$objPage->isValid()) {
+				$blnValid = false;
+			}
+
+			if ($objPage->getId() == $strPageId) {
+				break;
+			}
+		}
+
+		return $blnValid;
+	}
+
+	public function isValid($strPageId = null) {
+		if (!is_null($strPageId)) {
+			return $this->validateUntil($strPageId);
+		} else {
+			return parent::isValid();
+		}
+	}
 }
 
 ?>

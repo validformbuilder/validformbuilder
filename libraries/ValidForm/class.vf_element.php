@@ -235,6 +235,18 @@ class VF_Element extends ClassDynamic {
 		
 		return $strReturn;
 	}
+
+	protected function __getValidValue($submitted = false) {
+		$varValidValue = $this->__validator->getValidValue();
+		$varReturn = null;
+
+		if (!is_null($varValidValue)) {
+			echo "cool";
+			return $varValidValue;
+		} else {
+			return $this->__getValue($submitted);
+		}
+	}
 	
 	protected function __getMetaString() {
 		$strOutput = "";

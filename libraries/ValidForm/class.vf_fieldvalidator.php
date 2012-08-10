@@ -30,7 +30,7 @@ class VF_FieldValidator extends ClassDynamic {
 	protected $__fieldname;
 	protected $__type;
 	protected $__fieldhint;
-	protected $__validvalue;
+	protected $__validvalue = null;
 	protected $__minlength;
 	protected $__maxlength;
 	protected $__matchwith;
@@ -77,7 +77,7 @@ class VF_FieldValidator extends ClassDynamic {
 			$strReturn = NULL;
 		} else {
 			$strFieldName = ($intDynamicPosition > 0) ? $this->__fieldname . "_" . $intDynamicPosition : $this->__fieldname;
-			$strReturn = (array_key_exists($strFieldName, $_REQUEST)) ? $_REQUEST[$strFieldName] : NULL;
+			$strReturn = (array_key_exists($strFieldName, $_REQUEST)) ? $_REQUEST[$strFieldName] : $this->__validvalue;
 		}
 		
 		return $strReturn;

@@ -131,21 +131,35 @@ function ValidForm(strFormId, strMainAlert, blnAllowPreviousPage) {
 	this.init();
 }
 
+/**
+ * Initialize ValidForm Builder client side after all elements are added to the collection.
+ */
 ValidForm.prototype.init = function() {
 	var __this = this;
 
 	// Handle disabled elements and make sure all sub-elements are disabled as well.
-	__this.traverseDisabledElements();
+	this.traverseDisabledElements();
 	
 	// This is where the magic happens: onSubmit; validate form.
-	jQuery("#" + this.id).bind("submit", function(){		
-		return __this.validate();
+	jQuery("#" + this.id).bind("submit", function(){	
+		if (__this.pages.length > 1) {
+			// Validation has been done on each page individually. 
+			// No need to re-validate here.
+			return true; 
+		} else {
+			return __this.validate();
+		}
 	});
 	
 	// Dynamic duplication logic.
-	__this.dynamicDuplication();
+	this.dynamicDuplication();
 };
 
+/**
+ * This function handles the hashchange and hashupdated events if the _hash library is included.<br />
+ * This is an optional library and hashChange won't work if _hash is not initiated before <br />
+ * loading validform.js
+ */
 ValidForm.prototype.hashChange = function () {
 	if (typeof _hash == "object") {
 		var __this = this;
@@ -154,18 +168,15 @@ ValidForm.prototype.hashChange = function () {
 			var pageIndex = _hash.get(__this.hashPageIndex);
 			var valid = true;
 
-			for (i in __this.pages) {
-				if (i == (pageIndex - 1)) break;
-				
-				if (!__this.validate("#" + __this.pages[i])) {
-					_hash.set(__this.hashPrefix, parseInt(i + 1));
+			if ($("#" + __this.id).has(".vf__error").length > 0) {
+				var $error 	= $(".vf__error:first");
+				var $page 	= $error.parentsUntil(".vf__page").parent();
 
-					__this.currentPage = __this.showPage($("#" + __this.pages[i]));
-					valid = false;
-					break;
-				}
+				_hash.set(__this.hashPrefix, $("#" + __this.id + " .vf__page").index($page) + 1);
 			}
 
+			// If the page set by a hash is valid and it's index is within 
+			// the maximum number of pages, show that page and set this.currentPage.
 			if (pageIndex <= __this.pages.length && valid) {
 				var $newPage = $("#" + __this.pages[pageIndex - 1]);
 
@@ -174,14 +185,15 @@ ValidForm.prototype.hashChange = function () {
 					if (typeof __this.currentPage == "object") {
 						__this.currentPage.hide();
 					} else {
-						$(".vf__page:first").hide();
+						$("#" + __this.id + " .vf__page:first").hide();
 					}
 
 					__this.currentPage = __this.showPage($newPage);
 				}
+			// Show first page by force, hash page index is not a valid index for the this.pages array.
 			} else if (pageIndex > __this.pages.length) {
 				_hash.set(__this.hashPrefix, 1);
-				__this.currentPage = __this.showPage($(".vf__page:first"));
+				__this.currentPage = __this.showPage($("#" + __this.id + " .vf__page:first"));
 			}
 		});
 
@@ -210,14 +222,6 @@ ValidForm.prototype.addPage = function (strPageId, blnIsOverview) {
 		this.addPreviousButton(strPageId);
 	}
 
-	// If this is the first page, check if _hash exists and set 
-	// the current hash on the corresponding page.
-	if (this.pages.length == 1) {
-		if (typeof _hash == "object" && !_hash.get(this.hashPageIndex)) {
-			_hash.set(this.hashPrefix, 1);
-		}
-	}
-
 	$("#" + strPageId).on("keyup", function (e) {
 		if (event.keyCode == 13) {
 			var target;
@@ -236,7 +240,7 @@ ValidForm.prototype.addPreviousButton = function (strPageId) {
 	var __this			= this;
 	var $page 			= $("#" + strPageId);
 	var prevLabel 		= $page.data("prev-label");
-	var prevLabel 		= (typeof prevLabel == "undefined") ? "Previous" : prevLabel;
+	var prevLabel 		= (typeof prevLabel == "undefined") ? "&larr; Previous" : prevLabel;
 
 	var $pagenav = $page.find(".vf__pagenavigation");
 	var $nav = ($pagenav.length > 0) ? $pagenav : $page.find(".vf__navigation");
@@ -271,21 +275,34 @@ ValidForm.prototype.nextPage = function () {
 	if (typeof this.currentPage == "object" && this.currentPage instanceof jQuery) {
 		var currentPage = this.currentPage;
 	} else {
-		var currentPage = $(".vf__page:first");
+		var currentPage = $("#" + this.id + " .vf__page:first");
 	}
 
+	console.log("NEXT current:", currentPage)
+
 	if (this.validate("#" + currentPage.attr("id"))) {
+		if (this.isLastPage()) {
+			$("#" + this.id).trigger("submit");
+		} else {
+			currentPage.hide();
 
-		currentPage.hide();
+			// Set the next page as the new current page.
+			this.currentPage = currentPage.next(".vf__page");
+			this.showPage(this.currentPage);
 
-		// Set the next page as the new current page.
-		this.currentPage = currentPage.next(".vf__page");
-		this.showPage(this.currentPage);
-
-		// Try to update the current hash if hash-based navigation is enabled
-		if (typeof _hash == "object" && typeof _hash.set == "function") {
-			_hash.set(this.hashPrefix, this.currentPage.index());
+			// Try to update the current hash if hash-based navigation is enabled
+			if (typeof _hash == "object" && typeof _hash.set == "function") {
+				_hash.set(this.hashPrefix, $("#" + this.id + " .vf__page").index(this.currentPage) + 1);
+			}
 		}
+	}
+}
+
+ValidForm.prototype.isLastPage = function () {
+	if (typeof this.currentPage == "undefined") {
+		return false;
+	} else {
+		return (this.pages.length == ($("#" + this.id + " .vf__page").index(this.currentPage) + 1));
 	}
 }
 
@@ -302,7 +319,7 @@ ValidForm.prototype.previousPage = function () {
 
 	// Try to update the current hash if hash-based navigation is enabled
 	if (typeof _hash == "object" && typeof _hash.set == "function") {
-		_hash.set(this.hashPrefix, this.currentPage.index());
+		_hash.set(this.hashPrefix, $("#" + this.id + " .vf__page").index(this.currentPage) + 1);
 	}
 }
 
@@ -310,11 +327,12 @@ ValidForm.prototype.showPage = function ($objPage) {
 	if (typeof $objPage == "object" && $objPage instanceof jQuery) {
 		$objPage.show();
 
-		// Check if this is the last page. If that is the case, show submit button instead of page navigation.
-		if ($objPage.index() == this.pages.length) {
-			// This is the last page.
-			$objPage.find(".vf__pagenavigation").remove();
-			$("#" + this.id).find(".vf__navigation").show();
+		// Check if this is the last page. 
+		// If that is the case, set the 'next button'-label the submit button value to
+		// simulate a submit button
+		var pageIndex = $("#" + this.id + " .vf__page").index($objPage);
+		if (pageIndex == this.pages.length) {
+			$("#next_" + this.pages[pageIndex - 1]).text($("#" + this.id).find("input[type='submit']").val());
 		} else {
 			$("#" + this.id).find(".vf__navigation").hide();
 		}
@@ -329,13 +347,14 @@ ValidForm.prototype.addPageNavigation = function (strPageId) {
 	var __this 			= this;
 	var $page 			= $("#" + strPageId);
 	var nextLabel 		= $page.data("next-label");
-	var nextLabel 		= (typeof nextLabel == "undefined") ? "Next" : nextLabel;
+	var nextLabel 		= (typeof nextLabel == "undefined") ? "Next &rarr;" : nextLabel;
 	var $nextNavigation = $("<div class='vf__pagenavigation vf__cf'><a href='#' id='next_" + strPageId + "' class='vf__button'>" + nextLabel + "</a></div>");
 
 	$("#" + strPageId).append($nextNavigation);
 
 	$("#next_" + strPageId).on("click", function () {
 		__this.nextPage();
+
 
 		return false;
 	});

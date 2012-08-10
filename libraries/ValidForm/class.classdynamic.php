@@ -20,7 +20,12 @@
  * 
  * @package ValidForm
  * @author Felix Langfeldt
- * @version Release: 0.2.1
+ * @author Robin van Baalen
+ * @version Release: 0.3
+ *
+ * CHANGELOG
+ *
+ * 	- Removed all 'echo'-s and replaced them with throw new BadMethodCallException
  *
  */
 class ClassDynamic {
@@ -31,7 +36,7 @@ class ClassDynamic {
 		if (property_exists($this, $property)) {
 			return $this->$property;
 		} else {
-			echo "Property Error in " . get_class($this) . "::get({$property}) on line " . __LINE__ . ".";
+			throw new BadMethodCallException("Property Error in " . get_class($this) . "::get({$property}) on line " . __LINE__ . ".");
 		}
 	}
 
@@ -41,7 +46,7 @@ class ClassDynamic {
 		if (property_exists($this, $property)) {
 			$this->$property = $value;
 		} else {
-			echo "Property Error in " . get_class($this) . "::set({$property}) on line " . __LINE__ . ".";
+			throw new BadMethodCallException("Property Error in " . get_class($this) . "::set({$property}) on line " . __LINE__ . ".");
 		}
 	}
 
@@ -57,7 +62,7 @@ class ClassDynamic {
 			return;
 		}
 
-		echo "Method Error in " . get_class($this) . "::{$method} on line " . __LINE__ . ".";
+		throw new BadMethodCallException("Method Error in " . get_class($this) . "::{$method} on line " . __LINE__ . ".");
 	}
 
 }

@@ -34,6 +34,10 @@ class VF_Group extends VF_Element {
 		parent::__construct($name, $type, $label, $validationRules, $errorHandlers, $meta);
 	}
 
+	// public function getFields() {
+		
+	// }
+
 	public function toHtml($submitted = FALSE, $blnSimpleLayout = FALSE) {
 		$blnError = ($submitted && !$this->__validator->validate()) ? TRUE : FALSE;
 		
