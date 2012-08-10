@@ -48,6 +48,16 @@ class ValidWizard extends ValidForm {
 		$this->__confirmlabel = (isset($meta["confirmLabel"])) ? $meta["confirmLabel"] : "Confirm";
 	}
 
+	public function toJs() {
+		$strJs = "";
+		if ($this->__pageCount > 1) {
+			$strJs = "objForm.hashChange();\n";
+		}
+
+		return parent::toJs($strJs);
+
+	}
+
 	public function getPage($intIndex) {
 		$intIndex--; // Convert page no. to index no.
 		$this->__pages->seek($intIndex);

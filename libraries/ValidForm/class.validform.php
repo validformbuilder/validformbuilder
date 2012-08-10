@@ -541,7 +541,7 @@ class ValidForm extends ClassDynamic {
 		return $strReturn;
 	}
 	
-	private function __toJS() {
+	private function __toJS($strCustomJs = "") {
 		$strReturn = "";
 		$strJs = "";
 		
@@ -555,15 +555,12 @@ class ValidForm extends ClassDynamic {
 			$strJs .= "objForm.addEvent(\"{$event}\", {$method});\n";
 		}
 
-		if ($this->__pageCount > 1) {
-			$strJs .= "objForm.hashChange();\n";
-		}
-
 		$strReturn .= "<script type=\"text/javascript\">\n";
 		$strReturn .= "// <![CDATA[\n";
 		$strReturn .= "function {$this->__name}_init() {\n";
 		$strReturn .= "var objForm = new ValidForm(\"{$this->__name}\", \"{$this->__mainalert}\");\n";
 		$strReturn .= $strJs;
+		if (!empty($strCustomJs)) $strReturn .= $strCustomJs;
 		$strReturn .= "$(\"#{$this->__name}\").data(\"vf__formElement\", objForm);";
 		$strReturn .= "};\n";
 		$strReturn .= "\n";
