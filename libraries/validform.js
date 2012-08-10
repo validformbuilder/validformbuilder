@@ -268,7 +268,7 @@ ValidForm.prototype.getPages = function () {
 
 ValidForm.prototype.nextPage = function () {
 	if (typeof this.customEvents.beforeNextPage == "function") {
-		this.customEvents.beforeNextPage(this.id);
+		this.customEvents.beforeNextPage(this);
 	}
 
 	// Get the current page, fallback on first occurance of vf__page
@@ -293,6 +293,10 @@ ValidForm.prototype.nextPage = function () {
 			// Try to update the current hash if hash-based navigation is enabled
 			if (typeof _hash == "object" && typeof _hash.set == "function") {
 				_hash.set(this.hashPrefix, $("#" + this.id + " .vf__page").index(this.currentPage) + 1);
+			}
+
+			if (typeof this.customEvents.afterNextPage == "function") {
+				this.customEvents.afterNextPage(this);
 			}
 		}
 	}
