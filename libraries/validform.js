@@ -267,6 +267,7 @@ ValidForm.prototype.getPages = function () {
 }
 
 ValidForm.prototype.nextPage = function () {
+	console.log(this.customEvents.beforeNextPage);
 	if (typeof this.customEvents.beforeNextPage == "function") {
 		this.customEvents.beforeNextPage(this);
 	}
@@ -277,8 +278,6 @@ ValidForm.prototype.nextPage = function () {
 	} else {
 		var currentPage = $("#" + this.id + " .vf__page:first");
 	}
-
-	console.log("NEXT current:", currentPage)
 
 	if (this.validate("#" + currentPage.attr("id"))) {
 		if (this.isLastPage()) {
