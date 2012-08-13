@@ -241,7 +241,6 @@ class VF_Element extends ClassDynamic {
 		$varReturn = null;
 
 		if (!is_null($varValidValue)) {
-			echo "cool";
 			return $varValidValue;
 		} else {
 			return $this->__getValue($submitted);

@@ -134,7 +134,7 @@ class ValidWizard extends ValidForm {
 		$strOutput .= "<div class='vf__confirm'>";
 		$strOutput .= $this->valuesAsHtml();
 		$strOutput .= "</div>";
-		$strOutput .= "<div class=\"vf__navigation\">\n<input type=\"hidden\" name=\"vf__dispatch\" value=\"{$strName}\" />\n<input type=\"hidden\" name=\"vf__uniqueid\" value=\"{$this->getValidField("vf__uniqueid")->getValue()}\" />\n";
+		$strOutput .= "<div class=\"vf__navigation\">\n<input type=\"hidden\" name=\"vf__dispatch\" value=\"{$strName}\" />\n<input type=\"hidden\" name=\"vf__uniqueid\" value=\"{$this->__uniqueid}\" />\n";
 		$strOutput .= "<input type=\"submit\" value=\"{$this->__confirmlabel}\" class=\"vf__button\" />\n</div>\n";
 		$strOutput .= "</form>";
 
