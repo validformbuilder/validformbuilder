@@ -279,11 +279,11 @@ class ValidForm extends ClassDynamic {
 		$this->__jsEvents[$strEvent] = $strMethod;
 	}
 	
-	public function toHtml($blnClientSide = true, $blnForceSubmitted = false) {
+	public function toHtml($blnClientSide = true, $blnForceSubmitted = false, $strCustomJs = "") {
 		$strOutput = "";
 		
 		if ($blnClientSide) {
-			$strOutput .= $this->__toJS();
+			$strOutput .= $this->__toJS($strCustomJs);
 		}
 		
 		$strClass = "validform";
@@ -541,10 +541,10 @@ class ValidForm extends ClassDynamic {
 		return $strReturn;
 	}
 	
-	private function __toJS($strCustomJs = "") {
+	protected function __toJS($strCustomJs = "") {
 		$strReturn = "";
 		$strJs = "";
-		
+
 		//*** Form.
 		foreach ($this->__elements as $element) {
 			$strJs .= $element->toJS();
