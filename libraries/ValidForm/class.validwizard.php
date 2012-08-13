@@ -67,7 +67,7 @@ class ValidWizard extends ValidForm {
 	public function addPage($id = "", $header = "", $meta = array()) {
 		if ($this->__elements->count() == 0) {
 			// Add unique id field.
-			$this->addHiddenField("vf__uniqueid", VFORM_STRING, array("default" => $this->generateId()));
+			$this->addHiddenField("vf__uniqueid", VFORM_STRING, array("default" => $this->__uniqueid));
 		}
 
 		$objPage = new VF_Page($id, $header, $meta);
@@ -126,7 +126,7 @@ class ValidWizard extends ValidForm {
 		}
 	}
 
-	public function confirm($strUniqueId) {
+	public function confirm() {
 		$strOutput = "";
 		$strName = $this->__name . "_confirmed";
 
@@ -143,7 +143,7 @@ class ValidWizard extends ValidForm {
 
 	/**
 	 * Validate all form fields until and including the fields in the given page object
-	 * @param  string 	$objPage 	The page object
+	 * @param  string 	$strPageId 	The page object id
 	 * @return boolean         		True if all fields validate, false if not.
 	 */
 	public function validateUntil($strPageId) {
