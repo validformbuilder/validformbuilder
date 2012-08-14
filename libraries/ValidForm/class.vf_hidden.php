@@ -13,7 +13,7 @@
  * @license    http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU GPL v2
  * @link       http://code.google.com/p/validformbuilder/
  ***************************/
- 
+
 require_once('class.vf_element.php');
 
 /**
