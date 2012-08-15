@@ -401,6 +401,8 @@ ValidForm.prototype.matchfields = function (strSecondFieldId, strFirstFieldId, s
 }
 
 ValidForm.prototype.traverseDisabledElements = function () {
+	var __this = this;
+	
 	jQuery("#" + this.id + " fieldset.vf__disabled").each(function(){
 		var fieldset = this;
 		
