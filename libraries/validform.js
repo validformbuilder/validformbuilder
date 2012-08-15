@@ -147,6 +147,7 @@ ValidForm.prototype.init = function() {
 		if (typeof this.events.beforeSubmit = "function") {
 			this.events.beforeSubmit(this);
 		}
+
 		if (__this.pages.length > 1) {
 			// Validation has been done on each page individually. 
 			// No need to re-validate here.
@@ -164,7 +165,7 @@ ValidForm.prototype.init = function() {
  * This function only gets called when the ValidWizard contains more than one page.
  */
 ValidForm.prototype.initWizard = function () {
-	this.currentPage = $("#" + this.id + " .vf__page:first");
+	this.currentPage = jQuery("#" + this.id + " .vf__page:first");
 
 	this.hashChange();
 }
@@ -178,7 +179,7 @@ ValidForm.prototype.hashChange = function () {
 	if (typeof _hash == "object") {
 		var __this = this;
 
-		$(window).on("hashchange hashset hashupdated", function (e, updatedHashIndex) {
+		jQuery(window).on("hashchange hashset hashupdated", function (e, updatedHashIndex) {
 			var pageIndex = _hash.get(__this.hashPageIndex);
 			var valid = true;
 
@@ -188,7 +189,7 @@ ValidForm.prototype.hashChange = function () {
 			// If the page set by a hash is valid and it's index is within 
 			// the maximum number of pages, show that page and set this.currentPage.
 			if (pageIndex <= __this.pages.length && valid) {
-				var $newPage = $("#" + __this.pages[pageIndex - 1]);
+				var $newPage = jQuery("#" + __this.pages[pageIndex - 1]);
 
 				if (!$newPage.is(":visible")) {
 					// Do a page switch
@@ -204,28 +205,28 @@ ValidForm.prototype.hashChange = function () {
 			// Show first page by force, hash page index is not a valid index for the this.pages array.
 			} else if (pageIndex > __this.pages.length) {
 				_hash.set(__this.hashPrefix, 1);
-				__this.currentPage = __this.showPage($("#" + __this.id + " .vf__page:first"));
+				__this.currentPage = __this.showPage(jQuery("#" + __this.id + " .vf__page:first"));
 			}
 		});
 
-		$(window).trigger("hashset");
+		jQuery(window).trigger("hashset");
 	}
 }
 
 ValidForm.prototype.showFirstError = function () {
 	var __this = this;
-	if ($("#" + __this.id).has(".vf__error").length > 0) {
-		var $error 	= $(".vf__error:first");
+	if (jQuery("#" + __this.id).has(".vf__error").length > 0) {
+		var $error 	= jQuery(".vf__error:first");
 		var $page 	= $error.parentsUntil(".vf__page").parent();
 
-		_hash.set(__this.hashPrefix, $("#" + __this.id + " .vf__page").index($page) + 1);
+		_hash.set(__this.hashPrefix, jQuery("#" + __this.id + " .vf__page").index($page) + 1);
 		__this.showPage($page);
 	}
 }
 
 ValidForm.prototype.addPage = function (strPageId, blnIsOverview) {
 	var __this = this;
-	var $page = $("#" + strPageId);
+	var $page = jQuery("#" + strPageId);
 
 	// Set the data attribute if this is an overview page.
 	$page.data("vf__overview", (blnIsOverview) ? blnIsOverview : false);
@@ -238,7 +239,7 @@ ValidForm.prototype.addPage = function (strPageId, blnIsOverview) {
 
 	// If this is not the first page, hide it.
 	$page.hide();
-	$("#" + __this.id).find(".vf__navigation").hide();
+	jQuery("#" + __this.id).find(".vf__navigation").hide();
 
 	if (this.pages.length == 1) {
 		this.showPage($page);
@@ -248,36 +249,33 @@ ValidForm.prototype.addPage = function (strPageId, blnIsOverview) {
 		this.addPreviousButton(strPageId);
 	}
 
-	$("#" + this.id).on("submit", function () {
+	//*** Due to incomplete functionality, this is temporarily disabled. ***//
+	// jQuery("#" + strPageId).on("keyup", function (e) {
+	// 	if (event.keyCode == 13) {
+	// 		var target;
+	// 		if (e.target) target = jQuery(e.target);
+	// 		else if (e.srcElement) target = jQuery(e.srcElement);
 
-	});
-
-	$("#" + strPageId).on("keyup", function (e) {
-		if (event.keyCode == 13) {
-			var target;
-			if (e.target) target = $(e.target);
-			else if (e.srcElement) target = $(e.srcElement);
-
-			if (!target.is("textarea")) {
-				// Simulate submit
-				$(this).find("#next_" + $(this).attr("id")).trigger("click", [true]);
-			}
-		}
-	});
+	// 		if (!target.is("textarea")) {
+	// 			// Simulate submit
+	// 			jQuery(this).find("#next_" + jQuery(this).attr("id")).trigger("click", [true]);
+	// 		}
+	// 	}
+	// });
 }
 
 ValidForm.prototype.addPreviousButton = function (strPageId) {
 	var __this			= this;
-	var $page 			= $("#" + strPageId);
+	var $page 			= jQuery("#" + strPageId);
 	var prevLabel 		= $page.data("prev-label");
 	var prevLabel 		= (typeof prevLabel == "undefined") ? "&larr; Previous" : prevLabel;
 
 	var $pagenav = $page.find(".vf__pagenavigation");
 	var $nav = ($pagenav.length > 0) ? $pagenav : $page.find(".vf__navigation");
 
-	$nav.append($("<a href='#' id='prev_" + strPageId + "' class='vf__button vf__previous'>" + prevLabel + "</a>"));
+	$nav.append(jQuery("<a href='#' id='prev_" + strPageId + "' class='vf__button vf__previous'>" + prevLabel + "</a>"));
 
-	$("#prev_" + strPageId).on("click", function () {
+	jQuery("#prev_" + strPageId).on("click", function () {
 		__this.previousPage();
 		return false;
 	});
@@ -289,7 +287,7 @@ ValidForm.prototype.getPages = function () {
 
 	for (i in this.pages) {
 		if (this.pages.hasOwnProperty(i)) {
-			objReturn[this.pages[i]] = $("#" + __this.pages[i]);
+			objReturn[this.pages[i]] = jQuery("#" + __this.pages[i]);
 		}
 	}
 
@@ -303,7 +301,7 @@ ValidForm.prototype.nextPage = function () {
 
 	if (this.validate("#" + this.currentPage.attr("id"))) {
 		if (this.isLastPage()) {
-			$("#" + this.id).trigger("submit");
+			jQuery("#" + this.id).trigger("submit");
 		} else {
 			this.currentPage.hide();
 
@@ -313,7 +311,7 @@ ValidForm.prototype.nextPage = function () {
 
 			// Try to update the current hash if hash-based navigation is enabled
 			if (typeof _hash == "object" && typeof _hash.set == "function") {
-				_hash.set(this.hashPrefix, $("#" + this.id + " .vf__page").index(this.currentPage) + 1);
+				_hash.set(this.hashPrefix, jQuery("#" + this.id + " .vf__page").index(this.currentPage) + 1);
 			}
 
 			if (typeof this.events.afterNextPage == "function") {
@@ -324,7 +322,7 @@ ValidForm.prototype.nextPage = function () {
 }
 
 ValidForm.prototype.isLastPage = function () {
-	return (this.pages.length == ($("#" + this.id + " .vf__page").index(this.currentPage) + 1));
+	return (this.pages.length == (jQuery("#" + this.id + " .vf__page").index(this.currentPage) + 1));
 }
 
 ValidForm.prototype.previousPage = function () {
@@ -340,7 +338,7 @@ ValidForm.prototype.previousPage = function () {
 
 	// Try to update the current hash if hash-based navigation is enabled
 	if (typeof _hash == "object" && typeof _hash.set == "function") {
-		_hash.set(this.hashPrefix, $("#" + this.id + " .vf__page").index(this.currentPage) + 1);
+		_hash.set(this.hashPrefix, jQuery("#" + this.id + " .vf__page").index(this.currentPage) + 1);
 	}
 
 	if (typeof this.events.afterPreviousPage == "function") {
@@ -366,11 +364,11 @@ ValidForm.prototype.showPage = function ($objPage) {
 		// Check if this is the last page. 
 		// If that is the case, set the 'next button'-label the submit button value to
 		// simulate a submit button
-		var pageIndex = $("#" + this.id + " .vf__page").index($objPage);
+		var pageIndex = jQuery("#" + this.id + " .vf__page").index($objPage);
 		if (pageIndex == this.pages.length) {
-			$("#next_" + this.pages[pageIndex - 1]).text($("#" + this.id).find("input[type='submit']").val());
+			jQuery("#next_" + this.pages[pageIndex - 1]).text(jQuery("#" + this.id).find("input[type='submit']").val());
 		} else {
-			$("#" + this.id).find(".vf__navigation").hide();
+			jQuery("#" + this.id).find(".vf__navigation").hide();
 		}
 	} else {
 		throw new Error("Invalid object passed to ValidForm.showPage().");
@@ -381,14 +379,14 @@ ValidForm.prototype.showPage = function ($objPage) {
 
 ValidForm.prototype.addPageNavigation = function (strPageId) {
 	var __this 			= this;
-	var $page 			= $("#" + strPageId);
+	var $page 			= jQuery("#" + strPageId);
 	var nextLabel 		= $page.data("next-label");
 	var nextLabel 		= (typeof nextLabel == "undefined") ? "Next &rarr;" : nextLabel;
-	var $nextNavigation = $("<div class='vf__pagenavigation vf__cf'><a href='#' id='next_" + strPageId + "' class='vf__button'>" + nextLabel + "</a></div>");
+	var $nextNavigation = jQuery("<div class='vf__pagenavigation vf__cf'><a href='#' id='next_" + strPageId + "' class='vf__button'>" + nextLabel + "</a></div>");
 
-	$("#" + strPageId).append($nextNavigation);
+	jQuery("#" + strPageId).append($nextNavigation);
 
-	$("#next_" + strPageId).on("click", function () {
+	jQuery("#next_" + strPageId).on("click", function () {
 		__this.nextPage();
 
 
@@ -397,8 +395,8 @@ ValidForm.prototype.addPageNavigation = function (strPageId) {
 }
 
 ValidForm.prototype.matchfields = function (strSecondFieldId, strFirstFieldId, strMatchError) {
-	var objElement = this.getElement($("#" + strSecondFieldId).attr("name"));
-	objElement.validator.matchWith = this.getElement($("#" + strFirstFieldId).attr("name"));
+	var objElement = this.getElement(jQuery("#" + strSecondFieldId).attr("name"));
+	objElement.validator.matchWith = this.getElement(jQuery("#" + strFirstFieldId).attr("name"));
 	objElement.validator.matchError = strMatchError;
 }
 
@@ -534,8 +532,8 @@ ValidForm.prototype.inArray = function(arrToSearch, value) {
 };
 
 ValidForm.prototype.addTrigger = function(strTriggerId, strTargetId) {
-	var $trigger 	= $("#" + strTriggerId);
-	var $target 	= $("#" + strTargetId);
+	var $trigger 	= jQuery("#" + strTriggerId);
+	var $target 	= jQuery("#" + strTargetId);
 	var blnIsOption	= $trigger.is("option");
 
 	var toggleTrigger = function () {
@@ -547,7 +545,7 @@ ValidForm.prototype.addTrigger = function(strTriggerId, strTargetId) {
 	}
 
 	if ($trigger.is(":checkbox") || $trigger.is(":radio")) {
-		$("input[name='" + $trigger.attr("name") + "']").on("change", function () {
+		jQuery("input[name='" + $trigger.attr("name") + "']").on("change", function () {
 			toggleTrigger();
 		});
 		toggleTrigger();
@@ -557,7 +555,7 @@ ValidForm.prototype.addTrigger = function(strTriggerId, strTargetId) {
 
 	} else if (blnIsOption) {
 		// Select option
-		$("input[name='" + $trigger.attr("name") + "']").on("change", function () {
+		jQuery("input[name='" + $trigger.attr("name") + "']").on("change", function () {
 			toggleTrigger();
 		});
 		toggleTrigger();
@@ -808,7 +806,7 @@ ValidFormFieldValidator.prototype.validate = function(value) {
 			// Check if field values match
 			if (typeof this.matchWith == "object") {
 				if (this.matchWith.validate()) {
-					if ($("#" + this.matchWith.id).val() != value) {
+					if (jQuery("#" + this.matchWith.id).val() != value) {
 						this.matchWith.validator.showAlert(this.matchError);
 						this.showAlert(this.matchError);
 						return false;
