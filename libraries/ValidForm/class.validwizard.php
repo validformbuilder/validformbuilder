@@ -47,18 +47,9 @@ class ValidWizard extends ValidForm {
 		$this->__confirmlabel = (isset($meta["confirmLabel"])) ? $meta["confirmLabel"] : "Confirm";
 	}
 
-	public function toHtml($blnClientSide = true, $blnForceSubmitted = false) {
-		return parent::toHtml($blnClientSide, $blnForceSubmitted, $this->__toJs());
-	}
-
-	protected function __toJs() {
-		$strJs = "";
-
-		if ($this->__pageCount > 1) {
-			$strJs = "objForm.initWizard();\n";
-		}
-
-		return parent::__toJs($strJs);
+	public function toHtml($blnClientSide = true, $blnForceSubmitted = false, $strJs = "") {
+		$strJs = ($this->__pageCount > 1) ? "objForm.initWizard();\n" . $strJs : "";
+		return parent::toHtml($blnClientSide, $blnForceSubmitted, $strJs);
 	}
 
 	public function getPage($intIndex) {
