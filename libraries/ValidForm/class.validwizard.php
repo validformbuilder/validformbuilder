@@ -90,6 +90,16 @@ class ValidWizard extends ValidForm {
 		
 		return $objField;
 	}
+	
+	public function addFieldset($label, $noteHeader = NULL, $noteBody = NULL, $options = array()) {
+		$objFieldSet = new VF_Fieldset($label, $noteHeader, $noteBody, $options);
+		
+		$objPage = $this->__elements->getLast();
+		$objPage->addField($objFieldSet);
+
+		
+		return $objFieldSet;
+	}
 
 	public function valuesAsHtml($hideEmpty = false) {
 		$strOutput = "";

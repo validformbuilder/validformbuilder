@@ -144,8 +144,8 @@ ValidForm.prototype.init = function() {
 	
 	// This is where the magic happens: onSubmit; validate form.
 	jQuery("#" + this.id).bind("submit", function(){
-		if (typeof this.events.beforeSubmit = "function") {
-			this.events.beforeSubmit(this);
+		if (typeof __this.events.beforeSubmit == "function") {
+			__this.events.beforeSubmit(this);
 		}
 
 		if (__this.pages.length > 1) {
