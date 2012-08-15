@@ -63,21 +63,21 @@ class VF_Page extends ClassDynamic {
 	}
 
 	public function addField($objField) {
-		if ($this->__elements->count() == 0) {
-			$objFieldset = new VF_Fieldset();
-			$this->__elements->addObject($objFieldset);
-		}
+		if (get_class($objField) == "VF_Fieldset") {
+			$this->__elements->addObject($objField);
+		} else {
+			if ($this->__elements->count() == 0 && get_class($objField) !== "VF_Fieldset") {
+				$objFieldset = new VF_Fieldset();
+				$this->__elements->addObject($objFieldset);
+			}
 
-		$objFieldset = $this->__elements->getLast();
-		$objFieldset->getFields()->addObject($objField);
+			$objFieldset = $this->__elements->getLast();
+			$objFieldset->getFields()->addObject($objField);
+		}
 	}
 	
 	public function toJS() {
-		// if ($this->__isOverview) {
-		// 	$strReturn = "objForm.addOverviewPage('" . $this->getId() . "');\n";
-		// } else {
-			$strReturn = "objForm.addPage('" . $this->getId() . "', true);\n";
-		// }
+		$strReturn = "objForm.addPage('" . $this->getId() . "', true);\n";
 		
 		foreach ($this->__elements as $field) {
 			$strReturn .= $field->toJS();

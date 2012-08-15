@@ -130,6 +130,19 @@ class VF_Collection implements Iterator {
     }
 
     /**
+     * Get first element in collection
+     * @return mixed Returns first element in collection, null if collection is empty
+     */
+    public function getFirst() {
+        $varReturn = null;
+        if (count($this->collection) > 0) {
+            $varReturn = $this->collection[0];
+        }
+
+        return $varReturn;
+    }
+
+    /**
      * Get last element in collection
      * @return mixed Returns last element in collection, null if collection is empty
      */

@@ -225,12 +225,11 @@ class ValidForm extends ClassDynamic {
 		$objParagraph = new VF_Paragraph($strHeader, $strBody);
 		
 		//*** Fieldset already defined?
-		if (count($this->__elements) == 0) {
+		if ($this->__elements->count() == 0) {
 			$objFieldSet = new VF_Fieldset();
 			$this->__elements->addObject($objFieldSet);
 		}
 		
-		// $objFieldset = $this->__elements[count($this->__elements) - 1];
 		$objFieldset = $this->__elements->getLast();
 		$objFieldset->addField($objParagraph);
 		
@@ -249,7 +248,6 @@ class ValidForm extends ClassDynamic {
 		$objArea->setForm($this);
 		$objArea->setRequiredStyle($this->__requiredstyle);
 		
-		//$objFieldset = $this->__elements[count($this->__elements) - 1];
 		$objFieldset = $this->__elements->getLast();
 		$objFieldset->addField($objArea);
 		
@@ -268,7 +266,6 @@ class ValidForm extends ClassDynamic {
 		$objField->setForm($this);
 		$objField->setRequiredStyle($this->__requiredstyle);
 		
-		//$objFieldset = $this->__elements[count($this->__elements) - 1];
 		$objFieldset = $this->__elements->getLast();
 		$objFieldset->addField($objField);
 		
@@ -390,6 +387,7 @@ class ValidForm extends ClassDynamic {
 		$strOutput = "\t<table border=\"0\" cellspacing=\"0\" cellpadding=\"0\">\n";
 		$collection = (!is_null($collection)) ? $collection : $this->__elements;
 
+		// print_r($collection);
 		foreach ($collection as $objFieldset) {
 			$strSet = "";
 			foreach ($objFieldset->getFields() as $objField) {
@@ -410,7 +408,7 @@ class ValidForm extends ClassDynamic {
 							$strSet .= $this->fieldAsHtml($objField, $hideEmpty);
 						}
 					}
-					
+
 					if ($objField->isDynamic()) {
 						$intDynamicCount = $objField->getDynamicCount();
 						
@@ -492,7 +490,7 @@ class ValidForm extends ClassDynamic {
 											
 				$varValue = $objSubField->getValue($intDynamicCount);											
 				$strValue .= (is_array($varValue)) ? implode(", ", $varValue) : $varValue;
-				$strValue .= (count($objSubFields) > $intCount) ? " " : "";
+				$strValue .= ($objSubFields->count() > $intCount) ? " " : "";
 			}
 			
 			$strValue = trim($strValue);

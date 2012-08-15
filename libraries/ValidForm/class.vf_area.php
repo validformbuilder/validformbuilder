@@ -139,7 +139,7 @@ class VF_Area extends ClassDynamic {
 		$intReturn = 0;
 		
 		$objSubFields = $this->getFields();
-		$objSubField = (count($objSubFields) > 0) ? current($objSubFields) : NULL;
+		$objSubField = ($objSubFields->count() > 0) ? $objSubFields->getFirst() : NULL;
 		
 		if (is_object($objSubField)) {
 			$intReturn = $objSubField->getDynamicCount();
@@ -166,7 +166,7 @@ class VF_Area extends ClassDynamic {
 	}
 	
 	public function hasFields() {
-		return (count($this->__fields) > 0) ? TRUE : FALSE;
+		return ($this->__fields->count() > 0) ? TRUE : FALSE;
 	}
 	
 	private function __validate() {

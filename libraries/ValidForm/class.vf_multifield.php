@@ -128,7 +128,7 @@ class VF_MultiField extends ClassDynamic {
 		$intReturn = 0;
 		
 		$objSubFields = $this->getFields();
-		$objSubField = (count($objSubFields) > 0) ? current($objSubFields) : NULL;
+		$objSubField = ($objSubFields->count() > 0) ? $objSubFields->getFirst() : NULL;
 		
 		if (is_object($objSubField)) {
 			$intReturn = $objSubField->getDynamicCount();
