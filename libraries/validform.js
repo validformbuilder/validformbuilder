@@ -122,7 +122,7 @@ function ValidForm(strFormId, strMainAlert, blnAllowPreviousPage) {
 	this.validator = new ValidFormValidator(this.id);
 	this.validator.mainAlert = strMainAlert;
 	this.events = [];
-	this.customEvents = ["afterValidate", "afterDynamicChange", "afterNextPage", "beforeNextPage", "afterShowPage", "beforeShowPage"];
+	this.customEvents = ["beforeSubmit", "afterValidate", "afterDynamicChange", "afterNextPage", "beforeNextPage", "afterShowPage", "beforeShowPage"];
 	this.hashPageIndex = 1;
 	this.hashPrefix = "vf_page";
 	this.allowPreviousPage = (typeof blnAllowPreviousPage !== "undefined") ? blnAllowPreviousPage : true;
@@ -143,11 +143,14 @@ ValidForm.prototype.init = function() {
 	this.traverseDisabledElements();
 	
 	// This is where the magic happens: onSubmit; validate form.
-	jQuery("#" + this.id).bind("submit", function(){	
+	jQuery("#" + this.id).bind("submit", function(){
+		if (typeof this.events.beforeSubmit = "function") {
+			this.events.beforeSubmit(this);
+		}
 		if (__this.pages.length > 1) {
 			// Validation has been done on each page individually. 
 			// No need to re-validate here.
-			return true; 
+			return true;
 		} else {
 			return __this.validate();
 		}
@@ -244,6 +247,10 @@ ValidForm.prototype.addPage = function (strPageId, blnIsOverview) {
 	if (this.pages.length > 1) {
 		this.addPreviousButton(strPageId);
 	}
+
+	$("#" + this.id).on("submit", function () {
+
+	});
 
 	$("#" + strPageId).on("keyup", function (e) {
 		if (event.keyCode == 13) {
@@ -344,7 +351,6 @@ ValidForm.prototype.previousPage = function () {
 ValidForm.prototype.showPage = function ($objPage) {
 	var __this = this;
 
-	console.log("SHOW PAGE:", $objPage);
 	if (typeof $objPage == "object" && $objPage instanceof jQuery) {
 		if (typeof this.events.beforeShowPage == "function") {
 			this.events.beforeShowPage($objPage);
