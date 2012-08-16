@@ -416,24 +416,46 @@ ValidForm.prototype.traverseDisabledElements = function () {
 }
 
 ValidForm.prototype.dynamicDuplication = function () {
-	var __this = this;
+	var __this 	= this;
 
+	// Bind click event to duplicate button
 	jQuery(".vf__dynamic a").bind("click", function() {
+		var $anchor = jQuery(this);
+		var ids = jQuery(this).data("target-id").split("|");
+
+		if (ids.length == 1) {
+			// Single-field dynamic, one counter
+			var counter = $anchor.parent().next();
+		} else if (ids.length > 1) {
+			// Fieldset dynamic, multiple counters.
+			var strFirstFieldId = $anchor.data("target-id").split("|")[0];
+			var $parent = $("#" + strFirstFieldId).parentsUntil(".vf__area").parent();
+			var counter = $parent.find("input[name$='_dynamic']");
+		} else {
+			// Don't know what type this is *yet*. Throw an error.
+			throw new Error("Unknown dynamic parent.");
+		}
+
 		if (!jQuery(this).hasClass("vf__disabled")) {
 			//*** Update dynamic field counter.
-			var self = this;
-			var counter = jQuery(this).parent().find("input");
-			counter.val(parseInt(counter.val()) + 1);
-			
-			var copy = jQuery(this).parent().prev().clone();
+			var $original 	= $anchor.parent().prev();
+			var copy 		= $original.clone();
+
+			if (isNaN(parseInt(counter.val()))) {
+				counter.val(1);
+			} else {
+				counter.val(parseInt(counter.val()) + 1);
+			}
 			
 			//*** Clear values.
-			var ids = jQuery(this).data("target-id").split("|");
 			var names = jQuery(this).data("target-name").split("|");
 			
-			jQuery.each(names, function(index, value){
-				//*** Fix every field in an area or multifield.
-				var search = (counter.val() == 1) ? value : value + "_" + (counter.val() - 1);
+			copy.find("input[name$='_dynamic']").remove();
+
+			jQuery.each(names, function(index, fieldname){
+				//*** Fix every field in an area or multifield. 
+				var search 	= (parseInt(counter.val()) == 1) ? fieldname : fieldname + "_" + (parseInt(counter.val()) - 1);
+
 				copy.find("[name='" + search + "']").each(function(){
 					if (jQuery(this).attr("type") == "radio" || 
 							jQuery(this).attr("type") == "checkbox") {
@@ -449,24 +471,24 @@ ValidForm.prototype.dynamicDuplication = function () {
 						
 						jQuery(this)
 							.removeAttr("checked")
-							.attr("name", value + "_" + counter.val())
+							.attr("name", fieldname + "_" + counter.val())
 							.attr("id", fieldId + "_" + counter.val())
 							.parent("label").attr("for", fieldId + "_" + counter.val());
 					} else {
-						//*** Normal fields (input, textare) are easy.
+						//*** Normal fields (input, textarea) are easy.
 						jQuery(this)
 							.attr("value", "")
-							.attr("name", value + "_" + counter.val())
+							.attr("name", fieldname + "_" + counter.val())
 							.attr("id", ids[index] + "_" + counter.val())
 							.prev("label").attr("for", ids[index] + "_" + counter.val());
 					}
 				});
 				
 				//*** Add fields to the form.
-				var objOriginal = __this.getElement(value);
+				var objOriginal = __this.getElement(fieldname);
 				var objCopy = jQuery.extend(new ValidFormElement(), objOriginal);
 				objCopy.id = ids[index] + "_" + counter.val();
-				objCopy.name = value + "_" + counter.val();
+				objCopy.name = fieldname + "_" + counter.val();
 				objCopy.validator = jQuery.extend(new ValidFormFieldValidator(), objOriginal.validator);
 				objCopy.validator.id = objCopy.id;
 				objCopy.validator.required = false;
