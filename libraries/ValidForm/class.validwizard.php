@@ -74,7 +74,7 @@ class ValidWizard extends ValidForm {
 	}
 	
 	public function addField($name, $label, $type, $validationRules = array(), $errorHandlers = array(), $meta = array(), $blnJustRender = FALSE) {
-		$objField = parent::renderField($name, $label, $type, $validationRules, $errorHandlers, $meta, $blnJustRender);
+		$objField = ValidForm::renderField($name, $label, $type, $validationRules, $errorHandlers, $meta, $blnJustRender);
 		
 		//*** Fieldset already defined?
 		if ($this->__elements->count() == 0 && !$blnJustRender) {
@@ -138,9 +138,35 @@ class ValidWizard extends ValidForm {
 		$strOutput .= "<div class='vf__confirm'>";
 		$strOutput .= $this->valuesAsHtml();
 		$strOutput .= "</div>";
+		$strOutput .= $this->__addHiddenFields();
 		$strOutput .= "<div class=\"vf__navigation\">\n<input type=\"hidden\" name=\"vf__dispatch\" value=\"{$strName}\" />\n<input type=\"hidden\" name=\"vf__uniqueid\" value=\"{$this->__uniqueid}\" />\n";
 		$strOutput .= "<input type=\"submit\" value=\"{$this->__confirmlabel}\" class=\"vf__button\" />\n</div>\n";
 		$strOutput .= "</form>";
+
+		return $strOutput;
+	}
+
+	private function __addHiddenFields() {
+		$strOutput = "";
+		foreach ($this->getElements() as $objPage) {
+			if (get_class($objPage) == "VF_Hidden") continue;
+
+			foreach ($objPage->getElements() as $objFieldSet) {
+				foreach ($objFieldSet->getFields() as $objField) {
+					if ($objField->hasFields()) {
+						foreach ($objField->getFields() as $objSubField) {
+							if (get_class($objSubField) == "VF_Hidden") {
+								$strOutput .= $objSubField->toHtml(true);
+							}
+						}
+					} else {
+						if (get_class($objField) == "VF_Hidden") {
+							$strOutput .= $objField->toHtml(true);
+						}
+					}
+				}
+			}
+		}
 
 		return $strOutput;
 	}
