@@ -66,13 +66,18 @@ class VF_Page extends ClassDynamic {
 		if (get_class($objField) == "VF_Fieldset") {
 			$this->__elements->addObject($objField);
 		} else {
-			if ($this->__elements->count() == 0 && get_class($objField) !== "VF_Fieldset") {
+			if ($this->__elements->count() == 0) {
 				$objFieldset = new VF_Fieldset();
 				$this->__elements->addObject($objFieldset);
 			}
 
 			$objFieldset = $this->__elements->getLast();
 			$objFieldset->getFields()->addObject($objField);
+
+			if ($objField->isDynamic()) {
+				$objHiddenField = new VF_Hidden($objField->getId() . "_dynamic", VFORM_INTEGER, array("default" => 0));
+				$objFieldset->getFields()->addObject($objHiddenField);
+			}
 		}
 	}
 	

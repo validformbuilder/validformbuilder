@@ -31,7 +31,6 @@ class VF_Area extends ClassDynamic {
 	protected $__name;
 	protected $__checked;
 	protected $__meta;
-	protected $__form;
 	protected $__dynamic;
 	protected $__dynamicLabel;
 	protected $__requiredstyle;
@@ -51,9 +50,14 @@ class VF_Area extends ClassDynamic {
 	}
 	
 	public function addField($name, $label, $type, $validationRules = array(), $errorHandlers = array(), $meta = array()) {
-		$objField = $this->__form->addField($name, $label, $type, $validationRules, $errorHandlers, $meta, TRUE);
+		$objField = ValidForm::renderField($name, $label, $type, $validationRules, $errorHandlers, $meta);
 				
 		$this->__fields->addObject($objField);
+
+		if ($this->__dynamic || $objField->isDynamic()) {
+			$objHiddenField = new VF_Hidden($objField->getId() . "_dynamic", VFORM_INTEGER, array("default" => "0"));
+			$this->__fields->addObject($objHiddenField);
+		}
 		
 		return $objField;
 	}
@@ -61,10 +65,14 @@ class VF_Area extends ClassDynamic {
 	public function addMultiField($label = NULL, $meta = array()) {
 		$objField = new VF_MultiField($label, $meta);
 		
-		$objField->setForm($this->__form);
 		$objField->setRequiredStyle($this->__requiredstyle);
 		
 		$this->__fields->addObject($objField);
+
+		if ($this->__dynamic) {
+			$objHiddenField = new VF_Hidden($objField->getId() . "_dynamic", VFORM_INTEGER, array("default" => "0"), true);
+			$this->__fields->addObject($objHiddenField);
+		}
 		
 		return $objField;
 	}
@@ -93,24 +101,25 @@ class VF_Area extends ClassDynamic {
 			switch (get_class($field)) {
 				case "VF_MultiField":
 					foreach ($field->getFields() as $subfield) {
-						$arrFields[$subfield->getId()] = $subfield->getName();
+						$strSubFieldName = $subfield->getName();
+						if (!strstr($strSubFieldName, "_dynamic")) {
+							$arrFields[$subfield->getId()] = $subfield->getName();
+						}
 					}
 					
 					break;
 				default:
-					$arrFields[$field->getId()] = $field->getName();
+					$strFieldName = $field->getName();
+					if (!strstr($strFieldName, "_dynamic")) {
+						$arrFields[$field->getId()] = $field->getName();
+					}
 			}
 		}
 		
 		$strOutput .= "</fieldset>\n";
 		
 		if ($this->__dynamic && !empty($this->__dynamicLabel)) {
-			$strOutput .= "<div class=\"vf__dynamic\"><a href=\"#\" data-target-id=\"" . implode("|", array_keys($arrFields)) . "\" data-target-name=\"" . implode("|", array_values($arrFields)) . "\">{$this->__dynamicLabel}</a>";
-			
-			foreach ($arrFields as $key => $value) {
-				$strOutput .= "<input type=\"hidden\" id=\"{$key}_dynamic\" name=\"{$value}_dynamic\" value=\"0\" />";
-			}
-			
+			$strOutput .= "<div class=\"vf__dynamic vf__cf\"><a href=\"#\" data-target-id=\"" . implode("|", array_keys($arrFields)) . "\" data-target-name=\"" . implode("|", array_values($arrFields)) . "\">{$this->__dynamicLabel}</a>";
 			$strOutput .= "</div>";
 		}
 	

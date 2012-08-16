@@ -28,7 +28,6 @@ require_once('class.classdynamic.php');
 class VF_MultiField extends ClassDynamic {
 	protected $__label;
 	protected $__meta;
-	protected $__form;
 	protected $__dynamic;
 	protected $__dynamicLabel;
 	protected $__requiredstyle;
@@ -45,7 +44,7 @@ class VF_MultiField extends ClassDynamic {
 	}
 	
 	public function addField($name, $type, $validationRules = array(), $errorHandlers = array(), $meta = array()) {
-		$objField = $this->__form->addField($name, "", $type, $validationRules, $errorHandlers, $meta, TRUE);
+		$objField = ValidForm::addField($name, "", $type, $validationRules, $errorHandlers, $meta, TRUE);
 		
 		$this->__fields->addObject($objField);
 		
@@ -94,7 +93,7 @@ class VF_MultiField extends ClassDynamic {
 		$strOutput .= "</div>\n";
 		
 		if ($this->__dynamic && !empty($this->__dynamicLabel)) {
-			$strOutput .= "<div class=\"vf__dynamic\"><a href=\"#\" data-target-id=\"" . implode("|", array_keys($arrFields)) . "\" data-target-name=\"" . implode("|", array_values($arrFields)) . "\">{$this->__dynamicLabel}</a>";
+			$strOutput .= "<div class=\"vf__dynamic vf__cf\"><a href=\"#\" data-target-id=\"" . implode("|", array_keys($arrFields)) . "\" data-target-name=\"" . implode("|", array_values($arrFields)) . "\">{$this->__dynamicLabel}</a>";
 			
 			foreach ($arrFields as $key => $value) {
 				$strOutput .= "<input type=\"hidden\" id=\"{$key}_dynamic\" name=\"{$value}_dynamic\" value=\"0\" />";
