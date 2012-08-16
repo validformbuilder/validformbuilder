@@ -149,14 +149,17 @@ class ValidForm extends ClassDynamic {
 		return $objFieldSet;
 	}
 	
-	public function addHiddenField($name, $type, $meta = array()) {
+	public function addHiddenField($name, $type, $meta = array(), $blnJustRender = false) {
 		$objField = new VF_Hidden($name, $type, $meta);
-		$this->__elements->addObject($objField);
+
+		if(!$blnJustRender) {
+			$this->__elements->addObject($objField);
+		}
 		
 		return $objField;
 	}
 
-	protected function renderField($name, $label, $type, $validationRules, $errorHandlers, $meta, $blnJustRender) {
+	public static function renderField($name, $label, $type, $validationRules, $errorHandlers, $meta) {
 		$objField = null;
 		switch ($type) {
 			case VFORM_STRING:
@@ -204,7 +207,7 @@ class ValidForm extends ClassDynamic {
 	}
 	
 	public function addField($name, $label, $type, $validationRules = array(), $errorHandlers = array(), $meta = array(), $blnJustRender = FALSE) {
-		$objField = $this->renderField($name, $label, $type, $validationRules, $errorHandlers, $meta, $blnJustRender);
+		$objField = ValidForm::renderField($name, $label, $type, $validationRules, $errorHandlers, $meta, $blnJustRender);
 		
 		//*** Fieldset already defined?
 		if ($this->__elements->count() == 0 && !$blnJustRender) {
@@ -216,6 +219,10 @@ class ValidForm extends ClassDynamic {
 		if (!$blnJustRender) {
 			$objElement = $this->__elements->getLast();
 			$objElement->addField($objField);
+
+			if ($objField->isDynamic()) {
+				$this->addHiddenField($objField->getId() . "_dynamic", VFORM_INTEGER, array("default" => 0));
+			}
 		}
 		
 		return $objField;
@@ -245,7 +252,6 @@ class ValidForm extends ClassDynamic {
 			$this->__elements->addObject($objFieldSet);
 		}
 		
-		$objArea->setForm($this);
 		$objArea->setRequiredStyle($this->__requiredstyle);
 		
 		$objFieldset = $this->__elements->getLast();
@@ -263,7 +269,6 @@ class ValidForm extends ClassDynamic {
 			$this->__elements->addObject($objFieldSet);
 		}
 				
-		$objField->setForm($this);
 		$objField->setRequiredStyle($this->__requiredstyle);
 		
 		$objFieldset = $this->__elements->getLast();
@@ -461,9 +466,17 @@ class ValidForm extends ClassDynamic {
 				case "VF_MultiField":
 					$strSet .= $this->multiFieldAsHtml($objSubField, $hideEmpty, $intDynamicCount);
 					
-					break;	
-				default:								
-					$strSet .= $this->fieldAsHtml($objSubField, $hideEmpty, $intDynamicCount);
+					break;
+				default:
+					$strSet .= $this->fieldAsHtml($objSubField, $hideEmpty, $intDynamicCount, true);
+					
+					// Support nested dynamic fields.
+					if ($objSubField->isDynamic()) {
+						$intDynamicCount = $objSubField->getDynamicCount();
+						for ($intCount = 1; $intCount <= $intDynamicCount; $intCount++) {
+							$strSet .= $this->fieldAsHtml($objSubField, $hideEmpty, $intCount);
+						}
+					}
 			}
 		}	
 		
@@ -508,31 +521,36 @@ class ValidForm extends ClassDynamic {
 	private function fieldAsHtml($objField, $hideEmpty = FALSE, $intDynamicCount = 0) {
 		$strReturn = "";
 		
+		$strFieldName = $objField->getName();
 		$strLabel = $objField->getLabel();					
 		$varValue = ($intDynamicCount > 0) ? $objField->getValue($intDynamicCount) : $objField->getValue();
 		$strValue = (is_array($varValue)) ? implode(", ", $varValue) : $varValue;
 
-		if ((!empty($strValue) && $hideEmpty) || (!$hideEmpty && !is_null($strValue))) {
-			switch ($objField->getType()) {
-				case VFORM_BOOLEAN:
-					$strValue = ($strValue == 1) ? "yes" : "no";
-					break;
-			}
-			
-			if (empty($strLabel) && empty($strValue)) {	
-				//*** Skip the field.
-			} else {
-				$strReturn .= "<tr>";
-				$strReturn .= "<td valign=\"top\">{$objField->getLabel()} &nbsp;&nbsp;&nbsp;</td><td valign=\"top\">: <b>" . nl2br($strValue) . "</b></td>\n";
-				$strReturn .= "</tr>";
-			}
+		if (
+			((!empty($strValue) && $hideEmpty) || (!$hideEmpty && !is_null($strValue)))
+			&& ((get_class($objField) == "VF_Hidden") && !strstr($strFieldName, "_dynamic"))
+			) {
+
+				switch ($objField->getType()) {
+					case VFORM_BOOLEAN:
+						$strValue = ($strValue == 1) ? "yes" : "no";
+						break;
+				}
+				
+				if (empty($strLabel) && empty($strValue)) {	
+					//*** Skip the field.
+				} else {
+					$strReturn .= "<tr>";
+					$strReturn .= "<td valign=\"top\">{$objField->getLabel()} &nbsp;&nbsp;&nbsp;</td><td valign=\"top\">: <b>" . nl2br($strValue) . "</b></td>\n";
+					$strReturn .= "</tr>";
+				}
 		}
 		
 		return $strReturn;
 	}
 		
 	public static function get($param, $replaceEmpty = "") {
-		(isset($_REQUEST[$param])) ? $strReturn = $_REQUEST[$param] : $strReturn = "";
+		$strReturn = (isset($_REQUEST[$param])) ? $_REQUEST[$param] : "";
 
 		if (empty($strReturn) && !is_numeric($strReturn) && $strReturn !== 0) $strReturn = $replaceEmpty;
 
