@@ -29,19 +29,31 @@ class VF_Collection implements Iterator {
 	   }
 	}
 
-	/**
-	 * Add object to the collection
-	 * 
-	 * @param object The object
-	 * @param boolean Add object to beginning of array or not
-	 */
-	public function addObject($value, $blnAddToBeginning = FALSE) {
-		if ($blnAddToBeginning) {
-			array_unshift($this->collection, $value);
-		} else {
-			array_push($this->collection, $value);
-		}
-	}
+    /**
+     * Add object to the collection
+     * 
+     * @param object The object
+     * @param boolean Add object to beginning of array or not
+     */
+    public function addObject($value, $blnAddToBeginning = FALSE) {
+        if ($blnAddToBeginning) {
+            array_unshift($this->collection, $value);
+        } else {
+            array_push($this->collection, $value);
+        }
+    }
+
+    /**
+     * Add objects to the collection
+     * 
+     * @param array An array of items / collection of objects to be added
+     * @param boolean Add objects to beginning of array or not
+     */
+    public function addObjects($arrObjects, $blnAddToBeginning = FALSE) {
+        foreach ($arrObjects as $varObject) {
+            $this->addObject($varObject, $blnAddToBeginning);
+        }
+    }
 
 	/**
 	 * Advance internal pointer to a specific index
