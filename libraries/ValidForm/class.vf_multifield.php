@@ -44,7 +44,7 @@ class VF_MultiField extends ClassDynamic {
 	}
 	
 	public function addField($name, $type, $validationRules = array(), $errorHandlers = array(), $meta = array()) {
-		$objField = ValidForm::addField($name, "", $type, $validationRules, $errorHandlers, $meta, TRUE);
+		$objField = ValidForm::renderField($name, "", $type, $validationRules, $errorHandlers, $meta);
 		
 		$this->__fields->addObject($objField);
 		

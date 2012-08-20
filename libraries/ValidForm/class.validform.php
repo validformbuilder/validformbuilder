@@ -141,10 +141,9 @@ class ValidForm extends ClassDynamic {
 		return $objNavigation;
 	}
 	
-	public function addFieldset($label, $noteHeader = NULL, $noteBody = NULL, $options = array()) {
+	public function addFieldset($label = NULL, $noteHeader = NULL, $noteBody = NULL, $options = array()) {
 		$objFieldSet = new VF_Fieldset($label, $noteHeader, $noteBody, $options);
 		$this->__elements->addObject($objFieldSet);
-
 		
 		return $objFieldSet;
 	}
@@ -207,11 +206,11 @@ class ValidForm extends ClassDynamic {
 	}
 	
 	public function addField($name, $label, $type, $validationRules = array(), $errorHandlers = array(), $meta = array(), $blnJustRender = FALSE) {
-		$objField = ValidForm::renderField($name, $label, $type, $validationRules, $errorHandlers, $meta, $blnJustRender);
+		$objField = ValidForm::renderField($name, $label, $type, $validationRules, $errorHandlers, $meta);
 		
 		//*** Fieldset already defined?
 		if ($this->__elements->count() == 0 && !$blnJustRender) {
-			$this->addFieldset(null);
+			$this->addFieldset();
 		}
 		
 		$objField->setRequiredStyle($this->__requiredstyle);
@@ -251,7 +250,8 @@ class ValidForm extends ClassDynamic {
 			$objFieldSet = new VF_Fieldset();
 			$this->__elements->addObject($objFieldSet);
 		}
-		
+
+		$objArea->setForm($this);
 		$objArea->setRequiredStyle($this->__requiredstyle);
 		
 		$objFieldset = $this->__elements->getLast();
@@ -268,7 +268,8 @@ class ValidForm extends ClassDynamic {
 			$objFieldSet = new VF_Fieldset();
 			$this->__elements->addObject($objFieldSet);
 		}
-				
+
+		$objField->setForm($this);
 		$objField->setRequiredStyle($this->__requiredstyle);
 		
 		$objFieldset = $this->__elements->getLast();

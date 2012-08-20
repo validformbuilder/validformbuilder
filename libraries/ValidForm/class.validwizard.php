@@ -74,7 +74,7 @@ class ValidWizard extends ValidForm {
 	}
 	
 	public function addField($name, $label, $type, $validationRules = array(), $errorHandlers = array(), $meta = array(), $blnJustRender = FALSE) {
-		$objField = ValidForm::renderField($name, $label, $type, $validationRules, $errorHandlers, $meta, $blnJustRender);
+		$objField = ValidForm::renderField($name, $label, $type, $validationRules, $errorHandlers, $meta);
 		
 		//*** Fieldset already defined?
 		if ($this->__elements->count() == 0 && !$blnJustRender) {
