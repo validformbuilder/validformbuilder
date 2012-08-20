@@ -156,12 +156,23 @@ class VF_Collection implements Iterator {
 
     /**
      * Get last element in collection
+     * @param string $strType Optional type to search for 
      * @return mixed Returns last element in collection, null if collection is empty
      */
-    public function getLast() {
+    public function getLast($strType = "") {
         $varReturn = null;
+        
         if (count($this->collection) > 0) {
-            $varReturn = $this->collection[$this->count() - 1];
+        	if (!empty($strType)) {
+        		foreach ($this->collection as $object) {
+        			if (get_class($object) == $strType) {
+        				$varReturn = $object;
+        				break;
+        			}
+        		}
+        	} else {
+            	$varReturn = $this->collection[$this->count() - 1];
+        	}
         }
 
         return $varReturn;

@@ -141,8 +141,8 @@ class ValidForm extends ClassDynamic {
 		return $objNavigation;
 	}
 	
-	public function addFieldset($label = NULL, $noteHeader = NULL, $noteBody = NULL, $options = array()) {
-		$objFieldSet = new VF_Fieldset($label, $noteHeader, $noteBody, $options);
+	public function addFieldset($label = NULL, $noteHeader = NULL, $noteBody = NULL, $meta = array()) {
+		$objFieldSet = new VF_Fieldset($label, $noteHeader, $noteBody, $meta);
 		$this->__elements->addObject($objFieldSet);
 		
 		return $objFieldSet;
@@ -208,16 +208,17 @@ class ValidForm extends ClassDynamic {
 	public function addField($name, $label, $type, $validationRules = array(), $errorHandlers = array(), $meta = array(), $blnJustRender = FALSE) {
 		$objField = ValidForm::renderField($name, $label, $type, $validationRules, $errorHandlers, $meta);
 		
-		//*** Fieldset already defined?
-		if ($this->__elements->count() == 0 && !$blnJustRender) {
-			$this->addFieldset();
-		}
-		
 		$objField->setRequiredStyle($this->__requiredstyle);
 		
 		if (!$blnJustRender) {
-			$objElement = $this->__elements->getLast();
-			$objElement->addField($objField);
+			//*** Fieldset already defined?
+			$objFieldset = $this->__elements->getLast("VF_Fieldset");
+			if ($this->__elements->count() == 0 || !is_object($objFieldset)) {
+				$objFieldset = $this->addFieldset();
+			}
+			
+			//*** Add field to the fieldset.
+			$objFieldset->addField($objField);
 
 			if ($objField->isDynamic()) {
 				$this->addHiddenField($objField->getId() . "_dynamic", VFORM_INTEGER, array("default" => 0));
@@ -229,14 +230,14 @@ class ValidForm extends ClassDynamic {
 	
 	public function addParagraph($strBody, $strHeader = "") {
 		$objParagraph = new VF_Paragraph($strHeader, $strBody);
-		
+
 		//*** Fieldset already defined?
-		if ($this->__elements->count() == 0) {
-			$objFieldSet = new VF_Fieldset();
-			$this->__elements->addObject($objFieldSet);
+		$objFieldset = $this->__elements->getLast("VF_Fieldset");
+		if ($this->__elements->count() == 0 || !is_object($objFieldset)) {
+			$objFieldset = $this->addFieldset();
 		}
-		
-		$objFieldset = $this->__elements->getLast();
+			
+		//*** Add field to the fieldset.
 		$objFieldset->addField($objParagraph);
 		
 		return $objParagraph;
@@ -244,17 +245,16 @@ class ValidForm extends ClassDynamic {
 	
 	public function addArea($label = NULL, $active = FALSE, $name = NULL, $checked = FALSE, $meta = array()) {
 		$objArea = new VF_Area($label, $active, $name, $checked, $meta);
-		
-		//*** Fieldset already defined?
-		if ($this->__elements->count() == 0) {
-			$objFieldSet = new VF_Fieldset();
-			$this->__elements->addObject($objFieldSet);
-		}
 
-		$objArea->setForm($this);
 		$objArea->setRequiredStyle($this->__requiredstyle);
-		
-		$objFieldset = $this->__elements->getLast();
+
+		//*** Fieldset already defined?
+		$objFieldset = $this->__elements->getLast("VF_Fieldset");
+		if ($this->__elements->count() == 0 || !is_object($objFieldset)) {
+			$objFieldset = $this->addFieldset();
+		}
+			
+		//*** Add field to the fieldset.
 		$objFieldset->addField($objArea);
 		
 		return $objArea;
@@ -262,17 +262,16 @@ class ValidForm extends ClassDynamic {
 	
 	public function addMultiField($label = NULL, $meta = array()) {
 		$objField = new VF_MultiField($label, $meta);
-		
-		//*** Fieldset already defined?
-		if ($this->__elements->count() == 0) {
-			$objFieldSet = new VF_Fieldset();
-			$this->__elements->addObject($objFieldSet);
-		}
 
-		$objField->setForm($this);
 		$objField->setRequiredStyle($this->__requiredstyle);
-		
-		$objFieldset = $this->__elements->getLast();
+
+		//*** Fieldset already defined?
+		$objFieldset = $this->__elements->getLast("VF_Fieldset");
+		if ($this->__elements->count() == 0 || !is_object($objFieldset)) {
+			$objFieldset = $this->addFieldset();
+		}
+			
+		//*** Add field to the fieldset.
 		$objFieldset->addField($objField);
 		
 		return $objField;
