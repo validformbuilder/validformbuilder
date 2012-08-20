@@ -164,7 +164,8 @@ class VF_Collection implements Iterator {
         
         if (count($this->collection) > 0) {
         	if (!empty($strType)) {
-        		foreach ($this->collection as $object) {
+        		$arrTemp = array_reverse($this->collection);
+        		foreach ($arrTemp as $object) {
         			if (get_class($object) == $strType) {
         				$varReturn = $object;
         				break;

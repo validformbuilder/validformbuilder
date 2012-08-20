@@ -80,7 +80,7 @@ class VF_Fieldset extends ClassDynamic {
 	}
 	
 	public function hasFields() {
-		return ($this->__fields->count() > 0) ? TRUE : FALSE;
+		return TRUE;
 	}
 	
 	public function getFields() {
