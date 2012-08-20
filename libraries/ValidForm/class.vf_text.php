@@ -46,6 +46,11 @@ class VF_Text extends VF_Element {
 		} else {
 			$strOutput = "<div class=\"vf__multifielditem\">\n";
 		}
+		
+		//*** Add max-length attribute to the meta array. This is being read by the getMetaString method.
+		if ($this->__validator->getMaxLength() > 0) {
+			$this->__meta["maxlength"] = $this->__validator->getMaxLength();
+		}
 				
 		$strOutput .= "<input type=\"text\" value=\"{$this->__getValue($submitted)}\" name=\"{$this->__name}\" id=\"{$this->__id}\" {$this->__getMetaString()} />\n";
 		

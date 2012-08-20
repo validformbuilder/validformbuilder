@@ -50,6 +50,11 @@ class VF_Textarea extends VF_Element {
 			if (!empty($this->__label)) $strOutput .= "<label for=\"{$this->__id}\"{$this->__getLabelMetaString()}>{$strLabel}</label>\n";
 		}
 		
+		//*** Add max-length attribute to the meta array. This is being read by the getMetaString method.
+		if ($this->__validator->getMaxLength() > 0) {
+			$this->__meta["maxlength"] = $this->__validator->getMaxLength();
+		}
+		
 		$strOutput .= "<textarea name=\"{$this->__name}\" id=\"{$this->__id}\" {$this->__getMetaString()}>{$this->__getValue($submitted)}</textarea>\n";
 		if (!empty($this->__tip)) $strOutput .= "<small class=\"vf__tip\">{$this->__tip}</small>\n";
 		$strOutput .= "</div>\n";
