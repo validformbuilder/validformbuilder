@@ -44,14 +44,41 @@ class VF_MultiField extends ClassDynamic {
 	}
 	
 	public function addField($name, $type, $validationRules = array(), $errorHandlers = array(), $meta = array()) {
+		// Creating dynamic fields inside a multifield is not supported.
+		if (array_key_exists("dynamic", $meta)) unset($meta["dynamic"]);
+		if (array_key_exists("dynamicLabel", $meta)) unset($meta["dynamicLabel"]);
+
+		// Render the field and add it to the multifield field collection.
 		$objField = ValidForm::renderField($name, "", $type, $validationRules, $errorHandlers, $meta);
 		
 		$this->__fields->addObject($objField);
+
+		if ($this->__dynamic) {
+			$objHiddenField = new VF_Hidden($objField->getId() . "_dynamic", VFORM_INTEGER, array("default" => "0", "dynamicCounter" => true));
+			$this->__fields->addObject($objHiddenField);
+
+			$objField->setDynamicCounter($objHiddenField);
+		}
 		
 		return $objField;
 	}
+
+	public function toHtml($submitted) {
+		$strOutput = "";
+
+		if ($this->__dynamic) {
+			$intDynamicCount = $this->getDynamicCount();
+			for ($intCount = 0; $intCount <= $intDynamicCount; $intCount++) {
+				$strOutput .= $this->__toHtml($submitted, $intCount);
+			}
+		} else {
+			$strOutput = $this->__toHtml($submitted);
+		}
+
+		return $strOutput;
+	}
 	
-	public function toHtml($submitted = FALSE) {
+	public function __toHtml($submitted = FALSE, $intCount = 0) {
 		$blnRequired = FALSE;
 		$blnError = FALSE;
 		$strError = "";
@@ -59,16 +86,16 @@ class VF_MultiField extends ClassDynamic {
 		
 		foreach ($this->__fields as $field) {
 			if (empty($strId)) {
-				$strId = $field->id;
+				$strId = ($intCount == 0) ? $field->id : $field->id . "_" . $intCount;
 			}
 			
-			if ($field->validator->getRequired()) {
+			if ($field->getValidator()->getRequired()) {
 				$blnRequired = TRUE;
 			}
 			
-			if ($submitted && !$field->validator->validate()) {
+			if ($submitted && !$field->getValidator()->validate($intCount)) {
 				$blnError = TRUE;
-				$strError .= "<p class=\"vf__error\">{$field->validator->getError()}</p>";
+				$strError .= "<p class=\"vf__error\">{$field->getValidator()->getError($intCount)}</p>";
 			}
 		}
 		
@@ -84,7 +111,12 @@ class VF_MultiField extends ClassDynamic {
 		
 		$arrFields = array();
 		foreach ($this->__fields as $field) {
-			$strOutput .= $field->toHtml($submitted, TRUE);
+			// Skip the hidden dynamic counter fields.
+			if (($intCount > 0) && (get_class($field) == "VF_Hidden") && $field->isDynamicCounter()) {
+				continue;
+			}
+
+			$strOutput .= $field->__toHtml($submitted, true, true, true, $intCount);
 			
 			$arrFields[$field->getId()] = $field->getName();
 		}
@@ -92,17 +124,33 @@ class VF_MultiField extends ClassDynamic {
 		if (!empty($this->__tip)) $strOutput .= "<small class=\"vf__tip\">{$this->__tip}</small>\n";
 		$strOutput .= "</div>\n";
 		
-		if ($this->__dynamic && !empty($this->__dynamicLabel)) {
-			$strOutput .= "<div class=\"vf__dynamic vf__cf\"><a href=\"#\" data-target-id=\"" . implode("|", array_keys($arrFields)) . "\" data-target-name=\"" . implode("|", array_values($arrFields)) . "\">{$this->__dynamicLabel}</a>";
-			
-			foreach ($arrFields as $key => $value) {
-				$strOutput .= "<input type=\"hidden\" id=\"{$key}_dynamic\" name=\"{$value}_dynamic\" value=\"0\" />";
-			}
-			
-			$strOutput .= "</div>";
+		if ($intCount == $this->getDynamicCount()) {
+			$strOutput .= $this->__addDynamicHtml();
 		}
 		
 		return $strOutput;
+	}
+
+	protected function __addDynamicHtml() {
+		$strReturn = "";
+
+		if ($this->__dynamic && !empty($this->__dynamicLabel)) {
+			$arrFields = array();
+			// Generate an array of field id's
+			foreach ($this->__fields as $field) {
+				// Skip the hidden dynamic counter fields.
+				if ((get_class($field) == "VF_Hidden") && $field->isDynamicCounter()) {
+					continue;
+				}
+				$arrFields[$field->getId()] = $field->getName();
+			}
+
+			$strReturn .= "<div class=\"vf__dynamic vf__cf\">";
+			$strReturn .= "<a href=\"#\" data-target-id=\"" . implode("|", array_keys($arrFields)) . "\" data-target-name=\"" . implode("|", array_values($arrFields)) . "\">{$this->__dynamicLabel}</a>";
+			$strReturn .= "</div>";
+		}
+
+		return $strReturn;
 	}
 	
 	public function toJS() {
@@ -116,7 +164,17 @@ class VF_MultiField extends ClassDynamic {
 	}
 	
 	public function isValid() {
-		return $this->__validate();
+		$intDynamicCount = $this->getDynamicCount();
+
+		for ($intCount = 0; $intCount <= $intDynamicCount; $intCount++) {
+			$blnReturn = $this->__validate($intCount);
+
+			if (!$blnReturn) {
+				break;
+			}
+		}
+		
+		return $blnReturn;
 	}
 	
 	public function isDynamic() {
@@ -126,13 +184,15 @@ class VF_MultiField extends ClassDynamic {
 	public function getDynamicCount() {
 		$intReturn = 0;
 		
-		$objSubFields = $this->getFields();
-		$objSubField = ($objSubFields->count() > 0) ? $objSubFields->getFirst() : NULL;
-		
-		if (is_object($objSubField)) {
-			$intReturn = $objSubField->getDynamicCount();
+		if ($this->__dynamic) {
+			$objSubFields = $this->getFields();
+			$objSubField = ($objSubFields->count() > 0) ? $objSubFields->getFirst() : NULL;
+			
+			if (is_object($objSubField)) {
+				$intReturn = $objSubField->getDynamicCounter()->getValidator()->getValue();
+			}
 		}
-		
+
 		return $intReturn;
 	}
 	
@@ -156,11 +216,10 @@ class VF_MultiField extends ClassDynamic {
 		return ($this->__fields->count() > 0) ? TRUE : FALSE;
 	}
 	
-	private function __validate() {
+	private function __validate($intCount = null) {
 		$blnReturn = TRUE;
-		
 		foreach ($this->__fields as $field) {
-			if (!$field->isValid()) {
+			if (!$field->isValid($intCount)) {
 				$blnReturn = FALSE;
 				break;
 			}

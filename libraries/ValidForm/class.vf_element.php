@@ -29,19 +29,20 @@ class VF_Element extends ClassDynamic {
 	protected $__id;
 	protected $__name;
 	protected $__label;
-	protected $__tip;
+	protected $__tip = null;
 	protected $__type;
 	protected $__meta;
 	protected $__labelmeta;
-	protected $__hint;
-	protected $__default;
-	protected $__dynamic;
-	protected $__dynamicLabel;
+	protected $__hint = null;
+	protected $__default = null;
+	protected $__dynamic = null;
+	protected $__dynamiccounter = false;
+	protected $__dynamicLabel = null;
 	protected $__requiredstyle;
 	protected $__validator;
 	protected $__targetfield = null;
 	protected $__triggerfield = null;
-	protected $__reservedMeta = array("tip", "hint", "default", "width", "height", "length", "start", "end", "path", "labelStyle", "labelClass", "labelRange", "valueRange", "dynamic", "dynamicLabel", "matchWith");
+	protected $__reservedMeta = array("dynamicCounter", "tip", "hint", "default", "width", "height", "length", "start", "end", "path", "labelStyle", "labelClass", "labelRange", "valueRange", "dynamic", "dynamicLabel", "matchWith");
 
 	public function __construct($name, $type, $label = "", $validationRules = array(), $errorHandlers = array(), $meta = array()) {
 		if (is_null($validationRules)) $validationRules = array();
@@ -60,12 +61,13 @@ class VF_Element extends ClassDynamic {
 		$this->__type = $type;
 		$this->__meta = $meta;
 		$this->__labelmeta = $labelMeta;
-		$this->__tip = (array_key_exists("tip", $meta)) ? $meta["tip"] : NULL;
-		$this->__hint = (array_key_exists("hint", $meta)) ? $meta["hint"] : NULL;
-		$this->__default = (array_key_exists("default", $meta)) ? $meta["default"] : NULL;
-		$this->__dynamic = (array_key_exists("dynamic", $meta)) ? $meta["dynamic"] : NULL;
-		$this->__dynamicLabel = (array_key_exists("dynamicLabel", $meta)) ? $meta["dynamicLabel"] : NULL;
-		
+		$this->__tip = (array_key_exists("tip", $meta)) ? $meta["tip"] : $this->__tip;
+		$this->__hint = (array_key_exists("hint", $meta)) ? $meta["hint"] : $this->__hint;
+		$this->__default = (array_key_exists("default", $meta)) ? $meta["default"] : $this->__default;
+		$this->__dynamic = (array_key_exists("dynamic", $meta)) ? $meta["dynamic"] : $this->__dynamic;
+		$this->__dynamicLabel = (array_key_exists("dynamicLabel", $meta)) ? $meta["dynamicLabel"] : $this->__dynamicLabel;
+		$this->__dynamiccounter = (array_key_exists("dynamicCounter", $meta)) ? true : $this->__dynamiccounter;
+
 		$this->__validator = new VF_FieldValidator($name, $type, $validationRules, $errorHandlers, $this->__hint);		
 	}
 
@@ -129,9 +131,13 @@ class VF_Element extends ClassDynamic {
 		return "Field type not defined.";
 	}
 	
-	public function setError($strError) {
+	public function __toHtml($submitted = false, $blnSimpleLayout = false, $blnLabel = true, $blnDisplayErrors = true, $intCount = 0) {
+		return $this->toHtml($submitted, $blnSimpleLayout, $blnLabel, $blnDisplayErrors, $intCount);
+	}
+	
+	public function setError($strError, $intDynamicPosition = 0) {
 		//*** Override the validator message.
-		$this->__validator->setError($strError);
+		$this->__validator->setError($strError, $intDynamicPosition);
 	}
 	
 	public function toJS() {
@@ -150,18 +156,62 @@ class VF_Element extends ClassDynamic {
 		return $strReturn;
 	}
 	
-	public function isValid() {
-		return $this->__validator->validate();
+	/**
+	 * Validate the current field. This is a wrapper method to call the FieldValidator->validate() method.
+	 * @return boolean [True if field validates, false if not.]
+	 */
+	public function isValid($intCount = null) {
+		$blnReturn = false;
+		$intDynamicCount = $this->getDynamicCount();
+
+		if (is_null($intCount)) {
+			// No specific dynamic count is set, loop through dynamic fields internally
+			for ($intCount = 0; $intCount <= $intDynamicCount; $intCount++) {
+				$blnReturn = $this->__validator->validate($intCount);
+				
+				if (!$blnReturn) {
+					break;
+				}
+			}
+		} else {
+			// Validate just one, we're looping through the external fields externally
+			$blnReturn = $this->__validator->validate($intCount);
+		}
+
+		return $blnReturn;
 	}
 	
+	/**
+	 * Check if the current field is a dynamic field.
+	 * @return boolean True if dynamic, false if not.
+	 */
 	public function isDynamic() {
 		return ($this->__dynamic) ? true : false;
 	}
 	
+	/**
+	 * Get the number of dynamic fields from the dynamic counter field.
+	 * @return [type] [description]
+	 */
 	public function getDynamicCount() {
-		return ValidForm::get($this->getName() . "_dynamic", 0);
+		$intReturn = 0;
+
+		if ($this->__dynamic && is_object($this->__dynamiccounter)) {
+			$intReturn = $this->__dynamiccounter->getValidator()->getValue();
+		}
+
+		return (int)$intReturn;
+	}
+
+	public function setDynamicCounter(&$objCounter) {
+		$this->__dynamiccounter = $objCounter;
 	}
 	
+	/**
+	 * Get the *valid* value of the current field.
+	 * @param  integer $intDynamicPosition 	Optional parameter to get the value of a dynamic field.
+	 * @return mixed                      	The valid value of this field. If validation fails, it returns null.
+	 */
 	public function getValue($intDynamicPosition = 0) {
 		$varValue = NULL;
 		
@@ -169,14 +219,18 @@ class VF_Element extends ClassDynamic {
 			$objValidator = $this->__validator;
 			$objValidator->validate($intDynamicPosition);
 			
-			$varValue = $objValidator->getValidValue();
+			$varValue = $objValidator->getValidValue($intDynamicPosition);
 		} else {
 			$varValue = $this->__validator->getValidValue();
 		}
-		
+		 
 		return $varValue;
 	}
 	
+	/**
+	 * Placeholder function to determine wheter or not a field contains other fields.
+	 * @return boolean Return false by default.
+	 */
 	public function hasFields() {
 		return FALSE;
 	}
@@ -216,35 +270,28 @@ class VF_Element extends ClassDynamic {
 		}
 	}
 	
-	protected function __getValue($submitted = FALSE) {
-		$strReturn = NULL;
+	protected function __getValue($submitted = FALSE, $intDynamicPosition = 0) {
+		$varReturn = NULL;
 		
 		if ($submitted) {
-			if ($this->__validator->validate()) {
-				$strReturn = $this->__validator->getValidValue();
+			if ($this->__validator->validate($intDynamicPosition)) {
+				$varReturn = $this->__validator->getValidValue($intDynamicPosition);
 			} else {
-				$strReturn = $this->__validator->getValue();
+				$varReturn = $this->__validator->getValue($intDynamicPosition);
 			}		
 		} else {
 			if (!empty($this->__default)) {
-				$strReturn = $this->__default;
+				$varReturn = $this->__default;
 			} else if (!empty($this->__hint)) {
-				$strReturn = $this->__hint;
+				$varReturn = $this->__hint;
 			}
 		}
-		
-		return $strReturn;
-	}
 
-	protected function __getValidValue($submitted = false) {
-		$varValidValue = $this->__validator->getValidValue();
-		$varReturn = null;
-
-		if (!is_null($varValidValue)) {
-			return $varValidValue;
-		} else {
-			return $this->__getValue($submitted);
+		if(!$varReturn && ((get_class($this) == "VF_Hidden") && $this->isDynamicCounter())) {
+			$varReturn = (int)0;
 		}
+		
+		return $varReturn;
 	}
 	
 	protected function __getMetaString() {

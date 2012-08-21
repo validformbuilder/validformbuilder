@@ -74,9 +74,14 @@ class VF_Page extends ClassDynamic {
 			$objFieldset = $this->__elements->getLast();
 			$objFieldset->getFields()->addObject($objField);
 
-			if ($objField->isDynamic()) {
-				$objHiddenField = new VF_Hidden($objField->getId() . "_dynamic", VFORM_INTEGER, array("default" => 0));
-				$objFieldset->getFields()->addObject($objHiddenField);
+			if ($objField->isDynamic() 
+				&& get_class($objField) !== "VF_MultiField" 
+				&& get_class($objField) !== "VF_Area") {
+
+				$objHidden = new VF_Hidden($objField->getId() . "_dynamic", VFORM_INTEGER, array("default" => 0, "dynamicCounter" => true));
+				$objFieldset->addField($objHidden);
+
+				$objField->setDynamicCounter($objHidden);
 			}
 		}
 	}

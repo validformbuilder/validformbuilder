@@ -122,6 +122,7 @@ function ValidForm(strFormId, strMainAlert, blnAllowPreviousPage) {
 	this.validator = new ValidFormValidator(this.id);
 	this.validator.mainAlert = strMainAlert;
 	this.events = [];
+	this.cachedEvents = [];
 	this.customEvents = ["beforeSubmit", "afterValidate", "afterDynamicChange", "afterNextPage", "beforeNextPage", "afterShowPage", "beforeShowPage"];
 	this.hashPageIndex = 1;
 	this.hashPrefix = "vf_page";
@@ -215,11 +216,13 @@ ValidForm.prototype.hashChange = function () {
 
 ValidForm.prototype.showFirstError = function () {
 	var __this = this;
+
 	if (jQuery("#" + __this.id).has(".vf__error").length > 0) {
 		var $error 	= jQuery(".vf__error:first");
 		var $page 	= $error.parentsUntil(".vf__page").parent();
 
 		_hash.set(__this.hashPrefix, jQuery("#" + __this.id + " .vf__page").index($page) + 1);
+		__this.currentPage.hide();
 		__this.showPage($page);
 	}
 }
@@ -352,12 +355,15 @@ ValidForm.prototype.showPage = function ($objPage) {
 	if (typeof $objPage == "object" && $objPage instanceof jQuery) {
 		if (typeof this.events.beforeShowPage == "function") {
 			this.events.beforeShowPage($objPage);
+		} else {
+			this.cachedEvents.push({"beforeShowPage": $objPage});
 		}
-
 
 		$objPage.show(0, function () {
 			if (typeof __this.events.afterShowPage == "function") {
 				__this.events.afterShowPage($objPage);
+			} else {
+				__this.cachedEvents.push({"afterShowPage": $objPage});
 			}
 		});
 	
@@ -421,40 +427,26 @@ ValidForm.prototype.dynamicDuplication = function () {
 	// Bind click event to duplicate button
 	jQuery(".vf__dynamic a").bind("click", function() {
 		var $anchor = jQuery(this);
-		var ids = jQuery(this).data("target-id").split("|");
-
-		if (ids.length == 1) {
-			// Single-field dynamic, one counter
-			var counter = $anchor.parent().next();
-		} else if (ids.length > 1) {
-			// Fieldset dynamic, multiple counters.
-			var strFirstFieldId = $anchor.data("target-id").split("|")[0];
-			var $parent = $("#" + strFirstFieldId).parentsUntil(".vf__area").parent();
-			var counter = $parent.find("input[name$='_dynamic']");
-		} else {
-			// Don't know what type this is *yet*. Throw an error.
-			throw new Error("Unknown dynamic parent.");
-		}
 
 		if (!jQuery(this).hasClass("vf__disabled")) {
 			//*** Update dynamic field counter.
 			var $original 	= $anchor.parent().prev();
 			var copy 		= $original.clone();
 
-			if (isNaN(parseInt(counter.val()))) {
-				counter.val(1);
-			} else {
-				counter.val(parseInt(counter.val()) + 1);
-			}
-			
 			//*** Clear values.
 			var names = jQuery(this).data("target-name").split("|");
+			var ids = jQuery(this).data("target-id").split("|");
 			
 			copy.find("input[name$='_dynamic']").remove();
 
 			jQuery.each(names, function(index, fieldname){
 				//*** Fix every field in an area or multifield. 
+				var counter = $("#" + fieldname + "_dynamic");
+
+				counter.val(parseInt(counter.val()) + 1);
 				var search 	= (parseInt(counter.val()) == 1) ? fieldname : fieldname + "_" + (parseInt(counter.val()) - 1);
+
+				console.log(fieldname, counter);
 
 				copy.find("[name='" + search + "']").each(function(){
 					if (jQuery(this).attr("type") == "radio" || 
@@ -682,6 +674,19 @@ ValidForm.prototype.getElement = function(strElementName){
 ValidForm.prototype.addEvent = function(strEvent, callback){
 	if (this.inArray(this.customEvents, strEvent)) {
 		this.events[strEvent] = callback;
+
+		for(var i in this.cachedEvents) {
+			if (this.cachedEvents.hasOwnProperty(i)) {
+				var objCachedEvent = this.cachedEvents[i];
+				for (var eventName in objCachedEvent) {
+					if (objCachedEvent.hasOwnProperty(eventName)) {
+						if (strEvent == eventName) {
+							this.events[strEvent](objCachedEvent[eventName]);
+						}
+					}
+				}
+			}
+		}
 	} else {
 		jQuery("#" + this.id).bind(strEvent, callback);
 	}

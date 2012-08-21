@@ -29,39 +29,16 @@ class VF_Text extends VF_Element {
 	
 	public function toHtml($submitted = FALSE, $blnSimpleLayout = FALSE, $blnLabel = true, $blnDisplayErrors = true) {
 		$strOutput = "";
-		
-		if (!$blnSimpleLayout) {
-			$blnError = ($submitted && !$this->__validator->validate() && $blnDisplayErrors) ? TRUE : FALSE;
-			
-			$strClass = ($this->__validator->getRequired()) ? "vf__required" : "vf__optional";
-			$strClass = ($blnError) ? $strClass . " vf__error" : $strClass;
-			$strOutput = "<div class=\"{$strClass}\">\n";
-			
-			if ($blnError) $strOutput .= "<p class=\"vf__error\">{$this->__validator->getError()}</p>";
-			
-			if ($blnLabel) {
-				$strLabel = (!empty($this->__requiredstyle) && $this->__validator->getRequired()) ? sprintf($this->__requiredstyle, $this->__label) : $this->__label;
-				if (!empty($this->__label)) $strOutput .= "<label for=\"{$this->__id}\">{$strLabel}</label>\n";
+
+		if ($this->__dynamic) {
+			$intDynamicCount = $this->getDynamicCount();
+			for($intCount = 0; $intCount <= $intDynamicCount; $intCount++) {
+				$strOutput .= $this->__toHtml($submitted, $blnSimpleLayout, $blnLabel, $blnDisplayErrors, $intCount);
 			}
 		} else {
-			$strOutput = "<div class=\"vf__multifielditem\">\n";
+			$strOutput = $this->__toHtml($submitted, $blnSimpleLayout, $blnLabel, $blnDisplayErrors);
 		}
-		
-		//*** Add max-length attribute to the meta array. This is being read by the getMetaString method.
-		if ($this->__validator->getMaxLength() > 0) {
-			$this->__meta["maxlength"] = $this->__validator->getMaxLength();
-		}
-				
-		$strOutput .= "<input type=\"text\" value=\"{$this->__getValue($submitted)}\" name=\"{$this->__name}\" id=\"{$this->__id}\" {$this->__getMetaString()} />\n";
-		
-		if (!empty($this->__tip)) $strOutput .= "<small class=\"vf__tip\">{$this->__tip}</small>\n";
-							
-		$strOutput .= "</div>\n";
-		
-		if (!$blnSimpleLayout && $this->__dynamic && !empty($this->__dynamicLabel)) {
-			$strOutput .= "<div class=\"vf__dynamic vf__cf\"><a href=\"#\" data-target-id=\"{$this->__id}\" data-target-name=\"{$this->__name}\">{$this->__dynamicLabel}</a></div>\n";
-		}
-		
+
 		return $strOutput;
 	}
 	
@@ -72,12 +49,70 @@ class VF_Text extends VF_Element {
 		$intMaxLength = ($this->__validator->getMaxLength() > 0) ? $this->__validator->getMaxLength() : "null";
 		$intMinLength = ($this->__validator->getMinLength() > 0) ? $this->__validator->getMinLength() : "null";
 		
-		$strOutput = "objForm.addElement('{$this->__id}', '{$this->__name}', {$strCheck}, {$strRequired}, {$intMaxLength}, {$intMinLength}, '" . addslashes($this->__validator->getFieldHint()) . "', '" . addslashes($this->__validator->getTypeError()) . "', '" . addslashes($this->__validator->getRequiredError()) . "', '" . addslashes($this->__validator->getHintError()) . "', '" . addslashes($this->__validator->getMinLengthError()) . "', '" . addslashes($this->__validator->getMaxLengthError()) . "');\n";
+		$strOutput = "";
+		if ($this->__dynamic) {
+			$intDynamicCount = $this->getDynamicCount();
+			for($intCount = 0; $intCount <= $intDynamicCount; $intCount++) {
+				$strId 		= ($intCount == 0) ? $this->__id : $this->__id . "_" . $intCount;
+				$strName 	= ($intCount == 0) ? $this->__name : $this->__name . "_" . $intCount;
+
+				$strOutput .= "objForm.addElement('{$strId}', '{$strName}', {$strCheck}, {$strRequired}, {$intMaxLength}, {$intMinLength}, '" . addslashes($this->__validator->getFieldHint()) . "', '" . addslashes($this->__validator->getTypeError()) . "', '" . addslashes($this->__validator->getRequiredError()) . "', '" . addslashes($this->__validator->getHintError()) . "', '" . addslashes($this->__validator->getMinLengthError()) . "', '" . addslashes($this->__validator->getMaxLengthError()) . "');\n";
+			}
+		} else {
+			$strOutput = "objForm.addElement('{$this->__id}', '{$this->__name}', {$strCheck}, {$strRequired}, {$intMaxLength}, {$intMinLength}, '" . addslashes($this->__validator->getFieldHint()) . "', '" . addslashes($this->__validator->getTypeError()) . "', '" . addslashes($this->__validator->getRequiredError()) . "', '" . addslashes($this->__validator->getHintError()) . "', '" . addslashes($this->__validator->getMinLengthError()) . "', '" . addslashes($this->__validator->getMaxLengthError()) . "');\n";
+		}
 
 		if ($this->hasTrigger()) {
 			$strOutput .= $this->addTriggerJs();
 		}
 
+		return $strOutput;
+	}
+
+	public function __toHtml($submitted = FALSE, $blnSimpleLayout = FALSE, $blnLabel = true, $blnDisplayErrors = true, $intCount = 0) {
+		$strOutput 	= "";
+		
+		$strName 	= ($intCount == 0) ? $this->__name : $this->__name . "_" . $intCount;
+		$strId 		= ($intCount == 0) ? $this->__id : $this->__id . "_" . $intCount;
+
+		if (!$blnSimpleLayout) {
+			$blnError = ($submitted && !$this->__validator->validate($intCount) && $blnDisplayErrors) ? TRUE : FALSE;
+			
+			$strClass = ($this->__validator->getRequired()) ? "vf__required" : "vf__optional";
+			$strClass = ($blnError) ? $strClass . " vf__error" : $strClass;
+			$strOutput = "<div class=\"{$strClass}\">\n";
+			
+			if ($blnError) {
+				$strOutput .= "<p class=\"vf__error\">{$this->__validator->getError($intCount)}</p>";
+			}
+			
+			if ($blnLabel) {
+				$strLabel = (!empty($this->__requiredstyle) && $this->__validator->getRequired()) ? sprintf($this->__requiredstyle, $this->__label) : $this->__label;
+				if (!empty($this->__label)) $strOutput .= "<label for=\"{$strId}\">{$strLabel}</label>\n";
+			}
+		} else {
+			$strOutput = "<div class=\"vf__multifielditem\">\n";
+		}
+		
+		//*** Add max-length attribute to the meta array. This is being read by the getMetaString method.
+		if ($this->__validator->getMaxLength() > 0) {
+			$this->__meta["maxlength"] = $this->__validator->getMaxLength();
+		}
+
+		$strOutput .= "<input type=\"text\" value=\"{$this->__getValue($submitted, $intCount)}\" name=\"{$strName}\" id=\"{$strId}\" {$this->__getMetaString()} />\n";
+		
+		if (!empty($this->__tip)) $strOutput .= "<small class=\"vf__tip\">{$this->__tip}</small>\n";
+							
+		$strOutput .= "</div>\n";
+		
+		if (!$blnSimpleLayout 
+			&& $this->__dynamic 
+			&& !empty($this->__dynamicLabel) 
+			&& ($intCount == $this->getDynamicCount())
+		) {
+			$strOutput .= "<div class=\"vf__dynamic vf__cf\"><a href=\"#\" data-target-id=\"{$this->__id}\" data-target-name=\"{$this->__name}\">{$this->__dynamicLabel}</a></div>\n";
+		}
+		
 		return $strOutput;
 	}
 	

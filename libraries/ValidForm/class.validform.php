@@ -219,10 +219,6 @@ class ValidForm extends ClassDynamic {
 			
 			//*** Add field to the fieldset.
 			$objFieldset->addField($objField);
-
-			if ($objField->isDynamic()) {
-				$this->addHiddenField($objField->getId() . "_dynamic", VFORM_INTEGER, array("default" => 0));
-			}
 		}
 		
 		return $objField;
@@ -321,6 +317,13 @@ class ValidForm extends ClassDynamic {
 	
 		return $strOutput;
 	}
+
+	public function serialize($blnSubmittedValues = true) {
+		// Validate & cache all values
+		$this->valuesAsHtml(true);
+
+		return serialize($this);
+	}
 	
 	/**
 	 * Check if the form is submitted by validating the value of the hidden
@@ -392,7 +395,6 @@ class ValidForm extends ClassDynamic {
 		$strOutput = "\t<table border=\"0\" cellspacing=\"0\" cellpadding=\"0\">\n";
 		$collection = (!is_null($collection)) ? $collection : $this->__elements;
 
-		// print_r($collection);
 		foreach ($collection as $objFieldset) {
 			$strSet = "";
 			foreach ($objFieldset->getFields() as $objField) {
@@ -416,7 +418,7 @@ class ValidForm extends ClassDynamic {
 
 					if ($objField->isDynamic()) {
 						$intDynamicCount = $objField->getDynamicCount();
-						
+
 						if ($intDynamicCount > 0) {
 							for ($intCount = 1; $intCount <= $intDynamicCount; $intCount++) {
 								switch (get_class($objField)) {
@@ -500,6 +502,10 @@ class ValidForm extends ClassDynamic {
 			$intCount = 0;
 			foreach ($objSubFields as $objSubField) {	
 				$intCount++;
+
+				if (get_class($objSubField) == "VF_Hidden" && $objSubField->isDynamicCounter()) {
+					continue;
+				}
 											
 				$varValue = $objSubField->getValue($intDynamicCount);											
 				$strValue .= (is_array($varValue)) ? implode(", ", $varValue) : $varValue;
@@ -520,17 +526,16 @@ class ValidForm extends ClassDynamic {
 	
 	private function fieldAsHtml($objField, $hideEmpty = FALSE, $intDynamicCount = 0) {
 		$strReturn = "";
-		
+
 		$strFieldName = $objField->getName();
 		$strLabel = $objField->getLabel();					
 		$varValue = ($intDynamicCount > 0) ? $objField->getValue($intDynamicCount) : $objField->getValue();
 		$strValue = (is_array($varValue)) ? implode(", ", $varValue) : $varValue;
 
-		if (
-			((!empty($strValue) && $hideEmpty) || (!$hideEmpty && !is_null($strValue)))
-			&& ((get_class($objField) == "VF_Hidden") && !strstr($strFieldName, "_dynamic"))
-			) {
-
+		if ((!empty($strValue) && $hideEmpty) || (!$hideEmpty && !is_null($strValue))) {
+			if ((get_class($objField) == "VF_Hidden") && $objField->isDynamicCounter()) {
+				return $strReturn;
+			} else {
 				switch ($objField->getType()) {
 					case VFORM_BOOLEAN:
 						$strValue = ($strValue == 1) ? "yes" : "no";
@@ -544,6 +549,7 @@ class ValidForm extends ClassDynamic {
 					$strReturn .= "<td valign=\"top\">{$objField->getLabel()} &nbsp;&nbsp;&nbsp;</td><td valign=\"top\">: <b>" . nl2br($strValue) . "</b></td>\n";
 					$strReturn .= "</tr>";
 				}
+			}
 		}
 		
 		return $strReturn;

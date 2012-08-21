@@ -55,75 +55,111 @@ class VF_Area extends ClassDynamic {
 		$this->__fields->addObject($objField);
 
 		if ($this->__dynamic || $objField->isDynamic()) {
-			$objHiddenField = new VF_Hidden($objField->getId() . "_dynamic", VFORM_INTEGER, array("default" => "0"));
+			$objHiddenField = new VF_Hidden($objField->getId() . "_dynamic", VFORM_INTEGER, array("default" => "0", "dynamicCounter" => true));
 			$this->__fields->addObject($objHiddenField);
+
+			$objField->setDynamicCounter($objHiddenField);
 		}
 		
 		return $objField;
 	}
 	
 	public function addMultiField($label = NULL, $meta = array()) {
+		if (!array_key_exists("dynamic", $meta)) $meta["dynamic"] = $this->__dynamic;
 		$objField = new VF_MultiField($label, $meta);
 		
 		$objField->setRequiredStyle($this->__requiredstyle);
 		
 		$this->__fields->addObject($objField);
-
-		if ($this->__dynamic) {
-			$objHiddenField = new VF_Hidden($objField->getId() . "_dynamic", VFORM_INTEGER, array("default" => "0"), true);
-			$this->__fields->addObject($objHiddenField);
-		}
 		
 		return $objField;
 	}
 	
 	public function toHtml($submitted = FALSE) {
-		$value = ValidForm::get($this->__name);
+		$strOutput = "";
+
+		if ($this->__dynamic) {
+			$intDynamicCount = $this->getDynamicCount();
+			for($intCount = 0; $intCount <= $intDynamicCount; $intCount++) {
+				$strOutput .= $this->__toHtml($submitted, $intCount);
+			}
+		} else {
+			$strOutput = $this->__toHtml($submitted);
+		}
+
+		return $strOutput;
+	}
+
+	protected function __toHtml($submitted = false, $intCount = 0) {
+		$strName 	= ($intCount == 0) ? $this->__name : $this->__name . "_" . $intCount;
+		
+		$value = ValidForm::get($strName);
 		$strChecked = ($this->__active && $this->__checked && empty($value) && !$submitted) ? " checked=\"checked\"" : "";
 		$strChecked = ($this->__active && !empty($value)) ? " checked=\"checked\"" : $strChecked;
-		
-		$strClass = (array_key_exists("class", $this->__meta)) ? $this->__meta["class"] : "";
+
+		$strClass = (array_key_exists("class", $this->__meta)) ? " " . $this->__meta["class"] : "";
 		$strClass = ($this->__active && empty($strChecked)) ? $strClass . " vf__disabled" : $strClass;
 		
-		$strOutput = "<fieldset class=\"vf__area {$strClass}\">\n";
+		$strOutput = "<fieldset class=\"vf__area{$strClass}\">\n";
 		if ($this->__active) {
-			$label = "<label for=\"{$this->__name}\"><input type=\"checkbox\" name=\"{$this->__name}\" id=\"{$this->__name}\" {$strChecked} /> {$this->__label}</label>";
+			$label = "<label for=\"{$strName}\"><input type=\"checkbox\" name=\"{$strName}\" id=\"{$strName}\" {$strChecked} /> {$this->__label}</label>";
 		} else {
 			$label = $this->__label;
 		}
 		if (!empty($this->__label)) $strOutput .= "<legend>{$label}</legend>\n";
-				
-		$arrFields = array();
-		foreach ($this->__fields as $field) {
-			$submitted = ($this->__active && empty($value)) ? FALSE : $submitted;
-			$strOutput .= $field->toHtml($submitted);
-			
-			switch (get_class($field)) {
-				case "VF_MultiField":
-					foreach ($field->getFields() as $subfield) {
-						$strSubFieldName = $subfield->getName();
-						if (!strstr($strSubFieldName, "_dynamic")) {
-							$arrFields[$subfield->getId()] = $subfield->getName();
-						}
-					}
-					
-					break;
-				default:
-					$strFieldName = $field->getName();
-					if (!strstr($strFieldName, "_dynamic")) {
-						$arrFields[$field->getId()] = $field->getName();
-					}
+
+		foreach ($this->__fields as $objField) {
+			if (($intCount > 0) && get_class($objField) == "VF_Hidden" && $objField->isDynamicCounter()) {
+				continue;
 			}
+
+			$submitted = ($this->__active && empty($value)) ? FALSE : $submitted;
+			$strOutput .= $objField->__toHtml($submitted, false, true, true, $intCount);
 		}
 		
 		$strOutput .= "</fieldset>\n";
-		
-		if ($this->__dynamic && !empty($this->__dynamicLabel)) {
-			$strOutput .= "<div class=\"vf__dynamic vf__cf\"><a href=\"#\" data-target-id=\"" . implode("|", array_keys($arrFields)) . "\" data-target-name=\"" . implode("|", array_values($arrFields)) . "\">{$this->__dynamicLabel}</a>";
-			$strOutput .= "</div>";
+
+		if ($intCount == $this->getDynamicCount()) {
+			$strOutput .= $this->__addDynamicHtml();
 		}
 	
 		return $strOutput;
+	}
+
+	protected function __addDynamicHtml() {
+		$strReturn = "";
+
+		if ($this->__dynamic && !empty($this->__dynamicLabel)) {
+			$arrFields = array();
+			// Generate an array of field id's
+			foreach ($this->__fields as $field) {				
+				switch (get_class($field)) {
+					case "VF_MultiField":
+						foreach ($field->getFields() as $subfield) {
+							// Skip the hidden dynamic counter fields.
+							if ((get_class($subfield) == "VF_Hidden") && $subfield->isDynamicCounter()) {
+								continue;
+							}
+							$arrFields[$subfield->getId()] = $subfield->getName();
+						}
+						
+						break;
+					default:
+						// Skip the hidden dynamic counter fields.
+						if ((get_class($field) == "VF_Hidden") && $field->isDynamicCounter()) {
+							continue;
+						}
+						$arrFields[$field->getId()] = $field->getName();
+						break;
+				}
+			}
+
+			$strReturn .= "<div class=\"vf__dynamic vf__cf\">";
+			$strReturn .= "<a href=\"#\" data-target-id=\"" . implode("|", array_keys($arrFields)) . "\" data-target-name=\"" . implode("|", array_values($arrFields)) . "\">{$this->__dynamicLabel}</a>";
+			$strReturn .= "</div>";
+		}
+
+		return $strReturn;
 	}
 	
 	public function toJS() {
@@ -137,7 +173,18 @@ class VF_Area extends ClassDynamic {
 	}
 	
 	public function isValid() {
-		return $this->__validate();
+		$intDynamicCount = $this->getDynamicCount();
+
+		for ($intCount = 0; $intCount <= $intDynamicCount; $intCount++) {
+			echo $intCount;
+			$blnReturn = $this->__validate($intCount);
+
+			if (!$blnReturn) {
+				break;
+			}
+		}
+		
+		return $blnReturn;
 	}
 	
 	public function isDynamic() {
@@ -147,13 +194,15 @@ class VF_Area extends ClassDynamic {
 	public function getDynamicCount() {
 		$intReturn = 0;
 		
-		$objSubFields = $this->getFields();
-		$objSubField = ($objSubFields->count() > 0) ? $objSubFields->getFirst() : NULL;
-		
-		if (is_object($objSubField)) {
-			$intReturn = $objSubField->getDynamicCount();
+		if ($this->__dynamic) {
+			$objSubFields = $this->getFields();
+			$objSubField = ($objSubFields->count() > 0) ? $objSubFields->getFirst() : NULL;
+			
+			if (is_object($objSubField)) {
+				$intReturn = $objSubField->getDynamicCounter()->getValidator()->getValue();
+			}
 		}
-		
+
 		return $intReturn;
 	}
 	

@@ -46,6 +46,16 @@ class VF_Fieldset extends ClassDynamic {
 	
 	public function addField($field) {
 		$this->__fields->addObject($field);
+
+		if ($field->isDynamic() 
+			&& get_class($field) !== "VF_MultiField" 
+			&& get_class($field) !== "VF_Area") {
+
+			$objHidden = new VF_Hidden($field->getId() . "_dynamic", VFORM_INTEGER, array("default" => 0, "dynamicCounter" => true));
+			$this->__fields->addObject($objHidden);
+
+			$field->setDynamicCounter($objHidden);
+		}
 	}
 	
 	public function toHtml($submitted = FALSE) {
