@@ -26,11 +26,11 @@ require_once("class.validform.php");
  *
  */
 class ValidWizard extends ValidForm {
-	public $__pageCount = 1;
-	protected $__confirmlabel;
-	private $__nextlabel;
-	private $__objCurrentPage;
-	private $__uniqueid;
+	public 		$__pagecount = 1;
+	protected 	$__confirmlabel;
+	protected 	$__currentpage = 1;
+	private 	$__nextlabel;
+	private 	$__uniqueid;
 	
 	/**
 	 * 
@@ -48,8 +48,16 @@ class ValidWizard extends ValidForm {
 	}
 
 	public function toHtml($blnClientSide = true, $blnForceSubmitted = false, $strJs = "") {
-		$strJs = ($this->__pageCount > 1) ? "objForm.initWizard();\n" . $strJs : "";
-		return parent::toHtml($blnClientSide, $blnForceSubmitted, $strJs);
+		return parent::toHtml($blnClientSide, $blnForceSubmitted, $this->__wizardJs($strJs));
+	}
+
+	private function __wizardJs($strCustomJs = "") {
+		$strReturn = "";
+
+		$intPage = ($this->__currentpage > 1) ? $this->__currentpage : "";
+		$strReturn .= ($this->__pagecount > 1) ? "objForm.initWizard({$intPage});\n" . $strCustomJs : "";
+
+		return $strReturn;
 	}
 
 	public function getPage($intIndex) {
@@ -67,8 +75,7 @@ class ValidWizard extends ValidForm {
 		$objPage = new VF_Page($id, $header, $meta);
 		$this->__elements->addObject($objPage);
 
-		$this->__objCurrentPage = $objPage;
-		$this->__pageCount++;
+		$this->__pagecount++;
 		
 		return $objPage;
 	}
