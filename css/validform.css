@@ -1,7 +1,7 @@
 /***************************
  * ValidForm Builder - build valid and secure web forms quickly
  * 
- * Copyright (c) 2009-2012, Felix Langfeldt <flangfeldt@felix-it.com>.
+ * Copyright (c) 2009-2012, Felix iT B.V. <info@felix-it.com>.
  * All rights reserved.
  
  * ValidForm standard CSS. 
@@ -11,28 +11,30 @@
  * 
  * @package    ValidForm
  * @author     Felix Langfeldt <flangfeldt@felix-it.com>
- * @copyright  2009-2012 Felix Langfeldt <flangfeldt@felix-it.com>
+ * @author     Robin van Baalen <rvanbaalen@felix-it.com>
+ * @copyright  2009-2012 Felix iT B.V. <info@felix-it.com>
  * @license    http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU GPL v2
  * @link       http://code.google.com/p/validformbuilder/
  * @version	   Release: 0.2.1
  ***************************/
  
 /*A little reset rule*/
-* {
+form.validform,
+form.validform * {
 	margin: 0;
 	padding: 0;
 }
 
 /*The famous micro clearfix*/
-.vf__cf:before,
-.vf__cf:after {
+form.validform .vf__cf:before,
+form.validform .vf__cf:after {
     content: " ";
     display: table;
 }
-.vf__cf:after {
+form.validform .vf__cf:after {
     clear: both;
 }
-.vf__cf {
+form.validform .vf__cf {
     *zoom: 1;
 }
  
