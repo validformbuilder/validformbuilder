@@ -165,8 +165,17 @@ ValidForm.prototype.init = function() {
 /**
  * This function only gets called when the ValidWizard contains more than one page.
  */
-ValidForm.prototype.initWizard = function () {
+ValidForm.prototype.initWizard = function (intPageIndex) {
 	this.currentPage = jQuery("#" + this.id + " .vf__page:first");
+	
+	if (typeof intPageIndex !== "undefined") {
+		var $objPage = jQuery("#" + this.id + " .vf__page:eq(" + (parseInt(intPageIndex) - 1) + ")");
+
+		this.currentPage.hide();
+		
+		this.currentPage = $objPage;
+		this.showPage(this.currentPage);
+	}
 
 	this.hashChange();
 }
@@ -325,7 +334,8 @@ ValidForm.prototype.nextPage = function () {
 }
 
 ValidForm.prototype.isLastPage = function () {
-	return (this.pages.length == (jQuery("#" + this.id + " .vf__page").index(this.currentPage) + 1));
+	var index = (jQuery("#" + this.id + " .vf__page").index(this.currentPage) + 1);
+	return (this.pages.length == index);
 }
 
 ValidForm.prototype.previousPage = function () {
