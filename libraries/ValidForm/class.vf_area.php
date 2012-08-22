@@ -176,7 +176,6 @@ class VF_Area extends ClassDynamic {
 		$intDynamicCount = $this->getDynamicCount();
 
 		for ($intCount = 0; $intCount <= $intDynamicCount; $intCount++) {
-			echo $intCount;
 			$blnReturn = $this->__validate($intCount);
 
 			if (!$blnReturn) {
