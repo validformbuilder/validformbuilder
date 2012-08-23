@@ -58,8 +58,8 @@ class ValidWizard extends ValidForm {
 		$strReturn = "";
 
 		$intPage = ($this->__currentpage > 1) ? $this->__currentpage : "";
-		$strReturn .= ($this->__pagecount > 1) ? "objForm.setLabel('next', '" . $this->__nextlabel . "');\n";
-		$strReturn .= ($this->__pagecount > 1) ? "objForm.setLabel('previous', '" . $this->__nextlabel . "');\n";
+		$strReturn .= ($this->__pagecount > 1) ? "objForm.setLabel('next', '" . $this->__nextlabel . "');\n" : "";
+		$strReturn .= ($this->__pagecount > 1) ? "objForm.setLabel('previous', '" . $this->__previouslabel . "');\n" : "";
 		$strReturn .= ($this->__pagecount > 1) ? "objForm.initWizard({$intPage});\n" . $strCustomJs : "";
 
 		return $strReturn;
