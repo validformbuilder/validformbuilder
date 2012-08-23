@@ -84,6 +84,7 @@ class ValidWizard extends ValidForm {
 		if ($blnFromSession) {
 			$intPage = $this->__pagecount;
 		}
+		
 		$strReturn .= ($this->__pagecount > 1) ? "objForm.setLabel('next', '" . $this->__nextlabel . "');\n" : "";
 		$strReturn .= ($this->__pagecount > 1) ? "objForm.setLabel('previous', '" . $this->__previouslabel . "');\n" : "";
 		$strReturn .= ($this->__pagecount > 1) ? "objForm.initWizard({$intPage});\n" . $strCustomJs : "";
