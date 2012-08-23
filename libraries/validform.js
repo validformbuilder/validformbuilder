@@ -433,10 +433,16 @@ ValidForm.prototype.traverseDisabledElements = function () {
 
 ValidForm.prototype.dynamicDuplication = function () {
 	var __this 	= this;
+			
 
 	// Bind click event to duplicate button
 	jQuery(".vf__dynamic a").bind("click", function() {
 		var $anchor = jQuery(this);
+
+		//*** Call custom event if set.
+		if (typeof __this.events.beforeDynamicChange == "function") {
+			__this.events.beforeDynamicChange(__this, $anchor);
+		}
 
 		if (!jQuery(this).hasClass("vf__disabled")) {
 			//*** Update dynamic field counter.
@@ -455,8 +461,6 @@ ValidForm.prototype.dynamicDuplication = function () {
 
 				counter.val(parseInt(counter.val()) + 1);
 				var search 	= (parseInt(counter.val()) == 1) ? fieldname : fieldname + "_" + (parseInt(counter.val()) - 1);
-
-				console.log(fieldname, counter);
 
 				copy.find("[name='" + search + "']").each(function(){
 					if (jQuery(this).attr("type") == "radio" || 
@@ -518,7 +522,7 @@ ValidForm.prototype.dynamicDuplication = function () {
 			
 			//*** Call custom event if set.
 			if (typeof __this.events.afterDynamicChange == "function") {
-				__this.events.afterDynamicChange(__this);
+				__this.events.afterDynamicChange(__this, {anchor: $anchor, copy: copy});
 			}
 		}
 		
