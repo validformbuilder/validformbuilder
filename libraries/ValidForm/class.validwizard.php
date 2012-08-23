@@ -29,6 +29,8 @@ class ValidWizard extends ValidForm {
 	public 		$__pagecount = 1;
 	protected 	$__confirmlabel;
 	protected 	$__currentpage = 1;
+	protected 	$__nextlabel;
+	protected 	$__previouslabel;
 	private 	$__nextlabel;
 	private 	$__uniqueid;
 	
@@ -45,6 +47,8 @@ class ValidWizard extends ValidForm {
 
 		$this->__setUniqueId();
 		$this->__confirmlabel = (isset($meta["confirmLabel"])) ? $meta["confirmLabel"] : "Confirm";
+		$this->__nextlabel = (isset($meta["nextLabel"])) ? $meta["nextLabel"] : "Next &rarr;";
+		$this->__previouslabel = (isset($meta["previousLabel"])) ? $meta["previousLabel"] : "&larr; Previous";
 	}
 
 	public function toHtml($blnClientSide = true, $blnForceSubmitted = false, $strJs = "") {
@@ -55,6 +59,8 @@ class ValidWizard extends ValidForm {
 		$strReturn = "";
 
 		$intPage = ($this->__currentpage > 1) ? $this->__currentpage : "";
+		$strReturn .= ($this->__pagecount > 1) ? "objForm.setLabel('next', '" . $this->__nextlabel . "');\n";
+		$strReturn .= ($this->__pagecount > 1) ? "objForm.setLabel('previous', '" . $this->__nextlabel . "');\n";
 		$strReturn .= ($this->__pagecount > 1) ? "objForm.initWizard({$intPage});\n" . $strCustomJs : "";
 
 		return $strReturn;
