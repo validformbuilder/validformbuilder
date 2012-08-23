@@ -27,14 +27,21 @@ form.validform * {
 
 /*The famous micro clearfix*/
 form.validform .vf__cf:before,
-form.validform .vf__cf:after {
+form.validform .vf__cf:after,
+form.vf__cf:before,
+form.vf__cf:after 
+{
     content: " ";
     display: table;
 }
-form.validform .vf__cf:after {
+form.validform .vf__cf:after,
+form.vf__cf:after 
+{
     clear: both;
 }
-form.validform .vf__cf {
+form.validform .vf__cf,
+form.vf__cf 
+{
     *zoom: 1;
 }
  
