@@ -270,6 +270,11 @@ input.vf__button {
 	text-decoration: none;
 }
 
+a.vf__previous,
+input.vf__previous {
+	float: left;
+}
+
 select.vf__one {
 	width: 240px;
 	margin: 0; 
