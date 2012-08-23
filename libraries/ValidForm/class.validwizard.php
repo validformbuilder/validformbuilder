@@ -141,12 +141,12 @@ class ValidWizard extends ValidForm {
 		$strOutput = "";
 		$strName = $this->__name . "_confirmed";
 
-		$strOutput .= "<form id=\"{$this->__name}\" method=\"post\" enctype=\"multipart/form-data\" action=\"{$this->__action}\" class=\"validform\">\n";
+		$strOutput .= "<form id=\"{$this->__name}\" method=\"post\" enctype=\"multipart/form-data\" action=\"{$this->__action}\" class=\"validform vf__cf\">\n";
 		$strOutput .= "<div class='vf__confirm'>";
 		$strOutput .= $this->valuesAsHtml();
 		$strOutput .= "</div>";
 		$strOutput .= $this->__addHiddenFields();
-		$strOutput .= "<div class=\"vf__navigation\">\n<input type=\"hidden\" name=\"vf__dispatch\" value=\"{$strName}\" />\n<input type=\"hidden\" name=\"vf__uniqueid\" value=\"{$this->__uniqueid}\" />\n";
+		$strOutput .= "<div class=\"vf__navigation vf__cf\">\n<input type=\"hidden\" name=\"vf__dispatch\" value=\"{$strName}\" />\n<input type=\"hidden\" name=\"vf__uniqueid\" value=\"{$this->__uniqueid}\" />\n";
 		$strOutput .= "<input type=\"submit\" value=\"{$this->__confirmlabel}\" class=\"vf__button\" />\n</div>\n";
 		$strOutput .= "</form>";
 
