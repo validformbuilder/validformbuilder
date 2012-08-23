@@ -298,7 +298,7 @@ ValidForm.prototype.addPreviousButton = function (strPageId) {
 	var $pagenav = $page.find(".vf__pagenavigation");
 	var $nav = ($pagenav.length > 0) ? $pagenav : $page.find(".vf__navigation");
 
-	$nav.append(jQuery("<a href='#' id='prev_" + strPageId + "' class='vf__button vf__previous'>" + prevLabel + "</a>"));
+	$nav.append(jQuery("<a href='#' id='prev_" + strPageId + "' class='vf__button vf__previous" + ((typeof this.prevClass !== 'undefined') ? this.prevClass : '') + "'>" + prevLabel + "</a>"));
 
 	jQuery("#prev_" + strPageId).on("click", function () {
 		__this.previousPage();
@@ -410,13 +410,15 @@ ValidForm.prototype.addPageNavigation = function (strPageId) {
 	var __this 			= this;
 	//*** Call custom event if set.
 	if (typeof __this.events.beforeAddPageNavigation == "function") {
-		__this.events.beforeAddPageNavigation(__this, {pageId: strPageId});
+		__this.events.beforeAddPageNavigation(strPageId);
+	} else {
+		this.cachedEvents.push({"beforeAddPageNavigation": strPageId});
 	}
 
 	var $page 			= jQuery("#" + strPageId);
 	var nextLabel 		= $page.data("next-label");
 	nextLabel 			= (typeof nextLabel == "undefined") ? "Next &rarr;" : nextLabel;
-	var $nextNavigation = jQuery("<div class='vf__pagenavigation vf__cf'><a href='#' id='next_" + strPageId + "' class='vf__button'>" + nextLabel + "</a></div>");
+	var $nextNavigation = jQuery("<div class='vf__pagenavigation vf__cf'><a href='#' id='next_" + strPageId + "' class='vf__button" + ((typeof this.nextClass !== 'undefined') ? this.nextClass : '') + "'>" + nextLabel + "</a></div>");
 
 	jQuery("#" + strPageId).append($nextNavigation);
 
