@@ -26,7 +26,7 @@ require_once("class.validform.php");
  *
  */
 class ValidWizard extends ValidForm {
-	public 		$__pagecount = 1;
+	public 		$__pagecount = 0;
 	protected 	$__confirmlabel;
 	protected 	$__currentpage = 1;
 	protected 	$__previouslabel;
@@ -50,14 +50,40 @@ class ValidWizard extends ValidForm {
 		$this->__previouslabel = (isset($meta["previousLabel"])) ? $meta["previousLabel"] : "&larr; Previous";
 	}
 
-	public function toHtml($blnClientSide = true, $blnForceSubmitted = false, $strJs = "") {
-		return parent::toHtml($blnClientSide, $blnForceSubmitted, $this->__wizardJs($strJs));
+	public function toHtml($blnClientSide = true, $blnForceSubmitted = false, $strJs = "", $blnFromSession = false) {
+		$strReturn = null;
+		if (isset($_SESSION["vf__" . $this->getUniqueId()]) && !$blnFromSession) {
+			$objForm = unserialize($_SESSION["vf__" . $this->getUniqueId()]);
+		
+			if (is_object($objForm)) {
+				$strReturn = $objForm->toHtml($blnClientSide, true, $strJs, true);
+			} 
+		}
+
+		return (is_null($strReturn)) ? parent::toHtml($blnClientSide, $blnForceSubmitted, $this->__wizardJs($strJs, $blnFromSession)) : $strReturn;
+	}
+	
+	/**
+	 * Check if the form is submitted by validating the value of the hidden
+	 * vf__dispatch field.
+	 * @param  boolean $blnForce 	Fake isSubmitted to true to force field values.
+	 * @return boolean              [description]
+	 */
+	public function isSubmitted($blnForce = false) {
+		if (ValidForm::get("vf__dispatch") == $this->__name || $blnForce) {
+			return TRUE;
+		} else {
+			return FALSE;
+		}
 	}
 
-	private function __wizardJs($strCustomJs = "") {
+	private function __wizardJs($strCustomJs = "", $blnFromSession = false) {
 		$strReturn = "";
 
 		$intPage = ($this->__currentpage > 1) ? $this->__currentpage : "";
+		if ($blnFromSession) {
+			$intPage = $this->__pagecount;
+		}
 		$strReturn .= ($this->__pagecount > 1) ? "objForm.setLabel('next', '" . $this->__nextlabel . "');\n" : "";
 		$strReturn .= ($this->__pagecount > 1) ? "objForm.setLabel('previous', '" . $this->__previouslabel . "');\n" : "";
 		$strReturn .= ($this->__pagecount > 1) ? "objForm.initWizard({$intPage});\n" . $strCustomJs : "";
@@ -142,18 +168,50 @@ class ValidWizard extends ValidForm {
 		}
 	}
 
+	public function doCorrect() {
+		if (ValidForm::get("vf__dispatch") == $this->__name . "_correct") {
+			return TRUE;
+		} else {
+			return FALSE;
+		}
+	}
+
 	public function confirm() {
+		// Save the current form.
+		$_SESSION["vf__" . $this->getUniqueId()] = $this->serialize();
+
 		$strOutput = "";
 		$strName = $this->__name . "_confirmed";
+
+		$strOutput .= $this->__confirmJs();
 
 		$strOutput .= "<form id=\"{$this->__name}\" method=\"post\" enctype=\"multipart/form-data\" action=\"{$this->__action}\" class=\"validform vf__cf\">\n";
 		$strOutput .= "<div class='vf__confirm'>";
 		$strOutput .= $this->valuesAsHtml();
 		$strOutput .= "</div>";
 		$strOutput .= $this->__addHiddenFields();
-		$strOutput .= "<div class=\"vf__navigation vf__cf\">\n<input type=\"hidden\" name=\"vf__dispatch\" value=\"{$strName}\" />\n<input type=\"hidden\" name=\"vf__uniqueid\" value=\"{$this->__uniqueid}\" />\n";
-		$strOutput .= "<input type=\"submit\" value=\"{$this->__confirmlabel}\" class=\"vf__button\" />\n</div>\n";
+		$strOutput .= "<div class=\"vf__navigation vf__cf\">\n<input type=\"hidden\" name=\"vf__dispatch\" value=\"{$strName}\" />\n";
+		$strOutput .= "<input type=\"hidden\" name=\"vf__uniqueid\" value=\"{$this->getUniqueId()}\" />\n";
+		$strOutput .= "<input type=\"submit\" value=\"{$this->__confirmlabel}\" class=\"vf__button\" />\n";
+		$strOutput .= "<input type=\"submit\" value=\"{$this->__previouslabel}\" class=\"vf__button vf__previous\" id=\"confirm_" . $this->__name . "_previous\"/>\n";
+		$strOutput .= "</div>\n";
 		$strOutput .= "</form>";
+
+		return $strOutput;
+	}
+
+	protected function __confirmJs() {
+		$strOutput = "";
+
+		$strOutput .= "<script>";
+		$strOutput .= "jQuery(function ($) {\n";
+		$strOutput .= "try {\n";
+		$strOutput .= "objConfirmForm = new ValidConfirmForm('" . $this->__name . "');\n";
+		$strOutput .= "} catch (e) {\n";
+		$strOutput .= "throw new Error(\"Failed to initialize ValidConfirmForm('" . $this->__name . "'). Error:\\n\" + e.message);\n";
+		$strOutput .= "}\n";
+		$strOutput .= "});";
+		$strOutput .= "</script>";
 
 		return $strOutput;
 	}
@@ -227,7 +285,7 @@ class ValidWizard extends ValidForm {
 	}
 
 	public function getUniqueId() {
-		return $this->__uniqueid;
+		return ValidForm::get("vf__uniqueid", $this->__uniqueid);
 	}
 
 	private function __setUniqueId() {

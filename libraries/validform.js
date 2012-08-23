@@ -114,6 +114,12 @@ function ValidFormElement(strFormId, strElementName, strElementId, strValidation
 	}
 }
 
+function ValidConfirmForm(strFormId) {
+	this.id = strFormId;
+
+	this.init();
+}
+
 function ValidForm(strFormId, strMainAlert, blnAllowPreviousPage) {
 	this.id = strFormId;
 	this.elements = {};
@@ -188,8 +194,12 @@ ValidForm.prototype.initWizard = function (intPageIndex) {
 		var $objPage = jQuery("#" + this.id + " .vf__page:eq(" + (parseInt(intPageIndex) - 1) + ")");
 
 		this.currentPage.hide();
-		
 		this.currentPage = $objPage;
+
+		if (typeof _hash == "object") {
+			_hash.set(this.hashPrefix, intPageIndex);
+		}
+		
 		this.showPage(this.currentPage);
 	}
 
@@ -328,7 +338,7 @@ ValidForm.prototype.addPreviousButton = function (strPageId) {
 
 	$nav.append(jQuery("<a href='#' id='previous_" + strPageId + "' class='vf__button vf__previous'></a>"));
 
-	jQuery("#prev_" + strPageId).on("click", function () {
+	jQuery("#previous_" + strPageId).on("click", function () {
 		__this.previousPage();
 		return false;
 	});
@@ -843,6 +853,20 @@ ValidForm.prototype.validate = function(strSelector) {
 		
 	return blnReturn;
 };
+
+ValidConfirmForm.prototype.init = function () {
+	var __this = this;
+
+	$("#confirm_" + __this.id + "_previous").on("click", function () {
+		var $objForm = $("#" + __this.id);
+		var $objDispatch = $objForm.find("input[name='vf__dispatch']");
+
+		$objDispatch.val(__this.id + "_correct");
+		$objDispatch.after($("<input type='hidden' name='vf__back' value='true' />"));
+
+		$objForm.find("input[type='submit']:first").attr("disabled", true);
+	});
+}
 
 ValidFormElement.prototype.validate = function() {	
 	return this.validator.validate();
