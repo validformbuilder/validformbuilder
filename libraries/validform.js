@@ -129,6 +129,8 @@ function ValidForm(strFormId, strMainAlert, blnAllowPreviousPage) {
 		"afterNextPage", 
 		"beforePreviousPage", 
 		"afterPreviousPage", 
+		"beforeAddPreviousButton",
+		"afterAddPreviousButton",
 		"beforeShowPage",
 		"afterShowPage",
 		"beforeAddPageNavigation",
@@ -291,6 +293,12 @@ ValidForm.prototype.addPage = function (strPageId, blnIsOverview) {
 
 ValidForm.prototype.addPreviousButton = function (strPageId) {
 	var __this			= this;
+
+	//*** Call custom event if set.
+	if (typeof __this.events.beforeAddPreviousButton == "function") {
+		__this.events.beforeAddPreviousButton(strPageId);
+	}
+
 	var $page 			= jQuery("#" + strPageId);
 	var prevLabel		= $page.data("prev-label");
 	prevLabel 			= (typeof prevLabel == "undefined") ? "&larr; Previous" : prevLabel;
@@ -304,6 +312,13 @@ ValidForm.prototype.addPreviousButton = function (strPageId) {
 		__this.previousPage();
 		return false;
 	});
+
+	//*** Call custom event if set.
+	if (typeof __this.events.afterAddPreviousButton == "function") {
+		__this.events.afterAddPreviousButton(strPageId);
+	} else {
+		this.cachedEvents.push({"afterAddPreviousButton": strPageId});
+	}
 };
 
 ValidForm.prototype.getPages = function () {
@@ -411,13 +426,10 @@ ValidForm.prototype.addPageNavigation = function (strPageId) {
 	//*** Call custom event if set.
 	if (typeof __this.events.beforeAddPageNavigation == "function") {
 		__this.events.beforeAddPageNavigation(strPageId);
-	} else {
-		this.cachedEvents.push({"beforeAddPageNavigation": strPageId});
 	}
 
 	var $page 			= jQuery("#" + strPageId);
-	var nextLabel 		= $page.data("next-label");
-	nextLabel 			= (typeof nextLabel == "undefined") ? "Next &rarr;" : nextLabel;
+	var nextLabel 		= (typeof $page.data("next-label") == "undefined") ? "Next &rarr;" : $page.data("next-label");
 	var $nextNavigation = jQuery("<div class='vf__pagenavigation vf__cf'><a href='#' id='next_" + strPageId + "' class='vf__button" + ((typeof this.nextClass !== 'undefined') ? this.nextClass : '') + "'>" + nextLabel + "</a></div>");
 
 	jQuery("#" + strPageId).append($nextNavigation);
@@ -428,6 +440,13 @@ ValidForm.prototype.addPageNavigation = function (strPageId) {
 
 		return false;
 	});
+
+	//*** Call custom event if set.
+	if (typeof __this.events.afterAddPageNavigation == "function") {
+		__this.events.afterAddPageNavigation(strPageId);
+	} else {
+		this.cachedEvents.push({"afterAddPageNavigation": strPageId});
+	}
 };
 
 ValidForm.prototype.matchfields = function (strSecondFieldId, strFirstFieldId, strMatchError) {
