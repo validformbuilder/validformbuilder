@@ -407,12 +407,12 @@ ValidForm.prototype.showPage = function ($objPage) {
 };
 
 ValidForm.prototype.addPageNavigation = function (strPageId) {
+	var __this 			= this;
 	//*** Call custom event if set.
 	if (typeof __this.events.beforeAddPageNavigation == "function") {
 		__this.events.beforeAddPageNavigation(__this, {pageId: strPageId});
 	}
 
-	var __this 			= this;
 	var $page 			= jQuery("#" + strPageId);
 	var nextLabel 		= $page.data("next-label");
 	nextLabel 			= (typeof nextLabel == "undefined") ? "Next &rarr;" : nextLabel;
