@@ -123,7 +123,20 @@ function ValidForm(strFormId, strMainAlert, blnAllowPreviousPage) {
 	this.validator.mainAlert = strMainAlert;
 	this.events = [];
 	this.cachedEvents = [];
-	this.customEvents = ["beforeSubmit", "afterValidate", "afterDynamicChange", "afterNextPage", "beforeNextPage", "afterShowPage", "beforeShowPage"];
+	this.customEvents = [
+		"beforeSubmit", 
+		"beforeNextPage", 
+		"afterNextPage", 
+		"beforePreviousPage", 
+		"afterPreviousPage", 
+		"beforeShowPage",
+		"afterShowPage",
+		"beforeAddPageNavigation",
+		"afterAddPageNavigation",
+		"beforeDynamicChange",
+		"afterDynamicChange",
+		"afterValidate"
+	];
 	this.hashPageIndex = 1;
 	this.hashPrefix = "vf_page";
 	this.allowPreviousPage = (typeof blnAllowPreviousPage !== "undefined") ? blnAllowPreviousPage : true;
@@ -146,7 +159,7 @@ ValidForm.prototype.init = function() {
 	// This is where the magic happens: onSubmit; validate form.
 	jQuery("#" + this.id).bind("submit", function(){
 		if (typeof __this.events.beforeSubmit == "function") {
-			__this.events.beforeSubmit(this);
+			__this.events.beforeSubmit(__this);
 		}
 
 		if (__this.pages.length > 1) {
@@ -394,6 +407,11 @@ ValidForm.prototype.showPage = function ($objPage) {
 };
 
 ValidForm.prototype.addPageNavigation = function (strPageId) {
+	//*** Call custom event if set.
+	if (typeof __this.events.beforeAddPageNavigation == "function") {
+		__this.events.beforeAddPageNavigation(__this, {pageId: strPageId});
+	}
+
 	var __this 			= this;
 	var $page 			= jQuery("#" + strPageId);
 	var nextLabel 		= $page.data("next-label");
