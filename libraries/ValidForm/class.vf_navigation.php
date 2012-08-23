@@ -88,6 +88,10 @@ class VF_Navigation extends ClassDynamic {
 		return null;
 	}
 	
+	public function isDynamic() {
+		return false;
+	}
+	
 	public function getType() {
 		return 0;
 	}

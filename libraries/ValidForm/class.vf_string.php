@@ -53,6 +53,10 @@ class VF_String extends ClassDynamic {
 		return;
 	}
 	
+	public function isDynamic() {
+		return false;
+	}
+	
 }
 
 ?>

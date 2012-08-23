@@ -100,6 +100,10 @@ class VF_Page extends ClassDynamic {
 		return $this->__validate();
 	}
 	
+	public function isDynamic() {
+		return false;
+	}
+	
 	public function hasFields() {
 		return ($this->__elements->count() > 0) ? TRUE : FALSE;
 	}

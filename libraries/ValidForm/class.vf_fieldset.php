@@ -97,6 +97,10 @@ class VF_Fieldset extends ClassDynamic {
 		return $this->__fields;
 	}
 	
+	public function isDynamic() {
+		return false;
+	}
+	
 	private function __validate() {
 		$blnReturn = TRUE;
 		

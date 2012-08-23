@@ -54,6 +54,10 @@ class VF_Button extends ClassDynamic {
 		return TRUE;
 	}
 	
+	public function isDynamic() {
+		return false;
+	}
+	
 	public function hasFields() {
 		return FALSE;
 	}
