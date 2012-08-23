@@ -29,9 +29,8 @@ class ValidWizard extends ValidForm {
 	public 		$__pagecount = 1;
 	protected 	$__confirmlabel;
 	protected 	$__currentpage = 1;
-	protected 	$__nextlabel;
 	protected 	$__previouslabel;
-	private 	$__nextlabel;
+	protected 	$__nextlabel;
 	private 	$__uniqueid;
 	
 	/**
