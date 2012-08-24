@@ -34,10 +34,6 @@ class VF_Group extends VF_Element {
 		parent::__construct($name, $type, $label, $validationRules, $errorHandlers, $meta);
 	}
 
-	// public function getFields() {
-		
-	// }
-
 	public function toHtml($submitted = FALSE, $blnSimpleLayout = FALSE) {
 		$blnError = ($submitted && !$this->__validator->validate()) ? TRUE : FALSE;
 		
@@ -76,8 +72,10 @@ class VF_Group extends VF_Element {
 
 		$strOutput .= "objForm.addElement('{$id}', '{$name}', {$strCheck}, {$strRequired}, {$intMaxLength}, {$intMinLength}, '" . addslashes($this->__validator->getFieldHint()) . "', '" . addslashes($this->__validator->getTypeError()) . "', '" . addslashes($this->__validator->getRequiredError()) . "', '" . addslashes($this->__validator->getHintError()) . "', '" . addslashes($this->__validator->getMinLengthError()) . "', '" . addslashes($this->__validator->getMaxLengthError()) . "');\n";
 
-		if (is_object($this->__targetfield)) {
-			$strOutput .= $this->__targetfield->toJs();
+		foreach ($this->__fields as $field) {
+			if ($field->hasTrigger()) {
+				$strOutput .= $field->toJs();
+			}
 		}
 		
 		return $strOutput;
@@ -123,23 +121,26 @@ class VF_Group extends VF_Element {
 	}
 
 	public function addFieldObject($objTarget, $checked = false) {
-		// Add checkbox
-		$objTrigger = $this->addField($objTarget->getLabel(), $this->getName(true) . "_triggerfield", $checked);
+		// For now, we only support one targetfield per group object.
+		if (!is_object($this->__targetfield)) {
+			// Add checkbox
+			$objTrigger = $this->addField($objTarget->getLabel(), $objTarget->getName(true) . "_triggerfield", $checked);
 
-		// Set the defaults on the target element
-		$objTarget->setName($this->getName(true) . "_triggerfield");
-		$objTarget->setId($this->getRandomId($objTarget->getName()));
+			// Set the defaults on the target element
+			$objTarget->setName($objTarget->getName(true) . "_triggerfield");
+			$objTarget->setId($this->getRandomId($objTarget->getName()));
 
-		// Set the trigger field.
-		$objTarget->setTrigger($objTrigger);
+			// Set the trigger field.
+			$objTarget->setTrigger($objTrigger);
 
-		// This group has a trigger element.
-		$this->__targetfield = $objTarget;
+			// This group has a trigger element.
+			$this->__targetfield = $objTarget;
 
-		// Add to validator
-		$this->__validator->setTargetField($objTarget);
+			// Add to validator
+			$this->__validator->setTargetField($objTarget);
 
-		$this->__fields->addObject($objTarget);
+			$this->__fields->addObject($objTarget);
+		}
 	}
 	
 }

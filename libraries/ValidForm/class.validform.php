@@ -403,6 +403,7 @@ class ValidForm extends ClassDynamic {
 
 					if ((!empty($strValue) && $hideEmpty) || (!$hideEmpty && !is_null($strValue))) {
 						if ($objField->hasFields()) {
+
 							switch (get_class($objField)) {
 								case "VF_MultiField":
 									$strSet .= $this->multiFieldAsHtml($objField, $hideEmpty);

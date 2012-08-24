@@ -223,7 +223,7 @@ class VF_Area extends ClassDynamic {
 	}
 	
 	public function hasFields() {
-		return ($this->__fields->count() > 0) ? TRUE : FALSE;
+		return ($this->__fields->count() > 0);
 	}
 	
 	private function __validate() {
