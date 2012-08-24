@@ -204,6 +204,10 @@ class VF_MultiField extends ClassDynamic {
 		return TRUE;
 	}
 	
+	public function getName() {
+		return null;
+	}
+	
 	public function getId() {
 		return null;
 	}
