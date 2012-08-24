@@ -60,6 +60,9 @@ class ValidWizard extends ValidForm {
 				if (is_object($objForm)) {
 					$strReturn = $objForm->toHtml($blnClientSide, true, $strJs, true);
 				} 
+			} else {
+			    $strForm = $this->serialize();
+			    $_SESSION["vf__" . $this->getUniqueId()] = $strForm;
 			}
 		}
 
@@ -90,7 +93,7 @@ class ValidWizard extends ValidForm {
 		// Optionally set a custom first visibile page.
 		$intPage = ($this->__currentpage > 1) ? $this->__currentpage : "";
 
-		if ($blnFromSession) {
+		if ($blnFromSession && $this->doCorrect()) {
 			// We're coming from the confirm page, so the first page we want to show is the last page of the wizard.
 			$intPage = $this->__pagecount;
 		}
@@ -111,7 +114,7 @@ class ValidWizard extends ValidForm {
 	public function addPage($id = "", $header = "", $meta = array()) {
 		if ($this->__elements->count() == 0) {
 			// Add unique id field.
-			$this->addHiddenField("vf__uniqueid", VFORM_STRING, array("default" => $this->__uniqueid));
+			$this->addHiddenField("vf__uniqueid", VFORM_STRING, array("default" => $this->getUniqueId()));
 		}
 
 		$objPage = new VF_Page($id, $header, $meta);
