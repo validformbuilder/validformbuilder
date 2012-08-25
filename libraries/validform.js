@@ -167,6 +167,7 @@ ValidForm.prototype.init = function() {
 	
 	// This is where the magic happens: onSubmit; validate form.
 	jQuery("#" + this.id).bind("submit", function(){
+		jQuery("#" + this.id).trigger("VF_BeforeSubmit", [{ValidForm: __this}]);
 		if (typeof __this.events.beforeSubmit == "function") {
 			__this.events.beforeSubmit(__this);
 		}
@@ -327,6 +328,7 @@ ValidForm.prototype.addPreviousButton = function (strPageId) {
 	var __this		= this;
 
 	//*** Call custom event if set.
+	jQuery("#" + this.id).trigger("VF_BeforeAddPreviousButton", [__this, {ValidForm: __this, pageId: strPageId}]);
 	if (typeof __this.events.beforeAddPreviousButton == "function") {
 		__this.events.beforeAddPreviousButton(strPageId);
 	}
@@ -344,6 +346,7 @@ ValidForm.prototype.addPreviousButton = function (strPageId) {
 	});
 
 	//*** Call custom event if set.
+	jQuery("#" + this.id).trigger("VF_AfterAddPreviousButton", [{ValidForm: __this, pageId: strPageId}]);
 	if (typeof __this.events.afterAddPreviousButton == "function") {
 		__this.events.afterAddPreviousButton(strPageId);
 	} else {
@@ -365,6 +368,7 @@ ValidForm.prototype.getPages = function () {
 };
 
 ValidForm.prototype.nextPage = function () {
+	jQuery("#" + this.id).trigger("VF_BeforeNextPage", [{ValidForm: this}]);
 	if (typeof this.events.beforeNextPage == "function") {
 		this.events.beforeNextPage(this);
 	}
@@ -384,6 +388,7 @@ ValidForm.prototype.nextPage = function () {
 				_hash.set(this.hashPrefix, jQuery("#" + this.id + " .vf__page").index(this.currentPage) + 1);
 			}
 
+			jQuery("#" + this.id).trigger("VF_AfterNextPage", [{ValidForm: this}]);
 			if (typeof this.events.afterNextPage == "function") {
 				this.events.afterNextPage(this);
 			}
@@ -397,6 +402,7 @@ ValidForm.prototype.isLastPage = function () {
 };
 
 ValidForm.prototype.previousPage = function () {
+	jQuery("#" + this.id).trigger("VF_BeforePreviousPage", [{ValidForm: this}]);
 	if (typeof this.events.beforePreviousPage == "function") {
 		this.events.beforePreviousPage(this);
 	}
@@ -412,6 +418,7 @@ ValidForm.prototype.previousPage = function () {
 		_hash.set(this.hashPrefix, jQuery("#" + this.id + " .vf__page").index(this.currentPage) + 1);
 	}
 
+	jQuery("#" + this.id).trigger("VF_AfterPreviousPage", [{ValidForm: this}]);
 	if (typeof this.events.afterPreviousPage == "function") {
 		this.events.afterPreviousPage(this);
 	}
@@ -421,6 +428,7 @@ ValidForm.prototype.showPage = function ($objPage) {
 	var __this = this;
 
 	if (typeof $objPage == "object" && $objPage instanceof jQuery) {
+		jQuery("#" + this.id).trigger("VF_BeforeShowPage", [{ValidForm: __this, objPage: $objPage}]);
 		if (typeof this.events.beforeShowPage == "function") {
 			this.events.beforeShowPage($objPage);
 		} else {
@@ -428,6 +436,7 @@ ValidForm.prototype.showPage = function ($objPage) {
 		}
 
 		$objPage.show(0, function () {
+			jQuery("#" + this.id).trigger("VF_AfterShowPage", [{ValidForm: __this, objPage: $objPage}]);
 			if (typeof __this.events.afterShowPage == "function") {
 				__this.events.afterShowPage($objPage);
 			} else {
@@ -454,6 +463,7 @@ ValidForm.prototype.showPage = function ($objPage) {
 ValidForm.prototype.addPageNavigation = function (strPageId) {
 	var __this 			= this;
 	//*** Call custom event if set.
+	jQuery("#" + this.id).trigger("VF_BeforeAddPageNavigation", [{ValidForm: __this, pageId: strPageId}]);
 	if (typeof __this.events.beforeAddPageNavigation == "function") {
 		__this.events.beforeAddPageNavigation(strPageId);
 	}
@@ -471,6 +481,7 @@ ValidForm.prototype.addPageNavigation = function (strPageId) {
 	});
 
 	//*** Call custom event if set.
+	jQuery("#" + this.id).trigger("VF_AfterAddPageNavigation", [{ValidForm: __this, pageId: strPageId}]);
 	if (typeof __this.events.afterAddPageNavigation == "function") {
 		__this.events.afterAddPageNavigation(strPageId);
 	} else {
@@ -508,6 +519,7 @@ ValidForm.prototype.dynamicDuplication = function () {
 		var $anchor = jQuery(this);
 
 		//*** Call custom event if set.
+		jQuery("#" + this.id).trigger("VF_BeforeDynamicChange", [{ValidForm: __this, objAnchor: $anchor}]);
 		if (typeof __this.events.beforeDynamicChange == "function") {
 			__this.events.beforeDynamicChange(__this, $anchor);
 		}
@@ -589,6 +601,7 @@ ValidForm.prototype.dynamicDuplication = function () {
 			jQuery(this).parent().before(copy);
 			
 			//*** Call custom event if set.
+			jQuery("#" + this.id).trigger("VF_AfterDynamicChange", [{ValidForm: __this, objAnchor: $anchor, objCopy: copy}]);
 			if (typeof __this.events.afterDynamicChange == "function") {
 				__this.events.afterDynamicChange(__this, {anchor: $anchor, copy: copy});
 			}
@@ -844,6 +857,7 @@ ValidForm.prototype.validate = function(strSelector) {
 
 	blnReturn = this.valid;
 	
+	jQuery("#" + this.id).trigger("VF_AfterValidate", [{ValidForm: this, selector: strSelector}]);
 	if (typeof this.events.afterValidate == "function") {
 		varReturn = this.events.afterValidate(this, strSelector);
 		if (typeof varReturn !== "undefined") {
