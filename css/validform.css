@@ -63,6 +63,12 @@ form.validform legend
 	padding: 15px 0 5px 0;
 }
 
+form.validform div.vf__targetfield {
+	clear: both !important;
+	padding-top: 8px !important;
+	margin-left: 0 !important;
+}
+
 form.validform div.vf__multifield,
 form.validform div.vf__optional,
 form.validform div.vf__required {
