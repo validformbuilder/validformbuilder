@@ -392,8 +392,9 @@ class ValidForm extends ClassDynamic {
 	}
 	
 	public function valuesAsHtml($hideEmpty = FALSE, $collection = null) {
-		$strOutput = "\t<table border=\"0\" cellspacing=\"0\" cellpadding=\"0\">\n";
-		$collection = (!is_null($collection)) ? $collection : $this->__elements;
+		$strTable 		= "\t<table border=\"0\" cellspacing=\"0\" cellpadding=\"0\">\n";
+		$strTableOutput	= "";
+		$collection 	= (!is_null($collection)) ? $collection : $this->__elements;
 
 		foreach ($collection as $objFieldset) {
 			$strSet = "";
@@ -403,7 +404,6 @@ class ValidForm extends ClassDynamic {
 
 					if ((!empty($strValue) && $hideEmpty) || (!$hideEmpty && !is_null($strValue))) {
 						if ($objField->hasFields()) {
-
 							switch (get_class($objField)) {
 								case "VF_MultiField":
 									$strSet .= $this->multiFieldAsHtml($objField, $hideEmpty);
@@ -444,20 +444,24 @@ class ValidForm extends ClassDynamic {
 			
 			$strHeader = $objFieldset->getHeader();
 			if (!empty($strHeader) && !empty($strSet)) {
-				$strOutput .= "<tr>";
-				$strOutput .= "<td colspan=\"3\">&nbsp;</td>\n";
-				$strOutput .= "</tr>";			
-				$strOutput .= "<tr>";
-				$strOutput .= "<td colspan=\"3\"><b>{$strHeader}</b></td>\n";
-				$strOutput .= "</tr>";
+				$strTableOutput .= "<tr>";
+				$strTableOutput .= "<td colspan=\"3\">&nbsp;</td>\n";
+				$strTableOutput .= "</tr>";			
+				$strTableOutput .= "<tr>";
+				$strTableOutput .= "<td colspan=\"3\"><b>{$strHeader}</b></td>\n";
+				$strTableOutput .= "</tr>";
 			}
-			
-			$strOutput .= $strSet;
+
+			if (!empty($strSet)) {
+				$strTableOutput .= $strSet;
+			}
 		}
-		
-		$strOutput .= "</table>";
-		
-		return $strOutput;
+
+		if (!empty($strTableOutput)) {
+			return $strTable . $strTableOutput . "</table>";
+		} else {
+			return "";
+		}
 	}
 	
 	private function areaAsHtml($objField, $hideEmpty = FALSE, $intDynamicCount = 0) {

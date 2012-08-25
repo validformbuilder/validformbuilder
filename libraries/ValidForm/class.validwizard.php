@@ -156,12 +156,21 @@ class ValidWizard extends ValidForm {
 	public function valuesAsHtml($hideEmpty = false) {
 		$strOutput = "";
 		foreach ($this->__elements as $objPage) {
+			$strPage = "";
 			if (get_class($objPage) == "VF_Page") {
 				$strHeader = $objPage->getHeader();
-				$strOutput .= "\n<div id='{$objPage->getId()}'>\n";
-				if (!empty($strHeader)) $strOutput .= "<h2>{$strHeader}</h2>\n";
-				$strOutput .= parent::valuesAsHtml($hideEmpty, $objPage->getFields()) . "\n";
-				$strOutput .= "</div>\n";
+
+				$strPage .= "\n<div id='{$objPage->getId()}'>\n";
+				
+				if (!empty($strHeader)) {
+					$strPage .= "<h2>{$strHeader}</h2>\n";
+				}
+
+				$strPageContent = parent::valuesAsHtml($hideEmpty, $objPage->getFields()) . "\n";
+				
+				if (trim($strPageContent) !== "") {
+					$strOutput .= $strPage . $strPageContent . "</div>\n";
+				}
 			}
 		}
 
