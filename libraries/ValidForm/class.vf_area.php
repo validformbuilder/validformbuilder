@@ -9,6 +9,7 @@
  * 
  * @package    ValidForm
  * @author     Felix Langfeldt <flangfeldt@felix-it.com>
+ * @author     Robin van Baalen <rvanbaalen@felix-it.com>
  * @copyright  2009-2012 Felix Langfeldt <flangfeldt@felix-it.com>
  * @license    http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU GPL v2
  * @link       http://code.google.com/p/validformbuilder/
