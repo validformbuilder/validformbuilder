@@ -90,12 +90,31 @@ class VF_Area extends ClassDynamic {
 		return $strOutput;
 	}
 
+	public function hasContent() {
+		$blnReturn = false;
+
+		foreach ($this->__fields as $objField) {
+			if (get_class($objField) !== "VF_Hidden") {
+				$varValue = $objField->getValue();
+				// echo $varValue;
+
+				if (!empty($varValue)) {
+					$blnReturn = true;
+				}
+
+				break;
+			}
+		}
+
+		return $varValue;
+	}
+
 	protected function __toHtml($submitted = false, $intCount = 0) {
 		$strName 	= ($intCount == 0) ? $this->__name : $this->__name . "_" . $intCount;
 		
-		$value = ValidForm::get($strName);
-		$strChecked = ($this->__active && $this->__checked && empty($value) && !$submitted) ? " checked=\"checked\"" : "";
-		$strChecked = ($this->__active && !empty($value)) ? " checked=\"checked\"" : $strChecked;
+		$strChecked = ($this->__active && $this->__checked && !$submitted) ? " checked=\"checked\"" : "";
+		$strChecked = ($this->__active && $submitted && $this->hasContent()) ? " checked=\"checked\"" : "";
+		// $strChecked = ($this->__active && !empty($value)) ? " checked=\"checked\"" : $strChecked;
 
 		$strClass = (array_key_exists("class", $this->__meta)) ? " " . $this->__meta["class"] : "";
 		$strClass = ($this->__active && empty($strChecked)) ? $strClass . " vf__disabled" : $strClass;
@@ -113,7 +132,7 @@ class VF_Area extends ClassDynamic {
 				continue;
 			}
 
-			$submitted = ($this->__active && empty($value)) ? FALSE : $submitted;
+			$submitted = ($this->__active && !$this->hasContent()) ? FALSE : $submitted;
 			$strOutput .= $objField->__toHtml($submitted, false, true, true, $intCount);
 		}
 		
@@ -223,7 +242,7 @@ class VF_Area extends ClassDynamic {
 	}
 	
 	public function hasFields() {
-		return ($this->__fields->count() > 0);
+		return ($this->__fields->count() > 0) ? TRUE : FALSE;
 	}
 	
 	private function __validate() {
