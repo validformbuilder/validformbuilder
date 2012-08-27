@@ -159,7 +159,6 @@ class VF_FieldValidator extends ClassDynamic {
 		} else {
 			$blnTargetError = false;
 			if (is_object($this->__targetfield)) {
-						echo "cool";
 				if ($value == $this->__targetfield->getName()) {
 					// Validate target field and set error/validvalue
 					if ($this->__targetfield->getValidator()->validate($intDynamicPosition)) {
