@@ -489,7 +489,7 @@ class ValidForm extends ClassDynamic {
 		
 		if (!empty($strSet)) {
 			$strReturn = "<tr>";
-			$strReturn .= "<td colspan=\"3\" style=\"white-space:nowrap\"><b>{$objField->getLabel()}</b></td>\n";
+			$strReturn .= "<td colspan=\"3\" style=\"white-space:nowrap\" class=\"vf__area_header\"><h3>{$objField->getLabel()}</h3></td>\n";
 			$strReturn .= "</tr>";
 			$strReturn .= $strSet;
 		}
@@ -519,9 +519,10 @@ class ValidForm extends ClassDynamic {
 			
 			$strValue = trim($strValue);
 			
-			if ((!empty($strValue) && $hideEmpty) || (!$hideEmpty && !is_null($strValue))) {													
-				$strReturn .= "<tr>";
-				$strReturn .= "<td valign=\"top\" style=\"white-space:nowrap\">{$objField->getLabel()} &nbsp;&nbsp;&nbsp;</td><td valign=\"top\">: <b>" . nl2br($strValue) . "</b></td>\n";
+			if ((!empty($strValue) && $hideEmpty) || (!$hideEmpty && !is_null($strValue))) {	
+
+				$strReturn .= "<tr class=\"vf__field_value\">";
+				$strReturn .= "<td valign=\"top\" style=\"white-space:nowrap; padding-right: 20px\" class=\"vf__field\">{$objField->getLabel()}</td><td valign=\"top\" class=\"vf__value\"><strong>" . nl2br($strValue) . "</strong></td>\n";
 				$strReturn .= "</tr>";
 			}
 		}
@@ -550,8 +551,8 @@ class ValidForm extends ClassDynamic {
 				if (empty($strLabel) && empty($strValue)) {	
 					//*** Skip the field.
 				} else {
-					$strReturn .= "<tr>";
-					$strReturn .= "<td valign=\"top\">{$objField->getLabel()} &nbsp;&nbsp;&nbsp;</td><td valign=\"top\">: <b>" . nl2br($strValue) . "</b></td>\n";
+					$strReturn .= "<tr class=\"vf__field_value\">";
+					$strReturn .= "<td valign=\"top\" style=\"padding-right: 20px\" class=\"vf__field\">{$objField->getLabel()}</td><td valign=\"top\" class=\"vf__value\"><strong>" . nl2br($strValue) . "</strong></td>\n";
 					$strReturn .= "</tr>";
 				}
 			}

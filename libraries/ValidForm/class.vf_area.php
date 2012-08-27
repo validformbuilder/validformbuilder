@@ -67,6 +67,13 @@ class VF_Area extends ClassDynamic {
 	
 	public function addMultiField($label = NULL, $meta = array()) {
 		if (!array_key_exists("dynamic", $meta)) $meta["dynamic"] = $this->__dynamic;
+
+		//*** Overwrite dynamic settings. We cannot have a dynamic multifield inside a dynamic area.
+		if ($this->__dynamic) {
+			$meta["dynamic"] = $this->__dynamic;
+			$meta["dynamicLabel"] = "";
+		}
+
 		$objField = new VF_MultiField($label, $meta);
 		
 		$objField->setRequiredStyle($this->__requiredstyle);
