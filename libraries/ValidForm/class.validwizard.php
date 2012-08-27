@@ -44,6 +44,7 @@ class ValidWizard extends ValidForm {
 		parent::__construct($name, $description, $action, $meta);
 
 		$this->__setUniqueId();
+		$this->__uniqueid = (isset($meta["uniqueId"])) ? $meta["uniqueId"] : $this->__uniqueid;
 		$this->__confirmlabel = (isset($meta["confirmLabel"])) ? $meta["confirmLabel"] : "Confirm";
 		$this->__nextlabel = (isset($meta["nextLabel"])) ? $meta["nextLabel"] : "Next &rarr;";
 		$this->__previouslabel = (isset($meta["previousLabel"])) ? $meta["previousLabel"] : "&larr; Previous";
@@ -57,7 +58,7 @@ class ValidWizard extends ValidForm {
 			if (isset($_SESSION["vf__" . $this->getUniqueId()]) && !$blnFromSession) {
 				$objForm = unserialize($_SESSION["vf__" . $this->getUniqueId()]);
 			
-				if (is_object($objForm)) {
+				if (is_object($objForm) && $objForm->isSubmitted()) {
 					$strReturn = $objForm->toHtml($blnClientSide, true, $strJs, true);
 				} 
 			} else {

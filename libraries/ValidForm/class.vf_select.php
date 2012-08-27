@@ -33,26 +33,46 @@ class VF_Select extends VF_Element {
 
 		parent::__construct($name, $type, $label, $validationRules, $errorHandlers, $meta);
 	}
+	
+	public function toHtml($submitted = FALSE, $blnSimpleLayout = FALSE, $blnLabel = true, $blnDisplayErrors = true) {
+		$strOutput = "";
 
-	public function toHtml($submitted = FALSE, $blnSimpleLayout = FALSE) {
+		if ($this->__dynamic) {
+			$intDynamicCount = $this->getDynamicCount();
+			for($intCount = 0; $intCount <= $intDynamicCount; $intCount++) {
+				$strOutput .= $this->__toHtml($submitted, $blnSimpleLayout, $blnLabel, $blnDisplayErrors, $intCount);
+			}
+		} else {
+			$strOutput = $this->__toHtml($submitted, $blnSimpleLayout, $blnLabel, $blnDisplayErrors);
+		}
+
+		return $strOutput;
+	}
+
+	public function __toHtml($submitted = FALSE, $blnSimpleLayout = FALSE, $blnLabel = true, $blnDisplayErrors = true, $intCount = 0) {
 		$strOutput = "";
 		
+		$strName 	= ($intCount == 0) ? $this->__name : $this->__name . "_" . $intCount;
+		$strId 		= ($intCount == 0) ? $this->__id : $this->__id . "_" . $intCount;
+
 		if (!$blnSimpleLayout) {
-			$blnError = ($submitted && !$this->__validator->validate()) ? TRUE : FALSE;
+			$blnError = ($submitted && !$this->__validator->validate($intCount)) ? TRUE : FALSE;
 			
 			$strClass = ($this->__validator->getRequired()) ? "vf__required" : "vf__optional";
 			$strClass = ($blnError) ? $strClass . " vf__error" : $strClass;		
 			$strOutput .= "<div class=\"{$strClass}\">\n";
 			
-			if ($blnError) $strOutput .= "<p class=\"vf__error\">{$this->__validator->getError()}</p>";
+			if ($blnError) {
+				$strOutput .= "<p class=\"vf__error\">{$this->__validator->getError($intCount)}</p>";
+			}
 					
 			$strLabel = (!empty($this->__requiredstyle) && $this->__validator->getRequired()) ? sprintf($this->__requiredstyle, $this->__label) : $this->__label;
-			if (!empty($this->__label)) $strOutput .= "<label for=\"{$this->__id}\">{$strLabel}</label>\n";
+			if (!empty($this->__label)) $strOutput .= "<label for=\"{$strId}\">{$strLabel}</label>\n";
 		} else {
 			$strOutput = "<div class=\"vf__multifielditem\">\n";
 		}
 		
-		$strOutput .= "<select name=\"{$this->__name}\" id=\"{$this->__id}\" {$this->__getMetaString()}>\n";
+		$strOutput .= "<select name=\"{$strName}\" id=\"{$strId}\" {$this->__getMetaString()}>\n";
 		
 		if ($this->__options->count() == 0) {
 			if (isset($this->__meta["start"]) && is_numeric($this->__meta["start"]) && isset($this->__meta["end"]) && is_numeric($this->__meta["end"])) {
@@ -87,7 +107,17 @@ class VF_Select extends VF_Element {
 		$intMaxLength = ($this->__validator->getMaxLength() > 0) ? $this->__validator->getMaxLength() : "null";
 		$intMinLength = ($this->__validator->getMinLength() > 0) ? $this->__validator->getMinLength() : "null";
 		
-		$strOutput = "objForm.addElement('{$this->__id}', '{$this->__name}', {$strCheck}, {$strRequired}, {$intMaxLength}, {$intMinLength}, '" . addslashes($this->__validator->getFieldHint()) . "', '" . addslashes($this->__validator->getTypeError()) . "', '" . addslashes($this->__validator->getRequiredError()) . "', '" . addslashes($this->__validator->getHintError()) . "', '" . addslashes($this->__validator->getMinLengthError()) . "', '" . addslashes($this->__validator->getMaxLengthError()) . "');\n";
+		if ($this->__dynamic) {
+			$intDynamicCount = $this->getDynamicCount();
+			for($intCount = 0; $intCount <= $intDynamicCount; $intCount++) {
+				$strId 		= ($intCount == 0) ? $this->__id : $this->__id . "_" . $intCount;
+				$strName 	= ($intCount == 0) ? $this->__name : $this->__name . "_" . $intCount;
+
+				$strOutput .= "objForm.addElement('{$strId}', '{$strName}', {$strCheck}, {$strRequired}, {$intMaxLength}, {$intMinLength}, '" . addslashes($this->__validator->getFieldHint()) . "', '" . addslashes($this->__validator->getTypeError()) . "', '" . addslashes($this->__validator->getRequiredError()) . "', '" . addslashes($this->__validator->getHintError()) . "', '" . addslashes($this->__validator->getMinLengthError()) . "', '" . addslashes($this->__validator->getMaxLengthError()) . "');\n";
+			}
+		} else {
+			$strOutput = "objForm.addElement('{$this->__id}', '{$this->__name}', {$strCheck}, {$strRequired}, {$intMaxLength}, {$intMinLength}, '" . addslashes($this->__validator->getFieldHint()) . "', '" . addslashes($this->__validator->getTypeError()) . "', '" . addslashes($this->__validator->getRequiredError()) . "', '" . addslashes($this->__validator->getHintError()) . "', '" . addslashes($this->__validator->getMinLengthError()) . "', '" . addslashes($this->__validator->getMaxLengthError()) . "');\n";
+		}
 
 		if (is_object($this->__targetfield)) {
 			$strOutput .= $this->__targetfield->toJs($this->__id);

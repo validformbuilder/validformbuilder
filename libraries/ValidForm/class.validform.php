@@ -76,6 +76,7 @@ class ValidForm extends ClassDynamic {
 	protected $__name;
 	protected $__mainalert;	
 	protected $__requiredstyle;	
+	protected $__novaluesmessage;
 	
 	/**
 	 * 
@@ -460,7 +461,11 @@ class ValidForm extends ClassDynamic {
 		if (!empty($strTableOutput)) {
 			return $strTable . $strTableOutput . "</table>";
 		} else {
-			return "";
+			if (!empty($this->__novaluesmessage)) {
+				return $strTable . "<tr><td colspan=\"3\">{$this->__novaluesmessage}</td></tr></table>";
+			} else {
+				return "";
+			}
 		}
 	}
 	
