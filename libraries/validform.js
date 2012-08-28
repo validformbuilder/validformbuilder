@@ -160,8 +160,6 @@ function ValidForm(strFormId, strMainAlert, blnAllowPreviousPage) {
 ValidForm.prototype.init = function() {
 	var __this = this;
 
-	
-
 	// Handle disabled elements and make sure all sub-elements are disabled as well.
 	this.traverseDisabledElements();
 	
@@ -284,12 +282,9 @@ ValidForm.prototype.showFirstError = function () {
 	}
 };
 
-ValidForm.prototype.addPage = function (strPageId, blnIsOverview) {
+ValidForm.prototype.addPage = function (strPageId) {
 	var __this = this;
 	var $page = jQuery("#" + strPageId);
-
-	// Set the data attribute if this is an overview page.
-	$page.data("vf__overview", (blnIsOverview) ? blnIsOverview : false);
 
 	// Add page to the pages collection
 	this.pages.push(strPageId);
@@ -375,7 +370,9 @@ ValidForm.prototype.nextPage = function () {
 
 	if (this.validate("#" + this.currentPage.attr("id"))) {
 		if (this.isLastPage()) {
-			jQuery("#" + this.id).trigger("submit");
+			// Go to overview page.
+			// jQuery("#" + this.id).trigger("submit");
+			this.valuesAsHtml();
 		} else {
 			this.currentPage.hide();
 
@@ -395,6 +392,23 @@ ValidForm.prototype.nextPage = function () {
 		}
 	}
 };
+
+ValidForm.prototype.valuesAsHtml = function () {
+	$("#" + this.id).find(".vf__page").each(function () {
+		$(this).find("input textarea select").each(function () {
+
+		});
+	});
+}
+ValidForm.prototype.multiFieldAsHtml = function () {
+	
+}
+ValidForm.prototype.areaAsHtml = function () {
+	
+}
+ValidForm.prototype.fieldAsHtml = function () {
+	
+}
 
 ValidForm.prototype.isLastPage = function () {
 	var index = (jQuery("#" + this.id + " .vf__page").index(this.currentPage) + 1);
