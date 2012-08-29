@@ -202,6 +202,8 @@ ValidForm.prototype.initWizard = function (intPageIndex) {
 		this.showPage(this.currentPage);
 	}
 
+	this.addConfirmPage();
+
 	// Get the next & previous labels and set them on all page navigation elements.
 	for (var key in this.labels) {
 		if (this.labels.hasOwnProperty(key)) {
@@ -217,6 +219,11 @@ ValidForm.prototype.initWizard = function (intPageIndex) {
 
 	this.hashChange();
 };
+
+ValidForm.prototype.addConfirmPage = function () {
+	$("#" + this.pages[this.pages.length - 1]).after("<div class='vf__page' id='vf_confirm_" + this.id + "'></div>");
+	this.addPage("vf_confirm_" + this.id);
+}
 
 ValidForm.prototype.setLabel = function (key, value) {
 	if (typeof value !== "undefined") {
@@ -301,7 +308,8 @@ ValidForm.prototype.addPage = function (strPageId) {
 	}
 
 	if (this.pages.length > 1) {
-		this.addPreviousButton(strPageId);
+		var blnIsConfirmPage = (strPageId == "vf_confirm_" + this.id);
+		this.addPreviousButton(strPageId, blnIsConfirmPage);
 	}
 
 	//*** Due to incomplete functionality, this is temporarily disabled. ***//
@@ -319,7 +327,7 @@ ValidForm.prototype.addPage = function (strPageId) {
 	// });
 };
 
-ValidForm.prototype.addPreviousButton = function (strPageId) {
+ValidForm.prototype.addPreviousButton = function (strPageId, blnIsConfirmPage) {
 	var __this		= this;
 
 	//*** Call custom event if set.
@@ -331,7 +339,7 @@ ValidForm.prototype.addPreviousButton = function (strPageId) {
 	var $page 		= jQuery("#" + strPageId);
 	
 	var $pagenav 	= $page.find(".vf__pagenavigation");
-	var $nav 		= ($pagenav.length > 0) ? $pagenav : $page.find(".vf__navigation");
+	var $nav 		= ($pagenav.length > 0 && !blnIsConfirmPage) ? $pagenav : $("#" + this.id).find(".vf__navigation");
 
 	$nav.append(jQuery("<a href='#' id='previous_" + strPageId + "' class='vf__button vf__previous'></a>"));
 
@@ -369,49 +377,317 @@ ValidForm.prototype.nextPage = function () {
 	}
 
 	if (this.validate("#" + this.currentPage.attr("id"))) {
-		if (this.isLastPage()) {
-			// Go to overview page.
-			// jQuery("#" + this.id).trigger("submit");
+		if (this.nextIsLast()) {
 			this.valuesAsHtml();
-		} else {
-			this.currentPage.hide();
+		}
 
-			// Set the next page as the new current page.
-			this.currentPage = this.currentPage.next(".vf__page");
-			this.showPage(this.currentPage);
+		this.currentPage.hide();
 
-			// Try to update the current hash if hash-based navigation is enabled
-			if (typeof _hash == "object" && typeof _hash.set == "function") {
-				_hash.set(this.hashPrefix, jQuery("#" + this.id + " .vf__page").index(this.currentPage) + 1);
-			}
+		// Set the next page as the new current page.
+		this.currentPage = this.currentPage.next(".vf__page");
+		this.showPage(this.currentPage);
 
-			jQuery("#" + this.id).trigger("VF_AfterNextPage", [{ValidForm: this}]);
-			if (typeof this.events.afterNextPage == "function") {
-				this.events.afterNextPage(this);
-			}
+		// Try to update the current hash if hash-based navigation is enabled
+		if (typeof _hash == "object" && typeof _hash.set == "function") {
+			_hash.set(this.hashPrefix, jQuery("#" + this.id + " .vf__page").index(this.currentPage) + 1);
+		}
+
+		jQuery("#" + this.id).trigger("VF_AfterNextPage", [{ValidForm: this}]);
+		if (typeof this.events.afterNextPage == "function") {
+			this.events.afterNextPage(this);
 		}
 	}
 };
 
-ValidForm.prototype.valuesAsHtml = function () {
-	$("#" + this.id).find(".vf__page").each(function () {
-		$(this).find("input textarea select").each(function () {
+ValidForm.prototype.valuesAsHtml = function (blnHideEmpty) {
+	var __this = this;
 
+	// 'Constantes'
+	var VF_List = 1;
+	var VF_MultiField = 2;
+
+	// Set default value on hideEmpty
+	blnHideEmpty = (typeof blnHideEmpty == "undefined") ? false : true;
+
+	// Tempaltes used for parsing
+	var tpl = {
+		wrapper: function () {
+			return $("#vf_confirm_" + __this.id).addClass("vf__confirm");
+		},
+		page: function () {
+			return $("<div class='vf__overviewpage vf__cf'></div>");
+		},
+		pageLabel: function () {
+			return $("<h2></h2>");
+		},
+		fieldset: function () {
+			return $("<div class='vf__fieldset'></div>");
+		},
+		fieldsetLabel: function () {
+			return $("<h3></h3>");
+		},
+		field: function () {
+			return $("<div class='vf__field vf__cf'></div>");
+		},
+		label: function () {
+			return $("<span class='vf__label'></span>");
+		},
+		value: function () {
+			return $("<strong class='vf__value'></strong>");
+		},
+		multifield: function () {
+			return $("<div class='vf__multifield vf__cf'></div>");
+		},
+		multifieldItem: function () {
+			return $("<div class='vf__multifielditem'></div>");
+		},
+		list: function () {
+			return $("<div class='vf__list'><ul></ul></div>");
+		},
+		listItem: function () {
+			return $("<li class='vf__list_item'></li>");
+		}
+	}
+
+	// Define the field caches for fields that have multiple values
+	var $objFieldCache;
+
+	__this.init = function () {
+		var $objReturn = tpl.wrapper();
+		var $objNavigation = $objReturn.find(".vf__pagenavigation");
+
+		// Clean it up before we start
+		$objReturn.html("");
+
+		$("#" + this.id).find(".vf__page").not("#vf_confirm_" + this.id).each(function () {
+			try {
+				$objReturn.append(__this.pageAsHtml($(this)));
+			} catch (e) {
+				// Try to log the error message
+				try {
+					console.error("Parsing page failed in valuesAsHtml: " + e.message)
+				} 
+				catch (e) {}; // Or die silently
+			}
 		});
-	});
-}
-ValidForm.prototype.multiFieldAsHtml = function () {
-	
-}
-ValidForm.prototype.areaAsHtml = function () {
-	
-}
-ValidForm.prototype.fieldAsHtml = function () {
-	
+
+		return $objReturn;
+	}
+
+	__this.pageAsHtml = function ($page) {
+		var $objReturn = tpl.page();
+
+		var $objPageTitle = $page.find("h2:first");
+		if ($objPageTitle.length > 0) {
+			// This page has a title
+			var $tplPageTitle = tpl.pageLabel();
+			$objReturn.append($tplPageTitle.text($objPageTitle.text()));
+		}
+		
+		$page.find("> fieldset").each (function () {
+			$objReturn.append(__this.fieldsetAsHtml($(this)));
+		});
+
+		return $objReturn;
+	}
+
+	__this.fieldsetAsHtml = function ($fieldset) {
+		var $objReturn = tpl.fieldset();
+
+		// Add title to fieldset overview.
+		var $legend = $fieldset.find("legend");
+		if ($legend.length > 0) {
+			$fieldsetLabel = tpl.fieldsetLabel();
+
+			$objReturn.append($fieldsetLabel.text($legend.text()));
+		}
+
+		var blnCacheFields = false;
+		$fieldset.find("input:not([type='hidden']), textarea, select").each(function () {
+			var $element 	= $(this);
+			var $parent 	= $element.parent();
+
+			if ($parent.is("div")) {
+				if ($parent.hasClass("vf__multifielditem")) {
+					if (!blnCacheFields) {
+						// First multfield item
+						$element.data("label", $element.parent().prev().text());
+
+						// Set the cache template
+						$objFieldCache = tpl.multifield();
+					}
+
+					blnCacheFields = true;
+
+					// Parse Multifield item
+					__this.cacheField($element, VF_MultiField);
+				} else {
+					// There is a ready-to-parse multifield available
+					if (blnCacheFields) {
+						$objReturn = __this.cachedFieldsAsHtml($objReturn);
+					}
+
+					// Normal field or triggerfield
+					var name = $element.attr("name");
+					if (name.split("_").pop() == "triggerfield") {
+						// It's a triggerfield
+
+					} else {
+						// It's a normal field
+						$objReturn.append(__this.fieldAsHtml($element));
+					}
+				}
+			} else if ($parent.is("label") && $element.is(":checked")) {
+				// This is a checkbox
+				if (!blnCacheFields) {
+					// First check box
+					$element.data("label", $element.parent().parent().prev().text());
+
+					// Set the cache template
+					$objFieldCache = tpl.list();
+				}
+
+				blnCacheFields = true;
+
+				// Set the cache template
+				__this.cacheField($element, VF_List);
+			} 
+		});
+
+		// Final cleanup if there are any cached fields left.
+		if (blnCacheFields) {
+			$objReturn = __this.cachedFieldsAsHtml($objReturn);
+		}
+
+		return $objReturn;
+	}
+
+	__this.cachedFieldsAsHtml = function ($objReturn) {
+		if ($objFieldCache.hasClass("vf__multifield")) {
+			$objReturn.append(__this.multiFieldAsHtml(blnHideEmpty));
+
+		} else if ($objFieldCache.hasClass("vf__list")) {
+			$objReturn.append(__this.listAsHtml(blnHideEmpty));
+
+		}
+
+		blnCacheFields = false;
+
+		return $objReturn;
+	}
+
+	__this.fieldAsHtml = function ($field, blnHideEmpty) {
+		var $objReturn 	= tpl.field();
+		var strValue 	= $field.val();
+
+		if (strValue !== "" || (strValue == "" && blnHideEmpty)) {
+
+		}
+
+		$objReturn.attr("id", $field.attr("id") + "_confirm");
+
+		$objLabel = tpl.label();
+		$objLabel.text($field.prev().text());
+		$objLabel.appendTo($objReturn);
+		
+		$objValue = tpl.value();
+		$objValue.text($field.val());
+		$objValue.appendTo($objReturn);
+
+		return $objReturn;
+	}
+
+	__this.listAsHtml = function (blnHideEmpty) {
+		var $objReturn 	= $objFieldCache;
+		var strLabel 	= $objReturn.find("li:first").data("label");
+
+		// Set label if available
+		if (typeof strLabel !== "undefined") {
+			var $objLabel = tpl.label();
+			$objLabel.text(strLabel);
+			$objLabel.prependTo($objReturn);
+		} else {
+			$objReturn.find("div:first").addClass("vf__nolabel");
+		}
+
+		// Reset the cache
+		$objFieldCache = null;
+
+		return $objReturn;
+	}
+
+	__this.multiFieldAsHtml = function (blnHideEmpty) {
+		$objReturn = $objFieldCache;
+		var strLabel = $objReturn.find("div:first").data("label");
+
+		// Set label if available
+		if (typeof strLabel !== "undefined") {
+			var $objLabel = tpl.label();
+			$objLabel.text(strLabel);
+			$objLabel.prependTo($objReturn);
+		} else {
+			$objReturn.find("div:first").addClass("vf__nolabel");
+		}
+
+		// Reset the cache
+		$objFieldCache = null;
+
+		return $objReturn;
+	}
+
+	__this.cacheField = function ($field, type) {
+		$objReturn		= $(); // Empty jQuery object
+		var strValue 	= $field.val();
+
+
+		if (strValue !== "") {
+			switch (type) {
+				case VF_List:
+					$objReturn = tpl.listItem();
+					
+					// Set label
+					$objReturn.data("label", $field.data("label"));
+					break;
+
+				case VF_MultiField:
+					$objReturn = tpl.multifieldItem();
+
+					// Set label
+					$objReturn.data("label", $field.data("label"));
+					break;
+			}
+
+			// Set div ID
+			$objReturn.attr("id", $field.attr("id") + "_confirm");
+
+
+			$objValue = tpl.value();
+			$objValue.text($field.val());
+			$objValue.appendTo($objReturn);
+
+			// Add field to cache
+			switch (type) {
+				case VF_List:
+					$objFieldCache.find("ul").append($objReturn);
+
+					break;
+				case VF_MultiField:
+					$objFieldCache.append($objReturn);
+
+					break;
+			}
+		} else {
+			return $(); // empty jQuery object
+		}
+	}
+
+	return __this.init();
 }
 
-ValidForm.prototype.isLastPage = function () {
-	var index = (jQuery("#" + this.id + " .vf__page").index(this.currentPage) + 1);
+ValidForm.prototype.nextIsLast = function () {
+	var $next = this.currentPage.next(".vf__page");
+	var index = (jQuery("#" + this.id + " .vf__page").index($next) + 1);
+	
 	return (this.pages.length == index);
 };
 
@@ -462,8 +738,11 @@ ValidForm.prototype.showPage = function ($objPage) {
 		// If that is the case, set the 'next button'-label the submit button value to
 		// simulate a submit button
 		var pageIndex = jQuery("#" + this.id + " .vf__page").index($objPage);
-		if (pageIndex == this.pages.length) {
-			jQuery("#next_" + this.pages[pageIndex - 1]).text(jQuery("#" + this.id).find("input[type='submit']").val());
+		if (pageIndex > 0 && pageIndex == this.pages.length - 1) {
+			jQuery("#" + this.id).find(".vf__navigation").show();
+			$objPage.find(".vf__pagenavigation").remove();
+
+			// jQuery("#next_" + this.pages[pageIndex - 1]).text(jQuery("#" + this.id).find("input[type='submit']").val());
 		} else {
 			jQuery("#" + this.id).find(".vf__navigation").hide();
 		}
