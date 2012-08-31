@@ -47,9 +47,17 @@ class VF_Group extends VF_Element {
 		if (!empty($this->__label)) $strOutput .= "<label{$this->__getLabelMetaString()}>{$strLabel}</label>\n";
 		$strOutput .= "<fieldset class=\"vf__list\">\n";
 		
-		foreach ($this->__fields as $field) {
-			$blnLabel = ($field->getType() == "checkbox" || $field->getType() == "radio") ? true : false;
-			$strOutput .= $field->toHtml($this->__getValue($submitted), $submitted, $blnLabel);
+		foreach ($this->__fields as $objField) {
+			switch (get_class($objField)) {
+				case "VF_GroupField":
+					$strOutput .= $objField->toHtml($this->__getValue($submitted), $submitted, $this->__targetfield);
+					
+					break;
+				default: //*** Targetfield.
+					$strOutput .= $objField->toHtml($this->__getValue($submitted), $submitted, false);
+					
+					break;
+			}
 		}
 		
 		$strOutput .= "</fieldset>\n";

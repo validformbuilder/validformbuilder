@@ -957,6 +957,7 @@ ValidForm.prototype.addTrigger = function(strTriggerId, strTargetId) {
 			$target.parent().show();
 		} else {
 			$target.parent().hide();
+			$target.val("");
 		}
 	};
 

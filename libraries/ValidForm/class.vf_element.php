@@ -265,11 +265,19 @@ class VF_Element extends ClassDynamic {
 	 */
 	public function setName($strName) {
 		parent::setName($strName);
+		
 		if (is_object($this->__validator)) {
 			$this->__validator->setFieldName($strName);
 		}
 	}
 	
+	/**
+	 * Get the value of the field. If the value is *valid* then it will return that value, otherwise the invalid value is returned.
+	 * 
+	 * @param boolean $submitted Indicate if the form is submitted.
+	 * @param integer $intDynamicPosition The position of the field in a dynamic field setup.
+	 * @return Ambigous <NULL, string>
+	 */
 	protected function __getValue($submitted = FALSE, $intDynamicPosition = 0) {
 		$varReturn = NULL;
 		
@@ -278,7 +286,7 @@ class VF_Element extends ClassDynamic {
 				$varReturn = $this->__validator->getValidValue($intDynamicPosition);
 			} else {
 				$varReturn = $this->__validator->getValue($intDynamicPosition);
-			}		
+			}
 		} else {
 			if (!empty($this->__default)) {
 				$varReturn = $this->__default;

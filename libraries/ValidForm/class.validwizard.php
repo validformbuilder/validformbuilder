@@ -26,7 +26,6 @@ require_once("class.validform.php");
  */
 class ValidWizard extends ValidForm {
 	public 		$__pagecount = 0;
-	protected 	$__confirmlabel;
 	protected 	$__currentpage = 1;
 	protected 	$__previouslabel;
 	protected 	$__nextlabel;
@@ -43,9 +42,7 @@ class ValidWizard extends ValidForm {
 	public function __construct($name = NULL, $description = NULL, $action = NULL, $meta = array()) {
 		parent::__construct($name, $description, $action, $meta);
 
-		$this->__setUniqueId();
-		$this->__uniqueid = (isset($meta["uniqueId"])) ? $meta["uniqueId"] : $this->__uniqueid;
-		$this->__confirmlabel = (isset($meta["confirmLabel"])) ? $meta["confirmLabel"] : "Confirm";
+		$this->__uniqueid = (isset($meta["uniqueId"])) ? $meta["uniqueId"] : $this->generateId();
 		$this->__nextlabel = (isset($meta["nextLabel"])) ? $meta["nextLabel"] : "Next &rarr;";
 		$this->__previouslabel = (isset($meta["previousLabel"])) ? $meta["previousLabel"] : "&larr; Previous";
 	}
@@ -53,19 +50,19 @@ class ValidWizard extends ValidForm {
 	public function toHtml($blnClientSide = true, $blnForceSubmitted = false, $strJs = "", $blnFromSession = false) {
 		$strReturn = null;
 
-		if (session_id() !== "") {
-			// If we're inside a session, we're able to unserialize the form and edit it optionally.
-			if (isset($_SESSION["vf__" . $this->getUniqueId()]) && !$blnFromSession) {
-				$objForm = unserialize($_SESSION["vf__" . $this->getUniqueId()]);
+// 		if (session_id() !== "") {
+// 			// If we're inside a session, we're able to unserialize the form and edit it optionally.
+// 			if (isset($_SESSION["vf__" . $this->getUniqueId()]) && !$blnFromSession) {
+// 				$objForm = unserialize($_SESSION["vf__" . $this->getUniqueId()]);
 			
-				if (is_object($objForm) && $objForm->isSubmitted()) {
-					$strReturn = $objForm->toHtml($blnClientSide, true, $strJs, true);
-				} 
-			} else {
-			    $strForm = $this->serialize();
-			    $_SESSION["vf__" . $this->getUniqueId()] = $strForm;
-			}
-		}
+// 				if (is_object($objForm) && $objForm->isSubmitted()) {
+// 					$strReturn = $objForm->toHtml($blnClientSide, true, $strJs, true);
+// 				} 
+// 			} else {
+// 			    $strForm = $this->serialize();
+// 			    $_SESSION["vf__" . $this->getUniqueId()] = $strForm;
+// 			}
+// 		}
 
 		if (is_null($strReturn)) {
 			$strReturn = parent::toHtml($blnClientSide, $blnForceSubmitted, $this->__wizardJs($strJs, $blnFromSession));
@@ -81,11 +78,31 @@ class ValidWizard extends ValidForm {
 	 * @return boolean              [description]
 	 */
 	public function isSubmitted($blnForce = false) {
-		if (ValidForm::get("vf__dispatch") == $this->__name || $blnForce) {
-			return TRUE;
-		} else {
-			return FALSE;
+		$blnReturn = FALSE;
+		
+		if (ValidForm::get("vf__dispatch") == $this->__name) {
+			//*** Try to retrieve the uniqueId from a REQUEST value.
+			$strUniqueId = ValidWizard::get("vf__uniqueid");
+			if (!empty($strUniqueId)) $this->__setUniqueId($strUniqueId);
+			
+			$blnReturn = TRUE;
+		} else if ($blnForce) {
+			$blnReturn = TRUE;
 		}
+		
+		return $blnReturn;
+	}
+	
+	public static function unserialize($strSerialized, $strUniqueId = "") {
+		$objReturn = null;
+		
+		$objForm = unserialize($strSerialized);
+		if (get_class($objForm) == "ValidWizard") {
+			$objReturn = $objForm;
+			if (!empty($strUniqueId)) $objReturn->__setUniqueId($strUniqueId);
+		}
+		
+		return $objReturn;
 	}
 
 	private function __wizardJs($strCustomJs = "", $blnFromSession = false) {
@@ -93,15 +110,10 @@ class ValidWizard extends ValidForm {
 
 		// Optionally set a custom first visibile page.
 		$intPage = ($this->__currentpage > 1) ? $this->__currentpage : "";
-
-		if ($blnFromSession && $this->doCorrect()) {
-			// We're coming from the confirm page, so the first page we want to show is the last page of the wizard.
-			$intPage = $this->__pagecount;
-		}
 		
-		$strReturn .= ($this->__pagecount > 1) ? "objForm.setLabel('next', '" . $this->__nextlabel . "');\n" : "";
-		$strReturn .= ($this->__pagecount > 1) ? "objForm.setLabel('previous', '" . $this->__previouslabel . "');\n" : "";
-		$strReturn .= ($this->__pagecount > 1) ? "objForm.initWizard({$intPage});\n" . $strCustomJs : "";
+		$strReturn .= "objForm.setLabel('next', '" . $this->__nextlabel . "');\n";
+		$strReturn .= "objForm.setLabel('previous', '" . $this->__previouslabel . "');\n";
+		$strReturn .= "objForm.initWizard({$intPage});\n" . $strCustomJs;
 
 		return $strReturn;
 	}
@@ -177,74 +189,6 @@ class ValidWizard extends ValidForm {
 
 		return $strOutput;
 	}
-	
-	/**
-	 * Check if the form is confirmed by validating the value of the hidden
-	 * vf__dispatch field.
-	 * @param  boolean $blnForce 	Fake isConfirmed to true to force field values.
-	 * @return boolean              [description]
-	 */
-	public function isConfirmed($blnForce = false) {
-		if (ValidForm::get("vf__dispatch") == $this->__name . "_confirmed" || $blnForce) {
-			return TRUE;
-		} else {
-			return FALSE;
-		}
-	}
-
-	public function doCorrect() {
-		if (ValidForm::get("vf__dispatch") == $this->__name . "_correct") {
-			return TRUE;
-		} else {
-			return FALSE;
-		}
-	}
-
-	public function confirm() {
-		// Save the current form.
-		if (session_id() !== "") {
-			// If we're inside a session, we're able to serialize the form to a session variable for later use.
-			$_SESSION["vf__" . $this->getUniqueId()] = $this->serialize();
-		}
-
-		$strOutput = "";
-		$strName = $this->__name . "_confirmed";
-
-		$strOutput .= $this->__confirmJs();
-
-		$strOutput .= "<form id=\"{$this->__name}\" method=\"post\" enctype=\"multipart/form-data\" action=\"{$this->__action}\" class=\"validform vf__cf\">\n";
-		$strOutput .= "<div class='vf__confirm'>";
-		$strOutput .= $this->valuesAsHtml();
-		$strOutput .= "</div>";
-		$strOutput .= $this->__addHiddenFields();
-		$strOutput .= "<div class=\"vf__navigation vf__cf\">\n<input type=\"hidden\" name=\"vf__dispatch\" value=\"{$strName}\" />\n";
-		$strOutput .= "<input type=\"hidden\" name=\"vf__uniqueid\" value=\"{$this->getUniqueId()}\" />\n";
-		$strOutput .= "<input type=\"submit\" value=\"{$this->__confirmlabel}\" class=\"vf__button\" />\n";
-		if (session_id() !== "") {
-			// If we're inside a session, we're able to provide a back button on the confirm page, to edit previously entered values.
-			$strOutput .= "<input type=\"submit\" value=\"{$this->__previouslabel}\" class=\"vf__button vf__previous\" id=\"confirm_" . $this->__name . "_previous\"/>\n";
-		}
-		$strOutput .= "</div>\n";
-		$strOutput .= "</form>";
-
-		return $strOutput;
-	}
-
-	protected function __confirmJs() {
-		$strOutput = "";
-
-		$strOutput .= "<script>";
-		$strOutput .= "jQuery(function ($) {\n";
-		$strOutput .= "try {\n";
-		$strOutput .= "objConfirmForm = new ValidConfirmForm('" . $this->__name . "');\n";
-		$strOutput .= "} catch (e) {\n";
-		$strOutput .= "throw new Error(\"Failed to initialize ValidConfirmForm('" . $this->__name . "'). Error:\\n\" + e.message);\n";
-		$strOutput .= "}\n";
-		$strOutput .= "});";
-		$strOutput .= "</script>";
-
-		return $strOutput;
-	}
 
 	private function __addHiddenFields() {
 		$strOutput = "";
@@ -315,11 +259,11 @@ class ValidWizard extends ValidForm {
 	}
 
 	public function getUniqueId() {
-		return ValidForm::get("vf__uniqueid", $this->__uniqueid);
+		return $this->__uniqueid;
 	}
 
-	private function __setUniqueId() {
-		$this->__uniqueid = $this->generateId();
+	private function __setUniqueId($strId = "") {
+		$this->__uniqueid = (empty($strId)) ? $this->generateId() : $strId;
 	}
 }
 
