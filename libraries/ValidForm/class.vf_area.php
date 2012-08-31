@@ -135,12 +135,13 @@ class VF_Area extends ClassDynamic {
 		}
 		if (!empty($this->__label)) $strOutput .= "<legend>{$label}</legend>\n";
 
+		$blnHasContent = $this->hasContent();
 		foreach ($this->__fields as $objField) {
 			if (($intCount > 0) && get_class($objField) == "VF_Hidden" && $objField->isDynamicCounter()) {
 				continue;
 			}
 
-			$submitted = ($this->__active && !$this->hasContent()) ? FALSE : $submitted;
+			$submitted = ($this->__active && !$blnHasContent) ? FALSE : $submitted;
 			$strOutput .= $objField->__toHtml($submitted, false, true, true, $intCount);
 		}
 		

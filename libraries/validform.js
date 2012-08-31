@@ -403,8 +403,8 @@ ValidForm.prototype.valuesAsHtml = function (blnHideEmpty) {
 	var __this = this;
 
 	// 'Constantes'
-	var VF_List = 1;
-	var VF_MultiField = 2;
+	var VF_List 		= 1;
+	var VF_MultiField 	= 2;
 
 	// Set default value on hideEmpty
 	blnHideEmpty = (typeof blnHideEmpty == "undefined") ? false : true;
@@ -442,7 +442,7 @@ ValidForm.prototype.valuesAsHtml = function (blnHideEmpty) {
 			return $("<div class='vf__multifielditem'></div>");
 		},
 		list: function () {
-			return $("<div class='vf__list'><ul></ul></div>");
+			return $("<div class='vf__list vf__cf'><ul></ul></div>");
 		},
 		listItem: function () {
 			return $("<li class='vf__list_item'></li>");
@@ -453,6 +453,9 @@ ValidForm.prototype.valuesAsHtml = function (blnHideEmpty) {
 		var $objReturn = tpl.wrapper();
 		var $objNavigation = $objReturn.find(".vf__pagenavigation");
 
+		// Trigger custom event
+		$("#" + __this.id).trigger("VF_beforeValuesAsHtml", [{ValidForm: __this}]);
+
 		// Clean it up before we start
 		$objReturn.html("");
 
@@ -460,13 +463,15 @@ ValidForm.prototype.valuesAsHtml = function (blnHideEmpty) {
 			try {
 				$objReturn.append(__this.pageAsHtml($(this), blnHideEmpty));
 			} catch (e) {
-				// Try to log the error message
-				try {
-					console.error("Parsing page failed in valuesAsHtml: " + e.message)
-				} 
-				catch (e) {}; // Or die silently
+				try { // Log hard...
+					console.error("Parsing page failed in valuesAsHtml: " + e.message);
+				}
+				catch (e) {}; // .. or die trying
 			}
 		});
+
+		// Trigger custom event
+		$("#" + __this.id).trigger("VF_afterValuesAsHtml", [{ValidForm: __this, values: $objReturn}]);
 
 		return $objReturn;
 	}
@@ -493,19 +498,11 @@ ValidForm.prototype.valuesAsHtml = function (blnHideEmpty) {
 		return $objReturn;
 	}
 
-	// Define the field cache for fields that have multiple values
-	var $objFieldCache;
-	var blnCacheFields = false;
-
 	__this.fieldsetAsHtml = function ($fieldset, blnHideEmpty) {
 		var $objReturn = tpl.fieldset();
 
-		// Add title to fieldset overview.
-		var $legend = $fieldset.find("legend");
-		if ($legend.length > 0) {
-			$fieldsetLabel = tpl.fieldsetLabel();
-
-			$objReturn.append($fieldsetLabel.text($legend.text()));
+		if ($(this).find("legend label").length > 0) {
+			console.log("Active area", $(this));
 		}
 
 		// Handle all other fields.
@@ -526,20 +523,26 @@ ValidForm.prototype.valuesAsHtml = function (blnHideEmpty) {
 
 					switch($element.attr("type")) {
 						default:
-							if (!$element.parent().hasClass("vf__multifielditem")) {
+							if (!$element.parent().hasClass("vf__multifielditem") && !$element.parent().parent().hasClass("vf__list")) {
 								// Not part of a multifield
 								$objReturn.append(__this.fieldAsHtml($element, blnHideEmpty));
 							} 
 							break;
 						case "radio":
 						case "checkbox":
-							// Do nothing. They have been parsed already.
+							if ($element.parent().is("div")) {
+								// This is a boolean field.
+								$objReturn.append(__this.fieldAsHtml($element, blnHideEmpty));
+							} // else {	Do nothing. This field is parsed inside the 'listAsHtml' method. }
 							break;
 					}
 
 					break;
 				case "textarea":
-					$objReturn.append(__this.fieldAsHtml($element, blnHideEmpty));
+					if (!$element.parent().hasClass("vf__multifielditem") && !$element.parent().parent().hasClass("vf__list")) {
+						// Not part of a multifield
+						$objReturn.append(__this.fieldAsHtml($element, blnHideEmpty));
+					}
 					break;
 				case "select":
 					if (!$element.parent().hasClass("vf__multifielditem")) {
@@ -549,6 +552,20 @@ ValidForm.prototype.valuesAsHtml = function (blnHideEmpty) {
 					break;
 			}
 		}); // end input,textarea,select loop
+
+		// Add title to fieldset overview.
+		var $legend = $fieldset.find("legend");
+		if ($legend.length > 0 && !$objReturn.is(":empty")) {
+			$fieldsetLabel = tpl.fieldsetLabel();
+
+			$objReturn.prepend($fieldsetLabel.text($legend.text()));
+		}
+
+		// Clear this fieldset if it's active and not checked.
+		var $activeInput = $legend.find("input");
+		if ($activeInput.length > 0 && !$activeInput.is(":checked")) {
+			$objReturn = $();
+		} 
 
 		return $objReturn;
 	} // end fieldsetAsHtml
@@ -597,12 +614,15 @@ ValidForm.prototype.valuesAsHtml = function (blnHideEmpty) {
 				var $objValue		= tpl.value();
 				var strValue		= $(this).val();
 
-				// Check if we've got a triggerfield here
-				$objTargetField = $("#" + __this.id + " input[name='" + strValue + "']");
+				// Check if we've got an 'input' triggerfield here
+				$objTargetField = $("#" + __this.id + " input[name='" + strValue + "'], #" + __this.id + " textarea[name='" + strValue + "']");
+				if ($objTargetField.length > 0) {
+					strValue = $objTargetField.val();
+				} 
 				
-
-				$objValue.text($(this).val());
+				$objValue.text(strValue);
 				$objValue.appendTo($objListItem);
+
 
 				$objListItem.appendTo($objReturn.find("ul"));
 			});
@@ -621,7 +641,7 @@ ValidForm.prototype.valuesAsHtml = function (blnHideEmpty) {
 		if ($objFirstSelect.length > 0) {
 			strValue = $objFirstSelect.val();
 		}
-		var $objFirstInput = $multifield.find("input:first");
+		var $objFirstInput = $multifield.find("input:not([type='hidden']):first");
 		if ($objFirstInput.length > 0) {
 			strValue = $objFirstInput.val();
 		}
@@ -636,7 +656,7 @@ ValidForm.prototype.valuesAsHtml = function (blnHideEmpty) {
 			strValue = ""; // reset value
 			
 			// Continue parsing multifield.
-			$multifield.find("input, select").each(function () {
+			$multifield.find("input:not([type='hidden']), select").each(function () {
 				var $objItem 	= tpl.multifieldItem();
 				var $objValue 	= tpl.value();
 
