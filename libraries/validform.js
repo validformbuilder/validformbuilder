@@ -486,7 +486,7 @@ ValidForm.prototype.valuesAsHtml = function (blnHideEmpty) {
 			$objReturn.append($tplPageTitle.text($objPageTitle.text()));
 		}
 		
-		$page.find("> fieldset:not(.vf__list)").each (function () {
+		$page.find("> fieldset:not(.vf__list, .vf__area)").each (function () {
 			$objReturn.append(__this.fieldsetAsHtml($(this), blnHideEmpty));
 		});
 
@@ -501,71 +501,85 @@ ValidForm.prototype.valuesAsHtml = function (blnHideEmpty) {
 	__this.fieldsetAsHtml = function ($fieldset, blnHideEmpty) {
 		var $objReturn = tpl.fieldset();
 
-		if ($(this).find("legend label").length > 0) {
-			console.log("Active area", $(this));
-		}
-
 		// Handle all other fields.
-		$fieldset.find("input:not([type='hidden']), textarea, select, fieldset, div.vf__multifield").each(function () {
-			var $element 	= $(this);
-			var $parent 	= $element.parent();
+		var $subFieldsets = $fieldset.find("> fieldset");
+		if ($subFieldsets.length > 0) {
+			$subFieldsets.each(function () {
+				// Parse sub-fieldset such as (active) area's
+				$objReturn.append(__this.fieldsetAsHtml($(this), blnHideEmpty));
+			});
+		} else {
+			// Parse the fields inside the fieldset
+			$fieldset.find("input:not([type='hidden']), textarea, select, fieldset, div.vf__multifield").each(function () {
+				var $element 	= $(this);
+				var $parent 	= $element.parent();
 
-			switch ($element.prop("nodeName").toLowerCase()) {
-				case "div":
-					// This is a multifield
-					$objReturn.append(__this.multiFieldAsHtml($element, blnHideEmpty));
-					break;
-				case "fieldset":
-					// This is a list item
-					$objReturn.append(__this.listAsHtml($element, blnHideEmpty));
-					break;
-				case "input":
+				switch ($element.prop("nodeName").toLowerCase()) {
+					case "div":
+						// This is a multifield
+						$objReturn.append(__this.multiFieldAsHtml($element, blnHideEmpty));
+						break;
+					case "fieldset":
+						// This is a list/area element
+						if ($element.hasClass("vf__list")) {
+							// List
+							$objReturn.append(__this.listAsHtml($element, blnHideEmpty));
+						}
+						break;
+					case "input":
 
-					switch($element.attr("type")) {
-						default:
-							if (!$element.parent().hasClass("vf__multifielditem") && !$element.parent().parent().hasClass("vf__list")) {
-								// Not part of a multifield
-								$objReturn.append(__this.fieldAsHtml($element, blnHideEmpty));
-							} 
-							break;
-						case "radio":
-						case "checkbox":
-							if ($element.parent().is("div")) {
-								// This is a boolean field.
-								$objReturn.append(__this.fieldAsHtml($element, blnHideEmpty));
-							} // else {	Do nothing. This field is parsed inside the 'listAsHtml' method. }
-							break;
-					}
+						switch($element.attr("type")) {
+							default:
+								if (!$element.parent().hasClass("vf__multifielditem") && !$element.parent().parent().hasClass("vf__list")) {
+									// Not part of a multifield
+									$objReturn.append(__this.fieldAsHtml($element, blnHideEmpty));
+								} 
+								break;
+							case "radio":
+							case "checkbox":
+								if ($element.parent().is("div")) {
+									// This is a boolean field.
 
-					break;
-				case "textarea":
-					if (!$element.parent().hasClass("vf__multifielditem") && !$element.parent().parent().hasClass("vf__list")) {
-						// Not part of a multifield
-						$objReturn.append(__this.fieldAsHtml($element, blnHideEmpty));
-					}
-					break;
-				case "select":
-					if (!$element.parent().hasClass("vf__multifielditem")) {
-						// Not part of a multifield
-						$objReturn.append(__this.fieldAsHtml($element, blnHideEmpty));
-					} 
-					break;
+									$objReturn.append(__this.fieldAsHtml($element, blnHideEmpty));
+								} else if ($element.parent().parent().is("legend")) {
+									return;
+								} else {
+									// Do nothing. This field is parsed inside the 'listAsHtml' method. 
+								}
+								break;
+						}
+
+						break;
+					case "textarea":
+						if (!$element.parent().hasClass("vf__multifielditem") && !$element.parent().parent().hasClass("vf__list")) {
+							// Not part of a multifield
+							$objReturn.append(__this.fieldAsHtml($element, blnHideEmpty));
+						}
+						break;
+					case "select":
+						if (!$element.parent().hasClass("vf__multifielditem")) {
+							// Not part of a multifield
+							$objReturn.append(__this.fieldAsHtml($element, blnHideEmpty));
+						} 
+						break;
+				}
+			}); // end input,textarea,select loop
+
+			// Add title to fieldset overview.
+			var $legend = $fieldset.find("legend");
+			if ($legend.length > 0 && !$objReturn.is(":empty")) {
+				$fieldsetLabel = tpl.fieldsetLabel();
+
+				$objReturn.prepend($fieldsetLabel.text($legend.text()));
 			}
-		}); // end input,textarea,select loop
 
-		// Add title to fieldset overview.
-		var $legend = $fieldset.find("legend");
-		if ($legend.length > 0 && !$objReturn.is(":empty")) {
-			$fieldsetLabel = tpl.fieldsetLabel();
-
-			$objReturn.prepend($fieldsetLabel.text($legend.text()));
+			// Clear this fieldset if it's active and not checked.
+			var $activeInput = $legend.find("input");
+			if ($activeInput.length > 0 && !$activeInput.is(":checked")) {
+				$objReturn = $();
+			} 
+			
 		}
-
-		// Clear this fieldset if it's active and not checked.
-		var $activeInput = $legend.find("input");
-		if ($activeInput.length > 0 && !$activeInput.is(":checked")) {
-			$objReturn = $();
-		} 
 
 		return $objReturn;
 	} // end fieldsetAsHtml
@@ -595,12 +609,7 @@ ValidForm.prototype.valuesAsHtml = function (blnHideEmpty) {
 	__this.listAsHtml = function ($list, blnHideEmpty) {
 		var $objReturn 	= tpl.list();
 		var strLabel 	= $list.prev().text();
-		var strValue	= $list.find("input:checked:first").val();
-
-		// Add label
-		$objLabel = tpl.label();
-		$objLabel.text(strLabel);
-		$objLabel.prependTo($objReturn);
+		var strValue	= $list.find("input:not(legend>label>input):checked:first").val();
 
 		if (typeof strValue == "undefined") {
 			// No item is checked
@@ -609,7 +618,7 @@ ValidForm.prototype.valuesAsHtml = function (blnHideEmpty) {
 			}
 		} else {
 			// There is a checked item, continue parsing.
-			$list.find("input:checked").each(function () {
+			$list.find("input:not(legend>label>input):checked").each(function () {
 				var $objListItem 	= tpl.listItem();
 				var $objValue		= tpl.value();
 				var strValue		= $(this).val();
@@ -627,6 +636,11 @@ ValidForm.prototype.valuesAsHtml = function (blnHideEmpty) {
 				$objListItem.appendTo($objReturn.find("ul"));
 			});
 		}
+
+		// Add label
+		$objLabel = tpl.label();
+		$objLabel.text(strLabel);
+		$objLabel.prependTo($objReturn);
 
 		return $objReturn;
 	}
@@ -810,7 +824,7 @@ ValidForm.prototype.dynamicDuplication = function () {
 			__this.events.beforeDynamicChange(__this, $anchor);
 		}
 
-		if (!jQuery(this).hasClass("vf__disabled")) {
+		if (!jQuery(this).parent().prev().hasClass("vf__disabled")) {
 			//*** Update dynamic field counter.
 			var $original 	= $anchor.parent().prev();
 			var copy 		= $original.clone();
@@ -818,7 +832,7 @@ ValidForm.prototype.dynamicDuplication = function () {
 			//*** Clear values.
 			var names = jQuery(this).data("target-name").split("|");
 			var ids = jQuery(this).data("target-id").split("|");
-			
+
 			copy.find("input[name$='_dynamic']").remove();
 
 			jQuery.each(names, function(index, fieldname){
@@ -869,8 +883,13 @@ ValidForm.prototype.dynamicDuplication = function () {
 			
 			//*** Fix click event on active areas.
 			if (copy.hasClass("vf__area")) {
-				var copiedTrigger = jQuery("legend input", copy);
+				var copiedTrigger = jQuery("legend :checkbox", copy);
 				if (copiedTrigger.length > 0) {
+					var counter = $("#" + copiedTrigger.attr("name") + "_dynamic");
+
+					// +1 on the counter
+					counter.val(parseInt(counter.val()) + 1);
+
 					copiedTrigger.attr("id", copiedTrigger.attr("id") + "_" + counter.val());
 					copiedTrigger.attr("name", copiedTrigger.attr("name") + "_" + counter.val());
 					copiedTrigger.parent("label").attr("for", copiedTrigger.attr("id"));

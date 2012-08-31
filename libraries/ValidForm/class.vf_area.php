@@ -129,7 +129,8 @@ class VF_Area extends ClassDynamic {
 		
 		$strOutput = "<fieldset class=\"vf__area{$strClass}\">\n";
 		if ($this->__active) {
-			$label = "<label for=\"{$strName}\"><input type=\"checkbox\" name=\"{$strName}\" id=\"{$strName}\" {$strChecked} /> {$this->__label}</label>";
+			$strCounter = ($intCount == 0) ? "<input type='hidden' name='{$strName}_dynamic' value='{$intCount}' id='{$strName}_dynamic'/>" : "";
+			$label = "<label for=\"{$strName}\"><input type=\"checkbox\" name=\"{$strName}\" id=\"{$strName}\" {$strChecked} /> {$this->__label} {$strCounter}</label>";
 		} else {
 			$label = $this->__label;
 		}
