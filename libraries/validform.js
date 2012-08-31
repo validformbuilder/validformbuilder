@@ -378,7 +378,7 @@ ValidForm.prototype.nextPage = function () {
 
 	if (this.validate("#" + this.currentPage.attr("id"))) {
 		if (this.nextIsLast()) {
-			this.valuesAsHtml();
+			this.valuesAsHtml(true);
 		}
 
 		this.currentPage.hide();
@@ -421,7 +421,7 @@ ValidForm.prototype.valuesAsHtml = function (blnHideEmpty) {
 			return $("<h2></h2>");
 		},
 		fieldset: function () {
-			return $("<div class='vf__fieldset'></div>");
+			return $("<div class='vf__fieldset vf__cf'></div>");
 		},
 		fieldsetLabel: function () {
 			return $("<h3></h3>");
@@ -449,10 +449,7 @@ ValidForm.prototype.valuesAsHtml = function (blnHideEmpty) {
 		}
 	}
 
-	// Define the field caches for fields that have multiple values
-	var $objFieldCache;
-
-	__this.init = function () {
+	__this.init = function (blnHideEmpty) {
 		var $objReturn = tpl.wrapper();
 		var $objNavigation = $objReturn.find(".vf__pagenavigation");
 
@@ -461,7 +458,7 @@ ValidForm.prototype.valuesAsHtml = function (blnHideEmpty) {
 
 		$("#" + this.id).find(".vf__page").not("#vf_confirm_" + this.id).each(function () {
 			try {
-				$objReturn.append(__this.pageAsHtml($(this)));
+				$objReturn.append(__this.pageAsHtml($(this), blnHideEmpty));
 			} catch (e) {
 				// Try to log the error message
 				try {
@@ -474,7 +471,7 @@ ValidForm.prototype.valuesAsHtml = function (blnHideEmpty) {
 		return $objReturn;
 	}
 
-	__this.pageAsHtml = function ($page) {
+	__this.pageAsHtml = function ($page, blnHideEmpty) {
 		var $objReturn = tpl.page();
 
 		var $objPageTitle = $page.find("h2:first");
@@ -484,14 +481,23 @@ ValidForm.prototype.valuesAsHtml = function (blnHideEmpty) {
 			$objReturn.append($tplPageTitle.text($objPageTitle.text()));
 		}
 		
-		$page.find("> fieldset").each (function () {
-			$objReturn.append(__this.fieldsetAsHtml($(this)));
+		$page.find("> fieldset:not(.vf__list)").each (function () {
+			$objReturn.append(__this.fieldsetAsHtml($(this), blnHideEmpty));
 		});
+
+		if ($objReturn.find("strong.vf__value").length <= 0 && blnHideEmpty) {
+			// It's an empty page.
+			$objReturn = $();
+		}
 
 		return $objReturn;
 	}
 
-	__this.fieldsetAsHtml = function ($fieldset) {
+	// Define the field cache for fields that have multiple values
+	var $objFieldCache;
+	var blnCacheFields = false;
+
+	__this.fieldsetAsHtml = function ($fieldset, blnHideEmpty) {
 		var $objReturn = tpl.fieldset();
 
 		// Add title to fieldset overview.
@@ -502,186 +508,153 @@ ValidForm.prototype.valuesAsHtml = function (blnHideEmpty) {
 			$objReturn.append($fieldsetLabel.text($legend.text()));
 		}
 
-		var blnCacheFields = false;
-		$fieldset.find("input:not([type='hidden']), textarea, select").each(function () {
+		// Handle all other fields.
+		$fieldset.find("input:not([type='hidden']), textarea, select, fieldset, div.vf__multifield").each(function () {
 			var $element 	= $(this);
 			var $parent 	= $element.parent();
 
-			if ($parent.is("div")) {
-				if ($parent.hasClass("vf__multifielditem")) {
-					if (!blnCacheFields) {
-						// First multfield item
-						$element.data("label", $element.parent().prev().text());
+			switch ($element.prop("nodeName").toLowerCase()) {
+				case "div":
+					// This is a multifield
+					$objReturn.append(__this.multiFieldAsHtml($element, blnHideEmpty));
+					break;
+				case "fieldset":
+					// This is a list item
+					$objReturn.append(__this.listAsHtml($element, blnHideEmpty));
+					break;
+				case "input":
 
-						// Set the cache template
-						$objFieldCache = tpl.multifield();
+					switch($element.attr("type")) {
+						default:
+							if (!$element.parent().hasClass("vf__multifielditem")) {
+								// Not part of a multifield
+								$objReturn.append(__this.fieldAsHtml($element, blnHideEmpty));
+							} 
+							break;
+						case "radio":
+						case "checkbox":
+							// Do nothing. They have been parsed already.
+							break;
 					}
 
-					blnCacheFields = true;
-
-					// Parse Multifield item
-					__this.cacheField($element, VF_MultiField);
-				} else {
-					// There is a ready-to-parse multifield available
-					if (blnCacheFields) {
-						$objReturn = __this.cachedFieldsAsHtml($objReturn);
-					}
-
-					// Normal field or triggerfield
-					var name = $element.attr("name");
-					if (name.split("_").pop() == "triggerfield") {
-						// It's a triggerfield
-
-					} else {
-						// It's a normal field
-						$objReturn.append(__this.fieldAsHtml($element));
-					}
-				}
-			} else if ($parent.is("label") && $element.is(":checked")) {
-				// This is a checkbox
-				if (!blnCacheFields) {
-					// First check box
-					$element.data("label", $element.parent().parent().prev().text());
-
-					// Set the cache template
-					$objFieldCache = tpl.list();
-				}
-
-				blnCacheFields = true;
-
-				// Set the cache template
-				__this.cacheField($element, VF_List);
-			} 
-		});
-
-		// Final cleanup if there are any cached fields left.
-		if (blnCacheFields) {
-			$objReturn = __this.cachedFieldsAsHtml($objReturn);
-		}
+					break;
+				case "textarea":
+					$objReturn.append(__this.fieldAsHtml($element, blnHideEmpty));
+					break;
+				case "select":
+					if (!$element.parent().hasClass("vf__multifielditem")) {
+						// Not part of a multifield
+						$objReturn.append(__this.fieldAsHtml($element, blnHideEmpty));
+					} 
+					break;
+			}
+		}); // end input,textarea,select loop
 
 		return $objReturn;
-	}
-
-	__this.cachedFieldsAsHtml = function ($objReturn) {
-		if ($objFieldCache.hasClass("vf__multifield")) {
-			$objReturn.append(__this.multiFieldAsHtml(blnHideEmpty));
-
-		} else if ($objFieldCache.hasClass("vf__list")) {
-			$objReturn.append(__this.listAsHtml(blnHideEmpty));
-
-		}
-
-		blnCacheFields = false;
-
-		return $objReturn;
-	}
+	} // end fieldsetAsHtml
 
 	__this.fieldAsHtml = function ($field, blnHideEmpty) {
 		var $objReturn 	= tpl.field();
 		var strValue 	= $field.val();
 
-		if (strValue !== "" || (strValue == "" && blnHideEmpty)) {
-
-		}
-
-		$objReturn.attr("id", $field.attr("id") + "_confirm");
-
-		$objLabel = tpl.label();
-		$objLabel.text($field.prev().text());
-		$objLabel.appendTo($objReturn);
-		
-		$objValue = tpl.value();
-		$objValue.text($field.val());
-		$objValue.appendTo($objReturn);
-
-		return $objReturn;
-	}
-
-	__this.listAsHtml = function (blnHideEmpty) {
-		var $objReturn 	= $objFieldCache;
-		var strLabel 	= $objReturn.find("li:first").data("label");
-
-		// Set label if available
-		if (typeof strLabel !== "undefined") {
-			var $objLabel = tpl.label();
-			$objLabel.text(strLabel);
-			$objLabel.prependTo($objReturn);
+		if (strValue == "" && blnHideEmpty) {
+			// Do nothing
+			$objReturn = $();
 		} else {
-			$objReturn.find("div:first").addClass("vf__nolabel");
-		}
-
-		// Reset the cache
-		$objFieldCache = null;
-
-		return $objReturn;
-	}
-
-	__this.multiFieldAsHtml = function (blnHideEmpty) {
-		$objReturn = $objFieldCache;
-		var strLabel = $objReturn.find("div:first").data("label");
-
-		// Set label if available
-		if (typeof strLabel !== "undefined") {
-			var $objLabel = tpl.label();
-			$objLabel.text(strLabel);
-			$objLabel.prependTo($objReturn);
-		} else {
-			$objReturn.find("div:first").addClass("vf__nolabel");
-		}
-
-		// Reset the cache
-		$objFieldCache = null;
-
-		return $objReturn;
-	}
-
-	__this.cacheField = function ($field, type) {
-		$objReturn		= $(); // Empty jQuery object
-		var strValue 	= $field.val();
-
-
-		if (strValue !== "") {
-			switch (type) {
-				case VF_List:
-					$objReturn = tpl.listItem();
-					
-					// Set label
-					$objReturn.data("label", $field.data("label"));
-					break;
-
-				case VF_MultiField:
-					$objReturn = tpl.multifieldItem();
-
-					// Set label
-					$objReturn.data("label", $field.data("label"));
-					break;
-			}
-
-			// Set div ID
 			$objReturn.attr("id", $field.attr("id") + "_confirm");
 
-
+			$objLabel = tpl.label();
+			$objLabel.text($field.prev().text());
+			$objLabel.appendTo($objReturn);
+			
 			$objValue = tpl.value();
 			$objValue.text($field.val());
 			$objValue.appendTo($objReturn);
-
-			// Add field to cache
-			switch (type) {
-				case VF_List:
-					$objFieldCache.find("ul").append($objReturn);
-
-					break;
-				case VF_MultiField:
-					$objFieldCache.append($objReturn);
-
-					break;
-			}
-		} else {
-			return $(); // empty jQuery object
 		}
+
+		return $objReturn;
 	}
 
-	return __this.init();
+	__this.listAsHtml = function ($list, blnHideEmpty) {
+		var $objReturn 	= tpl.list();
+		var strLabel 	= $list.prev().text();
+		var strValue	= $list.find("input:checked:first").val();
+
+		// Add label
+		$objLabel = tpl.label();
+		$objLabel.text(strLabel);
+		$objLabel.prependTo($objReturn);
+
+		if (typeof strValue == "undefined") {
+			// No item is checked
+			if (blnHideEmpty) {
+				$objReturn = $(); // Return empty
+			}
+		} else {
+			// There is a checked item, continue parsing.
+			$list.find("input:checked").each(function () {
+				var $objListItem 	= tpl.listItem();
+				var $objValue		= tpl.value();
+				var strValue		= $(this).val();
+
+				// Check if we've got a triggerfield here
+				$objTargetField = $("#" + __this.id + " input[name='" + strValue + "']");
+				
+
+				$objValue.text($(this).val());
+				$objValue.appendTo($objListItem);
+
+				$objListItem.appendTo($objReturn.find("ul"));
+			});
+		}
+
+		return $objReturn;
+	}
+
+	__this.multiFieldAsHtml = function ($multifield, blnHideEmpty) {
+		var $objReturn	= tpl.multifield();
+		var strLabel	= $multifield.find("label:first").text();
+		var strValue	= "";
+		
+		// Check if first field is empty
+		var $objFirstSelect = $multifield.find("select:first");
+		if ($objFirstSelect.length > 0) {
+			strValue = $objFirstSelect.val();
+		}
+		var $objFirstInput = $multifield.find("input:first");
+		if ($objFirstInput.length > 0) {
+			strValue = $objFirstInput.val();
+		}
+
+		// Add label
+		$objLabel = tpl.label();
+		$objLabel.text(strLabel);
+		$objLabel.appendTo($objReturn);
+
+
+		if (strValue !== "") {
+			strValue = ""; // reset value
+			
+			// Continue parsing multifield.
+			$multifield.find("input, select").each(function () {
+				var $objItem 	= tpl.multifieldItem();
+				var $objValue 	= tpl.value();
+
+				$objValue.text($(this).val());
+				$objValue.appendTo($objItem);
+
+				$objItem.appendTo($objReturn);
+			});
+		} else {
+			if (blnHideEmpty) {
+				$objReturn = $();
+			}
+		}
+
+		return $objReturn;
+	}
+
+	return __this.init(blnHideEmpty);
 }
 
 ValidForm.prototype.nextIsLast = function () {
