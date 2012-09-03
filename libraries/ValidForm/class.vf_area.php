@@ -103,8 +103,7 @@ class VF_Area extends ClassDynamic {
 
 		foreach ($this->__fields as $objField) {
 			if (get_class($objField) !== "VF_Hidden") {
-				$varValue = $objField->getValue();
-				// echo $varValue;
+				$varValue = $objField->getValidator()->getValue();
 
 				if (!empty($varValue)) {
 					$blnReturn = true;
@@ -114,7 +113,7 @@ class VF_Area extends ClassDynamic {
 			}
 		}
 
-		return $varValue;
+		return $blnReturn;
 	}
 
 	protected function __toHtml($submitted = false, $intCount = 0) {
@@ -125,15 +124,19 @@ class VF_Area extends ClassDynamic {
 		// $strChecked = ($this->__active && !empty($value)) ? " checked=\"checked\"" : $strChecked;
 
 		$strClass = (array_key_exists("class", $this->__meta)) ? " " . $this->__meta["class"] : "";
-		$strClass = ($this->__active && empty($strChecked)) ? $strClass . " vf__disabled" : $strClass;
+		$strClass = ($this->__active && empty($strChecked) && empty($strChecked)) ? $strClass . " vf__disabled" : $strClass;
 		
 		$strOutput = "<fieldset class=\"vf__area{$strClass}\">\n";
+
 		if ($this->__active) {
+
 			$strCounter = ($intCount == 0) ? "<input type='hidden' name='{$strName}_dynamic' value='{$intCount}' id='{$strName}_dynamic'/>" : "";
 			$label = "<label for=\"{$strName}\"><input type=\"checkbox\" name=\"{$strName}\" id=\"{$strName}\" {$strChecked} /> {$this->__label} {$strCounter}</label>";
 		} else {
+
 			$label = $this->__label;
 		}
+
 		if (!empty($this->__label)) $strOutput .= "<legend>{$label}</legend>\n";
 
 		$blnHasContent = $this->hasContent();
@@ -255,15 +258,15 @@ class VF_Area extends ClassDynamic {
 		return ($this->__fields->count() > 0) ? TRUE : FALSE;
 	}
 	
-	private function __validate() {
-		$value = ValidForm::get($this->__name);
+	private function __validate($intCount = null) {
+		// $value = ValidForm::get($this->__name);
 		$blnReturn = TRUE;
 		
-		if ($this->__active && empty($value)) {
+		if ($this->__active && !$this->hasContent()) {
 			//*** Not active;
 		} else {
 			foreach ($this->fields as $field) {
-				if (!$field->isValid()) {
+				if (!$field->isValid($intCount)) {
 					$blnReturn = FALSE;
 					break;
 				}
