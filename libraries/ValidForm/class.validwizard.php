@@ -227,12 +227,16 @@ class ValidWizard extends ValidForm {
 				$blnValid = false;
 			}
 
-			if ($objPage->getId() == $strPageId) {
+			if (!$blnValid || $objPage->getId() == $strPageId) {
 				break;
 			}
 		}
 
 		return $blnValid;
+	}
+	
+	public function isValidUntil($strPageId) {
+		return $this->validateUntil($strPageId);
 	}
 
 	public function isValid($strPageId = null) {
