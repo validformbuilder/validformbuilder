@@ -598,8 +598,12 @@ ValidForm.prototype.valuesAsHtml = function (blnHideEmpty) {
 			$objLabel.text($field.prev().text());
 			$objLabel.appendTo($objReturn);
 			
+			if ($field.attr("type") == "password") {
+				strValue = "*****";
+			}
+			
 			$objValue = tpl.value();
-			$objValue.text($field.val());
+			$objValue.text(strValue);
 			$objValue.appendTo($objReturn);
 		}
 
@@ -626,7 +630,11 @@ ValidForm.prototype.valuesAsHtml = function (blnHideEmpty) {
 				// Check if we've got an 'input' triggerfield here
 				$objTargetField = $("#" + __this.id + " input[name='" + strValue + "'], #" + __this.id + " textarea[name='" + strValue + "']");
 				if ($objTargetField.length > 0) {
-					strValue = $objTargetField.val();
+					if ($objTargetField.attr("type") == "password") {
+						strValue = "*****";
+					} else {
+						strValue = $objTargetField.val();
+					}
 				} 
 				
 				$objValue.text(strValue);
@@ -1250,18 +1258,19 @@ ValidFormFieldValidator.prototype.validate = function(value) {
 				}
 			}
 
-			// Check if field values match
-			if (typeof this.matchWith == "object") {
-				if (this.matchWith.validate()) {
-					if (jQuery("#" + this.matchWith.id).val() != value) {
-						this.matchWith.validator.showAlert(this.matchError);
-						this.showAlert(this.matchError);
-						return false;
-					}
+			return true;
+		}
+
+		//*** Check if there is a matchWith field to validate against
+		if (typeof this.matchWith == "object") {
+			console.log(this, this.matchWith, $("#" + this.id).val(), $("#" + this.matchWith.id).val());
+			if (this.matchWith.validate()) {
+				if (jQuery("#" + this.matchWith.id).val() != value) {
+					this.matchWith.validator.showAlert(this.matchError);
+					this.showAlert(this.matchError);
+					return false;
 				}
 			}
-
-			return true;
 		}
 
 		//*** Value is the same as hint value.
