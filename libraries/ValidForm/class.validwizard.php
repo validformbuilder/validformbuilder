@@ -50,20 +50,6 @@ class ValidWizard extends ValidForm {
 	public function toHtml($blnClientSide = true, $blnForceSubmitted = false, $strJs = "", $blnFromSession = false) {
 		$strReturn = null;
 
-// 		if (session_id() !== "") {
-// 			// If we're inside a session, we're able to unserialize the form and edit it optionally.
-// 			if (isset($_SESSION["vf__" . $this->getUniqueId()]) && !$blnFromSession) {
-// 				$objForm = unserialize($_SESSION["vf__" . $this->getUniqueId()]);
-			
-// 				if (is_object($objForm) && $objForm->isSubmitted()) {
-// 					$strReturn = $objForm->toHtml($blnClientSide, true, $strJs, true);
-// 				} 
-// 			} else {
-// 			    $strForm = $this->serialize();
-// 			    $_SESSION["vf__" . $this->getUniqueId()] = $strForm;
-// 			}
-// 		}
-
 		if (is_null($strReturn)) {
 			$strReturn = parent::toHtml($blnClientSide, $blnForceSubmitted, $this->__wizardJs($strJs, $blnFromSession));
 		}

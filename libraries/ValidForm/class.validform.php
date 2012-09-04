@@ -322,7 +322,7 @@ class ValidForm extends ClassDynamic {
 
 	public function serialize($blnSubmittedValues = true) {
 		// Validate & cache all values
-		$this->valuesAsHtml(true);
+		// $this->valuesAsHtml($blnSubmittedValues);
 
 		return serialize($this);
 	}
