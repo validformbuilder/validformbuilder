@@ -77,6 +77,7 @@ class ValidForm extends ClassDynamic {
 	protected $__mainalert;	
 	protected $__requiredstyle;	
 	protected $__novaluesmessage;
+	protected $__invalidfields = array();
 	
 	/**
 	 * 
@@ -386,6 +387,21 @@ class ValidForm extends ClassDynamic {
 		}
 		
 		return $objReturn;
+	}
+
+	public function getInvalidFields() {
+		$objFields = $this->getFields();
+		$arrReturn = array();
+
+		foreach ($objFields as $objField) {
+			$arrTemp = array();
+			if (!$objField->isValid()) {
+				$arrTemp[$objField->getName()] = $objField->getValidator()->getError();
+				array_push($arrReturn, $arrTemp);
+			}
+		}
+
+		return $arrReturn;
 	}
 	
 	public function isValid() {

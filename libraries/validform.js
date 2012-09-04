@@ -155,6 +155,51 @@ function ValidForm(strFormId, strMainAlert, blnAllowPreviousPage) {
 }
 
 /**
+ * Parse field errors from javascript object as such:
+ * 
+ * [
+ * 		{fieldName: "Error message here"},
+ * 		{fieldName: "Error message here"},
+ * 		.... etc.
+ * ]
+ *
+ * This enables us to push validation errors from ajax return objects.
+ * 
+ * @param  {object} objFields The fields object which contains fieldname-error pairs
+ * 
+ */
+ValidForm.prototype.showAlerts = function (objFields) {
+	var __this = this;
+	try {
+		if ($(objFields).length > 0) {
+			$(objFields).each(function () {
+				var objFieldError = this;
+
+				for (var fieldName in objFieldError) {
+					if (objFieldError.hasOwnProperty(fieldName)) {
+						var objField = __this.getElement(fieldName);
+
+						if (objField !== null) {
+							// Field found in current form
+							var objValidator = objField.validator;
+
+							objValidator.removeAlert();
+							objValidator.showAlert(objFieldError[fieldName]);
+						}
+					}
+				}
+			});
+
+			$("#" + __this.id).trigger("VF_ShowAlerts", [{ValidForm: __this, invalidFields: objFields}]);
+		}
+	} catch (e) {
+		try {
+			console.error("Show alerts failed: ", e.message, e); // Log error
+		} catch (e) {} // Or die trying
+	}
+}
+
+/**
  * Initialize ValidForm Builder client side after all elements are added to the collection.
  */
 ValidForm.prototype.init = function() {
@@ -375,7 +420,7 @@ ValidForm.prototype.nextPage = function () {
 	if (typeof this.events.beforeNextPage == "function") {
 		this.events.beforeNextPage(this);
 	}
-
+	
 	if (this.validate("#" + this.currentPage.attr("id"))) {
 		if (this.nextIsLast()) {
 			this.valuesAsHtml(true);

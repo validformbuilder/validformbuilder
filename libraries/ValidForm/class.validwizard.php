@@ -216,32 +216,28 @@ class ValidWizard extends ValidForm {
 	}
 
 	/**
-	 * Validate all form fields until and including the fields in the given page object
+	 * Validate all form fields EXCLUDING the fields in the given page object and beyond.
 	 * @param  string 	$strPageId 	The page object id
 	 * @return boolean         		True if all fields validate, false if not.
 	 */
-	public function validateUntil($strPageId) {
+	public function isValidUntil($strPageId) {
 		$blnValid = true;
 		foreach ($this->__elements as $objPage) {
-			if (!$objPage->isValid()) {
-				$blnValid = false;
-			}
-
 			if (!$blnValid || $objPage->getId() == $strPageId) {
 				break;
+			}
+
+			if (!$objPage->isValid()) {
+				$blnValid = false;
 			}
 		}
 
 		return $blnValid;
 	}
-	
-	public function isValidUntil($strPageId) {
-		return $this->validateUntil($strPageId);
-	}
 
 	public function isValid($strPageId = null) {
 		if (!is_null($strPageId)) {
-			return $this->validateUntil($strPageId);
+			return $this->isValidUntil($strPageId);
 		} else {
 			return parent::isValid();
 		}
