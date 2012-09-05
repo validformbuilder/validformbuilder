@@ -630,26 +630,30 @@ ValidForm.prototype.valuesAsHtml = function (blnHideEmpty) {
 	} // end fieldsetAsHtml
 
 	__this.fieldAsHtml = function ($field, blnHideEmpty) {
-		var $objReturn 	= tpl.field();
-		var strValue 	= $field.val();
+		if (__this.getElement($field.attr("name")) !== null) {
+			var $objReturn 	= tpl.field();
+			var strValue 	= $field.val();
 
-		if (strValue == "" && blnHideEmpty) {
-			// Do nothing
-			$objReturn = $();
-		} else {
-			$objReturn.attr("id", $field.attr("id") + "_confirm");
+			if (strValue == "" && blnHideEmpty) {
+				// Do nothing
+				$objReturn = $();
+			} else {
+				$objReturn.attr("id", $field.attr("id") + "_confirm");
 
-			$objLabel = tpl.label();
-			$objLabel.text($field.prev().text());
-			$objLabel.appendTo($objReturn);
-			
-			if ($field.attr("type") == "password") {
-				strValue = "*****";
+				$objLabel = tpl.label();
+				$objLabel.text($field.prev().text());
+				$objLabel.appendTo($objReturn);
+				
+				if ($field.attr("type") == "password") {
+					strValue = "*****";
+				}
+				
+				$objValue = tpl.value();
+				$objValue.text(strValue);
+				$objValue.appendTo($objReturn);
 			}
-			
-			$objValue = tpl.value();
-			$objValue.text(strValue);
-			$objValue.appendTo($objReturn);
+		} else {
+			return $(); // This is not a valid element
 		}
 
 		return $objReturn;
@@ -705,11 +709,12 @@ ValidForm.prototype.valuesAsHtml = function (blnHideEmpty) {
 		
 		// Check if first field is empty
 		var $objFirstSelect = $multifield.find("select:first");
-		if ($objFirstSelect.length > 0) {
+		if ($objFirstSelect.length > 0 && __this.getElement($objFirstSelect.attr("name")) !== null) {
 			strValue = $objFirstSelect.val();
 		}
+
 		var $objFirstInput = $multifield.find("input:not([type='hidden']):first");
-		if ($objFirstInput.length > 0) {
+		if ($objFirstInput.length > 0 && __this.getElement($objFirstInput.attr("name")) !== null) {
 			strValue = $objFirstInput.val();
 		}
 
@@ -724,13 +729,17 @@ ValidForm.prototype.valuesAsHtml = function (blnHideEmpty) {
 			
 			// Continue parsing multifield.
 			$multifield.find("input:not([type='hidden']), select").each(function () {
-				var $objItem 	= tpl.multifieldItem();
-				var $objValue 	= tpl.value();
+				if (__this.getElement($(this).attr("name")) !== null) {
+					var $objItem 	= tpl.multifieldItem();
+					var $objValue 	= tpl.value();
 
-				$objValue.text($(this).val());
-				$objValue.appendTo($objItem);
+					console.log("VALUE: ", $(this).val());
 
-				$objItem.appendTo($objReturn);
+					$objValue.text($(this).val());
+					$objValue.appendTo($objItem);
+
+					$objItem.appendTo($objReturn);
+				}
 			});
 		} else {
 			if (blnHideEmpty) {
@@ -951,17 +960,25 @@ ValidForm.prototype.dynamicDuplication = function () {
 				}
 			}
 			
-			//*** Remove styling.
-			copy.removeClass("vf__required").removeClass("vf__error").addClass("vf__optional");
+			//*** Remove 'required' styling.
+			copy
+				.find(".vf__required")
+				.removeClass("vf__required")
+				.addClass("vf__optional")
+			copy
+				.removeClass("vf__required")
+				.removeClass("vf__error")
+				.addClass("vf__optional");
+
 			copy.find("p.vf__error").remove();
 			copy.find(".vf__error").removeClass("vf__error");
 			
 			jQuery(this).parent().before(copy);
 			
 			//*** Call custom event if set.
-			jQuery("#" + this.id).trigger("VF_AfterDynamicChange", [{ValidForm: __this, objAnchor: $anchor, objCopy: copy}]);
+			jQuery("#" + __this.id).trigger("VF_AfterDynamicChange", [{ValidForm: __this, objAnchor: $anchor, objCopy: copy}]);
 			if (typeof __this.events.afterDynamicChange == "function") {
-				__this.events.afterDynamicChange(__this, {anchor: $anchor, copy: copy});
+				__this.events.afterDynamicChange({ValidForm: __this, objAnchor: $anchor, objCopy: copy});
 			}
 		}
 		
