@@ -43,7 +43,7 @@ class VF_Page extends ClassDynamic {
 		$this->__elements = new VF_Collection();
 	}
 	
-	public function toHtml($submitted = FALSE) {
+	public function toHtml($submitted = FALSE, $blnSimpleLayout = FALSE, $blnLabel = true, $blnDisplayError = true) {
 		$strClass = (!empty($this->__class)) ? " class=\"{$this->__class} vf__page\"" : "class=\"vf__page\""; 
 		$strStyle = (!empty($this->__style)) ? " style=\"{$this->__style}\"" : ""; 
 		$strId		= " id=\"{$this->__id}\"";
@@ -52,7 +52,7 @@ class VF_Page extends ClassDynamic {
 		
 		if (!$this->__isOverview) {
 			foreach ($this->__elements as $field) {
-				$strOutput .= $field->toHtml($submitted);
+				$strOutput .= $field->toHtml($submitted, $blnSimpleLayout, $blnLabel, $blnDisplayError);
 			}
 		}
 

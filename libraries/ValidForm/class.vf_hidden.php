@@ -43,7 +43,7 @@ class VF_Hidden extends VF_Element {
 		$this->__validator = new VF_FieldValidator($name, $type, array(), array(), $this->__hint);		
 	}
 	
-	public function toHtml($submitted = FALSE, $blnSimpleLayout = FALSE) {
+	public function toHtml($submitted = FALSE, $blnSimpleLayout = FALSE, $blnLabel = true, $blnDisplayError = true) {
 		$strOutput = "";
 						
 		$strOutput .= "<input type=\"hidden\" value=\"{$this->__getValue($submitted)}\" name=\"{$this->__name}\" id=\"{$this->__id}\" {$this->__getMetaString()} />\n";

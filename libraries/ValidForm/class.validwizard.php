@@ -207,18 +207,67 @@ class ValidWizard extends ValidForm {
 	 * @return boolean         		True if all fields validate, false if not.
 	 */
 	public function isValidUntil($strPageId) {
-		$blnValid = true;
+		$blnReturn = true;
+		
 		foreach ($this->__elements as $objPage) {
-			if (!$blnValid || $objPage->getId() == $strPageId) {
+			if (!$blnReturn || $objPage->getId() == $strPageId) {
 				break;
 			}
 
 			if (!$objPage->isValid()) {
-				$blnValid = false;
+				$blnReturn = false;
 			}
 		}
 
-		return $blnValid;
+		return $blnReturn;
+	}
+
+	public function getInvalidFieldsUntil($strPageId) {
+		$arrReturn = array();
+		
+		foreach ($this->__elements as $objPage) {
+			if ($objPage->getId() == $strPageId) {
+				break;
+			}
+		
+			if ($objPage->hasFields()) {
+				$objFieldsets = $objPage->getFields();		
+				foreach ($objFieldsets as $objFieldset) {					
+					foreach ($objFieldset->getFields() as $objField) {
+						if (is_object($objField)) {
+							if ($objField->hasFields()) {
+								foreach ($objField->getFields() as $objSubField) {
+									if (is_object($objSubField)) {
+										if ($objSubField->hasFields()) {
+											foreach ($objSubField->getFields() as $objSubSubField) {
+												if (is_object($objSubSubField)) {
+													if (!$objSubSubField->isValid()) {
+														$arrTemp = array($objSubSubField->getName() => $objSubSubField->getValidator()->getError());
+														array_push($arrReturn, $arrTemp);
+													}
+												}
+											}
+										} else {
+											if (!$objSubField->isValid()) {
+												$arrTemp = array($objSubField->getName() => $objSubField->getValidator()->getError());
+												array_push($arrReturn, $arrTemp);
+											}
+										}
+									}
+								}
+							} else {
+								if (!$objField->isValid()) {
+									$arrTemp = array($objField->getName() => $objField->getValidator()->getError());
+									array_push($arrReturn, $arrTemp);
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+
+		return $arrReturn;
 	}
 
 	public function isValid($strPageId = null) {

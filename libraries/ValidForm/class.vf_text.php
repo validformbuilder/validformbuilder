@@ -42,7 +42,7 @@ class VF_Text extends VF_Element {
 		return $strOutput;
 	}
 	
-	public function toJS() {
+	public function toJS($blnParentIsDynamic = FALSE) {
 		$strCheck = $this->__validator->getCheck();
 		$strCheck = (empty($strCheck)) ? "''" : str_replace("'", "\\'", $strCheck);
 		$strRequired = ($this->__validator->getRequired()) ? "true" : "false";
@@ -50,11 +50,14 @@ class VF_Text extends VF_Element {
 		$intMinLength = ($this->__validator->getMinLength() > 0) ? $this->__validator->getMinLength() : "null";
 		
 		$strOutput = "";
-		if ($this->__dynamic) {
-			$intDynamicCount = $this->getDynamicCount();
+		if ($this->__dynamic || $blnParentIsDynamic) {
+			$intDynamicCount = $this->getDynamicCount($blnParentIsDynamic);
 			for($intCount = 0; $intCount <= $intDynamicCount; $intCount++) {
 				$strId 		= ($intCount == 0) ? $this->__id : $this->__id . "_" . $intCount;
 				$strName 	= ($intCount == 0) ? $this->__name : $this->__name . "_" . $intCount;
+				
+				//*** We asume that all dynamic fields greater than 0 are never required.
+				if ($intDynamicCount > 0) $strRequired = "false";
 
 				$strOutput .= "objForm.addElement('{$strId}', '{$strName}', {$strCheck}, {$strRequired}, {$intMaxLength}, {$intMinLength}, '" . addslashes($this->__validator->getFieldHint()) . "', '" . addslashes($this->__validator->getTypeError()) . "', '" . addslashes($this->__validator->getRequiredError()) . "', '" . addslashes($this->__validator->getHintError()) . "', '" . addslashes($this->__validator->getMinLengthError()) . "', '" . addslashes($this->__validator->getMaxLengthError()) . "');\n";
 			}
@@ -78,7 +81,9 @@ class VF_Text extends VF_Element {
 		if (!$blnSimpleLayout) {
 			$blnError = ($submitted && !$this->__validator->validate($intCount) && $blnDisplayErrors) ? TRUE : FALSE;
 			
-			$strClass = ($this->__validator->getRequired()) ? "vf__required" : "vf__optional";
+			//*** We asume that all dynamic fields greater than 0 are never required.
+			$strClass = ($this->__validator->getRequired() && $intCount == 0) ? "vf__required" : "vf__optional";
+			
 			$strClass = ($blnError) ? $strClass . " vf__error" : $strClass;
 			$strOutput = "<div class=\"{$strClass}\">\n";
 			

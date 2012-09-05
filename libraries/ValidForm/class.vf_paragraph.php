@@ -35,7 +35,7 @@ class VF_Paragraph extends ClassDynamic {
 		$this->__body = $body;
 	}
 	
-	public function toHtml($submitted = FALSE) {
+	public function toHtml($submitted = FALSE, $blnSimpleLayout = FALSE, $blnLabel = true, $blnDisplayError = true) {
 		$strOutput = "<div>\n";
 		
 		if (!empty($this->__header)) $strOutput .= "<h3>{$this->__header}</h3>\n";

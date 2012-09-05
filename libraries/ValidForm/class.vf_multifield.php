@@ -63,22 +63,22 @@ class VF_MultiField extends ClassDynamic {
 		return $objField;
 	}
 
-	public function toHtml($submitted) {
+	public function toHtml($submitted = FALSE, $blnSimpleLayout = FALSE, $blnLabel = true, $blnDisplayError = true) {
 		$strOutput = "";
 
 		if ($this->__dynamic) {
 			$intDynamicCount = $this->getDynamicCount();
 			for ($intCount = 0; $intCount <= $intDynamicCount; $intCount++) {
-				$strOutput .= $this->__toHtml($submitted, $intCount);
+				$strOutput .= $this->__toHtml($submitted, $blnSimpleLayout, $blnLabel, $blnDisplayError, $intCount);
 			}
 		} else {
-			$strOutput = $this->__toHtml($submitted);
+			$strOutput = $this->__toHtml($submitted, $blnSimpleLayout, $blnLabel, $blnDisplayError);
 		}
 
 		return $strOutput;
 	}
 	
-	public function __toHtml($submitted = FALSE, $intCount = 0) {
+	public function __toHtml($submitted = FALSE, $blnSimpleLayout = FALSE, $blnLabel = true, $blnDisplayError = true, $intCount = 0) {
 		$blnRequired = FALSE;
 		$blnError = FALSE;
 		$strError = "";
@@ -93,13 +93,15 @@ class VF_MultiField extends ClassDynamic {
 				$blnRequired = TRUE;
 			}
 			
-			if ($submitted && !$field->getValidator()->validate($intCount)) {
+			if ($submitted && !$field->getValidator()->validate($intCount) && $blnDisplayError) {
 				$blnError = TRUE;
 				$strError .= "<p class=\"vf__error\">{$field->getValidator()->getError($intCount)}</p>";
 			}
 		}
+
+		//*** We asume that all dynamic fields greater than 0 are never required.
+		$strClass = ($blnRequired && $intCount == 0) ? "vf__required" : "vf__optional";
 		
-		$strClass = ($blnRequired) ? "vf__required" : "vf__optional";
 		$strClass = (array_key_exists("class", $this->__meta)) ? $strClass . " " . $this->__meta["class"] : $strClass;
 		$strClass = ($blnError) ? $strClass . " vf__error" : $strClass;
 		$strOutput = "<div class=\"vf__multifield {$strClass}\">\n";
@@ -116,7 +118,7 @@ class VF_MultiField extends ClassDynamic {
 				continue;
 			}
 
-			$strOutput .= $field->__toHtml($submitted, true, true, true, $intCount);
+			$strOutput .= $field->__toHtml($submitted, true, $blnLabel, $blnDisplayError, $intCount);
 			
 			$arrFields[$field->getId()] = $field->getName();
 		}
@@ -157,7 +159,7 @@ class VF_MultiField extends ClassDynamic {
 		$strReturn = "";
 		
 		foreach ($this->__fields as $field) {
-			$strReturn .= $field->toJS();
+			$strReturn .= $field->toJS($this->__dynamic);
 		}
 		
 		return $strReturn;

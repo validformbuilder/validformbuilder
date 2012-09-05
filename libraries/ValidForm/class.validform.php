@@ -303,7 +303,7 @@ class ValidForm extends ClassDynamic {
 		
 		$blnNavigation = false;
 		foreach ($this->__elements as $element) {
-			$strOutput .= $element->toHtml($this->isSubmitted($blnForceSubmitted));
+			$strOutput .= $element->toHtml($this->isSubmitted($blnForceSubmitted), false, true, !$blnForceSubmitted);
 			
 			if (get_class($element) == "VF_Navigation") {
 				$blnNavigation = true;

@@ -56,9 +56,11 @@ class VF_Select extends VF_Element {
 		$strId 		= ($intCount == 0) ? $this->__id : $this->__id . "_" . $intCount;
 
 		if (!$blnSimpleLayout) {
-			$blnError = ($submitted && !$this->__validator->validate($intCount)) ? TRUE : FALSE;
+			$blnError = ($submitted && !$this->__validator->validate($intCount) && $blnDisplayErrors) ? TRUE : FALSE;
 			
-			$strClass = ($this->__validator->getRequired()) ? "vf__required" : "vf__optional";
+			//*** We asume that all dynamic fields greater than 0 are never required.
+			$strClass = ($this->__validator->getRequired() && $intCount == 0) ? "vf__required" : "vf__optional";
+			
 			$strClass = ($blnError) ? $strClass . " vf__error" : $strClass;		
 			$strOutput .= "<div class=\"{$strClass}\">\n";
 			
@@ -77,19 +79,19 @@ class VF_Select extends VF_Element {
 		if ($this->__options->count() == 0) {
 			if (isset($this->__meta["start"]) && is_numeric($this->__meta["start"]) && isset($this->__meta["end"]) && is_numeric($this->__meta["end"])) {
 				if ($this->__meta["start"] < $this->__meta["end"]) {
-					for ($intCount = $this->__meta["start"]; $intCount <= $this->__meta["end"]; $intCount++) {
-						$this->addField($intCount, $intCount);
+					for ($intIndex = $this->__meta["start"]; $intIndex <= $this->__meta["end"]; $intIndex++) {
+						$this->addField($intIndex, $intIndex);
 					}
 				} else {
-					for ($intCount = $this->__meta["start"]; $intCount >= $this->__meta["end"]; $intCount--) {
-						$this->addField($intCount, $intCount);
+					for ($intIndex = $this->__meta["start"]; $intIndex >= $this->__meta["end"]; $intIndex--) {
+						$this->addField($intIndex, $intIndex);
 					}
 				}
 			}
 		}
 
 		foreach ($this->__options as $option) {
-			$strOutput .= $option->toHtml($this->__getValue($submitted));
+			$strOutput .= $option->toHtml($this->__getValue($submitted, $intCount));
 		}
 		
 		$strOutput .= "</select>\n";
@@ -97,22 +99,39 @@ class VF_Select extends VF_Element {
 		if (!empty($this->__tip)) $strOutput .= "<small class=\"vf__tip\">{$this->__tip}</small>\n";
 		$strOutput .= "</div>\n";
 		
+		if (!$blnSimpleLayout && $intCount == $this->getDynamicCount()) {
+			$strOutput .= $this->__addDynamicHtml();
+		}
+		
 		return $strOutput;
 	}
+
+	protected function __addDynamicHtml() {
+		$strReturn = "";
+
+		if ($this->__dynamic && !empty($this->__dynamicLabel)) {
+			$strReturn = "<div class=\"vf__dynamic vf__cf\"><a href=\"#\" data-target-id=\"{$this->__id}\" data-target-name=\"{$this->__name}\">{$this->__dynamicLabel}</a></div>\n";
+		}
+
+		return $strReturn;
+	}
 	
-	public function toJS() {
+	public function toJS($blnParentIsDynamic = FALSE) {
 		$strCheck = $this->__validator->getCheck();
 		$strCheck = (empty($strCheck)) ? "''" : str_replace("'", "\\'", $strCheck);
 		$strRequired = ($this->__validator->getRequired()) ? "true" : "false";;
 		$intMaxLength = ($this->__validator->getMaxLength() > 0) ? $this->__validator->getMaxLength() : "null";
 		$intMinLength = ($this->__validator->getMinLength() > 0) ? $this->__validator->getMinLength() : "null";
 		
-		if ($this->__dynamic) {
-			$intDynamicCount = $this->getDynamicCount();
-			for($intCount = 0; $intCount <= $intDynamicCount; $intCount++) {
+		if ($this->__dynamic || $blnParentIsDynamic) {
+			$intDynamicCount = $this->getDynamicCount($blnParentIsDynamic);
+			for ($intCount = 0; $intCount <= $intDynamicCount; $intCount++) {
 				$strId 		= ($intCount == 0) ? $this->__id : $this->__id . "_" . $intCount;
 				$strName 	= ($intCount == 0) ? $this->__name : $this->__name . "_" . $intCount;
 
+				//*** We asume that all dynamic fields greater than 0 are never required.
+				if ($intDynamicCount > 0) $strRequired = "false";
+				
 				$strOutput .= "objForm.addElement('{$strId}', '{$strName}', {$strCheck}, {$strRequired}, {$intMaxLength}, {$intMinLength}, '" . addslashes($this->__validator->getFieldHint()) . "', '" . addslashes($this->__validator->getTypeError()) . "', '" . addslashes($this->__validator->getRequiredError()) . "', '" . addslashes($this->__validator->getHintError()) . "', '" . addslashes($this->__validator->getMinLengthError()) . "', '" . addslashes($this->__validator->getMaxLengthError()) . "');\n";
 			}
 		} else {

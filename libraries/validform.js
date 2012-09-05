@@ -1393,7 +1393,7 @@ ValidFormFieldValidator.prototype.removeAlert = function() {
 
 	if (objElement.parent("div").hasClass("vf__multifielditem")) {
 		objElement.parent("div").removeClass("vf__error");
-		if (objElement.parent("div").find(".vf__error").length == 0) {
+		if (objElement.parent("div").parent("div").find(".vf__error").length < 2) {
 			objElement.parent("div").parent("div").removeClass("vf__error").find("p.vf__error").remove();
 		}
 	} else {

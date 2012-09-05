@@ -58,7 +58,7 @@ class VF_Fieldset extends ClassDynamic {
 		}
 	}
 	
-	public function toHtml($submitted = FALSE) {
+	public function toHtml($submitted = FALSE, $blnSimpleLayout = FALSE, $blnLabel = true, $blnDisplayErrors = true) {
 		$strClass = (!empty($this->__class)) ? " class=\"{$this->__class}\"" : ""; 
 		$strStyle = (!empty($this->__style)) ? " style=\"{$this->__style}\"" : ""; 
 		$strOutput = "<fieldset{$strClass}{$strStyle}>\n";
@@ -67,7 +67,7 @@ class VF_Fieldset extends ClassDynamic {
 		if (is_object($this->__note)) $strOutput .= $this->__note->toHtml();
 		
 		foreach ($this->__fields as $field) {
-			$strOutput .= $field->toHtml($submitted);
+			$strOutput .= $field->toHtml($submitted, $blnSimpleLayout, $blnLabel, $blnDisplayErrors);
 		}
 		
 		$strOutput .= "</fieldset>\n";

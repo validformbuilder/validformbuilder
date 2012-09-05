@@ -127,11 +127,11 @@ class VF_Element extends ClassDynamic {
 		}
 	}
 	
-	public function toHtml($submitted = FALSE, $blnSimpleLayout = FALSE) {
+	public function toHtml($submitted = FALSE, $blnSimpleLayout = FALSE, $blnLabel = true, $blnDisplayErrors = true) {
 		return "Field type not defined.";
 	}
 	
-	public function __toHtml($submitted = false, $blnSimpleLayout = false, $blnLabel = true, $blnDisplayErrors = true, $intCount = 0) {
+	public function __toHtml($submitted = FALSE, $blnSimpleLayout = FALSE, $blnLabel = true, $blnDisplayErrors = true, $intCount = 0) {
 		return $this->toHtml($submitted, $blnSimpleLayout, $blnLabel, $blnDisplayErrors, $intCount);
 	}
 	
@@ -186,17 +186,17 @@ class VF_Element extends ClassDynamic {
 	 * @return boolean True if dynamic, false if not.
 	 */
 	public function isDynamic() {
-		return ($this->__dynamic) ? true : false;
+		return $this->__dynamic;
 	}
 	
 	/**
 	 * Get the number of dynamic fields from the dynamic counter field.
 	 * @return [type] [description]
 	 */
-	public function getDynamicCount() {
+	public function getDynamicCount($blnParentIsDynamic = FALSE) {
 		$intReturn = 0;
 
-		if ($this->__dynamic && is_object($this->__dynamiccounter)) {
+		if (($this->__dynamic || $blnParentIsDynamic) && is_object($this->__dynamiccounter)) {
 			$intReturn = $this->__dynamiccounter->getValidator()->getValue();
 		}
 
