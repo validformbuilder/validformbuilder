@@ -1,12 +1,12 @@
 <?php
 /***************************
  * ValidForm Builder - build valid and secure web forms quickly
- * 
+ *
  * Copyright (c) 2009-2012, Felix Langfeldt <flangfeldt@felix-it.com>.
  * All rights reserved.
- * 
+ *
  * This software is released under the GNU GPL v2 License <http://www.gnu.org/licenses/old-licenses/gpl-2.0.html>
- * 
+ *
  * @package    ValidForm
  * @author     Felix Langfeldt <flangfeldt@felix-it.com>
  * @copyright  2009-2012 Felix Langfeldt <flangfeldt@felix-it.com>
@@ -17,9 +17,9 @@
 require_once('class.vf_element.php');
 
 /**
- * 
+ *
  * Hidden Class
- * 
+ *
  * @package ValidForm
  * @author Felix Langfeldt
  * @version Release: 0.2.1
@@ -30,7 +30,7 @@ class VF_Hidden extends VF_Element {
 
 	public function __construct($name, $type, $meta = array()) {
 		if (is_null($meta)) $meta = array();
-		
+
 		$this->__id = (strpos($name, "[]") !== FALSE) ? $this->getRandomId($name) : $name;
 		$this->__name = $name;
 		$this->__type = $type;
@@ -40,21 +40,21 @@ class VF_Hidden extends VF_Element {
 		$this->__default = (array_key_exists("default", $meta)) ? $meta["default"] : NULL;
 		$this->__dynamiccounter = (array_key_exists("dynamicCounter", $meta)) ? $meta["dynamicCounter"] : false;
 
-		$this->__validator = new VF_FieldValidator($name, $type, array(), array(), $this->__hint);		
+		$this->__validator = new VF_FieldValidator($name, $type, array(), array(), $this->__hint);
 	}
-	
+
 	public function toHtml($submitted = FALSE, $blnSimpleLayout = FALSE, $blnLabel = true, $blnDisplayError = true) {
 		$strOutput = "";
-						
+
 		$strOutput .= "<input type=\"hidden\" value=\"{$this->__getValue($submitted)}\" name=\"{$this->__name}\" id=\"{$this->__id}\" {$this->__getMetaString()} />\n";
-				
+
 		return $strOutput;
 	}
-	
+
 	public function toJS() {
 		return "";
 	}
-	
+
 	public function hasFields() {
 		return FALSE;
 	}
@@ -69,7 +69,7 @@ class VF_Hidden extends VF_Element {
 
 		for ($intCount = 0; $intCount <= $intDynamicCount; $intCount++) {
 			$blnReturn = $this->__validator->validate($intCount);
-			
+
 			if (!$blnReturn) {
 				break;
 			}
@@ -77,7 +77,7 @@ class VF_Hidden extends VF_Element {
 
 		return $blnReturn;
 	}
-	
+
 }
 
 ?>
