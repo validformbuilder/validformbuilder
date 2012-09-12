@@ -238,9 +238,17 @@ class VF_Element extends ClassDynamic {
 	/**
 	 * Add javascript code for trigger fields. This code executed by the element's toJs() method.
 	 */
-	public function addTriggerJs($strId = null) {
-		$strId = (!is_null($strId)) ? $strId : $this->__triggerfield->getId();
-		return "objForm.addTrigger('{$this->__triggerfield->getId()}', '{$this->__id}');\n";
+	public function addTriggerJs() {
+		switch (get_class($this->__triggerfield)) {
+			case "VF_SelectOption":
+				$strSelector = "[value='" . $this->__triggerfield->getValue() . "']";
+				break;
+			default:
+				$strSelector = "#" . $this->__triggerfield->getId();
+				break;
+		}
+
+		return "objForm.addTrigger(\"{$strSelector}\", \"{$this->__id}\");\n";
 	}
 
 	/**

@@ -96,6 +96,11 @@ class VF_Select extends VF_Element {
 
 		$strOutput .= "</select>\n";
 
+		if (is_object($this->__targetfield)) {
+			$strOutput .= $this->__targetfield->toHtml($submitted, $blnSimpleLayout, $blnLabel, $blnDisplayErrors, $intCount);
+		}
+
+
 		if (!empty($this->__tip)) $strOutput .= "<small class=\"vf__tip\">{$this->__tip}</small>\n";
 		$strOutput .= "</div>\n";
 
@@ -140,7 +145,7 @@ class VF_Select extends VF_Element {
 		}
 
 		if (is_object($this->__targetfield)) {
-			$strOutput .= $this->__targetfield->toJs($this->__id);
+			$strOutput .= $this->__targetfield->toJs();
 		}
 
 		return $strOutput;
@@ -170,7 +175,7 @@ class VF_Select extends VF_Element {
 		// Add to validator
 		$this->__validator->setTargetField($objTarget);
 
-		$this->__options->addObject($objTarget);
+		// $this->__options->addObject($objTarget);
 	}
 
 	public function addGroup($label) {

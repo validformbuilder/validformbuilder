@@ -1015,17 +1015,32 @@ ValidForm.prototype.inArray = function(arrToSearch, value) {
 	return false;
 };
 
-ValidForm.prototype.addTrigger = function(strTriggerId, strTargetId) {
-	var $trigger 	= jQuery("#" + strTriggerId);
+ValidForm.prototype.addTrigger = function(strSelector, strTargetId) {
+	var $trigger 	= jQuery(strSelector);
 	var $target 	= jQuery("#" + strTargetId);
 	var blnIsOption	= $trigger.is("option");
+	var __this		= this;
 
 	var toggleTrigger = function () {
-		if ($trigger.is((blnIsOption) ? ":selected" : ":checked")) {
-			$target.parent().show();
+		if (blnIsOption) {
+			if ($trigger.is(":selected")) {
+				$target.parent().show();
+			} else {
+				// Clear all previous errors.
+				var objTargetElement = __this.getElement($target.attr("name"));
+				objTargetElement.validator.removeAlert();
+
+				// Hide the target element and reset it's value.
+				$target.parent().hide();
+				$target.val("");
+			}
 		} else {
-			$target.parent().hide();
-			$target.val("");
+			if ($trigger.is(":checked")) {
+				$target.parent().show();
+			} else {
+				$target.parent().hide();
+				$target.val("");
+			}
 		}
 	};
 
@@ -1040,7 +1055,7 @@ ValidForm.prototype.addTrigger = function(strTriggerId, strTargetId) {
 
 	} else if (blnIsOption) {
 		// Select option
-		jQuery("input[name='" + $trigger.attr("name") + "']").on("change", function () {
+		$trigger.parent().on("change", function () {
 			toggleTrigger();
 		});
 		toggleTrigger();
@@ -1312,9 +1327,22 @@ ValidFormFieldValidator.prototype.validate = function(value) {
 			// But ONLY if the triggerfield is checked.
 			var objTrigger = objElement.data("vf_triggerField");
 			if (typeof objTrigger !== "undefined") {
-				if (objTrigger[0].checked) {
-					this.showAlert(this.requiredError);
-					return false;
+				if (objTrigger.is("option")) {
+					// The trigger is an option in a select list.
+					objTrigger = objTrigger.parent(); // Get the select list instead of the option element
+
+					if (objTrigger.val() == objElement.attr("name")) {
+						this.showAlert(this.requiredError);
+						return false;
+					}
+
+				} else {
+					// The trigger is a checkbox or radiobutton
+					if (objTrigger[0].checked) {
+						this.showAlert(this.requiredError);
+						return false;
+
+					}
 				}
 			}
 
