@@ -65,6 +65,21 @@ class VF_Area extends ClassDynamic {
 		return $objField;
 	}
 
+	public function addParagraph($strBody, $strHeader = "") {
+		$objParagraph = new VF_Paragraph($strHeader, $strBody);
+
+		//*** Fieldset already defined?
+		$objFieldset = $this->__elements->getLast("VF_Fieldset");
+		if ($this->__elements->count() == 0 || !is_object($objFieldset)) {
+			$objFieldset = $this->addFieldset();
+		}
+
+		//*** Add field to the fieldset.
+		$objFieldset->addField($objParagraph);
+
+		return $objParagraph;
+	}
+
 	public function addMultiField($label = NULL, $meta = array()) {
 		if (!array_key_exists("dynamic", $meta)) $meta["dynamic"] = $this->__dynamic;
 

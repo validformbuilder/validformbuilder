@@ -515,6 +515,17 @@ ValidForm.prototype.valuesAsHtml = function (blnHideEmpty) {
 			}
 		});
 
+		// Clean up afterwards.
+		$(".vf__field").each(function () {
+			var height = $(this).height();
+			var $label = $(this).find(".vf__label");
+			var labelHeight = $label.height();
+
+			do {
+				$label.css("height", height);
+			} while (height > labelHeight);
+		});
+
 		// Trigger custom event
 		$("#" + __this.id).trigger("VF_afterValuesAsHtml", [{ValidForm: __this, values: $objReturn}]);
 
@@ -985,13 +996,21 @@ ValidForm.prototype.dynamicDuplication = function () {
 };
 
 ValidForm.prototype.attachAreaEvents = function(objActiveTrigger) {
+	var __this = this;
+
 	objActiveTrigger.unbind("click").bind("click", function(){
 		var fieldset = jQuery(objActiveTrigger).parentsUntil(".vf__area").parent(".vf__area");
+
 		if (this.checked) {
+			// Enable active area
 			jQuery("input, select, textarea", fieldset).removeAttr("disabled");
 			jQuery(".vf__dynamic a", fieldset).removeClass("vf__disabled");
 			jQuery(fieldset).removeClass("vf__disabled");
+
+			$("#" + __this.id).trigger("VF_EnableActiveArea", [{ValidForm: __this, objArea: fieldset}]);
 		} else {
+			// Disable active area & remove error's
+
 			jQuery("input, select, textarea", fieldset).attr("disabled", "disabled");
 			jQuery(".vf__dynamic a", fieldset).addClass("vf__disabled");
 			jQuery("legend input", fieldset).removeAttr("disabled");
@@ -1001,6 +1020,8 @@ ValidForm.prototype.attachAreaEvents = function(objActiveTrigger) {
 			jQuery("div.vf__error", fieldset).each(function(){
 				jQuery(this).removeClass("vf__error").find("p.vf__error").remove();
 			});
+
+			$("#" + __this.id).trigger("VF_DisableActiveArea", [{ValidForm: __this, objArea: fieldset}]);
 		}
 	});
 };
