@@ -486,6 +486,9 @@ ValidForm.prototype.valuesAsHtml = function (blnHideEmpty) {
 		multifieldItem: function () {
 			return $("<div class='vf__multifielditem'></div>");
 		},
+		multifieldItems: function () {
+			return $("<div class='vf__multifieldvalue vf__cf'></div>");
+		},
 		list: function () {
 			return $("<div class='vf__list vf__cf'><ul></ul></div>");
 		},
@@ -543,7 +546,7 @@ ValidForm.prototype.valuesAsHtml = function (blnHideEmpty) {
 					blnIsMulti = false;
 
 				} else if ($objValue.parent().is(".vf__multifielditem")) {
-					var $objParent	= $objValue.parent().parent();
+					var $objParent	= $objValue.parent().parent().parent();
 					blnIsMulti = true;
 
 				} else {
@@ -553,7 +556,8 @@ ValidForm.prototype.valuesAsHtml = function (blnHideEmpty) {
 				}
 
 				if (blnIsMulti) {
-					$objParent.find(".vf__multifielditem:first").css("margin-left", 30);
+					$objValue = $objParent.find(".vf__multifieldvalue");
+					// $objValue.css("margin-left", 30);
 				}
 
 				var labelWidth 	= $objParent.find(".vf__label").width();
@@ -653,8 +657,8 @@ ValidForm.prototype.valuesAsHtml = function (blnHideEmpty) {
 							case "checkbox":
 								if ($element.parent().is("div")) {
 									// This is a boolean field.
-
 									$objReturn.append(__this.fieldAsHtml($element, blnHideEmpty));
+
 								} else if ($element.parent().parent().is("legend")) {
 									return;
 								} else {
@@ -814,7 +818,10 @@ ValidForm.prototype.valuesAsHtml = function (blnHideEmpty) {
 			strValue = ""; // reset value
 
 			// Continue parsing multifield.
-			$multifield.find("input:not([type='hidden']), select").each(function () {
+			$objMultiFieldItems = tpl.multifieldItems();
+
+			var $items = $multifield.find("input:not([type='hidden']), select");
+			$items.each(function () {
 				if (__this.getElement($(this).attr("name")) !== null) {
 					var $objItem 	= tpl.multifieldItem();
 					var $objValue 	= tpl.value();
@@ -822,9 +829,15 @@ ValidForm.prototype.valuesAsHtml = function (blnHideEmpty) {
 					$objValue.text($(this).val());
 					$objValue.appendTo($objItem);
 
-					$objItem.appendTo($objReturn);
+					$objItem.appendTo($objMultiFieldItems);
+
+					if ($(this).is($items.last())) {
+						console.log($(this));
+					}
 				}
 			});
+
+			$objMultiFieldItems.appendTo($objReturn);
 		} else {
 			if (blnHideEmpty) {
 				$objReturn = $();
