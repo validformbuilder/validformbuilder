@@ -368,53 +368,24 @@ form.validform div.vf__dynamic a.vf__disabled {
  * Confirm page styling
  *************************************************************************/
 
-form.validform div.vf__confirm {
-
-}
 /* prevent earlier defined styling */
 form.validform div.vf__confirm * {
 	padding: 0;
 	margin: 0;
 	border: none;
 }
-form.validform div.vf__confirm div.vf__overviewpage {
-
-}
-form.validform div.vf__confirm div.vf__overviewpage > h2 {
-
-}
-form.validform div.vf__confirm div.vf__overviewpage div.vf__fieldset {
-
-}
-form.validform div.vf__confirm div.vf__overviewpage div.vf__fieldset > h3 {
-
-}
-form.validform div.vf__confirm div.vf__field {
-
-}
 form.validform div.vf__confirm span.vf__label {
 	width: 130px;
 	float: left;
 }
 form.validform div.vf__list > ul,
+form.validform div.vf__confirm div.vf__multifieldvalue,
 form.validform div.vf__field > strong.vf__value {
 	float: right !important;
 }
 form.validform div.vf__multifielditem strong.vf__value {
 	padding-right: 5px;
 }
-form.validform div.vf__confirm div.vf__multifield {
-
-}
-form.validform div.vf__confirm div.vf__multifielditem {
-
-}
-form.validform div.vf__confirm div.vf__list {
-
-}
 form.validform div.vf__confirm div.vf__list > ul {
 	list-style: none;
-}
-form.validform div.vf__confirm div.vf__list_item {
-
 }
