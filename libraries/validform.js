@@ -516,14 +516,48 @@ ValidForm.prototype.valuesAsHtml = function (blnHideEmpty) {
 		});
 
 		// Clean up afterwards.
-		$(".vf__field").each(function () {
-			var height = $(this).height();
-			var $label = $(this).find(".vf__label");
-			var labelHeight = $label.height();
+		var __setValueWidth = function () {
+			$(".vf__value", $objReturn).each(function () {
+				var $objValue 	= $(this);
+				var formWidth 	= $objValue.parentsUntil(".validform").parent().width();
+				var blnIsMulti	= false;
 
-			do {
-				$label.css("height", height);
-			} while (height > labelHeight);
+				// Get parent object
+				if ($objValue.parent().is(".vf__field")) {
+					var $objParent 	= $objValue.parent();
+					blnIsMulti = false;
+
+				} else if ($objValue.parent().is(".vf__multifielditem")) {
+					var $objParent	= $objValue.parent().parent();
+					blnIsMulti = true;
+
+				} else {
+					var $objParent 	= $objValue.parentsUntil(".vf__field").parent();
+					blnIsMulti = false;
+
+				}
+
+				if (blnIsMulti) {
+					$objParent.find(".vf__multifielditem:first").css("margin-left", 30);
+				}
+
+				var labelWidth 	= $objParent.find(".vf__label").width();
+				$objValue.width(formWidth - labelWidth - 30);
+
+			});
+		}
+		// Directly on init
+		__setValueWidth();
+
+		// And listen for resize events.
+		var _timer;
+		$(window).on("resize", function () {
+			var timeout = 0; // Make this 50 or higher if you're experiencing performance issues.
+			clearTimeout(_timer);
+
+			_timer = setTimeout(function () {
+				__setValueWidth();
+			}, timeout);
 		});
 
 		// Trigger custom event
@@ -645,6 +679,16 @@ ValidForm.prototype.valuesAsHtml = function (blnHideEmpty) {
 			var $objReturn 	= tpl.field();
 			var strValue 	= $field.val();
 
+			// Check if we've got an 'input' triggerfield here
+			$objTargetField = $("#" + __this.id + " input[name='" + strValue + "'], #" + __this.id + " textarea[name='" + strValue + "']");
+			if ($objTargetField.length > 0) {
+				if ($objTargetField.attr("type") == "password") {
+					strValue = "*****";
+				} else {
+					strValue = $objTargetField.val();
+				}
+			}
+
 			if (strValue == "" && blnHideEmpty) {
 				// Do nothing
 				$objReturn = $();
@@ -682,27 +726,34 @@ ValidForm.prototype.valuesAsHtml = function (blnHideEmpty) {
 			}
 		} else {
 			// There is a checked item, continue parsing.
-			$list.find("input:not(legend>label>input):checked").each(function () {
-				var $objListItem 	= tpl.listItem();
-				var $objValue		= tpl.value();
-				var strValue		= $(this).val();
+			var $inputs = $list.find("input:not(legend>label>input):checked");
+			if ($inputs.length > 1) {
+				$inputs.each(function () {
+					var $objListItem 	= tpl.listItem();
+					var $objValue		= tpl.value();
+					var strValue		= $(this).val();
 
-				// Check if we've got an 'input' triggerfield here
-				$objTargetField = $("#" + __this.id + " input[name='" + strValue + "'], #" + __this.id + " textarea[name='" + strValue + "']");
-				if ($objTargetField.length > 0) {
-					if ($objTargetField.attr("type") == "password") {
-						strValue = "*****";
-					} else {
-						strValue = $objTargetField.val();
+					// Check if we've got an 'input' triggerfield here
+					$objTargetField = $("#" + __this.id + " input[name='" + strValue + "'], #" + __this.id + " textarea[name='" + strValue + "']");
+					if ($objTargetField.length > 0) {
+						if ($objTargetField.attr("type") == "password") {
+							strValue = "*****";
+						} else {
+							strValue = $objTargetField.val();
+						}
 					}
-				}
 
-				$objValue.text(strValue);
-				$objValue.appendTo($objListItem);
+					$objValue.text(strValue);
+					$objValue.appendTo($objListItem);
 
 
-				$objListItem.appendTo($objReturn.find("ul"));
-			});
+					$objListItem.appendTo($objReturn.find("ul"));
+				});
+			} else if ($inputs.length == 1) {
+				$objReturn = __this.fieldAsHtml($inputs, blnHideEmpty);
+			} else {
+				// Nothin' up.
+			}
 		}
 
 		// Add label
