@@ -1,12 +1,12 @@
 <?php
 /***************************
  * ValidForm Builder - build valid and secure web forms quickly
- * 
+ *
  * Copyright (c) 2009-2012, Felix Langfeldt <flangfeldt@felix-it.com>.
  * All rights reserved.
- * 
+ *
  * This software is released under the GNU GPL v2 License <http://www.gnu.org/licenses/old-licenses/gpl-2.0.html>
- * 
+ *
  * @package    ValidForm
  * @author     Felix Langfeldt <flangfeldt@felix-it.com>
  * @copyright  2009-2012 Felix Langfeldt <flangfeldt@felix-it.com>
@@ -18,7 +18,7 @@ require_once("class.validform.php");
 
 /**
  * ValidWizard Builder base class
- * 
+ *
  * @package ValidForm
  * @author 	Robin van Baalen <rvanbaalen@felix-it.com>
  * @version Release: 1.0
@@ -30,9 +30,9 @@ class ValidWizard extends ValidForm {
 	protected 	$__previouslabel;
 	protected 	$__nextlabel;
 	private 	$__uniqueid;
-	
+
 	/**
-	 * 
+	 *
 	 * Create an instance of the ValidForm Builder
 	 * @param string|null $name The name and id of the form in the HTML DOM and JavaScript.
 	 * @param string|null $description Desriptive text which is displayed above the form.
@@ -56,7 +56,7 @@ class ValidWizard extends ValidForm {
 
 		return $strReturn;
 	}
-	
+
 	/**
 	 * Check if the form is submitted by validating the value of the hidden
 	 * vf__dispatch field.
@@ -65,29 +65,58 @@ class ValidWizard extends ValidForm {
 	 */
 	public function isSubmitted($blnForce = false) {
 		$blnReturn = FALSE;
-		
+
 		if (ValidForm::get("vf__dispatch") == $this->__name) {
 			//*** Try to retrieve the uniqueId from a REQUEST value.
 			$strUniqueId = ValidWizard::get("vf__uniqueid");
 			if (!empty($strUniqueId)) $this->__setUniqueId($strUniqueId);
-			
+
 			$blnReturn = TRUE;
 		} else if ($blnForce) {
 			$blnReturn = TRUE;
 		}
-		
+
 		return $blnReturn;
 	}
-	
+
+	/**
+	 * Exactly the same as ValidForm->addMultiField. Only this time it's executed from the context of ValidWizard.
+	 *
+	 * @param [type] $label [description]
+	 * @param array  $meta  [description]
+	 */
+	public function addMultiField($label = NULL, $meta = array()) {
+		$objField = new VF_MultiField($label, $meta);
+
+		$objField->setRequiredStyle($this->__requiredstyle);
+
+		//*** Page already defined?
+		$objPage = $this->__elements->getLast("VF_Page");
+		if ($this->__elements->count() == 0 || !is_object($objPage)) {
+			$objPage = $this->addPage();
+		}
+
+		//*** Fieldset already defined?
+		$objFieldset = $objPage->getElements()->getLast("VF_Fieldset");
+		if ($this->__elements->count() == 0 || !is_object($objFieldset)) {
+			$objFieldset = $this->addFieldset();
+		}
+
+		//*** Add field to the fieldset.
+		$objFieldset->addField($objField);
+
+		return $objField;
+	}
+
 	public static function unserialize($strSerialized, $strUniqueId = "") {
 		$objReturn = null;
-		
+
 		$objForm = unserialize($strSerialized);
 		if (get_class($objForm) == "ValidWizard") {
 			$objReturn = $objForm;
 			if (!empty($strUniqueId)) $objReturn->__setUniqueId($strUniqueId);
 		}
-		
+
 		return $objReturn;
 	}
 
@@ -96,7 +125,7 @@ class ValidWizard extends ValidForm {
 
 		// Optionally set a custom first visibile page.
 		$intPage = ($this->__currentpage > 1) ? $this->__currentpage : "";
-		
+
 		$strReturn .= "objForm.setLabel('next', '" . $this->__nextlabel . "');\n";
 		$strReturn .= "objForm.setLabel('previous', '" . $this->__previouslabel . "');\n";
 		$strReturn .= "objForm.initWizard({$intPage});\n" . $strCustomJs;
@@ -120,35 +149,38 @@ class ValidWizard extends ValidForm {
 		$this->__elements->addObject($objPage);
 
 		$this->__pagecount++;
-		
+
 		return $objPage;
 	}
-	
+
 	public function addField($name, $label, $type, $validationRules = array(), $errorHandlers = array(), $meta = array(), $blnJustRender = FALSE) {
 		$objField = ValidForm::renderField($name, $label, $type, $validationRules, $errorHandlers, $meta);
-		
+
 		//*** Fieldset already defined?
 		if ($this->__elements->count() == 0 && !$blnJustRender) {
 			$objPage = $this->addPage();
 		}
-		
+
 		$objField->setRequiredStyle($this->__requiredstyle);
-		
+
 		if (!$blnJustRender) {
 			$objPage = $this->__elements->getLast();
 			$objPage->addField($objField);
 		}
-		
+
 		return $objField;
 	}
-	
+
 	public function addFieldset($label = NULL, $noteHeader = NULL, $noteBody = NULL, $options = array()) {
 		$objFieldSet = new VF_Fieldset($label, $noteHeader, $noteBody, $options);
-		
-		$objPage = $this->__elements->getLast();
+
+		$objPage = $this->__elements->getLast("VF_Page");
+		if (!is_object($objPage)) {
+			$objPage = $this->addPage();
+		}
+
 		$objPage->addField($objFieldSet);
 
-		
 		return $objFieldSet;
 	}
 
@@ -160,13 +192,13 @@ class ValidWizard extends ValidForm {
 				$strHeader = $objPage->getHeader();
 
 				$strPage .= "\n<div id='{$objPage->getId()}'>\n";
-				
+
 				if (!empty($strHeader)) {
 					$strPage .= "<h2>{$strHeader}</h2>\n";
 				}
 
 				$strPageContent = parent::valuesAsHtml($hideEmpty, $objPage->getFields()) . "\n";
-				
+
 				if (trim($strPageContent) !== "") {
 					$strOutput .= $strPage . $strPageContent . "</div>\n";
 				}
@@ -208,7 +240,7 @@ class ValidWizard extends ValidForm {
 	 */
 	public function isValidUntil($strPageId) {
 		$blnReturn = true;
-		
+
 		foreach ($this->__elements as $objPage) {
 			if (!$blnReturn || $objPage->getId() == $strPageId) {
 				break;
@@ -224,15 +256,15 @@ class ValidWizard extends ValidForm {
 
 	public function getInvalidFieldsUntil($strPageId) {
 		$arrReturn = array();
-		
+
 		foreach ($this->__elements as $objPage) {
 			if ($objPage->getId() == $strPageId) {
 				break;
 			}
-		
+
 			if ($objPage->hasFields()) {
-				$objFieldsets = $objPage->getFields();		
-				foreach ($objFieldsets as $objFieldset) {					
+				$objFieldsets = $objPage->getFields();
+				foreach ($objFieldsets as $objFieldset) {
 					foreach ($objFieldset->getFields() as $objField) {
 						if (is_object($objField)) {
 							if ($objField->hasFields()) {
@@ -281,7 +313,7 @@ class ValidWizard extends ValidForm {
 	public function generateId($intLength = 8) {
 		$strChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 		$strReturn = '';
-		
+
 		srand((double)microtime()*1000000);
 
 		for ($i = 1; $i <= $intLength; $i++) {

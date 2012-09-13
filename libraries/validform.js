@@ -516,11 +516,26 @@ ValidForm.prototype.valuesAsHtml = function (blnHideEmpty) {
 		});
 
 		// Clean up afterwards.
+		var __setListWidth = function () {
+			$(".vf__list", $objReturn).each(function () {
+				var $objList 	= $(this);
+				var formWidth 	= $objList.parentsUntil(".validform").parent().width();
+				var labelWidth 	= $objList.find("span").width();
+
+				$objList.find("ul").width(formWidth - labelWidth - 30);
+
+			});
+		}
 		var __setValueWidth = function () {
 			$(".vf__value", $objReturn).each(function () {
 				var $objValue 	= $(this);
 				var formWidth 	= $objValue.parentsUntil(".validform").parent().width();
 				var blnIsMulti	= false;
+
+				// This is a list item, we handle them separately.
+				if ($objValue.parent().is("li")) {
+					return true; // Continue
+				}
 
 				// Get parent object
 				if ($objValue.parent().is(".vf__field")) {
@@ -546,8 +561,10 @@ ValidForm.prototype.valuesAsHtml = function (blnHideEmpty) {
 
 			});
 		}
+
 		// Directly on init
 		__setValueWidth();
+		__setListWidth();
 
 		// And listen for resize events.
 		var _timer;
@@ -557,6 +574,7 @@ ValidForm.prototype.valuesAsHtml = function (blnHideEmpty) {
 
 			_timer = setTimeout(function () {
 				__setValueWidth();
+				__setListWidth();
 			}, timeout);
 		});
 
@@ -577,7 +595,10 @@ ValidForm.prototype.valuesAsHtml = function (blnHideEmpty) {
 		}
 
 		$page.find("> fieldset:not(.vf__list, .vf__area)").each (function () {
-			$objReturn.append(__this.fieldsetAsHtml($(this), blnHideEmpty));
+			var $fieldset = __this.fieldsetAsHtml($(this), blnHideEmpty);
+			if (!$fieldset.is(":empty")) {
+				$objReturn.append($fieldset);
+			}
 		});
 
 		if ($objReturn.find("strong.vf__value").length <= 0 && blnHideEmpty) {
@@ -596,7 +617,10 @@ ValidForm.prototype.valuesAsHtml = function (blnHideEmpty) {
 		if ($subFieldsets.length > 0) {
 			$subFieldsets.each(function () {
 				// Parse sub-fieldset such as (active) area's
-				$objReturn.append(__this.fieldsetAsHtml($(this), blnHideEmpty));
+				var $fieldset = __this.fieldsetAsHtml($(this), blnHideEmpty);
+				if (!$fieldset.is(":empty")) {
+					$objReturn.append($fieldset);
+				}
 			});
 		} else {
 			// Parse the fields inside the fieldset
