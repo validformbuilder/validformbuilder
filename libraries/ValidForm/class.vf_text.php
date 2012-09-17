@@ -85,6 +85,9 @@ class VF_Text extends VF_Element {
 			$strClass = ($this->__validator->getRequired() && $intCount == 0) ? "vf__required" : "vf__optional";
 
 			$strClass = ($blnError) ? $strClass . " vf__error" : $strClass;
+			$strClass = ($this->hasTrigger()) ? $strClass . " vf__targetfield" : $strClass;
+			$strClass = (!$blnLabel) ? $strClass . " vf__nolabel" : $strClass;
+
 			$strOutput = "<div class=\"{$strClass}\">\n";
 
 			if ($blnError) {

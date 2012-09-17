@@ -35,6 +35,9 @@ class VF_Password extends VF_Element {
 
 			$strClass = ($this->__validator->getRequired()) ? "vf__required" : "vf__optional";
 			$strClass = ($blnError) ? $strClass . " vf__error" : $strClass;
+			$strClass = ($this->hasTrigger()) ? $strClass . " vf__targetfield" : $strClass;
+			$strClass = (!$blnLabel) ? $strClass . " vf__nolabel" : $strClass;
+
 			$strOutput = "<div class=\"{$strClass}\">\n";
 
 			if ($blnError) $strOutput .= "<p class=\"vf__error\">{$this->__validator->getError()}</p>";

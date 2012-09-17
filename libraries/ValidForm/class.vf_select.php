@@ -62,6 +62,9 @@ class VF_Select extends VF_Element {
 			$strClass = ($this->__validator->getRequired() && $intCount == 0) ? "vf__required" : "vf__optional";
 
 			$strClass = ($blnError) ? $strClass . " vf__error" : $strClass;
+			$strClass = ($this->hasTrigger()) ? $strClass . " vf__targetfield" : $strClass;
+			$strClass = (!$blnLabel) ? $strClass . " vf__nolabel" : $strClass;
+
 			$strOutput .= "<div class=\"{$strClass}\">\n";
 
 			if ($blnError) {
@@ -96,13 +99,12 @@ class VF_Select extends VF_Element {
 
 		$strOutput .= "</select>\n";
 
-		if (is_object($this->__targetfield)) {
-			$strOutput .= $this->__targetfield->toHtml($submitted, $blnSimpleLayout, $blnLabel, $blnDisplayErrors, $intCount);
-		}
-
-
 		if (!empty($this->__tip)) $strOutput .= "<small class=\"vf__tip\">{$this->__tip}</small>\n";
 		$strOutput .= "</div>\n";
+
+		if (is_object($this->__targetfield)) {
+			$strOutput .= $this->__targetfield->toHtml($submitted, $blnSimpleLayout, false, $blnDisplayErrors, $intCount);
+		}
 
 		if (!$blnSimpleLayout && $intCount == $this->getDynamicCount()) {
 			$strOutput .= $this->__addDynamicHtml();
