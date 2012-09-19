@@ -42,7 +42,7 @@ class VF_Group extends VF_Element {
 		$strClass = ($this->hasTrigger()) ? $strClass . " vf__targetfield" : $strClass;
 		$strClass = (!$blnLabel) ? $strClass . " vf__nolabel" : $strClass;
 
-		$strOutput = "<div class=\"{$strClass}\">\n";
+		$strOutput = "<div class=\"{$strClass}\" {$this->__getMetaString()}>\n";
 
 		if ($blnError) $strOutput .= "<p class=\"vf__error\">{$this->__validator->getError()}</p>";
 
@@ -152,6 +152,21 @@ class VF_Group extends VF_Element {
 
 			$this->__fields->addObject($objTarget);
 		}
+	}
+
+	protected function __getMetaString() {
+		$strOutput = "";
+
+		// Create a dummy element to get the reserved meta array.
+		$objDummy = new VF_Element("dummy", VF_TEXT);
+
+		foreach ($this->__meta as $key => $value) {
+			if (!in_array($key, $objDummy->getReservedMeta()) && !empty($value)) {
+				$strOutput .= " {$key}=\"{$value}\"";
+			}
+		}
+
+		return $strOutput;
 	}
 
 }

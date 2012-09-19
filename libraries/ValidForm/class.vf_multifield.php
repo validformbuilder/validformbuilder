@@ -1,25 +1,25 @@
 <?php
 /***************************
  * ValidForm Builder - build valid and secure web forms quickly
- * 
+ *
  * Copyright (c) 2009-2012, Felix Langfeldt <flangfeldt@felix-it.com>.
  * All rights reserved.
- * 
+ *
  * This software is released under the GNU GPL v2 License <http://www.gnu.org/licenses/old-licenses/gpl-2.0.html>
- * 
+ *
  * @package    ValidForm
  * @author     Felix Langfeldt <flangfeldt@felix-it.com>
  * @copyright  2009-2012 Felix Langfeldt <flangfeldt@felix-it.com>
  * @license    http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU GPL v2
  * @link       http://code.google.com/p/validformbuilder/
  ***************************/
-  
+
 require_once('class.classdynamic.php');
 
 /**
- * 
+ *
  * MultiField Class
- * 
+ *
  * @package ValidForm
  * @author Felix Langfeldt
  * @version Release: 0.2.1
@@ -32,17 +32,17 @@ class VF_MultiField extends ClassDynamic {
 	protected $__dynamicLabel;
 	protected $__requiredstyle;
 	protected $__fields;
-	
+
 	public function __construct($label, $meta = array()) {
 		$this->__label = $label;
 		$this->__meta = $meta;
-		
+
 		$this->__fields = new VF_Collection();
 
 		$this->__dynamic = (array_key_exists("dynamic", $meta)) ? $meta["dynamic"] : NULL;
 		$this->__dynamicLabel = (array_key_exists("dynamicLabel", $meta)) ? $meta["dynamicLabel"] : NULL;
 	}
-	
+
 	public function addField($name, $type, $validationRules = array(), $errorHandlers = array(), $meta = array()) {
 		// Creating dynamic fields inside a multifield is not supported.
 		if (array_key_exists("dynamic", $meta)) unset($meta["dynamic"]);
@@ -50,7 +50,7 @@ class VF_MultiField extends ClassDynamic {
 
 		// Render the field and add it to the multifield field collection.
 		$objField = ValidForm::renderField($name, "", $type, $validationRules, $errorHandlers, $meta);
-		
+
 		$this->__fields->addObject($objField);
 
 		if ($this->__dynamic) {
@@ -59,7 +59,7 @@ class VF_MultiField extends ClassDynamic {
 
 			$objField->setDynamicCounter($objHiddenField);
 		}
-		
+
 		return $objField;
 	}
 
@@ -77,22 +77,22 @@ class VF_MultiField extends ClassDynamic {
 
 		return $strOutput;
 	}
-	
+
 	public function __toHtml($submitted = FALSE, $blnSimpleLayout = FALSE, $blnLabel = true, $blnDisplayError = true, $intCount = 0) {
 		$blnRequired = FALSE;
 		$blnError = FALSE;
 		$strError = "";
 		$strId = "";
-		
+
 		foreach ($this->__fields as $field) {
 			if (empty($strId)) {
 				$strId = ($intCount == 0) ? $field->id : $field->id . "_" . $intCount;
 			}
-			
+
 			if ($field->getValidator()->getRequired()) {
 				$blnRequired = TRUE;
 			}
-			
+
 			if ($submitted && !$field->getValidator()->validate($intCount) && $blnDisplayError) {
 				$blnError = TRUE;
 				$strError .= "<p class=\"vf__error\">{$field->getValidator()->getError($intCount)}</p>";
@@ -101,16 +101,16 @@ class VF_MultiField extends ClassDynamic {
 
 		//*** We asume that all dynamic fields greater than 0 are never required.
 		$strClass = ($blnRequired && $intCount == 0) ? "vf__required" : "vf__optional";
-		
-		$strClass = (array_key_exists("class", $this->__meta)) ? $strClass . " " . $this->__meta["class"] : $strClass;
-		$strClass = ($blnError) ? $strClass . " vf__error" : $strClass;
-		$strOutput = "<div class=\"vf__multifield {$strClass}\">\n";
-		
+
+		$strClass 	= (array_key_exists("class", $this->__meta)) ? $strClass . " " . $this->__meta["class"] : $strClass;
+		$strClass 	= ($blnError) ? $strClass . " vf__error" : $strClass;
+		$strOutput 	= "<div class=\"vf__multifield {$strClass}\" {$this->__getMetaString()}>\n";
+
 		if ($blnError) $strOutput .= $strError;
-				
+
 		$strLabel = (!empty($this->__requiredstyle) && $blnRequired) ? sprintf($this->__requiredstyle, $this->__label) : $this->__label;
 		if(!empty($this->__label)) $strOutput .= "<label for=\"{$strId}\">{$strLabel}</label>\n";
-		
+
 		$arrFields = array();
 		foreach ($this->__fields as $field) {
 			// Skip the hidden dynamic counter fields.
@@ -119,17 +119,17 @@ class VF_MultiField extends ClassDynamic {
 			}
 
 			$strOutput .= $field->__toHtml($submitted, true, $blnLabel, $blnDisplayError, $intCount);
-			
+
 			$arrFields[$field->getId()] = $field->getName();
 		}
-		
+
 		if (!empty($this->__tip)) $strOutput .= "<small class=\"vf__tip\">{$this->__tip}</small>\n";
 		$strOutput .= "</div>\n";
-		
+
 		if ($intCount == $this->getDynamicCount()) {
 			$strOutput .= $this->__addDynamicHtml();
 		}
-		
+
 		return $strOutput;
 	}
 
@@ -154,17 +154,17 @@ class VF_MultiField extends ClassDynamic {
 
 		return $strReturn;
 	}
-	
+
 	public function toJS() {
 		$strReturn = "";
-		
+
 		foreach ($this->__fields as $field) {
 			$strReturn .= $field->toJS($this->__dynamic);
 		}
-		
+
 		return $strReturn;
 	}
-	
+
 	public function isValid() {
 		$intDynamicCount = $this->getDynamicCount();
 
@@ -175,21 +175,21 @@ class VF_MultiField extends ClassDynamic {
 				break;
 			}
 		}
-		
+
 		return $blnReturn;
 	}
-	
+
 	public function isDynamic() {
 		return ($this->__dynamic) ? true : false;
 	}
-	
+
 	public function getDynamicCount() {
 		$intReturn = 0;
-		
+
 		if ($this->__dynamic) {
 			$objSubFields = $this->getFields();
 			$objSubField = ($objSubFields->count() > 0) ? $objSubFields->getFirst() : NULL;
-			
+
 			if (is_object($objSubField)) {
 				$intReturn = $objSubField->getDynamicCounter()->getValidator()->getValue();
 			}
@@ -197,31 +197,93 @@ class VF_MultiField extends ClassDynamic {
 
 		return $intReturn;
 	}
-	
+
 	public function getFields() {
 		return $this->__fields;
 	}
-	
+
 	public function getValue() {
 		return TRUE;
 	}
-	
+
 	public function getName() {
 		return null;
 	}
-	
+
 	public function getId() {
 		return null;
 	}
-	
+
 	public function getType() {
 		return 0;
 	}
-	
+
 	public function hasFields() {
 		return ($this->__fields->count() > 0) ? TRUE : FALSE;
 	}
-	
+
+	/**
+	 * Store data in the current object. This data will not be visibile in any output
+	 * and will only be used for internal purposes. For example, you can store some custom
+	 * data from your CMS or an other library in a field object, for later use.
+	 * Note: Using this method will overwrite any previously set data with the same key!
+	 *
+	 * @param [string] 	$strKey   	The key for this storage
+	 * @param [mixed] 	$varValue 	The value to store
+	 * @return	[boolean] 			True if set successful, false if not.
+	 */
+	public function setData($strKey = null, $varValue = null) {
+		$varReturn = false;
+		$this->__meta["data"] = (isset($this->__meta["data"])) ? $this->__meta["data"] : array();
+
+		if (isset($this->__meta["data"])) {
+			if (!is_null($strKey) && !is_null($varValue)) {
+				$this->__meta["data"][$strKey] = $varValue;
+			}
+		}
+
+		return isset($this->__meta["data"][$strKey]);
+	}
+
+	/**
+	 * Get a value from the internal data array.
+	 *
+	 * @param  [string] $key The key of the data attribute to return
+	 * @return [mixed]       If a key is provided, return it's value. If no key
+	 *                       provided, return the whole data array. If anything
+	 *                       is not set or incorrect, return false.
+	 */
+	public function getData($key = null) {
+		$varReturn = false;
+
+		if (isset($this->__meta["data"])) {
+			if ($key == null) {
+				$varReturn = $this->__meta["data"];
+			} else {
+				if (isset($this->__meta["data"][$key])) {
+					$varReturn = $this->__meta["data"][$key];
+				}
+			}
+		}
+
+		return $varReturn;
+	}
+
+	protected function __getMetaString() {
+		$strOutput = "";
+
+		// Create a dummy element to get the reserved meta array.
+		$objDummy = new VF_Element("dummy", VF_TEXT);
+
+		foreach ($this->__meta as $key => $value) {
+			if (!in_array($key, $objDummy->getReservedMeta()) && !empty($value)) {
+				$strOutput .= " {$key}=\"{$value}\"";
+			}
+		}
+
+		return $strOutput;
+	}
+
 	private function __validate($intCount = null) {
 		$blnReturn = TRUE;
 		foreach ($this->__fields as $field) {
@@ -230,10 +292,10 @@ class VF_MultiField extends ClassDynamic {
 				break;
 			}
 		}
-		
+
 		return $blnReturn;
 	}
-	
+
 }
 
 ?>

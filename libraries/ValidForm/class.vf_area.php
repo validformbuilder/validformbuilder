@@ -272,6 +272,53 @@ class VF_Area extends ClassDynamic {
 		return ($this->__fields->count() > 0) ? TRUE : FALSE;
 	}
 
+	/**
+	 * Store data in the current object. This data will not be visibile in any output
+	 * and will only be used for internal purposes. For example, you can store some custom
+	 * data from your CMS or an other library in a field object, for later use.
+	 * Note: Using this method will overwrite any previously set data with the same key!
+	 *
+	 * @param [string] 	$strKey   	The key for this storage
+	 * @param [mixed] 	$varValue 	The value to store
+	 * @return	[boolean] 			True if set successful, false if not.
+	 */
+	public function setData($strKey = null, $varValue = null) {
+		$varReturn = false;
+		$this->__meta["data"] = (isset($this->__meta["data"])) ? $this->__meta["data"] : array();
+
+		if (isset($this->__meta["data"])) {
+			if (!is_null($strKey) && !is_null($varValue)) {
+				$this->__meta["data"][$strKey] = $varValue;
+			}
+		}
+
+		return isset($this->__meta["data"][$strKey]);
+	}
+
+	/**
+	 * Get a value from the internal data array.
+	 *
+	 * @param  [string] $key The key of the data attribute to return
+	 * @return [mixed]       If a key is provided, return it's value. If no key
+	 *                       provided, return the whole data array. If anything
+	 *                       is not set or incorrect, return false.
+	 */
+	public function getData($key = null) {
+		$varReturn = false;
+
+		if (isset($this->__meta["data"])) {
+			if ($key == null) {
+				$varReturn = $this->__meta["data"];
+			} else {
+				if (isset($this->__meta["data"][$key])) {
+					$varReturn = $this->__meta["data"][$key];
+				}
+			}
+		}
+
+		return $varReturn;
+	}
+
 	private function __validate($intCount = null) {
 		// $value = ValidForm::get($this->__name);
 		$blnReturn = TRUE;
