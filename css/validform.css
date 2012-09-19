@@ -1,14 +1,14 @@
 /***************************
  * ValidForm Builder - build valid and secure web forms quickly
- * 
+ *
  * Copyright (c) 2009-2012, Felix iT B.V. <info@felix-it.com>.
  * All rights reserved.
- 
- * ValidForm standard CSS. 
+
+ * ValidForm standard CSS.
  * Do not modify directly! You can overrule the styles in a separate file.
- * 
+ *
  * This software is released under the GNU GPL v2 License <http://www.gnu.org/licenses/old-licenses/gpl-2.0.html>
- * 
+ *
  * @package    ValidForm
  * @author     Felix Langfeldt <flangfeldt@felix-it.com>
  * @author     Robin van Baalen <rvanbaalen@felix-it.com>
@@ -17,7 +17,7 @@
  * @link       http://code.google.com/p/validformbuilder/
  * @version	   Release: 0.2.1
  ***************************/
- 
+
 /*A little reset rule*/
 form.validform,
 form.validform * {
@@ -29,22 +29,22 @@ form.validform * {
 form.validform .vf__cf:before,
 form.validform .vf__cf:after,
 form.vf__cf:before,
-form.vf__cf:after 
+form.vf__cf:after
 {
     content: " ";
     display: table;
 }
 form.validform .vf__cf:after,
-form.vf__cf:after 
+form.vf__cf:after
 {
     clear: both;
 }
 form.validform .vf__cf,
-form.vf__cf 
+form.vf__cf
 {
     *zoom: 1;
 }
- 
+
 form.validform {
 	margin: 0;
 	padding: 0;
@@ -56,7 +56,7 @@ form.validform fieldset {
 }
 
 form.validform h3,
-form.validform legend 
+form.validform legend
 {
 	font: bold 14px Arial, Helvetica, sans-serif;
 	color: #666;
@@ -231,7 +231,7 @@ textarea.vf__text
 	font: normal 12px Arial, Helvetica, sans-serif;
 	color: #666;
 	padding: 2px;
-	width: 147px;  
+	width: 147px;
 	background-color: #fff;
 	border: 1px solid #ccc;
 }
@@ -283,7 +283,7 @@ input.vf__previous {
 
 select.vf__one {
 	width: 240px;
-	margin: 0; 
+	margin: 0;
 }
 
 select.vf__multiple {
@@ -292,7 +292,7 @@ select.vf__multiple {
 	font: normal 12px Arial, Helvetica, sans-serif;
 }
 
-input.vf__checkbox, 
+input.vf__checkbox,
 input.vf__radiobutton
 {
 	display: inline;
@@ -346,20 +346,46 @@ form.validform div.vf__multifield div.vf__error {
 }
 
 form.validform div.vf__multifield .vf__error input,
-form.validform div.vf__multifield .vf__error select 
+form.validform div.vf__multifield .vf__error select
 {
 	border: 1px solid #f00;
 }
 
 form.validform div.vf__dynamic {
-	margin: 0 0 15px 148px;	
+	margin: 0 0 15px 148px;
 }
 
 form.validform div.vf__dynamic a {
-	font: normal 12px Arial, Helvetica, sans-serif;	
+	font: normal 12px Arial, Helvetica, sans-serif;
 }
 
 form.validform div.vf__dynamic a.vf__disabled {
 	color: #aaa;
 	cursor: default;
+}
+
+/************************************************************************
+ * Confirm page styling
+ *************************************************************************/
+
+/* prevent earlier defined styling */
+form.validform div.vf__confirm * {
+	padding: 0;
+	margin: 0;
+	border: none;
+}
+form.validform div.vf__confirm span.vf__label {
+	width: 130px;
+	float: left;
+}
+form.validform div.vf__list > ul,
+form.validform div.vf__confirm div.vf__multifieldvalue,
+form.validform div.vf__field > strong.vf__value {
+	float: right !important;
+}
+form.validform div.vf__multifielditem strong.vf__value {
+	padding-right: 5px;
+}
+form.validform div.vf__confirm div.vf__list > ul {
+	list-style: none;
 }

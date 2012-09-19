@@ -49,12 +49,12 @@ class VF_Navigation extends ClassDynamic {
 		return $objString;
 	}
 	
-	public function toHtml($submitted = FALSE) {
+	public function toHtml($submitted = FALSE, $blnSimpleLayout = FALSE, $blnLabel = true, $blnDisplayError = true) {
 		$strStyle = (isset($this->__meta["style"])) ? " style=\"{$this->__meta['style']}\"" : "";
 		$strReturn = "<div class=\"vf__navigation vf__cf\"{$strStyle}>\n";
 		
 		foreach ($this->__fields as $field) {
-			$strReturn .= $field->toHtml($submitted);
+			$strReturn .= $field->toHtml($submitted, $blnSimpleLayout, $blnLabel, $blnDisplayError);
 		}
 		
 		$strReturn .= "</div>\n";

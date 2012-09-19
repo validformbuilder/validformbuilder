@@ -48,19 +48,29 @@ class VF_GroupField extends VF_Element {
 		$this->__labelmeta = $labelMeta;
 	}
 	
-	public function toHtml($value = NULL, $submitted = FALSE) {
-		if (is_array($value)) {
-			foreach ($value as $valueItem) {
-				if ($valueItem == $this->__value) {
-					$strChecked = " checked=\"checked\"";
-					break;
-				} else {
-					$strChecked = "";
-				}
+	public function toHtml($value = NULL, $submitted = FALSE, $objTarget = null) {
+		$strChecked = "";
+		
+		if (is_object($objTarget) && $objTarget->getName() == $this->__value) {
+			//*** This is a checkbox for a targetfield.
+			if (($objTarget->getValue() !== "" && !is_null($objTarget->getValue())) 
+					|| ($this->__checked && !$submitted)) {
+				$strChecked = " checked=\"checked\"";
 			}
 		} else {
-			$strChecked = ($this->__checked && is_null($value) && !$submitted) ? " checked=\"checked\"" : "";
-			$strChecked = ($value == $this->__value) ? " checked=\"checked\"" : $strChecked;
+			if (is_array($value)) {
+				foreach ($value as $valueItem) {
+					if ($valueItem == $this->__value) {
+						$strChecked = " checked=\"checked\"";
+						break;
+					} else {
+						$strChecked = "";
+					}
+				}
+			} else {
+				$strChecked = ($this->__checked && is_null($value) && !$submitted) ? " checked=\"checked\"" : "";
+				$strChecked = ($value == $this->__value) ? " checked=\"checked\"" : $strChecked;
+			}
 		}
 				
 		$strOutput = "<label for=\"{$this->__id}\"{$this->__getLabelMetaString()}>\n";

@@ -27,8 +27,8 @@ require_once('class.vf_element.php');
  */
 class VF_Checkbox extends VF_Element {
 
-	public function toHtml($submitted = FALSE, $blnSimpleLayout = FALSE) {
-		$blnError = ($submitted && !$this->__validator->validate()) ? TRUE : FALSE;
+	public function toHtml($submitted = FALSE, $blnSimpleLayout = FALSE, $blnLabel = true, $blnDisplayErrors = true) {
+		$blnError = ($submitted && !$this->__validator->validate() && $blnDisplayErrors) ? TRUE : FALSE;
 		
 		$strClass = ($this->__validator->getRequired()) ? "vf__required" : "vf__optional";
 		$strClass = ($blnError) ? $strClass . " vf__error" : $strClass;		

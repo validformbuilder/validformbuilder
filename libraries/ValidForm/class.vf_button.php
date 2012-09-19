@@ -39,7 +39,7 @@ class VF_Button extends ClassDynamic {
 		$this->__disabled = (isset($meta["disabled"])) ? $meta["disabled"] : "";
 	}
 
-	public function toHtml($submitted = FALSE) {					
+	public function toHtml($submitted = FALSE, $blnSimpleLayout = FALSE, $blnLabel = true, $blnDisplayErrors = true) {					
 		$strDisabled = (!empty($this->__disabled)) ? "disabled=\"disabled\"" : ""; 	
 		$strReturn = "<input type=\"{$this->__type}\" value=\"{$this->__label}\" class=\"{$this->__class}\" $strDisabled />\n";
 				

@@ -1,11 +1,11 @@
 /***************************
  * ValidForm Builder - build valid and secure web forms quickly
- * 
+ *
  * Copyright (c) 2009-2012, Felix Langfeldt <flangfeldt@felix-it.com>.
  * All rights reserved.
- * 
+ *
  * This software is released under the GNU GPL v2 License <http://www.gnu.org/licenses/old-licenses/gpl-2.0.html>
- * 
+ *
  * @package    ValidForm
  * @author     Felix Langfeldt <flangfeldt@felix-it.com>
  * @copyright  2009-2012 Felix Langfeldt <flangfeldt@felix-it.com>
@@ -17,11 +17,11 @@
 function ValidFormValidator(strFormId) {
 	/****************************/
 	/* ValidFormValidator Class ******************************************/
-	/* 
-	/* Display class used to push alerts regarding form validation 
+	/*
+	/* Display class used to push alerts regarding form validation
 	/* to the browser.
 	/*********************************************************************/
-	
+
 	this.id 				= strFormId;
 	this.mainAlert			= "";
 }
@@ -29,11 +29,11 @@ function ValidFormValidator(strFormId) {
 function ValidFormFieldValidator(strElementId, strElementName) {
 	/****************************/
 	/* ValidFormValidator Class ******************************************/
-	/* 
-	/* Display class used to push alerts regarding form validation 
+	/*
+	/* Display class used to push alerts regarding form validation
 	/* to the browser.
 	/*********************************************************************/
-	
+
 	this.id 				= strElementId;
 	this.name 				= strElementName;
 	this.check				= null;
@@ -51,10 +51,10 @@ function ValidFormFieldValidator(strElementId, strElementName) {
 function ValidFormElement(strFormId, strElementName, strElementId, strValidation) {
 	/**************************/
 	/* ValidFormElement Class ********************************************/
-	/* 
+	/*
 	/* Holds an element that can be validated.
 	/*********************************************************************/
-	
+
 	this.formId					= strFormId;
 	this.id 					= strElementId;
 	this.name 					= strElementName;
@@ -63,22 +63,22 @@ function ValidFormElement(strFormId, strElementName, strElementId, strValidation
 	this.validator.required		= false;
 	this.validator.minLength	= null;
 	this.validator.maxLength	= null;
-	
+
 	if (ValidFormElement.arguments.length > 4) {
 		this.validator.required = ValidFormElement.arguments[4];
 	}
-	
+
 	if (ValidFormElement.arguments.length > 5) {
 		this.validator.maxLength = ValidFormElement.arguments[5];
 	}
-	
+
 	if (ValidFormElement.arguments.length > 6) {
 		this.validator.minLength = ValidFormElement.arguments[6];
 	}
-	
+
 	if (ValidFormElement.arguments.length > 7) {
 		this.validator.hint = ValidFormElement.arguments[7];
-		
+
 		var __this = this;
 		if (this.validator.hint != "") {
 			jQuery("#" + this.id).bind("focus", function(){
@@ -92,23 +92,23 @@ function ValidFormElement(strFormId, strElementName, strElementId, strValidation
 			});
 		}
 	}
-	
+
 	if (ValidFormElement.arguments.length > 8) {
 		this.validator.typeError = ValidFormElement.arguments[8];
 	}
-	
+
 	if (ValidFormElement.arguments.length > 9) {
 		this.validator.requiredError = ValidFormElement.arguments[9];
 	}
-	
+
 	if (ValidFormElement.arguments.length > 10) {
 		this.validator.hintError = ValidFormElement.arguments[10];
 	}
-	
+
 	if (ValidFormElement.arguments.length > 11) {
 		this.validator.minLengthError = ValidFormElement.arguments[11];
 	}
-	
+
 	if (ValidFormElement.arguments.length > 12) {
 		this.validator.maxLengthError = ValidFormElement.arguments[12];
 	}
@@ -130,11 +130,11 @@ function ValidForm(strFormId, strMainAlert, blnAllowPreviousPage) {
 	this.events = [];
 	this.cachedEvents = [];
 	this.customEvents = [
-		"beforeSubmit", 
-		"beforeNextPage", 
-		"afterNextPage", 
-		"beforePreviousPage", 
-		"afterPreviousPage", 
+		"beforeSubmit",
+		"beforeNextPage",
+		"afterNextPage",
+		"beforePreviousPage",
+		"afterPreviousPage",
 		"beforeAddPreviousButton",
 		"afterAddPreviousButton",
 		"beforeShowPage",
@@ -155,16 +155,59 @@ function ValidForm(strFormId, strMainAlert, blnAllowPreviousPage) {
 }
 
 /**
+ * Parse field errors from javascript object as such:
+ *
+ * [
+ * 		{fieldName: "Error message here"},
+ * 		{fieldName: "Error message here"},
+ * 		.... etc.
+ * ]
+ *
+ * This enables us to push validation errors from ajax return objects.
+ *
+ * @param  {object} objFields The fields object which contains fieldname-error pairs
+ *
+ */
+ValidForm.prototype.showAlerts = function (objFields) {
+	var __this = this;
+	try {
+		if ($(objFields).length > 0) {
+			$(objFields).each(function () {
+				var objFieldError = this;
+
+				for (var fieldName in objFieldError) {
+					if (objFieldError.hasOwnProperty(fieldName)) {
+						var objField = __this.getElement(fieldName);
+
+						if (objField !== null) {
+							// Field found in current form
+							var objValidator = objField.validator;
+
+							objValidator.removeAlert();
+							objValidator.showAlert(objFieldError[fieldName]);
+						}
+					}
+				}
+			});
+
+			$("#" + __this.id).trigger("VF_ShowAlerts", [{ValidForm: __this, invalidFields: objFields}]);
+		}
+	} catch (e) {
+		try {
+			console.error("Show alerts failed: ", e.message, e); // Log error
+		} catch (e) {} // Or die trying
+	}
+}
+
+/**
  * Initialize ValidForm Builder client side after all elements are added to the collection.
  */
 ValidForm.prototype.init = function() {
 	var __this = this;
 
-	
-
 	// Handle disabled elements and make sure all sub-elements are disabled as well.
 	this.traverseDisabledElements();
-	
+
 	// This is where the magic happens: onSubmit; validate form.
 	jQuery("#" + this.id).bind("submit", function(){
 		jQuery("#" + this.id).trigger("VF_BeforeSubmit", [{ValidForm: __this}]);
@@ -173,14 +216,14 @@ ValidForm.prototype.init = function() {
 		}
 
 		if (__this.pages.length > 1) {
-			// Validation has been done on each page individually. 
+			// Validation has been done on each page individually.
 			// No need to re-validate here.
 			return true;
 		} else {
 			return __this.validate();
 		}
 	});
-	
+
 	// Dynamic duplication logic.
 	this.dynamicDuplication();
 };
@@ -190,7 +233,7 @@ ValidForm.prototype.init = function() {
  */
 ValidForm.prototype.initWizard = function (intPageIndex) {
 	this.currentPage = jQuery("#" + this.id + " .vf__page:first");
-	
+
 	if (typeof intPageIndex !== "undefined") {
 		var $objPage = jQuery("#" + this.id + " .vf__page:eq(" + (parseInt(intPageIndex) - 1) + ")");
 
@@ -200,9 +243,11 @@ ValidForm.prototype.initWizard = function (intPageIndex) {
 		if (typeof _hash == "object") {
 			_hash.set(this.hashPrefix, intPageIndex);
 		}
-		
+
 		this.showPage(this.currentPage);
 	}
+
+	this.addConfirmPage();
 
 	// Get the next & previous labels and set them on all page navigation elements.
 	for (var key in this.labels) {
@@ -219,6 +264,11 @@ ValidForm.prototype.initWizard = function (intPageIndex) {
 
 	this.hashChange();
 };
+
+ValidForm.prototype.addConfirmPage = function () {
+	$("#" + this.pages[this.pages.length - 1]).after("<div class='vf__page' id='vf_confirm_" + this.id + "'></div>");
+	this.addPage("vf_confirm_" + this.id);
+}
 
 ValidForm.prototype.setLabel = function (key, value) {
 	if (typeof value !== "undefined") {
@@ -244,7 +294,7 @@ ValidForm.prototype.hashChange = function () {
 			// If there are any, show the first page with errors.
 			__this.showFirstError();
 
-			// If the page set by a hash is valid and it's index is within 
+			// If the page set by a hash is valid and it's index is within
 			// the maximum number of pages, show that page and set this.currentPage.
 			if (pageIndex <= __this.pages.length && valid) {
 				var $newPage = jQuery("#" + __this.pages[pageIndex - 1]);
@@ -284,12 +334,9 @@ ValidForm.prototype.showFirstError = function () {
 	}
 };
 
-ValidForm.prototype.addPage = function (strPageId, blnIsOverview) {
+ValidForm.prototype.addPage = function (strPageId) {
 	var __this = this;
 	var $page = jQuery("#" + strPageId);
-
-	// Set the data attribute if this is an overview page.
-	$page.data("vf__overview", (blnIsOverview) ? blnIsOverview : false);
 
 	// Add page to the pages collection
 	this.pages.push(strPageId);
@@ -306,7 +353,8 @@ ValidForm.prototype.addPage = function (strPageId, blnIsOverview) {
 	}
 
 	if (this.pages.length > 1) {
-		this.addPreviousButton(strPageId);
+		var blnIsConfirmPage = (strPageId == "vf_confirm_" + this.id);
+		this.addPreviousButton(strPageId, blnIsConfirmPage);
 	}
 
 	//*** Due to incomplete functionality, this is temporarily disabled. ***//
@@ -324,7 +372,7 @@ ValidForm.prototype.addPage = function (strPageId, blnIsOverview) {
 	// });
 };
 
-ValidForm.prototype.addPreviousButton = function (strPageId) {
+ValidForm.prototype.addPreviousButton = function (strPageId, blnIsConfirmPage) {
 	var __this		= this;
 
 	//*** Call custom event if set.
@@ -334,9 +382,9 @@ ValidForm.prototype.addPreviousButton = function (strPageId) {
 	}
 
 	var $page 		= jQuery("#" + strPageId);
-	
+
 	var $pagenav 	= $page.find(".vf__pagenavigation");
-	var $nav 		= ($pagenav.length > 0) ? $pagenav : $page.find(".vf__navigation");
+	var $nav 		= ($pagenav.length > 0 && !blnIsConfirmPage) ? $pagenav : $("#" + this.id).find(".vf__navigation");
 
 	$nav.append(jQuery("<a href='#' id='previous_" + strPageId + "' class='vf__button vf__previous'></a>"));
 
@@ -374,30 +422,444 @@ ValidForm.prototype.nextPage = function () {
 	}
 
 	if (this.validate("#" + this.currentPage.attr("id"))) {
-		if (this.isLastPage()) {
-			jQuery("#" + this.id).trigger("submit");
-		} else {
-			this.currentPage.hide();
+		if (this.nextIsLast()) {
+			this.valuesAsHtml(true);
+		}
 
-			// Set the next page as the new current page.
-			this.currentPage = this.currentPage.next(".vf__page");
-			this.showPage(this.currentPage);
+		this.currentPage.hide();
 
-			// Try to update the current hash if hash-based navigation is enabled
-			if (typeof _hash == "object" && typeof _hash.set == "function") {
-				_hash.set(this.hashPrefix, jQuery("#" + this.id + " .vf__page").index(this.currentPage) + 1);
-			}
+		// Set the next page as the new current page.
+		this.currentPage = this.currentPage.next(".vf__page");
+		this.showPage(this.currentPage);
 
-			jQuery("#" + this.id).trigger("VF_AfterNextPage", [{ValidForm: this}]);
-			if (typeof this.events.afterNextPage == "function") {
-				this.events.afterNextPage(this);
-			}
+		// Try to update the current hash if hash-based navigation is enabled
+		if (typeof _hash == "object" && typeof _hash.set == "function") {
+			_hash.set(this.hashPrefix, jQuery("#" + this.id + " .vf__page").index(this.currentPage) + 1);
+		}
+
+		jQuery("#" + this.id).trigger("VF_AfterNextPage", [{ValidForm: this}]);
+		if (typeof this.events.afterNextPage == "function") {
+			this.events.afterNextPage(this);
 		}
 	}
 };
 
-ValidForm.prototype.isLastPage = function () {
-	var index = (jQuery("#" + this.id + " .vf__page").index(this.currentPage) + 1);
+ValidForm.prototype.valuesAsHtml = function (blnHideEmpty) {
+	var __this = this;
+
+	// 'Constantes'
+	var VF_List 		= 1;
+	var VF_MultiField 	= 2;
+
+	// Set default value on hideEmpty
+	blnHideEmpty = (typeof blnHideEmpty == "undefined") ? false : true;
+
+	// Tempaltes used for parsing
+	var tpl = {
+		wrapper: function () {
+			return $("#vf_confirm_" + __this.id).addClass("vf__confirm");
+		},
+		page: function () {
+			return $("<div class='vf__overviewpage vf__cf'></div>");
+		},
+		pageLabel: function () {
+			return $("<h2></h2>");
+		},
+		fieldset: function () {
+			return $("<div class='vf__fieldset vf__cf'></div>");
+		},
+		fieldsetLabel: function () {
+			return $("<h3></h3>");
+		},
+		field: function () {
+			return $("<div class='vf__field vf__cf'></div>");
+		},
+		label: function () {
+			return $("<span class='vf__label'></span>");
+		},
+		value: function () {
+			return $("<strong class='vf__value'></strong>");
+		},
+		multifield: function () {
+			return $("<div class='vf__multifield vf__cf'></div>");
+		},
+		multifieldItem: function () {
+			return $("<div class='vf__multifielditem'></div>");
+		},
+		multifieldItems: function () {
+			return $("<div class='vf__multifieldvalue vf__cf'></div>");
+		},
+		list: function () {
+			return $("<div class='vf__list vf__cf'><ul></ul></div>");
+		},
+		listItem: function () {
+			return $("<li class='vf__list_item'></li>");
+		}
+	}
+
+	__this.init = function (blnHideEmpty) {
+		var $objReturn = tpl.wrapper();
+		var $objNavigation = $objReturn.find(".vf__pagenavigation");
+
+		// Trigger custom event
+		$("#" + __this.id).trigger("VF_beforeValuesAsHtml", [{ValidForm: __this}]);
+
+		// Clean it up before we start
+		$objReturn.html("");
+
+		$("#" + this.id).find(".vf__page").not("#vf_confirm_" + this.id).each(function () {
+			try {
+				$objReturn.append(__this.pageAsHtml($(this), blnHideEmpty));
+			} catch (e) {
+				try { // Log hard...
+					console.error("Parsing page failed in valuesAsHtml: " + e.message);
+				}
+				catch (e) {}; // .. or die trying
+			}
+		});
+
+		// Clean up afterwards.
+		var __setListWidth = function () {
+			$(".vf__list", $objReturn).each(function () {
+				var $objList 	= $(this);
+				var formWidth 	= $objList.parentsUntil(".validform").parent().width();
+				var labelWidth 	= $objList.find("span").width();
+
+				$objList.find("ul").width(formWidth - labelWidth - 30);
+
+			});
+		}
+		var __setValueWidth = function () {
+			$(".vf__value", $objReturn).each(function () {
+				var $objValue 	= $(this);
+				var formWidth 	= $objValue.parentsUntil(".validform").parent().width();
+				var blnIsMulti	= false;
+
+				// This is a list item, we handle them separately.
+				if ($objValue.parent().is("li")) {
+					return true; // Continue
+				}
+
+				// Get parent object
+				if ($objValue.parent().is(".vf__field")) {
+					var $objParent 	= $objValue.parent();
+					blnIsMulti = false;
+
+				} else if ($objValue.parent().is(".vf__multifielditem")) {
+					var $objParent	= $objValue.parent().parent().parent();
+					blnIsMulti = true;
+
+				} else {
+					var $objParent 	= $objValue.parentsUntil(".vf__field").parent();
+					blnIsMulti = false;
+
+				}
+
+				if (blnIsMulti) {
+					$objValue = $objParent.find(".vf__multifieldvalue");
+					// $objValue.css("margin-left", 30);
+				}
+
+				var labelWidth 	= $objParent.find(".vf__label").width();
+				$objValue.width(formWidth - labelWidth - 30);
+
+			});
+		}
+
+		// Directly on init
+		__setValueWidth();
+		__setListWidth();
+
+		// And listen for resize events.
+		var _timer;
+		$(window).on("resize", function () {
+			var timeout = 0; // Make this 50 or higher if you're experiencing performance issues.
+			clearTimeout(_timer);
+
+			_timer = setTimeout(function () {
+				__setValueWidth();
+				__setListWidth();
+			}, timeout);
+		});
+
+		// Trigger custom event
+		$("#" + __this.id).trigger("VF_afterValuesAsHtml", [{ValidForm: __this, values: $objReturn}]);
+
+		return $objReturn;
+	}
+
+	__this.pageAsHtml = function ($page, blnHideEmpty) {
+		var $objReturn = tpl.page();
+
+		var $objPageTitle = $page.find("h2:first");
+		if ($objPageTitle.length > 0) {
+			// This page has a title
+			var $tplPageTitle = tpl.pageLabel();
+			$objReturn.append($tplPageTitle.text($objPageTitle.text()));
+		}
+
+		$page.find("> fieldset:not(.vf__list, .vf__area)").each (function () {
+			var $fieldset = __this.fieldsetAsHtml($(this), blnHideEmpty);
+			if (!$fieldset.is(":empty")) {
+				$objReturn.append($fieldset);
+			}
+		});
+
+		if ($objReturn.find("strong.vf__value").length <= 0 && blnHideEmpty) {
+			// It's an empty page.
+			$objReturn = $();
+		}
+
+		return $objReturn;
+	}
+
+	__this.fieldsetAsHtml = function ($fieldset, blnHideEmpty) {
+		var $objReturn = tpl.fieldset();
+
+		// Handle all other fields.
+		var $subFieldsets = $fieldset.find("> fieldset");
+		if ($subFieldsets.length > 0) {
+			$subFieldsets.each(function () {
+				// Parse sub-fieldset such as (active) area's
+				var $fieldset = __this.fieldsetAsHtml($(this), blnHideEmpty);
+				if (!$fieldset.is(":empty")) {
+					$objReturn.append($fieldset);
+				}
+			});
+		} else {
+			// Parse the fields inside the fieldset
+			$fieldset.find("input:not([type='hidden']), textarea, select, fieldset, div.vf__multifield").each(function () {
+				var $element 	= $(this);
+				var $parent 	= $element.parent();
+
+				switch ($element.prop("nodeName").toLowerCase()) {
+					case "div":
+						// This is a multifield
+						$objReturn.append(__this.multiFieldAsHtml($element, blnHideEmpty));
+						break;
+					case "fieldset":
+						// This is a list/area element
+						if ($element.hasClass("vf__list")) {
+							// List
+							$objReturn.append(__this.listAsHtml($element, blnHideEmpty));
+						}
+						break;
+					case "input":
+
+						switch($element.attr("type")) {
+							default:
+								if (!$element.parent().hasClass("vf__multifielditem") && !$element.parent().parent().hasClass("vf__list")) {
+									// Not part of a multifield
+									$objReturn.append(__this.fieldAsHtml($element, blnHideEmpty));
+								}
+								break;
+							case "radio":
+							case "checkbox":
+								if ($element.parent().is("div")) {
+									// This is a boolean field.
+									$objReturn.append(__this.fieldAsHtml($element, blnHideEmpty));
+
+								} else if ($element.parent().parent().is("legend")) {
+									return;
+								} else {
+									// Do nothing. This field is parsed inside the 'listAsHtml' method.
+								}
+								break;
+						}
+
+						break;
+					case "textarea":
+						if (!$element.parent().hasClass("vf__multifielditem") && !$element.parent().parent().hasClass("vf__list")) {
+							// Not part of a multifield
+							$objReturn.append(__this.fieldAsHtml($element, blnHideEmpty));
+						}
+						break;
+					case "select":
+						if (!$element.parent().hasClass("vf__multifielditem")) {
+							// Not part of a multifield
+							$objReturn.append(__this.fieldAsHtml($element, blnHideEmpty));
+						}
+						break;
+				}
+			}); // end input,textarea,select loop
+
+			// Add title to fieldset overview.
+			var $legend = $fieldset.find("legend");
+			if ($legend.length > 0 && !$objReturn.is(":empty")) {
+				$fieldsetLabel = tpl.fieldsetLabel();
+
+				$objReturn.prepend($fieldsetLabel.text($legend.text()));
+			}
+
+			// Clear this fieldset if it's active and not checked.
+			var $activeInput = $legend.find("input");
+			if ($activeInput.length > 0 && !$activeInput.is(":checked")) {
+				$objReturn = $();
+			}
+
+		}
+
+		return $objReturn;
+	} // end fieldsetAsHtml
+
+	__this.fieldAsHtml = function ($field, blnHideEmpty) {
+		if (__this.getElement($field.attr("name")) !== null) {
+			var $objReturn 	= tpl.field();
+			var strValue 	= $field.val();
+
+			// Check if we've got an 'input' triggerfield here
+			$objTargetField = $("#" + __this.id + " input[name='" + strValue + "'], #" + __this.id + " textarea[name='" + strValue + "']");
+			if ($objTargetField.length > 0) {
+				if ($objTargetField.attr("type") == "password") {
+					strValue = "*****";
+				} else {
+					strValue = $objTargetField.val();
+				}
+			}
+
+			if (strValue == "" && blnHideEmpty) {
+				// Do nothing
+				$objReturn = $();
+			} else {
+				$objReturn.attr("id", $field.attr("id") + "_confirm");
+
+				// Set the (optional) alternative or normal label.
+				var strShortLabel 	= $field.data("overviewlabel")
+				,	strLabel 		= (typeof strShortLabel !== "undefined") ? strShortLabel : $field.prev().text();
+
+				$objLabel = tpl.label();
+				$objLabel.text(strLabel);
+				$objLabel.appendTo($objReturn);
+
+				if ($field.attr("type") == "password") {
+					strValue = "*****";
+				}
+
+				$objValue = tpl.value();
+				$objValue.text(strValue);
+				$objValue.appendTo($objReturn);
+			}
+		} else {
+			return $(); // This is not a valid element
+		}
+
+		return $objReturn;
+	}
+
+	__this.listAsHtml = function ($list, blnHideEmpty) {
+		var $objReturn 		= tpl.list();
+		var strShortLabel 	= $list.parent().data("overviewlabel");
+		var strLabel 		= (typeof strShortLabel !== "undefined") ? strShortLabel : $list.prev().text();
+		var strValue		= $list.find("input:not(legend>label>input):checked:first").val();
+
+		if (typeof strValue == "undefined") {
+			// No item is checked
+			if (blnHideEmpty) {
+				$objReturn = $(); // Return empty
+			}
+		} else {
+			// There is a checked item, continue parsing.
+			var $inputs = $list.find("input:not(legend>label>input):checked");
+			if ($inputs.length > 1) {
+				$inputs.each(function () {
+					var $objListItem 	= tpl.listItem();
+					var $objValue		= tpl.value();
+					var strValue		= $(this).val();
+
+					// Check if we've got an 'input' triggerfield here
+					$objTargetField = $("#" + __this.id + " input[name='" + strValue + "'], #" + __this.id + " textarea[name='" + strValue + "']");
+					if ($objTargetField.length > 0) {
+						if ($objTargetField.attr("type") == "password") {
+							strValue = "*****";
+						} else {
+							strValue = $objTargetField.val();
+						}
+					}
+
+					$objValue.text(strValue);
+					$objValue.appendTo($objListItem);
+
+
+					$objListItem.appendTo($objReturn.find("ul"));
+				});
+			} else if ($inputs.length == 1) {
+				$objReturn = __this.fieldAsHtml($inputs, blnHideEmpty);
+			} else {
+				// Nothin' up.
+			}
+		}
+
+		// Add label
+		$objLabel = tpl.label();
+		$objLabel.text(strLabel);
+		$objLabel.prependTo($objReturn);
+
+		return $objReturn;
+	}
+
+	__this.multiFieldAsHtml = function ($multifield, blnHideEmpty) {
+		var $objReturn		= tpl.multifield();
+		var strShortLabel 	= $multifield.data("overviewlabel");
+		var strLabel 		= (typeof strShortLabel !== "undefined") ? strShortLabel : $multifield.find("label:first").text();
+		var strValue		= "";
+
+		// Check if first field is empty
+		var $objFirstSelect = $multifield.find("select:first");
+		if ($objFirstSelect.length > 0 && __this.getElement($objFirstSelect.attr("name")) !== null) {
+			strValue = $objFirstSelect.val();
+		}
+
+		var $objFirstInput = $multifield.find("input:not([type='hidden']):first");
+		if ($objFirstInput.length > 0 && __this.getElement($objFirstInput.attr("name")) !== null) {
+			strValue = $objFirstInput.val();
+		}
+
+		// Add label
+		$objLabel = tpl.label();
+		$objLabel.text(strLabel);
+		$objLabel.appendTo($objReturn);
+
+
+		if (strValue !== "") {
+			strValue = ""; // reset value
+
+			// Continue parsing multifield.
+			$objMultiFieldItems = tpl.multifieldItems();
+
+			var $items = $multifield.find("input:not([type='hidden']), select");
+			$items.each(function () {
+				if (__this.getElement($(this).attr("name")) !== null) {
+					var $objItem 	= tpl.multifieldItem();
+					var $objValue 	= tpl.value();
+
+					$objValue.text($(this).val());
+					$objValue.appendTo($objItem);
+
+					$objItem.appendTo($objMultiFieldItems);
+
+					if ($(this).is($items.last())) {
+						console.log($(this));
+					}
+				}
+			});
+
+			$objMultiFieldItems.appendTo($objReturn);
+		} else {
+			if (blnHideEmpty) {
+				$objReturn = $();
+			}
+		}
+
+		return $objReturn;
+	}
+
+	return __this.init(blnHideEmpty);
+}
+
+ValidForm.prototype.nextIsLast = function () {
+	var $next = this.currentPage.next(".vf__page");
+	var index = (jQuery("#" + this.id + " .vf__page").index($next) + 1);
+
 	return (this.pages.length == index);
 };
 
@@ -443,13 +905,16 @@ ValidForm.prototype.showPage = function ($objPage) {
 				__this.cachedEvents.push({"afterShowPage": $objPage});
 			}
 		});
-	
-		// Check if this is the last page. 
+
+		// Check if this is the last page.
 		// If that is the case, set the 'next button'-label the submit button value to
 		// simulate a submit button
 		var pageIndex = jQuery("#" + this.id + " .vf__page").index($objPage);
-		if (pageIndex == this.pages.length) {
-			jQuery("#next_" + this.pages[pageIndex - 1]).text(jQuery("#" + this.id).find("input[type='submit']").val());
+		if (pageIndex > 0 && pageIndex == this.pages.length - 1) {
+			jQuery("#" + this.id).find(".vf__navigation").show();
+			$objPage.find(".vf__pagenavigation").remove();
+
+			// jQuery("#next_" + this.pages[pageIndex - 1]).text(jQuery("#" + this.id).find("input[type='submit']").val());
 		} else {
 			jQuery("#" + this.id).find(".vf__navigation").hide();
 		}
@@ -497,22 +962,22 @@ ValidForm.prototype.matchfields = function (strSecondFieldId, strFirstFieldId, s
 
 ValidForm.prototype.traverseDisabledElements = function () {
 	var __this = this;
-	
+
 	jQuery("#" + this.id + " fieldset.vf__disabled").each(function(){
 		var fieldset = this;
-		
+
 		jQuery("input, select, textarea", fieldset).attr("disabled", "disabled");
 		jQuery(".vf__dynamic a", fieldset).addClass("vf__disabled");
 		jQuery("legend input", fieldset)
 			.removeAttr("disabled");
-		
+
 		__this.attachAreaEvents(jQuery("legend input", fieldset));
 	});
 };
 
 ValidForm.prototype.dynamicDuplication = function () {
 	var __this 	= this;
-			
+
 
 	// Bind click event to duplicate button
 	jQuery(".vf__dynamic a").bind("click", function() {
@@ -524,7 +989,7 @@ ValidForm.prototype.dynamicDuplication = function () {
 			__this.events.beforeDynamicChange(__this, $anchor);
 		}
 
-		if (!jQuery(this).hasClass("vf__disabled")) {
+		if (!jQuery(this).parent().prev().hasClass("vf__disabled")) {
 			//*** Update dynamic field counter.
 			var $original 	= $anchor.parent().prev();
 			var copy 		= $original.clone();
@@ -532,18 +997,18 @@ ValidForm.prototype.dynamicDuplication = function () {
 			//*** Clear values.
 			var names = jQuery(this).data("target-name").split("|");
 			var ids = jQuery(this).data("target-id").split("|");
-			
+
 			copy.find("input[name$='_dynamic']").remove();
 
 			jQuery.each(names, function(index, fieldname){
-				//*** Fix every field in an area or multifield. 
+				//*** Fix every field in an area or multifield.
 				var counter = $("#" + fieldname + "_dynamic");
 
 				counter.val(parseInt(counter.val()) + 1);
 				var search 	= (parseInt(counter.val()) == 1) ? fieldname : fieldname + "_" + (parseInt(counter.val()) - 1);
 
 				copy.find("[name='" + search + "']").each(function(){
-					if (jQuery(this).attr("type") == "radio" || 
+					if (jQuery(this).attr("type") == "radio" ||
 							jQuery(this).attr("type") == "checkbox") {
 						//*** Radio buttons and checkboxes have to be treated differently.
 						var fieldId;
@@ -554,7 +1019,7 @@ ValidForm.prototype.dynamicDuplication = function () {
 							arrFieldId.pop();
 							fieldId = arrFieldId.join("_");
 						}
-						
+
 						jQuery(this)
 							.removeAttr("checked")
 							.attr("name", fieldname + "_" + counter.val())
@@ -569,7 +1034,7 @@ ValidForm.prototype.dynamicDuplication = function () {
 							.prev("label").attr("for", ids[index] + "_" + counter.val());
 					}
 				});
-				
+
 				//*** Add fields to the form.
 				var objOriginal = __this.getElement(fieldname);
 				var objCopy = jQuery.extend(new ValidFormElement(), objOriginal);
@@ -580,54 +1045,77 @@ ValidForm.prototype.dynamicDuplication = function () {
 				objCopy.validator.required = false;
 				__this.addElement(objCopy);
 			});
-			
+
 			//*** Fix click event on active areas.
 			if (copy.hasClass("vf__area")) {
-				var copiedTrigger = jQuery("legend input", copy);
+				var copiedTrigger = jQuery("legend :checkbox", copy);
 				if (copiedTrigger.length > 0) {
+					var counter = $("#" + copiedTrigger.attr("name") + "_dynamic");
+
+					// +1 on the counter
+					counter.val(parseInt(counter.val()) + 1);
+
 					copiedTrigger.attr("id", copiedTrigger.attr("id") + "_" + counter.val());
 					copiedTrigger.attr("name", copiedTrigger.attr("name") + "_" + counter.val());
 					copiedTrigger.parent("label").attr("for", copiedTrigger.attr("id"));
-					
+
 					__this.attachAreaEvents(copiedTrigger);
 				}
 			}
-			
-			//*** Remove styling.
-			copy.removeClass("vf__required").removeClass("vf__error").addClass("vf__optional");
+
+			//*** Remove 'required' styling.
+			copy
+				.find(".vf__required")
+				.removeClass("vf__required")
+				.addClass("vf__optional")
+			copy
+				.removeClass("vf__required")
+				.removeClass("vf__error")
+				.addClass("vf__optional");
+
 			copy.find("p.vf__error").remove();
 			copy.find(".vf__error").removeClass("vf__error");
-			
+
 			jQuery(this).parent().before(copy);
-			
+
 			//*** Call custom event if set.
-			jQuery("#" + this.id).trigger("VF_AfterDynamicChange", [{ValidForm: __this, objAnchor: $anchor, objCopy: copy}]);
+			jQuery("#" + __this.id).trigger("VF_AfterDynamicChange", [{ValidForm: __this, objAnchor: $anchor, objCopy: copy}]);
 			if (typeof __this.events.afterDynamicChange == "function") {
-				__this.events.afterDynamicChange(__this, {anchor: $anchor, copy: copy});
+				__this.events.afterDynamicChange({ValidForm: __this, objAnchor: $anchor, objCopy: copy});
 			}
 		}
-		
+
 		return false;
 	});
 };
 
 ValidForm.prototype.attachAreaEvents = function(objActiveTrigger) {
+	var __this = this;
+
 	objActiveTrigger.unbind("click").bind("click", function(){
 		var fieldset = jQuery(objActiveTrigger).parentsUntil(".vf__area").parent(".vf__area");
+
 		if (this.checked) {
+			// Enable active area
 			jQuery("input, select, textarea", fieldset).removeAttr("disabled");
 			jQuery(".vf__dynamic a", fieldset).removeClass("vf__disabled");
 			jQuery(fieldset).removeClass("vf__disabled");
+
+			$("#" + __this.id).trigger("VF_EnableActiveArea", [{ValidForm: __this, objArea: fieldset}]);
 		} else {
+			// Disable active area & remove error's
+
 			jQuery("input, select, textarea", fieldset).attr("disabled", "disabled");
 			jQuery(".vf__dynamic a", fieldset).addClass("vf__disabled");
 			jQuery("legend input", fieldset).removeAttr("disabled");
 			jQuery(fieldset).addClass("vf__disabled");
-			
+
 			//*** Remove errors.
 			jQuery("div.vf__error", fieldset).each(function(){
 				jQuery(this).removeClass("vf__error").find("p.vf__error").remove();
 			});
+
+			$("#" + __this.id).trigger("VF_DisableActiveArea", [{ValidForm: __this, objArea: fieldset}]);
 		}
 	});
 };
@@ -642,16 +1130,32 @@ ValidForm.prototype.inArray = function(arrToSearch, value) {
 	return false;
 };
 
-ValidForm.prototype.addTrigger = function(strTriggerId, strTargetId) {
-	var $trigger 	= jQuery("#" + strTriggerId);
+ValidForm.prototype.addTrigger = function(strSelector, strTargetId) {
+	var $trigger 	= jQuery(strSelector);
 	var $target 	= jQuery("#" + strTargetId);
 	var blnIsOption	= $trigger.is("option");
+	var __this		= this;
 
 	var toggleTrigger = function () {
-		if ($trigger.is((blnIsOption) ? ":selected" : ":checked")) {
-			$target.parent().show();
+		if (blnIsOption) {
+			if ($trigger.is(":selected")) {
+				$target.parent().show();
+			} else {
+				// Clear all previous errors.
+				var objTargetElement = __this.getElement($target.attr("name"));
+				objTargetElement.validator.removeAlert();
+
+				// Hide the target element and reset it's value.
+				$target.parent().hide();
+				$target.val("");
+			}
 		} else {
-			$target.parent().hide();
+			if ($trigger.is(":checked")) {
+				$target.parent().show();
+			} else {
+				$target.parent().hide();
+				$target.val("");
+			}
 		}
 	};
 
@@ -666,11 +1170,11 @@ ValidForm.prototype.addTrigger = function(strTriggerId, strTargetId) {
 
 	} else if (blnIsOption) {
 		// Select option
-		jQuery("input[name='" + $trigger.attr("name") + "']").on("change", function () {
+		$trigger.parent().on("change", function () {
 			toggleTrigger();
 		});
 		toggleTrigger();
-		
+
 		// Store the triggerfield
 		$target.data("vf_triggerField", $trigger);
 
@@ -682,7 +1186,7 @@ ValidForm.prototype.addTrigger = function(strTriggerId, strTargetId) {
 ValidForm.prototype.addElement = function() {
 	if (arguments.length > 0 && typeof(arguments[0]) == "object") {
 		this.elements[arguments[0].name] = arguments[0];
-		
+
 		return true;
 	} else {
 		var typeError		= "";
@@ -694,7 +1198,7 @@ ValidForm.prototype.addElement = function() {
 		var minLengthError	= "";
 		var maxLength		= null;
 		var maxLengthError	= "";
-	
+
 		if (arguments.length > 0) {
 			var strElementId = arguments[0];
 		} else {
@@ -712,57 +1216,57 @@ ValidForm.prototype.addElement = function() {
 		} else {
 			return false;
 		}
-		
+
 		if (arguments.length > 3) {
 			required = arguments[3];
 		}
-		
+
 		if (arguments.length > 4) {
 			maxLength = arguments[4];
 		}
-		
+
 		if (arguments.length > 5) {
 			minLength = arguments[5];
 		}
-		
+
 		if (arguments.length > 6) {
 			hint = arguments[6];
 		}
-		
+
 		if (arguments.length > 7) {
 			typeError = arguments[7];
 		}
-		
+
 		if (arguments.length > 8) {
 			requiredError = arguments[8];
 		}
-		
+
 		if (arguments.length > 9) {
 			hintError = arguments[9];
 		}
-		
+
 		if (arguments.length > 10) {
 			minLengthError = arguments[10];
 		}
-		
+
 		if (arguments.length > 11) {
 			maxLengthError = arguments[11];
 		}
-		
+
 		this.elements[strElementName] = new ValidFormElement(this.id, strElementName, strElementId, strValidation, required, maxLength, minLength, hint, typeError, requiredError, hintError, minLengthError, maxLengthError);
 	}
 };
 
 ValidForm.prototype.getElement = function(strElementName){
 	var objReturn = null;
-	
+
 	for (var strElement in this.elements) {
 		if (strElement == strElementName) {
 			objReturn = this.elements[strElement];
 			break;
 		}
 	}
-	
+
 	return objReturn;
 };
 
@@ -798,16 +1302,16 @@ ValidForm.prototype.reset = function() {
 ValidForm.prototype.validate = function(strSelector) {
 	/*************************/
 	/* validate function     *********************************************/
-	/* 
-	/* Uses the ValidForms, ValidForm, ValidElement and ValidFormAlerter 
+	/*
+	/* Uses the ValidForms, ValidForm, ValidElement and ValidFormAlerter
 	/* objects to validate form elements.
 	/*********************************************************************/
-	
+
 	this.valid = true;
 	var objDOMForm = null;
 	var blnReturn = false;
 	strSelector = strSelector || null;
-	
+
 	//*** Set the form object.
 	try {
 		objDOMForm = jQuery("#" + this.id);
@@ -815,14 +1319,14 @@ ValidForm.prototype.validate = function(strSelector) {
 		alert("An error occured while calling the Form.\nMessage: " + e.message);
 		this.valid = false;
 	}
-	
-	if (objDOMForm) {		
+
+	if (objDOMForm) {
 		//*** Reset main error notifications.
 		this.validator.removeMain();
 		for (var strElement in this.elements) {
 			var objElement = this.elements[strElement];
-			
-			if (((strSelector !== null) && (jQuery(strSelector).has(jQuery("[name='" + objElement.name + "']")).length > 0)) 
+
+			if (((strSelector !== null) && (jQuery(strSelector).has(jQuery("[name='" + objElement.name + "']")).length > 0))
 				|| (strSelector == null)) {
 				//*** Check if the element is part of an area.
 				var objArea = jQuery("[name='" + objElement.name + "']").parentsUntil(".vf__area").parent(".vf__area");
@@ -837,26 +1341,26 @@ ValidForm.prototype.validate = function(strSelector) {
 					} else {
 						if (!objElement.validate()) {
 							this.valid = false;
-						} 
+						}
 					}
 				} else {
 					if (!objElement.validate()) {
 						this.valid = false;
-					}	
+					}
 				}
 			}
-		}				
+		}
 	} else {
 		alert("An error occured while calling the Form.\nMessage: " + e.message);
 		this.valid = false;
 	}
-	
+
 	if (!this.valid) {
 		this.validator.showMain();
 	}
 
 	blnReturn = this.valid;
-	
+
 	jQuery("#" + this.id).trigger("VF_AfterValidate", [{ValidForm: this, selector: strSelector}]);
 	if (typeof this.events.afterValidate == "function") {
 		varReturn = this.events.afterValidate(this, strSelector);
@@ -864,7 +1368,7 @@ ValidForm.prototype.validate = function(strSelector) {
 			blnReturn = varReturn;
 		}
 	}
-		
+
 	return blnReturn;
 };
 
@@ -882,13 +1386,13 @@ ValidConfirmForm.prototype.init = function () {
 	});
 }
 
-ValidFormElement.prototype.validate = function() {	
+ValidFormElement.prototype.validate = function() {
 	return this.validator.validate();
 };
 
-ValidFormElement.prototype.reset = function() {	
+ValidFormElement.prototype.reset = function() {
 	this.validator.removeAlert();
-	
+
 	var objElement = jQuery("#" + this.id);
 	objElement.val("");
 };
@@ -901,7 +1405,7 @@ ValidFormValidator.prototype.showMain = function() {
 	if (this.mainAlert != "") {
 		jQuery("#" + this.id).prepend("<div class=\"vf__main_error\"><p>" + this.mainAlert + "</p></div>");
 	}
-	
+
 	//*** Jump to the first error.
 	jQuery.scrollTo(jQuery("div.vf__error:first"), 500);
 };
@@ -914,9 +1418,9 @@ ValidFormValidator.prototype.showMain = function() {
 ValidFormFieldValidator.prototype.validate = function(value) {
 	var objElement = jQuery("#" + this.id);
 	var value = objElement.val();
-	
+
 	this.removeAlert();
-			
+
 	try {
 		var objDOMElement = objElement.get(0);
 		/*** Redirect to error handler if a checkbox or radio is found.
@@ -928,29 +1432,31 @@ ValidFormFieldValidator.prototype.validate = function(value) {
 				throw "Checkbox or radio button detected.";
 				break;
 		}
-		
+
 		//*** Required, but empty is not good.
 		if (this.required && value == "") {
 			this.showAlert(this.requiredError);
 			return false;
 		} else if (!this.required && value == "") {
-			// If the triggerfield is checked, the targetfield (objElement) becomes required. 
+			// If the triggerfield is checked, the targetfield (objElement) becomes required.
 			// But ONLY if the triggerfield is checked.
 			var objTrigger = objElement.data("vf_triggerField");
 			if (typeof objTrigger !== "undefined") {
-				if (objTrigger[0].checked) {
-					this.showAlert(this.requiredError);
-					return false;
-				}
-			}
+				if (objTrigger.is("option")) {
+					// The trigger is an option in a select list.
+					objTrigger = objTrigger.parent(); // Get the select list instead of the option element
 
-			// Check if field values match
-			if (typeof this.matchWith == "object") {
-				if (this.matchWith.validate()) {
-					if (jQuery("#" + this.matchWith.id).val() != value) {
-						this.matchWith.validator.showAlert(this.matchError);
-						this.showAlert(this.matchError);
+					if (objTrigger.val() == objElement.attr("name")) {
+						this.showAlert(this.requiredError);
 						return false;
+					}
+
+				} else {
+					// The trigger is a checkbox or radiobutton
+					if (objTrigger[0].checked) {
+						this.showAlert(this.requiredError);
+						return false;
+
 					}
 				}
 			}
@@ -958,23 +1464,34 @@ ValidFormFieldValidator.prototype.validate = function(value) {
 			return true;
 		}
 
+		//*** Check if there is a matchWith field to validate against
+		if (typeof this.matchWith == "object") {
+			if (this.matchWith.validate()) {
+				if (jQuery("#" + this.matchWith.id).val() != value) {
+					this.matchWith.validator.showAlert(this.matchError);
+					this.showAlert(this.matchError);
+					return false;
+				}
+			}
+		}
+
 		//*** Value is the same as hint value.
 		if (this.hint && value == this.hint) {
 			this.showAlert(this.hintError);
 			return false;
 		}
-		
+
 		//*** Check if the length of the value is within the range.
 		if (this.minLength > 0 && value.length < this.minLength) {
 			this.showAlert(sprintf(this.minLengthError, this.minLength));
 			return false;
 		}
-		
+
 		if (this.maxLength > 0 && value.length > this.maxLength) {
 			this.showAlert(sprintf(this.maxLengthError, this.maxLength));
 			return false;
 		}
-		
+
 		//*** Check specific types using regular expression.
 		if(typeof this.check != "function" && typeof this.check != "object") {
 			return true;
@@ -1002,7 +1519,7 @@ ValidFormFieldValidator.prototype.validate = function(value) {
 				this.showAlert(sprintf(this.minLengthError, this.minLength));
 				return false;
 			}
-			
+
 			if (this.maxLength > 0 && objValidElements.length > this.maxLength) {
 				this.showAlert(sprintf(this.maxLengthError, this.maxLength));
 				return false;
@@ -1033,7 +1550,7 @@ ValidFormFieldValidator.prototype.removeAlert = function() {
 
 	if (objElement.parent("div").hasClass("vf__multifielditem")) {
 		objElement.parent("div").removeClass("vf__error");
-		if (objElement.parent("div").find(".vf__error").length == 0) {
+		if (objElement.parent("div").parent("div").find(".vf__error").length < 2) {
 			objElement.parent("div").parent("div").removeClass("vf__error").find("p.vf__error").remove();
 		}
 	} else {
@@ -1046,7 +1563,7 @@ ValidFormFieldValidator.prototype.showAlert = function(strAlert) {
 	if (objElement.length == 0) {
 		objElement = jQuery("input[name='" + this.name + "']:first").parent().parent();
 	}
-	
+
 	if (objElement.parent("div").hasClass("vf__multifielditem")) {
 		objElement.parent("div").addClass("vf__error");
 		if (!objElement.parent("div").parent("div").hasClass("vf__error")) {

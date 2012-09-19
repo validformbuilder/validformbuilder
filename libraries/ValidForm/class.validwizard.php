@@ -1,12 +1,12 @@
 <?php
 /***************************
  * ValidForm Builder - build valid and secure web forms quickly
- * 
+ *
  * Copyright (c) 2009-2012, Felix Langfeldt <flangfeldt@felix-it.com>.
  * All rights reserved.
- * 
+ *
  * This software is released under the GNU GPL v2 License <http://www.gnu.org/licenses/old-licenses/gpl-2.0.html>
- * 
+ *
  * @package    ValidForm
  * @author     Felix Langfeldt <flangfeldt@felix-it.com>
  * @copyright  2009-2012 Felix Langfeldt <flangfeldt@felix-it.com>
@@ -18,7 +18,7 @@ require_once("class.validform.php");
 
 /**
  * ValidWizard Builder base class
- * 
+ *
  * @package ValidForm
  * @author 	Robin van Baalen <rvanbaalen@felix-it.com>
  * @version Release: 1.0
@@ -26,14 +26,13 @@ require_once("class.validform.php");
  */
 class ValidWizard extends ValidForm {
 	public 		$__pagecount = 0;
-	protected 	$__confirmlabel;
 	protected 	$__currentpage = 1;
 	protected 	$__previouslabel;
 	protected 	$__nextlabel;
 	private 	$__uniqueid;
-	
+
 	/**
-	 * 
+	 *
 	 * Create an instance of the ValidForm Builder
 	 * @param string|null $name The name and id of the form in the HTML DOM and JavaScript.
 	 * @param string|null $description Desriptive text which is displayed above the form.
@@ -43,9 +42,7 @@ class ValidWizard extends ValidForm {
 	public function __construct($name = NULL, $description = NULL, $action = NULL, $meta = array()) {
 		parent::__construct($name, $description, $action, $meta);
 
-		$this->__setUniqueId();
-		$this->__uniqueid = (isset($meta["uniqueId"])) ? $meta["uniqueId"] : $this->__uniqueid;
-		$this->__confirmlabel = (isset($meta["confirmLabel"])) ? $meta["confirmLabel"] : "Confirm";
+		$this->__uniqueid = (isset($meta["uniqueId"])) ? $meta["uniqueId"] : $this->generateId();
 		$this->__nextlabel = (isset($meta["nextLabel"])) ? $meta["nextLabel"] : "Next &rarr;";
 		$this->__previouslabel = (isset($meta["previousLabel"])) ? $meta["previousLabel"] : "&larr; Previous";
 	}
@@ -53,27 +50,13 @@ class ValidWizard extends ValidForm {
 	public function toHtml($blnClientSide = true, $blnForceSubmitted = false, $strJs = "", $blnFromSession = false) {
 		$strReturn = null;
 
-		if (session_id() !== "") {
-			// If we're inside a session, we're able to unserialize the form and edit it optionally.
-			if (isset($_SESSION["vf__" . $this->getUniqueId()]) && !$blnFromSession) {
-				$objForm = unserialize($_SESSION["vf__" . $this->getUniqueId()]);
-			
-				if (is_object($objForm) && $objForm->isSubmitted()) {
-					$strReturn = $objForm->toHtml($blnClientSide, true, $strJs, true);
-				} 
-			} else {
-			    $strForm = $this->serialize();
-			    $_SESSION["vf__" . $this->getUniqueId()] = $strForm;
-			}
-		}
-
 		if (is_null($strReturn)) {
 			$strReturn = parent::toHtml($blnClientSide, $blnForceSubmitted, $this->__wizardJs($strJs, $blnFromSession));
 		}
 
 		return $strReturn;
 	}
-	
+
 	/**
 	 * Check if the form is submitted by validating the value of the hidden
 	 * vf__dispatch field.
@@ -81,11 +64,60 @@ class ValidWizard extends ValidForm {
 	 * @return boolean              [description]
 	 */
 	public function isSubmitted($blnForce = false) {
-		if (ValidForm::get("vf__dispatch") == $this->__name || $blnForce) {
-			return TRUE;
-		} else {
-			return FALSE;
+		$blnReturn = FALSE;
+
+		if (ValidForm::get("vf__dispatch") == $this->__name) {
+			//*** Try to retrieve the uniqueId from a REQUEST value.
+			$strUniqueId = ValidWizard::get("vf__uniqueid");
+			if (!empty($strUniqueId)) $this->__setUniqueId($strUniqueId);
+
+			$blnReturn = TRUE;
+		} else if ($blnForce) {
+			$blnReturn = TRUE;
 		}
+
+		return $blnReturn;
+	}
+
+	/**
+	 * Exactly the same as ValidForm->addMultiField. Only this time it's executed from the context of ValidWizard.
+	 *
+	 * @param [type] $label [description]
+	 * @param array  $meta  [description]
+	 */
+	public function addMultiField($label = NULL, $meta = array()) {
+		$objField = new VF_MultiField($label, $meta);
+
+		$objField->setRequiredStyle($this->__requiredstyle);
+
+		//*** Page already defined?
+		$objPage = $this->__elements->getLast("VF_Page");
+		if ($this->__elements->count() == 0 || !is_object($objPage)) {
+			$objPage = $this->addPage();
+		}
+
+		//*** Fieldset already defined?
+		$objFieldset = $objPage->getElements()->getLast("VF_Fieldset");
+		if ($this->__elements->count() == 0 || !is_object($objFieldset)) {
+			$objFieldset = $this->addFieldset();
+		}
+
+		//*** Add field to the fieldset.
+		$objFieldset->addField($objField);
+
+		return $objField;
+	}
+
+	public static function unserialize($strSerialized, $strUniqueId = "") {
+		$objReturn = null;
+
+		$objForm = unserialize($strSerialized);
+		if (get_class($objForm) == "ValidWizard") {
+			$objReturn = $objForm;
+			if (!empty($strUniqueId)) $objReturn->__setUniqueId($strUniqueId);
+		}
+
+		return $objReturn;
 	}
 
 	private function __wizardJs($strCustomJs = "", $blnFromSession = false) {
@@ -94,14 +126,9 @@ class ValidWizard extends ValidForm {
 		// Optionally set a custom first visibile page.
 		$intPage = ($this->__currentpage > 1) ? $this->__currentpage : "";
 
-		if ($blnFromSession && $this->doCorrect()) {
-			// We're coming from the confirm page, so the first page we want to show is the last page of the wizard.
-			$intPage = $this->__pagecount;
-		}
-		
-		$strReturn .= ($this->__pagecount > 1) ? "objForm.setLabel('next', '" . $this->__nextlabel . "');\n" : "";
-		$strReturn .= ($this->__pagecount > 1) ? "objForm.setLabel('previous', '" . $this->__previouslabel . "');\n" : "";
-		$strReturn .= ($this->__pagecount > 1) ? "objForm.initWizard({$intPage});\n" . $strCustomJs : "";
+		$strReturn .= "objForm.setLabel('next', '" . $this->__nextlabel . "');\n";
+		$strReturn .= "objForm.setLabel('previous', '" . $this->__previouslabel . "');\n";
+		$strReturn .= "objForm.initWizard({$intPage});\n" . $strCustomJs;
 
 		return $strReturn;
 	}
@@ -122,35 +149,38 @@ class ValidWizard extends ValidForm {
 		$this->__elements->addObject($objPage);
 
 		$this->__pagecount++;
-		
+
 		return $objPage;
 	}
-	
+
 	public function addField($name, $label, $type, $validationRules = array(), $errorHandlers = array(), $meta = array(), $blnJustRender = FALSE) {
 		$objField = ValidForm::renderField($name, $label, $type, $validationRules, $errorHandlers, $meta);
-		
+
 		//*** Fieldset already defined?
 		if ($this->__elements->count() == 0 && !$blnJustRender) {
 			$objPage = $this->addPage();
 		}
-		
+
 		$objField->setRequiredStyle($this->__requiredstyle);
-		
+
 		if (!$blnJustRender) {
 			$objPage = $this->__elements->getLast();
 			$objPage->addField($objField);
 		}
-		
+
 		return $objField;
 	}
-	
+
 	public function addFieldset($label = NULL, $noteHeader = NULL, $noteBody = NULL, $options = array()) {
 		$objFieldSet = new VF_Fieldset($label, $noteHeader, $noteBody, $options);
-		
-		$objPage = $this->__elements->getLast();
+
+		$objPage = $this->__elements->getLast("VF_Page");
+		if (!is_object($objPage)) {
+			$objPage = $this->addPage();
+		}
+
 		$objPage->addField($objFieldSet);
 
-		
 		return $objFieldSet;
 	}
 
@@ -162,86 +192,18 @@ class ValidWizard extends ValidForm {
 				$strHeader = $objPage->getHeader();
 
 				$strPage .= "\n<div id='{$objPage->getId()}'>\n";
-				
+
 				if (!empty($strHeader)) {
 					$strPage .= "<h2>{$strHeader}</h2>\n";
 				}
 
 				$strPageContent = parent::valuesAsHtml($hideEmpty, $objPage->getFields()) . "\n";
-				
+
 				if (trim($strPageContent) !== "") {
 					$strOutput .= $strPage . $strPageContent . "</div>\n";
 				}
 			}
 		}
-
-		return $strOutput;
-	}
-	
-	/**
-	 * Check if the form is confirmed by validating the value of the hidden
-	 * vf__dispatch field.
-	 * @param  boolean $blnForce 	Fake isConfirmed to true to force field values.
-	 * @return boolean              [description]
-	 */
-	public function isConfirmed($blnForce = false) {
-		if (ValidForm::get("vf__dispatch") == $this->__name . "_confirmed" || $blnForce) {
-			return TRUE;
-		} else {
-			return FALSE;
-		}
-	}
-
-	public function doCorrect() {
-		if (ValidForm::get("vf__dispatch") == $this->__name . "_correct") {
-			return TRUE;
-		} else {
-			return FALSE;
-		}
-	}
-
-	public function confirm() {
-		// Save the current form.
-		if (session_id() !== "") {
-			// If we're inside a session, we're able to serialize the form to a session variable for later use.
-			$_SESSION["vf__" . $this->getUniqueId()] = $this->serialize();
-		}
-
-		$strOutput = "";
-		$strName = $this->__name . "_confirmed";
-
-		$strOutput .= $this->__confirmJs();
-
-		$strOutput .= "<form id=\"{$this->__name}\" method=\"post\" enctype=\"multipart/form-data\" action=\"{$this->__action}\" class=\"validform vf__cf\">\n";
-		$strOutput .= "<div class='vf__confirm'>";
-		$strOutput .= $this->valuesAsHtml();
-		$strOutput .= "</div>";
-		$strOutput .= $this->__addHiddenFields();
-		$strOutput .= "<div class=\"vf__navigation vf__cf\">\n<input type=\"hidden\" name=\"vf__dispatch\" value=\"{$strName}\" />\n";
-		$strOutput .= "<input type=\"hidden\" name=\"vf__uniqueid\" value=\"{$this->getUniqueId()}\" />\n";
-		$strOutput .= "<input type=\"submit\" value=\"{$this->__confirmlabel}\" class=\"vf__button\" />\n";
-		if (session_id() !== "") {
-			// If we're inside a session, we're able to provide a back button on the confirm page, to edit previously entered values.
-			$strOutput .= "<input type=\"submit\" value=\"{$this->__previouslabel}\" class=\"vf__button vf__previous\" id=\"confirm_" . $this->__name . "_previous\"/>\n";
-		}
-		$strOutput .= "</div>\n";
-		$strOutput .= "</form>";
-
-		return $strOutput;
-	}
-
-	protected function __confirmJs() {
-		$strOutput = "";
-
-		$strOutput .= "<script>";
-		$strOutput .= "jQuery(function ($) {\n";
-		$strOutput .= "try {\n";
-		$strOutput .= "objConfirmForm = new ValidConfirmForm('" . $this->__name . "');\n";
-		$strOutput .= "} catch (e) {\n";
-		$strOutput .= "throw new Error(\"Failed to initialize ValidConfirmForm('" . $this->__name . "'). Error:\\n\" + e.message);\n";
-		$strOutput .= "}\n";
-		$strOutput .= "});";
-		$strOutput .= "</script>";
 
 		return $strOutput;
 	}
@@ -272,28 +234,133 @@ class ValidWizard extends ValidForm {
 	}
 
 	/**
-	 * Validate all form fields until and including the fields in the given page object
+	 * Validate all form fields EXCLUDING the fields in the given page object and beyond.
 	 * @param  string 	$strPageId 	The page object id
 	 * @return boolean         		True if all fields validate, false if not.
 	 */
-	public function validateUntil($strPageId) {
-		$blnValid = true;
+	public function isValidUntil($strPageId) {
+		$blnReturn = true;
+
 		foreach ($this->__elements as $objPage) {
-			if (!$objPage->isValid()) {
-				$blnValid = false;
+			if (!$blnReturn || $objPage->getId() == $strPageId) {
+				break;
 			}
 
-			if ($objPage->getId() == $strPageId) {
-				break;
+			if (!$objPage->isValid()) {
+				$blnReturn = false;
 			}
 		}
 
-		return $blnValid;
+		return $blnReturn;
+	}
+
+	public function getInvalidFieldsUntil($strPageId) {
+		$arrReturn = array();
+
+		foreach ($this->__elements as $objPage) {
+			if ($objPage->getId() == $strPageId) {
+				break;
+			}
+
+			if ($objPage->hasFields()) {
+				$objFieldsets = $objPage->getFields();
+				foreach ($objFieldsets as $objFieldset) {
+					foreach ($objFieldset->getFields() as $objField) {
+						if (is_object($objField)) {
+							if ($objField->hasFields()) {
+								foreach ($objField->getFields() as $objSubField) {
+									if (is_object($objSubField)) {
+										if ($objSubField->hasFields()) {
+											foreach ($objSubField->getFields() as $objSubSubField) {
+												if (is_object($objSubSubField)) {
+													if (!$objSubSubField->isValid()) {
+														$arrTemp = array($objSubSubField->getName() => $objSubSubField->getValidator()->getError());
+														array_push($arrReturn, $arrTemp);
+													}
+												}
+											}
+										} else {
+											if (!$objSubField->isValid()) {
+												$arrTemp = array($objSubField->getName() => $objSubField->getValidator()->getError());
+												array_push($arrReturn, $arrTemp);
+											}
+										}
+									}
+								}
+							} else {
+								if (!$objField->isValid()) {
+									$arrTemp = array($objField->getName() => $objField->getValidator()->getError());
+									array_push($arrReturn, $arrTemp);
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+
+		return $arrReturn;
+	}
+
+	/**
+	 * getFields creates a flat collection of all form fields.
+	 *
+	 * @param  boolean $blnIncludeMultiFields Set this to true if you want to include MultiFields in the collection
+	 * @return VF_Collection                  The collection of fields.
+	 */
+	public function getFields($blnIncludeMultiFields = false) {
+		$objFields = new VF_Collection();
+
+		foreach ($this->__elements as $objPage) {
+			if ($objPage->hasFields()) {
+				foreach ($objPage->getFields() as $objFieldset) {
+					if ($objFieldset->hasFields()) {
+						foreach ($objFieldset->getFields() as $objField) {
+							if (is_object($objField)) {
+								if ($objField->hasFields()) {
+									// Also add the multifield to the resulting collection, if $blnIncludeMultiFields is true.
+									if (get_class($objField) == "VF_MultiField" && $blnIncludeMultiFields) {
+										$objFields->addObject($objField);
+									}
+
+									foreach ($objField->getFields() as $objSubField) {
+										if (is_object($objSubField)) {
+											if ($objSubField->hasFields()) {
+												// Also add the multifield to the resulting collection, if $blnIncludeMultiFields is true.
+												if (get_class($objField) == "VF_MultiField" && $blnIncludeMultiFields) {
+													$objFields->addObject($objField);
+												}
+
+												foreach ($objSubField->getFields() as $objSubSubField) {
+													if (is_object($objSubSubField)) {
+														$objFields->addObject($objSubSubField);
+													}
+												}
+											} else {
+												$objFields->addObject($objSubField);
+											}
+										}
+									}
+								} else {
+									$objFields->addObject($objField);
+								}
+							}
+						}
+					} else {
+						$objFields->addObject($objFieldset);
+					}
+				}
+			} else {
+				$objFields->addObject($objPage);
+			}
+		}
+
+		return $objFields;
 	}
 
 	public function isValid($strPageId = null) {
 		if (!is_null($strPageId)) {
-			return $this->validateUntil($strPageId);
+			return $this->isValidUntil($strPageId);
 		} else {
 			return parent::isValid();
 		}
@@ -302,7 +369,7 @@ class ValidWizard extends ValidForm {
 	public function generateId($intLength = 8) {
 		$strChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 		$strReturn = '';
-		
+
 		srand((double)microtime()*1000000);
 
 		for ($i = 1; $i <= $intLength; $i++) {
@@ -315,11 +382,11 @@ class ValidWizard extends ValidForm {
 	}
 
 	public function getUniqueId() {
-		return ValidForm::get("vf__uniqueid", $this->__uniqueid);
+		return $this->__uniqueid;
 	}
 
-	private function __setUniqueId() {
-		$this->__uniqueid = $this->generateId();
+	private function __setUniqueId($strId = "") {
+		$this->__uniqueid = (empty($strId)) ? $this->generateId() : $strId;
 	}
 }
 

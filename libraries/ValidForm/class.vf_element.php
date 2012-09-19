@@ -1,23 +1,23 @@
 <?php
 /***************************
  * ValidForm Builder - build valid and secure web forms quickly
- * 
+ *
  * Copyright (c) 2009-2012, Felix Langfeldt <flangfeldt@felix-it.com>.
  * All rights reserved.
- * 
+ *
  * This software is released under the GNU GPL v2 License <http://www.gnu.org/licenses/old-licenses/gpl-2.0.html>
- * 
+ *
  * @package    ValidForm
  * @author     Felix Langfeldt <flangfeldt@felix-it.com>
  * @copyright  2009-2012 Felix Langfeldt <flangfeldt@felix-it.com>
  * @license    http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU GPL v2
  * @link       http://code.google.com/p/validformbuilder/
  ***************************/
- 
+
 require_once('class.classdynamic.php');
 
 /**
- * 
+ *
  * Element Class
  *
  * @package ValidForm
@@ -42,7 +42,7 @@ class VF_Element extends ClassDynamic {
 	protected $__validator;
 	protected $__targetfield = null;
 	protected $__triggerfield = null;
-	protected $__reservedMeta = array("dynamicCounter", "tip", "hint", "default", "width", "height", "length", "start", "end", "path", "labelStyle", "labelClass", "labelRange", "valueRange", "dynamic", "dynamicLabel", "matchWith");
+	protected $__reservedMeta = array("data", "dynamicCounter", "tip", "hint", "default", "width", "height", "length", "start", "end", "path", "labelStyle", "labelClass", "labelRange", "valueRange", "dynamic", "dynamicLabel", "matchWith");
 
 	public function __construct($name, $type, $label = "", $validationRules = array(), $errorHandlers = array(), $meta = array()) {
 		if (is_null($validationRules)) $validationRules = array();
@@ -51,10 +51,10 @@ class VF_Element extends ClassDynamic {
 
 		// Set meta class
 		$this->setClass($type, $meta);
-		
+
 		$labelMeta = (isset($meta['labelStyle'])) ? array("style" => $meta['labelStyle']) : array();
 		if (isset($meta['labelClass'])) $labelMeta["class"] = $meta['labelClass'];
-		
+
 		$this->__id = (strpos($name, "[]") !== FALSE) ? $this->getRandomId($name) : $name;
 		$this->__name = $name;
 		$this->__label = $label;
@@ -68,7 +68,7 @@ class VF_Element extends ClassDynamic {
 		$this->__dynamicLabel = (array_key_exists("dynamicLabel", $meta)) ? $meta["dynamicLabel"] : $this->__dynamicLabel;
 		$this->__dynamiccounter = (array_key_exists("dynamicCounter", $meta)) ? true : $this->__dynamiccounter;
 
-		$this->__validator = new VF_FieldValidator($name, $type, $validationRules, $errorHandlers, $this->__hint);		
+		$this->__validator = new VF_FieldValidator($name, $type, $validationRules, $errorHandlers, $this->__hint);
 	}
 
 	protected function setClass($type, &$meta) {
@@ -79,7 +79,7 @@ class VF_Element extends ClassDynamic {
 			case VFORM_EMAIL:
 			case VFORM_URL:
 			case VFORM_SIMPLEURL:
-			case VFORM_CUSTOM:	
+			case VFORM_CUSTOM:
 			case VFORM_CURRENCY:
 			case VFORM_DATE:
 			case VFORM_NUMERIC:
@@ -126,36 +126,36 @@ class VF_Element extends ClassDynamic {
 			$meta["class"] = (isset($meta["class"])) ? $meta["class"] .= " " . $strClass : $strClass;
 		}
 	}
-	
-	public function toHtml($submitted = FALSE, $blnSimpleLayout = FALSE) {
+
+	public function toHtml($submitted = FALSE, $blnSimpleLayout = FALSE, $blnLabel = true, $blnDisplayErrors = true) {
 		return "Field type not defined.";
 	}
-	
-	public function __toHtml($submitted = false, $blnSimpleLayout = false, $blnLabel = true, $blnDisplayErrors = true, $intCount = 0) {
+
+	public function __toHtml($submitted = FALSE, $blnSimpleLayout = FALSE, $blnLabel = true, $blnDisplayErrors = true, $intCount = 0) {
 		return $this->toHtml($submitted, $blnSimpleLayout, $blnLabel, $blnDisplayErrors, $intCount);
 	}
-	
+
 	public function setError($strError, $intDynamicPosition = 0) {
 		//*** Override the validator message.
 		$this->__validator->setError($strError, $intDynamicPosition);
 	}
-	
+
 	public function toJS() {
 		return "alert('Field type not defined.');\n";
 	}
-	
+
 	public function getRandomId($name) {
 		$strReturn = $name;
-		
+
 		if (strpos($name, "[]") !== FALSE) {
 			$strReturn = str_replace("[]", "_" . rand(100000, 900000), $name);
 		} else {
 			$strReturn = $name . "_" . rand(100000, 900000);
 		}
-		
+
 		return $strReturn;
 	}
-	
+
 	/**
 	 * Validate the current field. This is a wrapper method to call the FieldValidator->validate() method.
 	 * @return boolean [True if field validates, false if not.]
@@ -168,7 +168,7 @@ class VF_Element extends ClassDynamic {
 			// No specific dynamic count is set, loop through dynamic fields internally
 			for ($intCount = 0; $intCount <= $intDynamicCount; $intCount++) {
 				$blnReturn = $this->__validator->validate($intCount);
-				
+
 				if (!$blnReturn) {
 					break;
 				}
@@ -180,23 +180,23 @@ class VF_Element extends ClassDynamic {
 
 		return $blnReturn;
 	}
-	
+
 	/**
 	 * Check if the current field is a dynamic field.
 	 * @return boolean True if dynamic, false if not.
 	 */
 	public function isDynamic() {
-		return ($this->__dynamic) ? true : false;
+		return $this->__dynamic;
 	}
-	
+
 	/**
 	 * Get the number of dynamic fields from the dynamic counter field.
 	 * @return [type] [description]
 	 */
-	public function getDynamicCount() {
+	public function getDynamicCount($blnParentIsDynamic = FALSE) {
 		$intReturn = 0;
 
-		if ($this->__dynamic && is_object($this->__dynamiccounter)) {
+		if (($this->__dynamic || $blnParentIsDynamic) && is_object($this->__dynamiccounter)) {
 			$intReturn = $this->__dynamiccounter->getValidator()->getValue();
 		}
 
@@ -206,7 +206,7 @@ class VF_Element extends ClassDynamic {
 	public function setDynamicCounter(&$objCounter) {
 		$this->__dynamiccounter = $objCounter;
 	}
-	
+
 	/**
 	 * Get the *valid* value of the current field.
 	 * @param  integer $intDynamicPosition 	Optional parameter to get the value of a dynamic field.
@@ -214,19 +214,19 @@ class VF_Element extends ClassDynamic {
 	 */
 	public function getValue($intDynamicPosition = 0) {
 		$varValue = NULL;
-		
+
 		if ($intDynamicPosition > 0) {
 			$objValidator = $this->__validator;
 			$objValidator->validate($intDynamicPosition);
-			
+
 			$varValue = $objValidator->getValidValue($intDynamicPosition);
 		} else {
 			$varValue = $this->__validator->getValidValue();
 		}
-		 
+
 		return $varValue;
 	}
-	
+
 	/**
 	 * Placeholder function to determine wheter or not a field contains other fields.
 	 * @return boolean Return false by default.
@@ -238,9 +238,17 @@ class VF_Element extends ClassDynamic {
 	/**
 	 * Add javascript code for trigger fields. This code executed by the element's toJs() method.
 	 */
-	public function addTriggerJs($strId = null) {
-		$strId = (!is_null($strId)) ? $strId : $this->__triggerfield->getId();
-		return "objForm.addTrigger('{$this->__triggerfield->getId()}', '{$this->__id}');\n";
+	public function addTriggerJs() {
+		switch (get_class($this->__triggerfield)) {
+			case "VF_SelectOption":
+				$strSelector = "[value='" . $this->__triggerfield->getValue() . "']";
+				break;
+			default:
+				$strSelector = "#" . $this->__triggerfield->getId();
+				break;
+		}
+
+		return "objForm.addTrigger(\"{$strSelector}\", \"{$this->__id}\");\n";
 	}
 
 	/**
@@ -265,20 +273,75 @@ class VF_Element extends ClassDynamic {
 	 */
 	public function setName($strName) {
 		parent::setName($strName);
+
 		if (is_object($this->__validator)) {
 			$this->__validator->setFieldName($strName);
 		}
 	}
-	
+
+	/**
+	 * Store data in the current object. This data will not be visibile in any output
+	 * and will only be used for internal purposes. For example, you can store some custom
+	 * data from your CMS or an other library in a field object, for later use.
+	 * Note: Using this method will overwrite any previously set data with the same key!
+	 *
+	 * @param [string] 	$strKey   	The key for this storage
+	 * @param [mixed] 	$varValue 	The value to store
+	 * @return	[boolean] 			True if set successful, false if not.
+	 */
+	public function setData($strKey = null, $varValue = null) {
+		$varReturn = false;
+		$this->__meta["data"] = (isset($this->__meta["data"])) ? $this->__meta["data"] : array();
+
+		if (isset($this->__meta["data"])) {
+			if (!is_null($strKey) && !is_null($varValue)) {
+				$this->__meta["data"][$strKey] = $varValue;
+			}
+		}
+
+		return isset($this->__meta["data"][$strKey]);
+	}
+
+	/**
+	 * Get a value from the internal data array.
+	 *
+	 * @param  [string] $key The key of the data attribute to return
+	 * @return [mixed]       If a key is provided, return it's value. If no key
+	 *                       provided, return the whole data array. If anything
+	 *                       is not set or incorrect, return false.
+	 */
+	public function getData($key = null) {
+		$varReturn = false;
+
+		if (isset($this->__meta["data"])) {
+			if ($key == null) {
+				$varReturn = $this->__meta["data"];
+			} else {
+				if (isset($this->__meta["data"][$key])) {
+					$varReturn = $this->__meta["data"][$key];
+				}
+			}
+		}
+
+		return $varReturn;
+	}
+
+	/**
+	 * Get the value of the field. If the value is *valid* then it will return that value, otherwise the invalid value is returned.
+	 *
+	 * @param boolean $submitted Indicate if the form is submitted.
+	 * @param integer $intDynamicPosition The position of the field in a dynamic field setup.
+	 * @return Ambigous <NULL, string>
+	 */
 	protected function __getValue($submitted = FALSE, $intDynamicPosition = 0) {
 		$varReturn = NULL;
-		
+
 		if ($submitted) {
 			if ($this->__validator->validate($intDynamicPosition)) {
 				$varReturn = $this->__validator->getValidValue($intDynamicPosition);
 			} else {
 				$varReturn = $this->__validator->getValue($intDynamicPosition);
-			}		
+			}
 		} else {
 			if (!empty($this->__default)) {
 				$varReturn = $this->__default;
@@ -290,25 +353,25 @@ class VF_Element extends ClassDynamic {
 		if(!$varReturn && ((get_class($this) == "VF_Hidden") && $this->isDynamicCounter())) {
 			$varReturn = (int)0;
 		}
-		
+
 		return $varReturn;
 	}
-	
+
 	protected function __getMetaString() {
 		$strOutput = "";
-		
+
 		foreach ($this->__meta as $key => $value) {
 			if (!in_array($key, $this->__reservedMeta)) {
 				$strOutput .= " {$key}=\"{$value}\"";
 			}
 		}
-		
+
 		return $strOutput;
 	}
-	
+
 	protected function __getLabelMetaString() {
 		$strOutput = "";
-		
+
 		if (is_array($this->__labelmeta)) {
 			foreach ($this->__labelmeta as $key => $value) {
 				if (!in_array($key, $this->__reservedMeta)) {
@@ -316,7 +379,7 @@ class VF_Element extends ClassDynamic {
 				}
 			}
 		}
-				
+
 		return $strOutput;
 	}
 
