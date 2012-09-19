@@ -723,8 +723,12 @@ ValidForm.prototype.valuesAsHtml = function (blnHideEmpty) {
 			} else {
 				$objReturn.attr("id", $field.attr("id") + "_confirm");
 
+				// Set the (optional) alternative or normal label.
+				var strShortLabel 	= $field.data("overviewlabel")
+				,	strLabel 		= (typeof strShortLabel !== "undefined") ? strShortLabel : $field.prev().text();
+
 				$objLabel = tpl.label();
-				$objLabel.text($field.prev().text());
+				$objLabel.text(strLabel);
 				$objLabel.appendTo($objReturn);
 
 				if ($field.attr("type") == "password") {
@@ -743,9 +747,10 @@ ValidForm.prototype.valuesAsHtml = function (blnHideEmpty) {
 	}
 
 	__this.listAsHtml = function ($list, blnHideEmpty) {
-		var $objReturn 	= tpl.list();
-		var strLabel 	= $list.prev().text();
-		var strValue	= $list.find("input:not(legend>label>input):checked:first").val();
+		var $objReturn 		= tpl.list();
+		var strShortLabel 	= $list.parent().data("overviewlabel");
+		var strLabel 		= (typeof strShortLabel !== "undefined") ? strShortLabel : $list.prev().text();
+		var strValue		= $list.find("input:not(legend>label>input):checked:first").val();
 
 		if (typeof strValue == "undefined") {
 			// No item is checked
@@ -793,9 +798,10 @@ ValidForm.prototype.valuesAsHtml = function (blnHideEmpty) {
 	}
 
 	__this.multiFieldAsHtml = function ($multifield, blnHideEmpty) {
-		var $objReturn	= tpl.multifield();
-		var strLabel	= $multifield.find("label:first").text();
-		var strValue	= "";
+		var $objReturn		= tpl.multifield();
+		var strShortLabel 	= $multifield.data("overviewlabel");
+		var strLabel 		= (typeof strShortLabel !== "undefined") ? strShortLabel : $multifield.find("label:first").text();
+		var strValue		= "";
 
 		// Check if first field is empty
 		var $objFirstSelect = $multifield.find("select:first");
