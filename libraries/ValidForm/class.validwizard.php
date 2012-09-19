@@ -302,6 +302,46 @@ class ValidWizard extends ValidForm {
 		return $arrReturn;
 	}
 
+	public function getFields() {
+		$objFields = new VF_Collection();
+
+		foreach ($this->__elements as $objPage) {
+			if ($objPage->hasFields()) {
+				foreach ($objPage->getFields() as $objFieldset) {
+					if ($objFieldset->hasFields()) {
+						foreach ($objFieldset->getFields() as $objField) {
+							if (is_object($objField)) {
+								if ($objField->hasFields()) {
+									foreach ($objField->getFields() as $objSubField) {
+										if (is_object($objSubField)) {
+											if ($objSubField->hasFields()) {
+												foreach ($objSubField->getFields() as $objSubSubField) {
+													if (is_object($objSubSubField)) {
+														$objFields->addObject($objSubSubField);
+													}
+												}
+											} else {
+												$objFields->addObject($objSubField);
+											}
+										}
+									}
+								} else {
+									$objFields->addObject($objField);
+								}
+							}
+						}
+					} else {
+						$objFields->addObject($objFieldset);
+					}
+				}
+			} else {
+				$objFields->addObject($objPage);
+			}
+		}
+
+		return $objFields;
+	}
+
 	public function isValid($strPageId = null) {
 		if (!is_null($strPageId)) {
 			return $this->isValidUntil($strPageId);
