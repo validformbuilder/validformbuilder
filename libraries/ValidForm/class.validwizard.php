@@ -302,7 +302,13 @@ class ValidWizard extends ValidForm {
 		return $arrReturn;
 	}
 
-	public function getFields() {
+	/**
+	 * getFields creates a flat collection of all form fields.
+	 *
+	 * @param  boolean $blnIncludeMultiFields Set this to true if you want to include MultiFields in the collection
+	 * @return VF_Collection                  The collection of fields.
+	 */
+	public function getFields($blnIncludeMultiFields = false) {
 		$objFields = new VF_Collection();
 
 		foreach ($this->__elements as $objPage) {
@@ -312,9 +318,19 @@ class ValidWizard extends ValidForm {
 						foreach ($objFieldset->getFields() as $objField) {
 							if (is_object($objField)) {
 								if ($objField->hasFields()) {
+									// Also add the multifield to the resulting collection, if $blnIncludeMultiFields is true.
+									if (get_class($objField) == "VF_MultiField" && $blnIncludeMultiFields) {
+										$objFields->addObject($objField);
+									}
+
 									foreach ($objField->getFields() as $objSubField) {
 										if (is_object($objSubField)) {
 											if ($objSubField->hasFields()) {
+												// Also add the multifield to the resulting collection, if $blnIncludeMultiFields is true.
+												if (get_class($objField) == "VF_MultiField" && $blnIncludeMultiFields) {
+													$objFields->addObject($objField);
+												}
+
 												foreach ($objSubField->getFields() as $objSubSubField) {
 													if (is_object($objSubSubField)) {
 														$objFields->addObject($objSubSubField);
