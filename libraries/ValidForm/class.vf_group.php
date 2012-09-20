@@ -158,7 +158,7 @@ class VF_Group extends VF_Element {
 		$strOutput = "";
 
 		// Create a dummy element to get the reserved meta array.
-		$objDummy = new VF_Element("dummy", VF_TEXT);
+		$objDummy = new VF_Element("dummy", VFORM_TEXT);
 
 		foreach ($this->__meta as $key => $value) {
 			if (!in_array($key, $objDummy->getReservedMeta()) && !empty($value)) {

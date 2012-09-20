@@ -42,7 +42,7 @@ class VF_Element extends ClassDynamic {
 	protected $__validator;
 	protected $__targetfield = null;
 	protected $__triggerfield = null;
-	protected $__reservedMeta = array("data", "dynamicCounter", "tip", "hint", "default", "width", "height", "length", "start", "end", "path", "labelStyle", "labelClass", "labelRange", "valueRange", "dynamic", "dynamicLabel", "matchWith");
+	protected $__reservedmeta = array("data", "dynamicCounter", "tip", "hint", "default", "width", "height", "length", "start", "end", "path", "labelStyle", "labelClass", "labelRange", "valueRange", "dynamic", "dynamicLabel", "matchWith");
 
 	public function __construct($name, $type, $label = "", $validationRules = array(), $errorHandlers = array(), $meta = array()) {
 		if (is_null($validationRules)) $validationRules = array();
@@ -361,7 +361,7 @@ class VF_Element extends ClassDynamic {
 		$strOutput = "";
 
 		foreach ($this->__meta as $key => $value) {
-			if (!in_array($key, $this->__reservedMeta)) {
+			if (!in_array($key, $this->__reservedmeta)) {
 				$strOutput .= " {$key}=\"{$value}\"";
 			}
 		}
@@ -374,7 +374,7 @@ class VF_Element extends ClassDynamic {
 
 		if (is_array($this->__labelmeta)) {
 			foreach ($this->__labelmeta as $key => $value) {
-				if (!in_array($key, $this->__reservedMeta)) {
+				if (!in_array($key, $this->__reservedmeta)) {
 					$strOutput .= " {$key}=\"{$value}\"";
 				}
 			}
