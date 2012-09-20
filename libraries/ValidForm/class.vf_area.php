@@ -117,10 +117,14 @@ class VF_Area extends ClassDynamic {
 
 		foreach ($this->__fields as $objField) {
 			if (get_class($objField) !== "VF_Hidden") {
-				$varValue = $objField->getValidator()->getValue($intCount);
+				if (get_class($objField) == "VF_MultiField") {
+					$blnReturn = $objField->hasContent($intCount);
+				} else {
+					$varValue = $objField->getValidator()->getValue($intCount);
 
-				if (!empty($varValue)) {
-					$blnReturn = true;
+					if (!empty($varValue)) {
+						$blnReturn = true;
+					}
 				}
 
 				break;
@@ -240,11 +244,15 @@ class VF_Area extends ClassDynamic {
 
 		if ($this->__dynamic) {
 			$objSubFields = $this->getFields();
-			// echo "ok" . $objSubFields->getFirst();
 			$objSubField = ($objSubFields->count() > 0) ? $objSubFields->getFirst() : NULL;
 
 			if (is_object($objSubField)) {
-				$intReturn = $objSubField->getDynamicCounter()->getValidator()->getValue();
+				if ($objSubField->hasFields()) {
+					$objSubField = $objSubField->getFields()->getFirst();
+				}
+
+				//$intReturn = $objSubField->getDynamicCounter()->getValidator()->getValue(); // old, faulty way to get dynamic count
+				$intReturn = $objSubField->getDynamicCount(); // new
 			}
 		}
 

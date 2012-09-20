@@ -218,6 +218,31 @@ class VF_MultiField extends ClassDynamic {
 		return 0;
 	}
 
+	/**
+	 * Loop through all child fields and check their values. If one value is not empty,
+	 * the MultiField has content.
+	 *
+	 * @param  integer $intCount The current dynamic count.
+	 * @return boolean           True if multifield has content, false if not.
+	 */
+	public function hasContent($intCount = 0) {
+		$blnReturn = false;
+
+		foreach ($this->__fields as $objField) {
+			if (get_class($objField) !== "VF_Hidden") {
+				$varValue = $objField->getValidator()->getValue($intCount);
+
+				if (!empty($varValue)) {
+					$blnReturn = true;
+				}
+
+				break;
+			}
+		}
+
+		return $blnReturn;
+	}
+
 	public function hasFields() {
 		return ($this->__fields->count() > 0) ? TRUE : FALSE;
 	}
@@ -273,7 +298,7 @@ class VF_MultiField extends ClassDynamic {
 		$strOutput = "";
 
 		// Create a dummy element to get the reserved meta array.
-		$objDummy = new VF_Element("dummy", VF_TEXT);
+		$objDummy = new VF_Element("dummy", VFORM_TEXT);
 
 		foreach ($this->__meta as $key => $value) {
 			if (!in_array($key, $objDummy->getReservedMeta()) && !empty($value)) {
