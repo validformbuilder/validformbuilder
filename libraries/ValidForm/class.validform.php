@@ -324,7 +324,7 @@ class ValidForm extends ClassDynamic {
 		// Validate & cache all values
 		$this->valuesAsHtml($blnSubmittedValues); // Especially dynamic counters need this!
 
-		return serialize($this);
+		return base64_encode(gzcompress(serialize($this)));
 	}
 
 	/**

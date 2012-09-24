@@ -111,7 +111,7 @@ class ValidWizard extends ValidForm {
 	public static function unserialize($strSerialized, $strUniqueId = "") {
 		$objReturn = null;
 
-		$objForm = unserialize($strSerialized);
+		$objForm = unserialize(gzuncompress(base64_decode($strSerialized)));
 		if (get_class($objForm) == "ValidWizard") {
 			$objReturn = $objForm;
 			if (!empty($strUniqueId)) $objReturn->__setUniqueId($strUniqueId);
