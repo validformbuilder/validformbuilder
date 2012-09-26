@@ -251,8 +251,8 @@ class VF_Area extends ClassDynamic {
 					$objSubField = $objSubField->getFields()->getFirst();
 				}
 
-				//$intReturn = $objSubField->getDynamicCounter()->getValidator()->getValue(); // old, faulty way to get dynamic count
-				$intReturn = $objSubField->getDynamicCount(); // new
+				$intReturn = $objSubField->getDynamicCounter()->getValidator()->getValue(); // old, faulty way to get dynamic count
+				// $intReturn = $objSubField->getDynamicCount(); // new --- NOT working
 			}
 		}
 

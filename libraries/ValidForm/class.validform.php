@@ -489,30 +489,39 @@ class ValidForm extends ClassDynamic {
 		$strReturn = "";
 		$strSet = "";
 
-		foreach ($objField->getFields() as $objSubField) {
-			switch (get_class($objSubField)) {
-				case "VF_MultiField":
-					$strSet .= $this->multiFieldAsHtml($objSubField, $hideEmpty, $intDynamicCount);
+		if ($objField->hasContent($intDynamicCount)) {
+			foreach ($objField->getFields() as $objSubField) {
+				switch (get_class($objSubField)) {
+					case "VF_MultiField":
+						$strSet .= $this->multiFieldAsHtml($objSubField, $hideEmpty, $intDynamicCount);
 
-					break;
-				default:
-					$strSet .= $this->fieldAsHtml($objSubField, $hideEmpty, $intDynamicCount);
+						break;
+					default:
+						$strSet .= $this->fieldAsHtml($objSubField, $hideEmpty, $intDynamicCount);
 
-					// Support nested dynamic fields.
-					if ($objSubField->isDynamic()) {
-						$intDynamicCount = $objSubField->getDynamicCount();
-						for ($intCount = 1; $intCount <= $intDynamicCount; $intCount++) {
-							$strSet .= $this->fieldAsHtml($objSubField, $hideEmpty, $intCount);
+						// Support nested dynamic fields.
+						if ($objSubField->isDynamic()) {
+							$intDynamicCount = $objSubField->getDynamicCount();
+							for ($intCount = 1; $intCount <= $intDynamicCount; $intCount++) {
+								$strSet .= $this->fieldAsHtml($objSubField, $hideEmpty, $intCount);
+							}
 						}
-					}
+				}
 			}
 		}
+
 
 		if (!empty($strSet)) {
 			$strReturn = "<tr>";
 			$strReturn .= "<td colspan=\"3\" style=\"white-space:nowrap\" class=\"vf__area_header\"><h3>{$objField->getLabel()}</h3></td>\n";
 			$strReturn .= "</tr>";
 			$strReturn .= $strSet;
+		} else {
+			if (!empty($this->__novaluesmessage)) {
+				return $strReturn . "<tr><td colspan=\"3\">{$this->__novaluesmessage}</td></tr></table>";
+			} else {
+				return "";
+			}
 		}
 
 		return $strReturn;
@@ -521,30 +530,31 @@ class ValidForm extends ClassDynamic {
 	private function multiFieldAsHtml($objField, $hideEmpty = FALSE, $intDynamicCount = 0) {
 		$strReturn = "";
 
-		if ($objField->hasFields()) {
-			$strValue = "";
-			$objSubFields = $objField->getFields();
+		if ($objField->hasContent($intDynamicCount)) {
+			if ($objField->hasFields()) {
+				$strValue = "";
+				$objSubFields = $objField->getFields();
 
-			$intCount = 0;
-			foreach ($objSubFields as $objSubField) {
-				$intCount++;
+				$intCount = 0;
+				foreach ($objSubFields as $objSubField) {
+					$intCount++;
 
-				if (get_class($objSubField) == "VF_Hidden" && $objSubField->isDynamicCounter()) {
-					continue;
+					if (get_class($objSubField) == "VF_Hidden" && $objSubField->isDynamicCounter()) {
+						continue;
+					}
+
+					$varValue = $objSubField->getValue($intDynamicCount);
+					$strValue .= (is_array($varValue)) ? implode(", ", $varValue) : $varValue;
+					$strValue .= ($objSubFields->count() > $intCount) ? " " : "";
 				}
 
-				$varValue = $objSubField->getValue($intDynamicCount);
-				$strValue .= (is_array($varValue)) ? implode(", ", $varValue) : $varValue;
-				$strValue .= ($objSubFields->count() > $intCount) ? " " : "";
-			}
+				$strValue = trim($strValue);
 
-			$strValue = trim($strValue);
-
-			if ((!empty($strValue) && $hideEmpty) || (!$hideEmpty && !is_null($strValue))) {
-
-				$strReturn .= "<tr class=\"vf__field_value\">";
-				$strReturn .= "<td valign=\"top\" style=\"white-space:nowrap; padding-right: 20px\" class=\"vf__field\">{$objField->getLabel()}</td><td valign=\"top\" class=\"vf__value\"><strong>" . nl2br($strValue) . "</strong></td>\n";
-				$strReturn .= "</tr>";
+				if ((!empty($strValue) && $hideEmpty) || (!$hideEmpty && !empty($strValue))) {
+					$strReturn .= "<tr class=\"vf__field_value\">";
+					$strReturn .= "<td valign=\"top\" style=\"white-space:nowrap; padding-right: 20px\" class=\"vf__field\">{$objField->getLabel()}</td><td valign=\"top\" class=\"vf__value\"><strong>" . nl2br($strValue) . "</strong></td>\n";
+					$strReturn .= "</tr>";
+				}
 			}
 		}
 
