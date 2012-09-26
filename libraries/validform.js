@@ -529,7 +529,11 @@ ValidForm.prototype.valuesAsHtml = function (blnHideEmpty) {
 
 			});
 		}
+
 		var __setValueWidth = function () {
+			var labelWidth = 0;
+
+			// First, get the widest label width.
 			$(".vf__value", $objReturn).each(function () {
 				var $objValue 	= $(this);
 				var formWidth 	= $objValue.parentsUntil(".validform").parent().width();
@@ -557,18 +561,37 @@ ValidForm.prototype.valuesAsHtml = function (blnHideEmpty) {
 
 				if (blnIsMulti) {
 					$objValue = $objParent.find(".vf__multifieldvalue");
-					// $objValue.css("margin-left", 30);
 				}
 
-				var labelWidth 	= $objParent.find(".vf__label").width();
-				$objValue.width(formWidth - labelWidth - 30);
+				var newLabelWidth 	= $objParent.find(".vf__label").outerWidth();
+				labelWidth = (newLabelWidth > labelWidth) ? newLabelWidth : labelWidth;
+			});
 
+			$(".vf__value", $objReturn).each(function () {
+				var $objValue 	= $(this);
+				var formWidth 	= $objValue.parentsUntil(".validform").parent().width();
+				var blnIsMulti	= ($objValue.parent().is(".vf__multifielditem")) ? true : false;
+
+				// This is a list item, we handle them separately.
+				if ($objValue.parent().is("li")) {
+					return true; // Continue
+				}
+
+				if (blnIsMulti) {
+					$objValue = $objValue.parent().parent().parent().find(".vf__multifieldvalue");
+				}
+
+				$objValue.width(formWidth - labelWidth - 30);
 			});
 		}
 
 		// Directly on init
-		__setValueWidth();
-		__setListWidth();
+		$("#" + __this.id)
+			.one("VF_AfterShowPage", function () {
+				// Page is visible, now we can measure the elements.
+				__setValueWidth();
+				__setListWidth();
+			});
 
 		// And listen for resize events.
 		var _timer;
@@ -836,10 +859,6 @@ ValidForm.prototype.valuesAsHtml = function (blnHideEmpty) {
 					$objValue.appendTo($objItem);
 
 					$objItem.appendTo($objMultiFieldItems);
-
-					if ($(this).is($items.last())) {
-						console.log($(this));
-					}
 				}
 			});
 
@@ -891,6 +910,7 @@ ValidForm.prototype.showPage = function ($objPage) {
 
 	if (typeof $objPage == "object" && $objPage instanceof jQuery) {
 		jQuery("#" + this.id).trigger("VF_BeforeShowPage", [{ValidForm: __this, objPage: $objPage}]);
+
 		if (typeof this.events.beforeShowPage == "function") {
 			this.events.beforeShowPage($objPage);
 		} else {
