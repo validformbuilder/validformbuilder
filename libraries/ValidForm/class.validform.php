@@ -517,7 +517,7 @@ class ValidForm extends ClassDynamic {
 			$strReturn .= "</tr>";
 			$strReturn .= $strSet;
 		} else {
-			if (!empty($this->__novaluesmessage)) {
+			if (!empty($this->__novaluesmessage) && !$objField->isActive()) {
 				return $strReturn . "<tr><td colspan=\"3\">{$this->__novaluesmessage}</td></tr></table>";
 			} else {
 				return "";

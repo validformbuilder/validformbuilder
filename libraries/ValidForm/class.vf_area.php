@@ -221,6 +221,10 @@ class VF_Area extends ClassDynamic {
 		return $strReturn;
 	}
 
+	public function isActive() {
+		return $this->__active;
+	}
+
 	public function isValid() {
 		$intDynamicCount = $this->getDynamicCount();
 
