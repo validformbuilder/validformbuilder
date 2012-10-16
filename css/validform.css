@@ -302,6 +302,7 @@ input.vf__radiobutton
 	padding: 0;
 }
 
+form.validform div.vf__page_error,
 form.validform div.vf__main_error {
 	width: auto;
 	padding: 5px;
@@ -309,6 +310,7 @@ form.validform div.vf__main_error {
   	border: 3px solid #f00;
 }
 
+form.validform div.vf__page_error p,
 form.validform div.vf__main_error p {
 	font: bold 12px Arial, Helvetica, sans-serif;
   	color: #666;
@@ -375,7 +377,7 @@ form.validform div.vf__confirm * {
 	border: none;
 }
 form.validform div.vf__confirm span.vf__label {
-	width: 130px;
+	/*width: 130px;*/
 	float: left;
 }
 form.validform div.vf__list > ul,
