@@ -87,6 +87,7 @@ class VF_Text extends VF_Element {
 			$strClass = ($blnError) ? $strClass . " vf__error" : $strClass;
 			$strClass = ($this->hasTrigger()) ? $strClass . " vf__targetfield" : $strClass;
 			$strClass = (!$blnLabel) ? $strClass . " vf__nolabel" : $strClass;
+			$strClass = (empty($this->__hint)) ? $strClass : $strClass . " vf__hint";
 
 			$strOutput = "<div class=\"{$strClass}\">\n";
 
