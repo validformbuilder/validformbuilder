@@ -78,6 +78,11 @@ form.validform div.vf__required {
 	padding: 1px 3px;
 }
 
+form.validform div.vf__hint input,
+form.validform div.vf__hint textarea {
+	color: #999;
+}
+
 form.validform div.vf__multifield {
 	overflow: auto;
 }
