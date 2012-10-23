@@ -1445,6 +1445,12 @@ ValidFormValidator.prototype.showPage = function (strAlert) {
 	strAlert = (typeof this.pageAlert !== "undefined") ? this.pageAlert : strAlert;
 
 	if (typeof strAlert !== "undefined" && strAlert !== "") {
+		var $objPageError = jQuery("#" + this.id).find(".vf__page:visible").find(".vf__page_error");
+
+		if ($objPageError.length > 0) {
+			this.removePage();
+		}
+
 		jQuery("#" + this.id).find(".vf__page:visible").prepend("<div class=\"vf__page_error\"><p>" + strAlert + "</p></div>");
 	}
 

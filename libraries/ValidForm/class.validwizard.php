@@ -184,28 +184,53 @@ class ValidWizard extends ValidForm {
 		return $objFieldSet;
 	}
 
+	// public function valuesAsHtml($hideEmpty = false) {
+	// 	$strOutput = "";
+	// 	foreach ($this->__elements as $objPage) {
+	// 		$strPage = "";
+	// 		if (get_class($objPage) == "VF_Page") {
+	// 			$strHeader = $objPage->getHeader();
+
+	// 			$strPage .= "\n<div id='{$objPage->getId()}'>\n";
+
+	// 			if (!empty($strHeader)) {
+	// 				$strPage .= "<h2>{$strHeader}</h2>\n";
+	// 			}
+
+	// 			$strPageContent = parent::valuesAsHtml($hideEmpty, $objPage->getFields()) . "\n";
+
+	// 			if (trim($strPageContent) !== "") {
+	// 				$strOutput .= $strPage . $strPageContent . "</div>\n";
+	// 			}
+	// 		}
+	// 	}
+
+	// 	return $strOutput;
+	// }
+
 	public function valuesAsHtml($hideEmpty = false) {
-		$strOutput = "";
+		$strTable 		= "\t<table border=\"0\" cellspacing=\"0\" cellpadding=\"0\" class=\"validform\">\n";
+		$strTableOutput	= "";
+
 		foreach ($this->__elements as $objPage) {
-			$strPage = "";
-			if (get_class($objPage) == "VF_Page") {
-				$strHeader = $objPage->getHeader();
-
-				$strPage .= "\n<div id='{$objPage->getId()}'>\n";
-
-				if (!empty($strHeader)) {
-					$strPage .= "<h2>{$strHeader}</h2>\n";
-				}
-
-				$strPageContent = parent::valuesAsHtml($hideEmpty, $objPage->getFields()) . "\n";
-
-				if (trim($strPageContent) !== "") {
-					$strOutput .= $strPage . $strPageContent . "</div>\n";
+			if (get_class($objPage) === "VF_Page") {
+				$strTableOutput .= "<tr><td colspan=\"3\" class=\"vf__page-header\">{$objPage->getHeader()}</td></tr>";
+				foreach ($objPage->getFields() as $objFieldset) {
+					$strSet = "";
+					$strTableOutput .= parent::fieldsetAsHtml($objFieldset, $strSet, $hideEmpty);
 				}
 			}
 		}
 
-		return $strOutput;
+		if (!empty($strTableOutput)) {
+			return $strTable . $strTableOutput . "</table>";
+		} else {
+			if (!empty($this->__novaluesmessage)) {
+				return $strTable . "<tr><td colspan=\"3\">{$this->__novaluesmessage}</td></tr></table>";
+			} else {
+				return "";
+			}
+		}
 	}
 
 	private function __addHiddenFields() {

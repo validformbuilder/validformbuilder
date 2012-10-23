@@ -367,7 +367,7 @@ form.validform div.vf__dynamic a.vf__disabled {
 }
 
 /************************************************************************
- * Confirm page styling
+ * Client-side confirm page styling
  *************************************************************************/
 
 /* prevent earlier defined styling */
@@ -377,7 +377,6 @@ form.validform div.vf__confirm * {
 	border: none;
 }
 form.validform div.vf__confirm span.vf__label {
-	/*width: 130px;*/
 	float: left;
 }
 form.validform div.vf__list > ul,
@@ -390,4 +389,16 @@ form.validform div.vf__multifielditem strong.vf__value {
 }
 form.validform div.vf__confirm div.vf__list > ul {
 	list-style: none;
+}
+
+/**
+ * valuesAsHtml table overview
+ */
+table.validform {
+
+}
+table.validform td.vf__page-header {
+	font-size: 20px;
+	font-weight: bold;
+	padding: 10px 0 5px;
 }

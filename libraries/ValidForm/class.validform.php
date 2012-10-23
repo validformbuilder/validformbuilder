@@ -26,6 +26,7 @@ require_once('class.vf_select.php');
 require_once('class.vf_selectgroup.php');
 require_once('class.vf_selectoption.php');
 require_once('class.vf_file.php');
+require_once('class.vf_hidden.php');
 require_once('class.vf_paragraph.php');
 require_once('class.vf_group.php');
 require_once('class.vf_groupfield.php');
@@ -409,69 +410,13 @@ class ValidForm extends ClassDynamic {
 	}
 
 	public function valuesAsHtml($hideEmpty = FALSE, $collection = null) {
-		$strTable 		= "\t<table border=\"0\" cellspacing=\"0\" cellpadding=\"0\">\n";
+		$strTable 		= "\t<table border=\"0\" cellspacing=\"0\" cellpadding=\"0\" class=\"validform\">\n";
 		$strTableOutput	= "";
 		$collection 	= (!is_null($collection)) ? $collection : $this->__elements;
 
 		foreach ($collection as $objFieldset) {
 			$strSet = "";
-			foreach ($objFieldset->getFields() as $objField) {
-				if (is_object($objField)) {
-					$strValue = (is_array($objField->getValue())) ? implode(", ", $objField->getValue()) : $objField->getValue();
-
-					if ((!empty($strValue) && $hideEmpty) || (!$hideEmpty && !is_null($strValue))) {
-						if ($objField->hasFields()) {
-							switch (get_class($objField)) {
-								case "VF_MultiField":
-									$strSet .= $this->multiFieldAsHtml($objField, $hideEmpty);
-
-									break;
-								default:
-									$strSet .= $this->areaAsHtml($objField, $hideEmpty);
-							}
-						} else {
-							$strSet .= $this->fieldAsHtml($objField, $hideEmpty);
-						}
-					}
-
-					if ($objField->isDynamic()) {
-						$intDynamicCount = $objField->getDynamicCount();
-
-						if ($intDynamicCount > 0) {
-							for ($intCount = 1; $intCount <= $intDynamicCount; $intCount++) {
-								switch (get_class($objField)) {
-									case "VF_MultiField":
-										$strSet .= $this->multiFieldAsHtml($objField, $hideEmpty, $intCount);
-
-										break;
-
-									case "VF_Area":
-										$strSet .= $this->areaAsHtml($objField, $hideEmpty, $intCount);
-
-										break;
-
-									default:
-										$strSet .= $this->fieldAsHtml($objField, $hideEmpty, $intCount);
-								}
-							}
-						}
-					}
- 				}
-			}
-
-			$strHeader = $objFieldset->getHeader();
-			if (!empty($strHeader) && !empty($strSet)) {
-				$strTableOutput .= "<tr>";
-				$strTableOutput .= "<td colspan=\"3\">&nbsp;</td>\n";
-				$strTableOutput .= "</tr>";
-				$strTableOutput .= "<tr>";
-				$strTableOutput .= "<td colspan=\"3\"><b>{$strHeader}</b></td>\n";
-				$strTableOutput .= "</tr>";
-			}
-
-			if (!empty($strSet)) {
-				$strTableOutput .= $strSet;
-			}
+			$strTableOutput .= $this->fieldsetAsHtml($objFieldset, $strSet, $hideEmpty);
 		}
 
 		if (!empty($strTableOutput)) {
@@ -483,6 +428,70 @@ class ValidForm extends ClassDynamic {
 				return "";
 			}
 		}
+	}
+
+	public function fieldsetAsHtml($objFieldset, &$strSet, $hideEmpty = false) {
+		$strTableOutput = "";
+
+		foreach ($objFieldset->getFields() as $objField) {
+			if (is_object($objField)) {
+				$strValue = (is_array($objField->getValue())) ? implode(", ", $objField->getValue()) : $objField->getValue();
+
+				if ((!empty($strValue) && $hideEmpty) || (!$hideEmpty && !is_null($strValue))) {
+					if ($objField->hasFields()) {
+						switch (get_class($objField)) {
+							case "VF_MultiField":
+								$strSet .= $this->multiFieldAsHtml($objField, $hideEmpty);
+
+								break;
+							default:
+								$strSet .= $this->areaAsHtml($objField, $hideEmpty);
+						}
+					} else {
+						$strSet .= $this->fieldAsHtml($objField, $hideEmpty);
+					}
+				}
+
+				if ($objField->isDynamic()) {
+					$intDynamicCount = $objField->getDynamicCount();
+
+					if ($intDynamicCount > 0) {
+						for ($intCount = 1; $intCount <= $intDynamicCount; $intCount++) {
+							switch (get_class($objField)) {
+								case "VF_MultiField":
+									$strSet .= $this->multiFieldAsHtml($objField, $hideEmpty, $intCount);
+
+									break;
+
+								case "VF_Area":
+									$strSet .= $this->areaAsHtml($objField, $hideEmpty, $intCount);
+
+									break;
+
+								default:
+									$strSet .= $this->fieldAsHtml($objField, $hideEmpty, $intCount);
+							}
+						}
+					}
+				}
+				}
+		}
+
+		$strHeader = $objFieldset->getHeader();
+		if (!empty($strHeader) && !empty($strSet)) {
+			$strTableOutput .= "<tr>";
+			$strTableOutput .= "<td colspan=\"3\">&nbsp;</td>\n";
+			$strTableOutput .= "</tr>";
+			$strTableOutput .= "<tr>";
+			$strTableOutput .= "<td colspan=\"3\"><b>{$strHeader}</b></td>\n";
+			$strTableOutput .= "</tr>";
+		}
+
+		if (!empty($strSet)) {
+			$strTableOutput .= $strSet;
+		}
+
+		return $strTableOutput;
 	}
 
 	private function areaAsHtml($objField, $hideEmpty = FALSE, $intDynamicCount = 0) {
