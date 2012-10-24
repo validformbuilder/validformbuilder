@@ -48,7 +48,8 @@ class VF_Password extends VF_Element {
 				if (!empty($this->__label)) $strOutput .= "<label for=\"{$this->__id}\"{$this->__getLabelMetaString()}>{$strLabel}</label>\n";
 			}
 		} else {
-			$strOutput = "<div class=\"vf__multifielditem\">\n";
+			$strClass = (empty($this->__hint)) ? "" : " vf__hint";
+			$strOutput = "<div class=\"vf__multifielditem{$strClass}\">\n";
 		}
 
 		//*** Add maxlength attribute to the meta array. This is being read by the getMetaString method.

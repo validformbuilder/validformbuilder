@@ -100,7 +100,8 @@ class VF_Text extends VF_Element {
 				if (!empty($this->__label)) $strOutput .= "<label for=\"{$strId}\">{$strLabel}</label>\n";
 			}
 		} else {
-			$strOutput = "<div class=\"vf__multifielditem\">\n";
+			$strClass = (empty($this->__hint)) ? "" : " vf__hint";
+			$strOutput = "<div class=\"vf__multifielditem{$strClass}\">\n";
 		}
 
 		//*** Add max-length attribute to the meta array. This is being read by the getMetaString method.
