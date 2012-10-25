@@ -36,6 +36,7 @@ function ValidFormFieldValidator(strElementId, strElementName) {
 
 	this.id 				= strElementId;
 	this.name 				= strElementName;
+	this.disabled 			= !!($("#" + strElementId).attr("disabled") === "disabled");
 	this.check				= null;
 	this.typeError			= "";
 	this.required			= false;
@@ -58,6 +59,7 @@ function ValidFormElement(strFormId, strElementName, strElementId, strValidation
 	this.formId					= strFormId;
 	this.id 					= strElementId;
 	this.name 					= strElementName;
+	this.disabled 				= !!($("#" + strElementId).attr("disabled") === "disabled");
 	this.validator 				= new ValidFormFieldValidator(strElementId, strElementName);
 	this.validator.check 		= strValidation;
 	this.validator.required		= false;
@@ -1287,6 +1289,15 @@ ValidForm.prototype.addElement = function() {
 		}
 
 		this.elements[strElementName] = new ValidFormElement(this.id, strElementName, strElementId, strValidation, required, maxLength, minLength, hint, typeError, requiredError, hintError, minLengthError, maxLengthError);
+
+		// Slightly experimental, but seems to work so far.
+		// This event listener listens for change events on all form elements.
+		// As soon as they are changes, the corresponding error message
+		// will be removed.
+		var self = this;
+		$("[name='" + strElementName + "']").on("change", function () {
+			self.elements[strElementName].validator.removeAlert();
+		});
 	}
 };
 
@@ -1477,127 +1488,137 @@ ValidFormFieldValidator.prototype.validate = function(value) {
 
 	this.removeAlert();
 
-	try {
-		var objDOMElement = objElement.get(0);
-		/*** Redirect to error handler if a checkbox or radio is found.
-				This is done for cross-browser functionality. */
+	// Check if the disabled attribute has been set if so, no validation is
+	// needed because this field value will not be submitted anyway.
+	this.disabled = !!(objElement.attr("disabled") === "disabled");
 
-		switch (objDOMElement.type) {
-			case 'checkbox':
-			case 'radiobutton':
-				throw "Checkbox or radio button detected.";
-				break;
-		}
 
-		//*** Required, but empty is not good.
-		if (this.required && value == "") {
-			this.showAlert(this.requiredError);
-			return false;
-		} else if (!this.required && value == "") {
-			// If the triggerfield is checked, the targetfield (objElement) becomes required.
-			var objTrigger = objElement.data("vf_triggerField");
+	if (!this.disabled) {
+		try {
+			var objDOMElement = objElement.get(0);
+			/*** Redirect to error handler if a checkbox or radio is found.
+					This is done for cross-browser functionality. */
 
-			if (typeof objTrigger !== "undefined") {
-				if (objTrigger.is("option")) {
-					// The trigger is an option in a select list.
-					objTrigger = objTrigger.parent(); // Get the select list instead of the option element
-
-					if (objTrigger.val() == objElement.attr("name")) {
-						this.showAlert(this.requiredError);
-						return false;
-					}
-
-				} else {
-					// The trigger is a checkbox or radiobutton
-					if (objTrigger[0].checked) {
-						this.showAlert(this.requiredError);
-						return false;
-
-					}
-				}
+			switch (objDOMElement.type) {
+				case 'checkbox':
+				case 'radiobutton':
+					throw "Checkbox or radio button detected.";
+					break;
 			}
-
-			return true;
-		}
-
-		//*** Check if there is a matchWith field to validate against
-		if (typeof this.matchWith == "object") {
-			if (this.matchWith.validate()) {
-				if (jQuery("#" + this.matchWith.id).val() != value) {
-					this.matchWith.validator.showAlert(this.matchError);
-					this.showAlert(this.matchError);
-					return false;
-				}
-			}
-		}
-
-		//*** Value is the same as hint value.
-		if (this.hint && value == this.hint) {
-			this.showAlert(this.hintError);
-			return false;
-		}
-
-		//*** Check if the length of the value is within the range.
-		if (this.minLength > 0 && value.length < this.minLength) {
-			this.showAlert(sprintf(this.minLengthError, this.minLength));
-			return false;
-		}
-
-		if (this.maxLength > 0 && value.length > this.maxLength) {
-			this.showAlert(sprintf(this.maxLengthError, this.maxLength));
-			return false;
-		}
-
-		//*** Check specific types using regular expression.
-		if(typeof this.check != "function" && typeof this.check != "object") {
-			return true;
-		} else {
-			blnReturn = this.check.test(value);
-			if (blnReturn == false) this.showAlert(this.typeError);
-			return blnReturn;
-		}
-	} catch(e) {
-		var objElements = jQuery("input[name='" + this.name + "']");
-		if (objElements.length > 0) {
-			var objValidElements = objElements.filter(":checked");
-			value = objValidElements.val();
 
 			//*** Required, but empty is not good.
-			if (this.required && value == undefined && objElements.attr("disabled") !== "disabled") {
+			if (this.required && value == "") {
 				this.showAlert(this.requiredError);
 				return false;
-			} else if (!this.required && value == undefined) {
+			} else if (!this.required && value == "") {
+				// If the triggerfield is checked, the targetfield (objElement) becomes required.
+				var objTrigger = objElement.data("vf_triggerField");
+
+				if (typeof objTrigger !== "undefined") {
+					if (objTrigger.is("option")) {
+						// The trigger is an option in a select list.
+						objTrigger = objTrigger.parent(); // Get the select list instead of the option element
+
+						if (objTrigger.val() == objElement.attr("name")) {
+							this.showAlert(this.requiredError);
+							return false;
+						}
+
+					} else {
+						// The trigger is a checkbox or radiobutton
+						if (objTrigger[0].checked) {
+							this.showAlert(this.requiredError);
+							return false;
+
+						}
+					}
+				}
+
 				return true;
-			} else if (this.required && value == undefined && objElements.attr("disabled") == "disabled") {
-				return true;
+			}
+
+			//*** Check if there is a matchWith field to validate against
+			if (typeof this.matchWith == "object") {
+				if (this.matchWith.validate()) {
+					if (jQuery("#" + this.matchWith.id).val() != value) {
+						this.matchWith.validator.showAlert(this.matchError);
+						this.showAlert(this.matchError);
+						return false;
+					}
+				}
+			}
+
+			//*** Value is the same as hint value.
+			if (this.hint && value == this.hint) {
+				this.showAlert(this.hintError);
+				return false;
 			}
 
 			//*** Check if the length of the value is within the range.
-			if (this.minLength > 0 && objValidElements.length < this.minLength) {
+			if (this.minLength > 0 && value.length < this.minLength) {
 				this.showAlert(sprintf(this.minLengthError, this.minLength));
 				return false;
 			}
 
-			if (this.maxLength > 0 && objValidElements.length > this.maxLength) {
+			if (this.maxLength > 0 && value.length > this.maxLength) {
 				this.showAlert(sprintf(this.maxLengthError, this.maxLength));
 				return false;
 			}
 
-			//*** Check specific types using the type array.
-			if (typeof this.check == "array") {
-				for (var intCount = 0; intCount < objValidElements.length; intCount++) {
-					if (!ValidForm.inArray(this.check, objValidElements.get(intCount))) {
-						this.showAlert(this.typeError);
-						return false;
+			//*** Check specific types using regular expression.
+			if(typeof this.check != "function" && typeof this.check != "object") {
+				return true;
+			} else {
+				blnReturn = this.check.test(value);
+				if (blnReturn == false) this.showAlert(this.typeError);
+				return blnReturn;
+			}
+		} catch(e) {
+			var objElements = jQuery("input[name='" + this.name + "']");
+			if (objElements.length > 0) {
+				var objValidElements = objElements.filter(":checked");
+				value = objValidElements.val();
+
+				//*** Required, but empty is not good.
+				if (this.required && value == undefined && objElements.attr("disabled") !== "disabled") {
+					this.showAlert(this.requiredError);
+					return false;
+				} else if (!this.required && value == undefined) {
+					return true;
+				} else if (this.required && value == undefined && objElements.attr("disabled") == "disabled") {
+					return true;
+				}
+
+				//*** Check if the length of the value is within the range.
+				if (this.minLength > 0 && objValidElements.length < this.minLength) {
+					this.showAlert(sprintf(this.minLengthError, this.minLength));
+					return false;
+				}
+
+				if (this.maxLength > 0 && objValidElements.length > this.maxLength) {
+					this.showAlert(sprintf(this.maxLengthError, this.maxLength));
+					return false;
+				}
+
+				//*** Check specific types using the type array.
+				if (typeof this.check == "array") {
+					for (var intCount = 0; intCount < objValidElements.length; intCount++) {
+						if (!ValidForm.inArray(this.check, objValidElements.get(intCount))) {
+							this.showAlert(this.typeError);
+							return false;
+						}
 					}
 				}
-			}
 
-			return true;
-		} else {
-			return true;
+				return true;
+			} else {
+				return true;
+			}
 		}
+	} else {
+		return true;
 	}
+
 };
 
 ValidFormFieldValidator.prototype.removeAlert = function() {
