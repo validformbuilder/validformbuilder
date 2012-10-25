@@ -620,24 +620,27 @@ class ValidForm extends ClassDynamic {
 
 		//*** Form Events.
 		foreach ($this->__jsEvents as $event => $method) {
-			$strJs .= "objForm.addEvent(\"{$event}\", {$method});\n";
+			$strJs .= "\tobjForm.addEvent(\"{$event}\", {$method});\n";
 		}
+
+		// Indent javascript
+		$strJs = str_replace("\n", "\n\t", $strJs);
 
 		$strReturn .= "<script type=\"text/javascript\">\n";
 		$strReturn .= "// <![CDATA[\n";
 		$strReturn .= "function {$this->__name}_init() {\n";
-		$strReturn .= "var objForm = new ValidForm(\"{$this->__name}\", \"{$this->__mainalert}\");\n";
+		$strReturn .= "\tvar objForm = new ValidForm(\"{$this->__name}\", \"{$this->__mainalert}\");\n";
 		$strReturn .= $strJs;
 		if (!empty($strCustomJs)) $strReturn .= $strCustomJs;
-		$strReturn .= "$(\"#{$this->__name}\").data(\"vf__formElement\", objForm);";
+		$strReturn .= "\t$(\"#{$this->__name}\").data(\"vf__formElement\", objForm);";
 		$strReturn .= "};\n";
 		$strReturn .= "\n";
 		$strReturn .= "try {\n";
-		$strReturn .= "jQuery(function(){\n";
-		$strReturn .= "{$this->__name}_init();\n";
-		$strReturn .= "});\n";
+		$strReturn .= "\tjQuery(function(){\n";
+		$strReturn .= "\t\t{$this->__name}_init();\n";
+		$strReturn .= "\t});\n";
 		$strReturn .= "} catch (e) {\n";
-		$strReturn .= "alert('Exception caught while initiating ValidForm:\\n\\n' + e.message);\n";
+		$strReturn .= "\talert('Exception caught while initiating ValidForm:\\n\\n' + e.message);\n";
 		$strReturn .= "}\n";
 		$strReturn .= "// ]]>\n";
 		$strReturn .= "</script>\n";

@@ -126,9 +126,9 @@ class ValidWizard extends ValidForm {
 		// Optionally set a custom first visibile page.
 		$intPage = ($this->__currentpage > 1) ? $this->__currentpage : "";
 
-		$strReturn .= "objForm.setLabel('next', '" . $this->__nextlabel . "');\n";
-		$strReturn .= "objForm.setLabel('previous', '" . $this->__previouslabel . "');\n";
-		$strReturn .= "objForm.initWizard({$intPage});\n" . $strCustomJs;
+		$strReturn .= "objForm.setLabel('next', '" . $this->__nextlabel . "');\n\t";
+		$strReturn .= "objForm.setLabel('previous', '" . $this->__previouslabel . "');\n\t";
+		$strReturn .= "objForm.initWizard({$intPage});\n\n" . $strCustomJs;
 
 		return $strReturn;
 	}

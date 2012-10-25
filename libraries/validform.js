@@ -81,17 +81,19 @@ function ValidFormElement(strFormId, strElementName, strElementId, strValidation
 
 		var __this = this;
 		if (this.validator.hint != "") {
-			jQuery("#" + this.id).bind("focus", function(){
-				if (jQuery(this).val() == __this.validator.hint) {
-					jQuery(this).val("");
-					jQuery(this).parent().removeClass("vf__hint");
-				}
-			}).bind("blur", function(){
-				if (jQuery(this).val() == "" && __this.validator.required) {
-					jQuery(this).val(__this.validator.hint);
-					jQuery(this).parent().addClass("vf__hint");
-				}
-			});
+			jQuery("#" + this.id)
+				.bind("focus", function(){
+					if (jQuery(this).val() == __this.validator.hint) {
+						jQuery(this).val("");
+						jQuery(this).parent().removeClass("vf__hint");
+					}
+				})
+				.bind("blur", function(){
+					if (jQuery(this).val() == "" && __this.validator.required) {
+						jQuery(this).val(__this.validator.hint);
+						jQuery(this).parent().addClass("vf__hint");
+					}
+				});
 		}
 	}
 
