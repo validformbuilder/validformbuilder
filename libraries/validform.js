@@ -216,18 +216,22 @@ ValidForm.prototype.init = function() {
 	this.traverseDisabledElements();
 
 	// This is where the magic happens: onSubmit; validate form.
-	jQuery("#" + this.id).bind("submit", function(){
+	jQuery("#" + __this.id).bind("submit", function(){
 		jQuery("#" + this.id).trigger("VF_BeforeSubmit", [{ValidForm: __this}]);
 		if (typeof __this.events.beforeSubmit == "function") {
 			__this.events.beforeSubmit(__this);
 		}
 
-		if (__this.pages.length > 1) {
-			// Validation has been done on each page individually.
-			// No need to re-validate here.
-			return true;
+		if (__this.__continueExecution) {
+			if (__this.pages.length > 1) {
+				// Validation has been done on each page individually.
+				// No need to re-validate here.
+				return true;
+			} else {
+				return __this.validate();
+			}
 		} else {
-			return __this.validate();
+			return false;
 		}
 	});
 
@@ -423,6 +427,8 @@ ValidForm.prototype.getPages = function () {
 };
 
 ValidForm.prototype.nextPage = function () {
+	this.__continueExecution = true; // reset before triggering custom events
+
 	jQuery("#" + this.id).trigger("VF_BeforeNextPage", [{ValidForm: this}]);
 	if (this.__continueExecution) {
 		if (typeof this.events.beforeNextPage == "function") {
