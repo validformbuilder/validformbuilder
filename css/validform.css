@@ -48,7 +48,6 @@ form.vf__cf
 form.validform {
 	margin: 0;
 	padding: 0;
-	overflow: auto;
 }
 
 form.validform fieldset {
@@ -81,10 +80,6 @@ form.validform div.vf__required {
 form.validform div.vf__hint input,
 form.validform div.vf__hint textarea {
 	color: #999;
-}
-
-form.validform div.vf__multifield {
-	overflow: auto;
 }
 
 form.validform label {

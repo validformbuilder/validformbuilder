@@ -104,7 +104,7 @@ class VF_MultiField extends ClassDynamic {
 
 		$strClass 	= (array_key_exists("class", $this->__meta)) ? $strClass . " " . $this->__meta["class"] : $strClass;
 		$strClass 	= ($blnError) ? $strClass . " vf__error" : $strClass;
-		$strOutput 	= "<div class=\"vf__multifield {$strClass}\" {$this->__getMetaString()}>\n";
+		$strOutput 	= "<div class=\"vf__multifield vf__cf {$strClass}\" {$this->__getMetaString()}>\n";
 
 		if ($blnError) $strOutput .= $strError;
 
