@@ -80,7 +80,19 @@ class VF_Select extends VF_Element {
 		$strOutput .= "<select name=\"{$strName}\" id=\"{$strId}\" {$this->__getMetaString()}>\n";
 
 		if ($this->__options->count() == 0) {
-			if (isset($this->__meta["start"]) && is_numeric($this->__meta["start"]) && isset($this->__meta["end"]) && is_numeric($this->__meta["end"])) {
+			if (isset($this->__meta["labelRange"]) && is_array($this->__meta["labelRange"])) {
+				if (isset($this->__meta["valueRange"]) && is_array($this->__meta["valueRange"]) && count($this->__meta["labelRange"]) == count($this->__meta["valueRange"])) {
+					$intIndex = 0;
+					foreach ($this->__meta["labelRange"] as $strLabel) {
+						$this->addField($strLabel, $this->__meta["valueRange"][$intIndex]);
+						$intIndex++;
+					}
+				} else {
+					foreach ($this->__meta["labelRange"] as $strLabel) {
+						$this->addField($strLabel, $strLabel);
+					}
+				}
+			} else if (isset($this->__meta["start"]) && is_numeric($this->__meta["start"]) && isset($this->__meta["end"]) && is_numeric($this->__meta["end"])) {
 				if ($this->__meta["start"] < $this->__meta["end"]) {
 					for ($intIndex = $this->__meta["start"]; $intIndex <= $this->__meta["end"]; $intIndex++) {
 						$this->addField($intIndex, $intIndex);
