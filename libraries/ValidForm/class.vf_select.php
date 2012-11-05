@@ -22,7 +22,7 @@ require_once('class.vf_element.php');
  *
  * @package ValidForm
  * @author Felix Langfeldt
- * @version Release: 0.2.2
+ * @version Release: 0.2.3
  *
  */
 class VF_Select extends VF_Element {
@@ -165,8 +165,8 @@ class VF_Select extends VF_Element {
 		return $strOutput;
 	}
 
-	public function addField($value, $label, $selected = FALSE) {
-		$objOption = new VF_SelectOption($value, $label, $selected);
+	public function addField($value, $label, $selected = FALSE, $meta = array()) {
+		$objOption = new VF_SelectOption($value, $label, $selected, $meta);
 		$this->__options->addObject($objOption);
 
 		return $objOption;
