@@ -28,6 +28,7 @@ require_once('class.classdynamic.php');
 class VF_MultiField extends ClassDynamic {
 	protected $__label;
 	protected $__meta;
+	protected $__labelmeta;
 	protected $__dynamic;
 	protected $__dynamicLabel;
 	protected $__requiredstyle;
@@ -36,6 +37,10 @@ class VF_MultiField extends ClassDynamic {
 	public function __construct($label, $meta = array()) {
 		$this->__label = $label;
 		$this->__meta = $meta;
+		
+		$labelMeta = (isset($meta['labelStyle'])) ? array("style" => $meta['labelStyle']) : array();
+		if (isset($meta['labelClass'])) $labelMeta["class"] = $meta['labelClass'];
+		$this->__labelmeta = $labelMeta;
 
 		$this->__fields = new VF_Collection();
 
@@ -303,6 +308,23 @@ class VF_MultiField extends ClassDynamic {
 		foreach ($this->__meta as $key => $value) {
 			if (!in_array($key, $objDummy->getReservedMeta()) && !empty($value)) {
 				$strOutput .= " {$key}=\"{$value}\"";
+			}
+		}
+
+		return $strOutput;
+	}
+
+	protected function __getLabelMetaString() {
+		$strOutput = "";
+
+		// Create a dummy element to get the reserved meta array.
+		$objDummy = new VF_Element("dummy", VFORM_TEXT);
+
+		if (is_array($this->__labelmeta)) {
+			foreach ($this->__labelmeta as $key => $value) {
+				if (!in_array($key, $objDummy->getReservedMeta())) {
+					$strOutput .= " {$key}=\"{$value}\"";
+				}
 			}
 		}
 
