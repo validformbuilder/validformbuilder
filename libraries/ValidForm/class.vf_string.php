@@ -22,19 +22,34 @@ require_once('class.classdynamic.php');
  * 
  * @package ValidForm
  * @author Felix Langfeldt
- * @version Release: 0.2.0
+ * @version Release: 0.2.1
  *
  */
 class VF_String extends ClassDynamic {
 	protected $__id;
 	protected $__body;
+	protected $__meta;
 	
-	public function __construct($bodyString) {
+	public function __construct($bodyString, $meta = array()) {
 		$this->__body = $bodyString;
+		$this->__meta = $meta;
 	}
 		
-	public function toHtml($submitted = FALSE) {
-		return $this->__body;
+	public function toHtml($submitted = FALSE, $blnSimpleLayout = FALSE) {
+		return $this->__toHtml($submitted, $blnSimpleLayout);
+	}
+		
+	public function __toHtml($submitted = FALSE, $blnSimpleLayout = FALSE) {
+		$strOutput = "";
+			
+		if (!$blnSimpleLayout) {
+			$strOutput = $this->__body;
+		} else {
+			$strClass = (array_key_exists("class", $this->__meta)) ? $this->__meta["class"] : "";
+			$strOutput = "<div class=\"vf__multifielditem {$strClass}\">{$this->__body}</div>\n";
+		}
+		
+		return $strOutput;
 	}
 	
 	public function toJS() {
@@ -50,6 +65,14 @@ class VF_String extends ClassDynamic {
 	}
 	
 	public function getValue() {
+		return;
+	}
+	
+	public function getValidator() {
+		return null;
+	}
+	
+	public function getName() {
 		return;
 	}
 	

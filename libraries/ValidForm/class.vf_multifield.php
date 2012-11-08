@@ -22,7 +22,7 @@ require_once('class.classdynamic.php');
  *
  * @package ValidForm
  * @author Felix Langfeldt
- * @version Release: 0.2.1
+ * @version Release: 0.2.2
  *
  */
 class VF_MultiField extends ClassDynamic {
@@ -67,6 +67,13 @@ class VF_MultiField extends ClassDynamic {
 
 		return $objField;
 	}
+	
+	public function addText($strText, $meta = array()) {
+		$objString = new VF_String($strText, $meta);
+		$this->__fields->addObject($objString);
+		
+		return $objString;
+	}
 
 	public function toHtml($submitted = FALSE, $blnSimpleLayout = FALSE, $blnLabel = true, $blnDisplayError = true) {
 		$strOutput = "";
@@ -93,14 +100,16 @@ class VF_MultiField extends ClassDynamic {
 			if (empty($strId)) {
 				$strId = ($intCount == 0) ? $field->id : $field->id . "_" . $intCount;
 			}
-
-			if ($field->getValidator()->getRequired()) {
-				$blnRequired = TRUE;
-			}
-
-			if ($submitted && !$field->getValidator()->validate($intCount) && $blnDisplayError) {
-				$blnError = TRUE;
-				$strError .= "<p class=\"vf__error\">{$field->getValidator()->getError($intCount)}</p>";
+			
+			if (is_object($field->getValidator())) {
+				if ($field->getValidator()->getRequired()) {
+					$blnRequired = TRUE;
+				}
+	
+				if ($submitted && !$field->getValidator()->validate($intCount) && $blnDisplayError) {
+					$blnError = TRUE;
+					$strError .= "<p class=\"vf__error\">{$field->getValidator()->getError($intCount)}</p>";
+				}
 			}
 		}
 
