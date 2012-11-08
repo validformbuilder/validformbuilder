@@ -97,7 +97,7 @@ class VF_Text extends VF_Element {
 
 			if ($blnLabel) {
 				$strLabel = (!empty($this->__requiredstyle) && $this->__validator->getRequired()) ? sprintf($this->__requiredstyle, $this->__label) : $this->__label;
-				if (!empty($this->__label)) $strOutput .= "<label for=\"{$strId}\">{$strLabel}</label>\n";
+				if (!empty($this->__label)) $strOutput .= "<label for=\"{$strId}\"{$this->__getLabelMetaString()}>{$strLabel}</label>\n";
 			}
 		} else {
 			$strClass = (empty($this->__hint)) ? "" : " vf__hint";

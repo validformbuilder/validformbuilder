@@ -72,7 +72,7 @@ class VF_Select extends VF_Element {
 			}
 
 			$strLabel = (!empty($this->__requiredstyle) && $this->__validator->getRequired()) ? sprintf($this->__requiredstyle, $this->__label) : $this->__label;
-			if (!empty($this->__label)) $strOutput .= "<label for=\"{$strId}\">{$strLabel}</label>\n";
+			if (!empty($this->__label)) $strOutput .= "<label for=\"{$strId}\"{$this->__getLabelMetaString()}>{$strLabel}</label>\n";
 		} else {
 			$strOutput = "<div class=\"vf__multifielditem\">\n";
 		}

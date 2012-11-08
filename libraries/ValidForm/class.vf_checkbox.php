@@ -39,7 +39,7 @@ class VF_Checkbox extends VF_Element {
 		$strChecked = ($this->__getValue($submitted)) ? " checked=\"checked\"" : "";
 		
 		$strLabel = (!empty($this->__requiredstyle) && $this->__validator->getRequired()) ? sprintf($this->__requiredstyle, $this->__label) : $this->__label;
-		if (!empty($this->__label)) $strOutput .= "<label for=\"{$this->__id}\">{$strLabel}</label>\n";
+		if (!empty($this->__label)) $strOutput .= "<label for=\"{$this->__id}\"{$this->__getLabelMetaString()}>{$strLabel}</label>\n";
 		$strOutput .= "<input type=\"checkbox\" name=\"{$this->__name}\" id=\"{$this->__id}\" {$this->__getMetaString()} {$strChecked} />\n";
 		if (!empty($this->__tip)) $strOutput .= "<small class=\"vf__tip\">{$this->__tip}</small>\n";
 		$strOutput .= "</div>\n";
