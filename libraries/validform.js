@@ -1222,6 +1222,11 @@ ValidForm.prototype.addTrigger = function(strSelector, strTargetId) {
 	} else {
 		throw new Error("Invalid Trigger type in addTrigger. Trigger should be a checkbox, radiobutton or selectlist option : '" + strTriggerId + "'.");
 	}
+
+	//*** Make sure the targetfield is shown after a page was hidden and shown again.
+	jQuery("#" + this.id).on("VF_AfterShowPage", function () {
+		$trigger.trigger("change");
+	});
 };
 
 ValidForm.prototype.addElement = function() {
