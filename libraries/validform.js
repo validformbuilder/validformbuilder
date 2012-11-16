@@ -747,38 +747,43 @@ ValidForm.prototype.valuesAsHtml = function (blnHideEmpty) {
 			var $objReturn 	= tpl.field();
 			var strValue 	= $field.val().replace(/\r?\n/g, "<br />");
 
-			// Check if we've got an 'input' triggerfield here
-			$objTargetField = $("#" + __this.id + " input[name='" + strValue + "'], #" + __this.id + " textarea[name='" + strValue + "']");
-			if ($objTargetField.length > 0) {
-				if ($objTargetField.attr("type") == "password") {
-					strValue = "*****";
+			//*** Skip trigger fields, their values are parsed already.
+			if (!/triggerfield/.test($field.attr("name"))) {
+				// Check if we've got an 'input' triggerfield here
+				$objTargetField = $("#" + __this.id + " input[name='" + strValue + "'], #" + __this.id + " textarea[name='" + strValue + "']");
+				if ($objTargetField.length > 0) {
+					if ($objTargetField.attr("type") == "password") {
+						strValue = "*****";
+					} else {
+						strValue = $objTargetField.val().replace(/\r?\n/g, "<br />");
+						console.log("VALUE: ", strValue);
+					}
+				}
+
+				if (strValue == "" && blnHideEmpty) {
+					// Do nothing
+					$objReturn = $();
 				} else {
-					strValue = $objTargetField.val().replace(/\r?\n/g, "<br />");
+					$objReturn.attr("id", $field.attr("id") + "_confirm");
+
+					// Set the (optional) alternative or normal label.
+					var strShortLabel 	= $field.data("overviewlabel")
+					,	strLabel 		= (typeof strShortLabel !== "undefined") ? strShortLabel : $field.prev().text();
+
+					$objLabel = tpl.label();
+					$objLabel.text(strLabel);
+					$objLabel.appendTo($objReturn);
+
+					if ($field.attr("type") == "password") {
+						strValue = "*****";
+					}
+
+					$objValue = tpl.value();
+					$objValue.html(strValue);
+					$objValue.appendTo($objReturn);
 				}
 			}
 
-			if (strValue == "" && blnHideEmpty) {
-				// Do nothing
-				$objReturn = $();
-			} else {
-				$objReturn.attr("id", $field.attr("id") + "_confirm");
-
-				// Set the (optional) alternative or normal label.
-				var strShortLabel 	= $field.data("overviewlabel")
-				,	strLabel 		= (typeof strShortLabel !== "undefined") ? strShortLabel : $field.prev().text();
-
-				$objLabel = tpl.label();
-				$objLabel.text(strLabel);
-				$objLabel.appendTo($objReturn);
-
-				if ($field.attr("type") == "password") {
-					strValue = "*****";
-				}
-
-				$objValue = tpl.value();
-				$objValue.html(strValue);
-				$objValue.appendTo($objReturn);
-			}
 		} else {
 			return $(); // This is not a valid element
 		}
