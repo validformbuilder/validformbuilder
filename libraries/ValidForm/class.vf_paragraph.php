@@ -22,21 +22,23 @@ require_once('class.classdynamic.php');
  * 
  * @package ValidForm
  * @author Felix Langfeldt
- * @version Release: 0.2.1
+ * @version Release: 0.2.2
  *
  */
 class VF_Paragraph extends ClassDynamic {
 	protected $__header;
 	protected $__body;
 	protected $__id;
-	
-	public function __construct($header = NULL, $body = NULL) {
+	protected $__meta;
+
+	public function __construct($header = NULL, $body = NULL, $meta = array()) {
 		$this->__header = $header;
 		$this->__body = $body;
+		$this->__meta = $meta;
 	}
 	
 	public function toHtml($submitted = FALSE, $blnSimpleLayout = FALSE, $blnLabel = true, $blnDisplayError = true) {
-		$strOutput = "<div>\n";
+		$strOutput = "<div {$this->__getMetaString()}>\n";
 		
 		if (!empty($this->__header)) $strOutput .= "<h3>{$this->__header}</h3>\n";
 		if (!empty($this->__body)) {
@@ -47,6 +49,16 @@ class VF_Paragraph extends ClassDynamic {
 			}
 		}
 		$strOutput .= "</div>\n";
+		
+		return $strOutput;
+	}
+	
+	protected function __getMetaString() {
+		$strOutput = "";
+		
+		foreach ($this->__meta as $key => $value) {
+			$strOutput .= " {$key}=\"{$value}\"";
+		}
 		
 		return $strOutput;
 	}

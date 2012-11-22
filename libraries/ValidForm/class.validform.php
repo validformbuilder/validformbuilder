@@ -64,7 +64,7 @@ define('VFORM_URL', 21);
  *
  * @package ValidForm
  * @author Felix Langfeldt
- * @version Release: 0.2.7
+ * @version Release: 0.2.8
  *
  */
 class ValidForm extends ClassDynamic {
@@ -227,8 +227,8 @@ class ValidForm extends ClassDynamic {
 		return $objField;
 	}
 
-	public function addParagraph($strBody, $strHeader = "") {
-		$objParagraph = new VF_Paragraph($strHeader, $strBody);
+	public function addParagraph($strBody, $strHeader = "", $meta = array()) {
+		$objParagraph = new VF_Paragraph($strHeader, $strBody, $meta);
 
 		//*** Fieldset already defined?
 		$objFieldset = $this->__elements->getLast("VF_Fieldset");
