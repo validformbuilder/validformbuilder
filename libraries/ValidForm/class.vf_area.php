@@ -23,7 +23,7 @@ require_once('class.classdynamic.php');
  *
  * @package ValidForm
  * @author Felix Langfeldt
- * @version Release: 0.2.1
+ * @version Release: 0.2.2
  *
  */
 class VF_Area extends ClassDynamic {
@@ -138,7 +138,7 @@ class VF_Area extends ClassDynamic {
 		$strName 	= ($intCount == 0) ? $this->__name : $this->__name . "_" . $intCount;
 
 		$strChecked = ($this->__active && $this->__checked && !$submitted) ? " checked=\"checked\"" : "";
-		$strChecked = ($this->__active && $submitted && $this->hasContent($intCount)) ? " checked=\"checked\"" : "";
+		$strChecked = ($this->__active && $submitted && $this->hasContent($intCount)) ? " checked=\"checked\"" : $strChecked;
 
 		$strClass = (array_key_exists("class", $this->__meta)) ? " " . $this->__meta["class"] : "";
 		$strClass = ($this->__active && empty($strChecked) && empty($strChecked)) ? $strClass . " vf__disabled" : $strClass;

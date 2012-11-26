@@ -64,7 +64,7 @@ define('VFORM_URL', 21);
  *
  * @package ValidForm
  * @author Felix Langfeldt
- * @version Release: 0.2.8
+ * @version Release: 0.2.9
  *
  */
 class ValidForm extends ClassDynamic {
@@ -303,13 +303,7 @@ class ValidForm extends ClassDynamic {
 		if (!empty($this->__description)) $strOutput .= "<div class=\"vf__description\"><p>{$this->__description}</p></div>\n";
 
 		$blnNavigation = false;
-		foreach ($this->__elements as $element) {
-			$strOutput .= $element->toHtml($this->isSubmitted($blnForceSubmitted), false, true, !$blnForceSubmitted);
-
-			if (get_class($element) == "VF_Navigation") {
-				$blnNavigation = true;
-			}
-		}
+		$strOutput .= $this->fieldsToHtml($blnForceSubmitted, $blnNavigation, !$blnForceSubmitted);
 
 		if (!$blnNavigation) {
 			$strOutput .= "<div class=\"vf__navigation vf__cf\">\n<input type=\"hidden\" name=\"vf__dispatch\" value=\"{$this->__name}\" />\n";
@@ -319,6 +313,22 @@ class ValidForm extends ClassDynamic {
 		$strOutput .= "</form>";
 
 		return $strOutput;
+	}
+	
+	public function fieldsToHtml($blnForceSubmitted = false, &$blnNavigation = false, $blnShowErrors = null) {
+		$strReturn = "";
+		
+		$blnShowErrors = (is_null($blnShowErrors)) ? !$blnForceSubmitted : $blnShowErrors;
+		
+		foreach ($this->__elements as $element) {
+			$strReturn .= $element->toHtml($this->isSubmitted($blnForceSubmitted), false, true, $blnShowErrors);
+		
+			if (get_class($element) == "VF_Navigation") {
+				$blnNavigation = true;
+			}
+		}
+		
+		return $strReturn;
 	}
 
 	public function serialize($blnSubmittedValues = true) {
