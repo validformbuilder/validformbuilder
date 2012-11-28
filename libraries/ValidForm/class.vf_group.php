@@ -22,7 +22,7 @@ require_once('class.vf_element.php');
  *
  * @package ValidForm
  * @author Felix Langfeldt
- * @version Release: 0.2.2
+ * @version Release: 0.2.3
  *
  */
 class VF_Group extends VF_Element {
@@ -37,17 +37,27 @@ class VF_Group extends VF_Element {
 	public function toHtml($submitted = FALSE, $blnSimpleLayout = FALSE, $blnLabel = true, $blnDisplayErrors = true) {
 		$blnError = ($submitted && !$this->__validator->validate() && $blnDisplayErrors) ? TRUE : FALSE;
 
-		$strClass = ($this->__validator->getRequired()) ? "vf__required" : "vf__optional";
-		$strClass = ($blnError) ? $strClass . " vf__error" : $strClass;
-		$strClass = ($this->hasTrigger()) ? $strClass . " vf__targetfield" : $strClass;
-		$strClass = (!$blnLabel) ? $strClass . " vf__nolabel" : $strClass;
+		if (!$blnSimpleLayout) {
+			$strClass = ($this->__validator->getRequired()) ? "vf__required" : "vf__optional";
+			$strClass = ($blnError) ? $strClass . " vf__error" : $strClass;
+			$strClass = ($this->hasTrigger()) ? $strClass . " vf__targetfield" : $strClass;
+			$strClass = (!$blnLabel) ? $strClass . " vf__nolabel" : $strClass;
+	
+			$strOutput = "<div class=\"{$strClass}\" {$this->__getMetaString()}>\n";
+	
+			if ($blnError) {
+				$strOutput .= "<p class=\"vf__error\">{$this->__validator->getError()}</p>";
+			}
 
-		$strOutput = "<div class=\"{$strClass}\" {$this->__getMetaString()}>\n";
-
-		if ($blnError) $strOutput .= "<p class=\"vf__error\">{$this->__validator->getError()}</p>";
-
-		$strLabel = (!empty($this->__requiredstyle) && $this->__validator->getRequired()) ? sprintf($this->__requiredstyle, $this->__label) : $this->__label;
-		if (!empty($this->__label)) $strOutput .= "<label{$this->__getLabelMetaString()}>{$strLabel}</label>\n";
+			if ($blnLabel) {
+				$strLabel = (!empty($this->__requiredstyle) && $this->__validator->getRequired()) ? sprintf($this->__requiredstyle, $this->__label) : $this->__label;
+				if (!empty($this->__label)) $strOutput .= "<label{$this->__getLabelMetaString()}>{$strLabel}</label>\n";
+			}
+		} else {
+			$strClass = ($blnError) ? $strClass . " vf__error" : $strClass;
+			$strOutput = "<div class=\"vf__multifielditem{$strClass}\">\n";
+		}
+		
 		$strOutput .= "<fieldset class=\"vf__list\">\n";
 
 		foreach ($this->__fields as $objField) {
