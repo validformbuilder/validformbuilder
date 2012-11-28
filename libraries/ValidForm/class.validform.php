@@ -64,7 +64,7 @@ define('VFORM_URL', 21);
  *
  * @package ValidForm
  * @author Felix Langfeldt
- * @version Release: 0.2.10
+ * @version Release: 0.2.11
  *
  */
 class ValidForm extends ClassDynamic {
@@ -508,74 +508,78 @@ class ValidForm extends ClassDynamic {
 	}
 
 	public function fieldsetAsHtml($objFieldset, &$strSet, $hideEmpty = false) {
-		$strTableOutput = "";
+		$strReturn = "";
+		$strHeader = "";
 
-		foreach ($objFieldset->getFields() as $objField) {
-			if (is_object($objField)) {
-				$strValue = (is_array($objField->getValue())) ? implode(", ", $objField->getValue()) : $objField->getValue();
-
-				if ((!empty($strValue) && $hideEmpty) || (!$hideEmpty && !is_null($strValue))) {
-					if ($objField->hasFields()) {
-						switch (get_class($objField)) {
-							case "VF_MultiField":
-								$strSet .= $this->multiFieldAsHtml($objField, $hideEmpty);
-
-								break;
-							default:
-								$strSet .= $this->areaAsHtml($objField, $hideEmpty);
-						}
-					} else {
-						$strSet .= $this->fieldAsHtml($objField, $hideEmpty);
-					}
-				}
-
-				if ($objField->isDynamic()) {
-					$intDynamicCount = $objField->getDynamicCount();
-
-					if ($intDynamicCount > 0) {
-						for ($intCount = 1; $intCount <= $intDynamicCount; $intCount++) {
+		if ($objFieldset->hasFields()) {
+			foreach ($objFieldset->getFields() as $objField) {
+				if (is_object($objField)) {
+					$strValue = (is_array($objField->getValue())) ? implode(", ", $objField->getValue()) : $objField->getValue();
+	
+					if ((!empty($strValue) && $hideEmpty) || (!$hideEmpty && !is_null($strValue))) {
+						if ($objField->hasFields()) {
 							switch (get_class($objField)) {
 								case "VF_MultiField":
-									$strSet .= $this->multiFieldAsHtml($objField, $hideEmpty, $intCount);
+									$strSet .= $this->multiFieldAsHtml($objField, $hideEmpty);
 
 									break;
-
-								case "VF_Area":
-									$strSet .= $this->areaAsHtml($objField, $hideEmpty, $intCount);
-
-									break;
-
 								default:
-									$strSet .= $this->fieldAsHtml($objField, $hideEmpty, $intCount);
+									$strSet .= $this->areaAsHtml($objField, $hideEmpty);
+							}
+						} else {
+							$strSet .= $this->fieldAsHtml($objField, $hideEmpty);
+						}
+					}
+	
+					if ($objField->isDynamic()) {
+						$intDynamicCount = $objField->getDynamicCount();
+
+						if ($intDynamicCount > 0) {
+							for ($intCount = 1; $intCount <= $intDynamicCount; $intCount++) {
+								switch (get_class($objField)) {
+									case "VF_MultiField":
+										$strSet .= $this->multiFieldAsHtml($objField, $hideEmpty, $intCount);
+	
+										break;
+	
+									case "VF_Area":
+										$strSet .= $this->areaAsHtml($objField, $hideEmpty, $intCount);
+	
+										break;
+
+									default:
+										$strSet .= $this->fieldAsHtml($objField, $hideEmpty, $intCount);
+								}
 							}
 						}
 					}
 				}
-				}
+			}
+
+			$strHeader = $objFieldset->getHeader();
 		}
 
-		$strHeader = $objFieldset->getHeader();
 		if (!empty($strHeader) && !empty($strSet)) {
-			$strTableOutput .= "<tr>";
-			$strTableOutput .= "<td colspan=\"3\">&nbsp;</td>\n";
-			$strTableOutput .= "</tr>";
-			$strTableOutput .= "<tr>";
-			$strTableOutput .= "<td colspan=\"3\"><b>{$strHeader}</b></td>\n";
-			$strTableOutput .= "</tr>";
+			$strReturn .= "<tr>";
+			$strReturn .= "<td colspan=\"3\">&nbsp;</td>\n";
+			$strReturn .= "</tr>";
+			$strReturn .= "<tr>";
+			$strReturn .= "<td colspan=\"3\"><b>{$strHeader}</b></td>\n";
+			$strReturn .= "</tr>";
 		}
 
 		if (!empty($strSet)) {
-			$strTableOutput .= $strSet;
+			$strReturn .= $strSet;
 		}
 
-		return $strTableOutput;
+		return $strReturn;
 	}
 
 	private function areaAsHtml($objField, $hideEmpty = FALSE, $intDynamicCount = 0) {
 		$strReturn = "";
 		$strSet = "";
 
-		if ($objField->hasContent($intDynamicCount)) {
+		if ($objField->hasFields() && $objField->hasContent($intDynamicCount)) {
 			foreach ($objField->getFields() as $objSubField) {
 				switch (get_class($objSubField)) {
 					case "VF_MultiField":
@@ -619,31 +623,29 @@ class ValidForm extends ClassDynamic {
 	private function multiFieldAsHtml($objField, $hideEmpty = FALSE, $intDynamicCount = 0) {
 		$strReturn = "";
 
-		if ($objField->hasContent($intDynamicCount)) {
-			if ($objField->hasFields()) {
-				$strValue = "";
-				$objSubFields = $objField->getFields();
+		if ($objField->hasFields() && $objField->hasContent($intDynamicCount)) {
+			$strValue = "";
+			$objSubFields = $objField->getFields();
 
-				$intCount = 0;
-				foreach ($objSubFields as $objSubField) {
-					$intCount++;
+			$intCount = 0;
+			foreach ($objSubFields as $objSubField) {
+				$intCount++;
 
-					if (get_class($objSubField) == "VF_Hidden" && $objSubField->isDynamicCounter()) {
-						continue;
-					}
-
-					$varValue = $objSubField->getValue($intDynamicCount);
-					$strValue .= (is_array($varValue)) ? implode(", ", $varValue) : $varValue;
-					$strValue .= ($objSubFields->count() > $intCount) ? " " : "";
+				if (get_class($objSubField) == "VF_Hidden" && $objSubField->isDynamicCounter()) {
+					continue;
 				}
 
-				$strValue = trim($strValue);
+				$varValue = $objSubField->getValue($intDynamicCount);
+				$strValue .= (is_array($varValue)) ? implode(", ", $varValue) : $varValue;
+				$strValue .= ($objSubFields->count() > $intCount) ? " " : "";
+			}
 
-				if ((!empty($strValue) && $hideEmpty) || (!$hideEmpty && !empty($strValue))) {
-					$strReturn .= "<tr class=\"vf__field_value\">";
-					$strReturn .= "<td valign=\"top\" style=\"white-space:nowrap; padding-right: 20px\" class=\"vf__field\">{$objField->getLabel()}</td><td valign=\"top\" class=\"vf__value\"><strong>" . nl2br($strValue) . "</strong></td>\n";
-					$strReturn .= "</tr>";
-				}
+			$strValue = trim($strValue);
+
+			if ((!empty($strValue) && $hideEmpty) || (!$hideEmpty && !empty($strValue))) {
+				$strReturn .= "<tr class=\"vf__field_value\">";
+				$strReturn .= "<td valign=\"top\" style=\"white-space:nowrap; padding-right: 20px\" class=\"vf__field\">{$objField->getLabel()}</td><td valign=\"top\" class=\"vf__value\"><strong>" . nl2br($strValue) . "</strong></td>\n";
+				$strReturn .= "</tr>";
 			}
 		}
 
