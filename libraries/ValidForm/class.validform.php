@@ -64,7 +64,7 @@ define('VFORM_URL', 21);
  *
  * @package ValidForm
  * @author Felix Langfeldt
- * @version Release: 0.2.9
+ * @version Release: 0.2.10
  *
  */
 class ValidForm extends ClassDynamic {
@@ -274,6 +274,73 @@ class ValidForm extends ClassDynamic {
 		$objFieldset->addField($objField);
 
 		return $objField;
+	}
+	
+	/**
+	 * Re-position a field in the fields collection. This takes all the fieldsets in account.
+	 * @param string $strFieldName The name of the field that needs re-positioning
+	 * @param integer $intPosition The desired absolute position of the field
+	 */
+	public function positionField($strFieldName, $intPosition) {
+		$intCount = 0;
+		$intTargetFieldset = 0;
+		$objSeekField = null;
+		
+		//*** Find the field and the desired fieldset poisition.
+		foreach ($this->__elements as $objElement) {
+			if (get_class($objElement) == "VF_Fieldset") {				
+				$objFields = $objElement->getFields();
+				foreach ($objFields as $objField) {
+					if ($objField->getName() == $strFieldName) {
+						//*** Remove the field from the collection and add to the fieldset that corresponds to the desired position.
+						$objSeekField = $objField;
+						$objFields->remove($objSeekField);
+						
+						break 2;
+					}
+					
+					$intCount++;
+				}
+				
+				if ($intCount < $intPosition) $intTargetFieldset++;
+			}
+		}
+		
+		//*** Find the targetPosition in the desired fieldset.
+		if ($intTargetFieldset > 0) {
+			$intCount = 0;
+			$intTargetPosition = 0;
+			foreach ($this->__elements as $objElement) {
+				if (get_class($objElement) == "VF_Fieldset") {		
+					$intCount += $objElement->getFields()->count();
+					
+					if ($intCount == $intPosition) {
+						$intTargetPosition = $intCount - $intPosition;
+						break;
+					} else if ($intCount > $intPosition) {
+						$intTargetPosition = $intCount - $intPosition - 1;
+						break;
+					}
+				}
+			}
+		} else {
+			$intTargetPosition = $intPosition;
+		}
+		
+		//*** Insert the field in the correct fieldset at the desired position.
+		if (is_object($objSeekField)) {
+			$intCount = 0;
+			foreach ($this->__elements as $objElement) {
+				if (get_class($objElement) == "VF_Fieldset") {		
+					if ($intCount == $intTargetFieldset) {
+						$objElement->fields->addObjectAtPosition($objSeekField, $intTargetPosition);
+						break;
+					}
+					
+					$intCount++;
+				}
+			}
+		}
 	}
 
 	public function addJSEvent($strEvent, $strMethod) {
@@ -529,11 +596,14 @@ class ValidForm extends ClassDynamic {
 			}
 		}
 
-
 		if (!empty($strSet)) {
-			$strReturn = "<tr>";
-			$strReturn .= "<td colspan=\"3\" style=\"white-space:nowrap\" class=\"vf__area_header\"><h3>{$objField->getLabel()}</h3></td>\n";
-			$strReturn .= "</tr>";
+			$strLabel = $objField->getLabel();
+			if (!empty($strLabel)) {
+				$strReturn = "<tr>";
+				$strReturn .= "<td colspan=\"3\" style=\"white-space:nowrap\" class=\"vf__area_header\"><h3>{$objField->getLabel()}</h3></td>\n";
+				$strReturn .= "</tr>";
+			}
+
 			$strReturn .= $strSet;
 		} else {
 			if (!empty($this->__novaluesmessage) && !$objField->isActive()) {
