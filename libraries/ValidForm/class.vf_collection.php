@@ -14,6 +14,14 @@
  * @link       http://code.google.com/p/validformbuilder/
  ***************************/
 
+/**
+ * Collection Class
+ *
+ * @package ValidForm
+ * @author Felix Langfeldt
+ * @version 0.2.3
+ *
+ */
 class VF_Collection implements Iterator {
 	protected $collection = array();
 	private $isSeek = FALSE;
@@ -41,6 +49,36 @@ class VF_Collection implements Iterator {
         } else {
             array_push($this->collection, $value);
         }
+    }
+
+    /**
+     * Add object to the collection at a specified position
+     * 
+     * @param object $value The object
+     * @param integer $intPosition The position the object should be placed at.
+     */
+    public function addObjectAtPosition($value, $intPosition) {
+    	$arrTempCollection = array();
+    	$intCount = 0;
+    	
+    	if ($intPosition >= $this->count()) {
+    		//*** Position is greater than the collection count. Just add at the end.
+    		$this->addObject($value);
+    	} else {
+	    	foreach ($this->collection as $varObject) {
+	    		if ($intCount == $intPosition) {
+	    			//*** Insert the new object.
+	    			array_push($arrTempCollection, $value);
+	    		}
+		
+	    		//*** Insert the existing object.
+	    		array_push($arrTempCollection, $varObject);
+	    		$intCount++;
+	    	}
+	    	
+	    	//*** Replace the collection.
+	    	$this->collection = $arrTempCollection;
+    	}
     }
 
     /**
