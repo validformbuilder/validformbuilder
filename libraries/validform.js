@@ -756,7 +756,6 @@ ValidForm.prototype.valuesAsHtml = function (blnHideEmpty) {
 						strValue = "*****";
 					} else {
 						strValue = $objTargetField.val().replace(/\r?\n/g, "<br />");
-						console.log("VALUE: ", strValue);
 					}
 				}
 
@@ -769,6 +768,11 @@ ValidForm.prototype.valuesAsHtml = function (blnHideEmpty) {
 					// Set the (optional) alternative or normal label.
 					var strShortLabel 	= $field.data("overviewlabel")
 					,	strLabel 		= (typeof strShortLabel !== "undefined") ? strShortLabel : $field.prev().text();
+
+					if ($field.is("select") && $objTargetField.length > 0) {
+						// Select boxes only.
+						strLabel = $field.parent().prev().text();
+					}
 
 					$objLabel = tpl.label();
 					$objLabel.text(strLabel);

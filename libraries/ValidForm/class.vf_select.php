@@ -77,6 +77,10 @@ class VF_Select extends VF_Element {
 			$strOutput = "<div class=\"vf__multifielditem\">\n";
 		}
 
+		if (is_object($this->__targetfield)) {
+			$strOutput .= "<div class=\"vf__targetfieldwrap\">";
+		}
+
 		$strOutput .= "<select name=\"{$strName}\" id=\"{$strId}\" {$this->__getMetaString()}>\n";
 
 		if ($this->__options->count() == 0) {
@@ -112,11 +116,13 @@ class VF_Select extends VF_Element {
 		$strOutput .= "</select>\n";
 
 		if (!empty($this->__tip)) $strOutput .= "<small class=\"vf__tip\">{$this->__tip}</small>\n";
-		$strOutput .= "</div>\n";
 
 		if (is_object($this->__targetfield)) {
 			$strOutput .= $this->__targetfield->toHtml($submitted, $blnSimpleLayout, false, $blnDisplayErrors, $intCount);
+			$strOutput .= "</div>\n";
 		}
+
+		$strOutput .= "</div>\n";
 
 		if (!$blnSimpleLayout && $intCount == $this->getDynamicCount()) {
 			$strOutput .= $this->__addDynamicHtml();
@@ -165,8 +171,8 @@ class VF_Select extends VF_Element {
 		return $strOutput;
 	}
 
-	public function addField($value, $label, $selected = FALSE, $meta = array()) {
-		$objOption = new VF_SelectOption($value, $label, $selected, $meta);
+	public function addField($value, $label, $selected = FALSE) {
+		$objOption = new VF_SelectOption($value, $label, $selected);
 		$this->__options->addObject($objOption);
 
 		return $objOption;
