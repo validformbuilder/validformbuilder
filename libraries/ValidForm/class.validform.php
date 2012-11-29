@@ -64,7 +64,7 @@ define('VFORM_URL', 21);
  *
  * @package ValidForm
  * @author Felix Langfeldt
- * @version Release: 0.2.11
+ * @version Release: 0.2.12
  *
  */
 class ValidForm extends ClassDynamic {
@@ -398,11 +398,34 @@ class ValidForm extends ClassDynamic {
 		return $strReturn;
 	}
 
+	/**
+	 * Serialize the form using serialize, gzip compression and base64 encoding.
+	 * 
+	 * @param boolean $blnSubmittedValues Indicate if an internal submit should be forced. This is mostly used by the dynamic fields.
+	 * @return string A base64 string
+	 */
 	public function serialize($blnSubmittedValues = true) {
 		// Validate & cache all values
 		$this->valuesAsHtml($blnSubmittedValues); // Especially dynamic counters need this!
 
 		return base64_encode(gzcompress(serialize($this)));
+	}
+
+	/**
+	 * Unserialize a ValidForm object that was serialized using ValidForm::serialize().
+	 * 
+	 * @param string $strSerialized The serialized string
+	 * @return ValidForm A ValidForm object if the class name matched, otherwise NULL
+	 */
+	public static function unserialize($strSerialized) {
+		$objReturn = null;
+
+		$objForm = unserialize(gzuncompress(base64_decode($strSerialized)));
+		if (get_class($objForm) == "ValidForm") {
+			$objReturn = $objForm;
+		}
+
+		return $objReturn;
 	}
 
 	/**
