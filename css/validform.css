@@ -19,8 +19,7 @@
  ***************************/
 
 /*A little reset rule*/
-form.validform,
-form.validform * {
+form.validform {
 	margin: 0;
 	padding: 0;
 }
@@ -48,6 +47,7 @@ form.vf__cf
 form.validform {
 	margin: 0;
 	padding: 0;
+	overflow: auto;
 }
 
 form.validform fieldset {
@@ -67,6 +67,12 @@ form.validform div.vf__targetfield {
 	padding-top: 8px !important;
 	margin-left: 0 !important;
 }
+form.validform div.vf__targetfieldwrap {
+	float: left;
+}
+form.validform div.vf__targetfieldwrap div.vf__targetfield {
+	margin-top: 5px;
+}
 
 form.validform div.vf__multifield,
 form.validform div.vf__optional,
@@ -80,6 +86,10 @@ form.validform div.vf__required {
 form.validform div.vf__hint input,
 form.validform div.vf__hint textarea {
 	color: #999;
+}
+
+form.validform div.vf__multifield {
+	overflow: auto;
 }
 
 form.validform label {
@@ -377,6 +387,7 @@ form.validform div.vf__confirm * {
 	border: none;
 }
 form.validform div.vf__confirm span.vf__label {
+	max-width: 440px;
 	float: left;
 }
 form.validform div.vf__list > ul,
