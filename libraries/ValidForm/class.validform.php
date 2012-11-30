@@ -64,7 +64,7 @@ define('VFORM_URL', 21);
  *
  * @package ValidForm
  * @author Felix Langfeldt
- * @version Release: 0.2.12
+ * @version Release: 0.2.7
  *
  */
 class ValidForm extends ClassDynamic {
@@ -227,8 +227,8 @@ class ValidForm extends ClassDynamic {
 		return $objField;
 	}
 
-	public function addParagraph($strBody, $strHeader = "", $meta = array()) {
-		$objParagraph = new VF_Paragraph($strHeader, $strBody, $meta);
+	public function addParagraph($strBody, $strHeader = "") {
+		$objParagraph = new VF_Paragraph($strHeader, $strBody);
 
 		//*** Fieldset already defined?
 		$objFieldset = $this->__elements->getLast("VF_Fieldset");
@@ -275,73 +275,6 @@ class ValidForm extends ClassDynamic {
 
 		return $objField;
 	}
-	
-	/**
-	 * Re-position a field in the fields collection. This takes all the fieldsets in account.
-	 * @param string $strFieldName The name of the field that needs re-positioning
-	 * @param integer $intPosition The desired absolute position of the field
-	 */
-	public function positionField($strFieldName, $intPosition) {
-		$intCount = 0;
-		$intTargetFieldset = 0;
-		$objSeekField = null;
-		
-		//*** Find the field and the desired fieldset poisition.
-		foreach ($this->__elements as $objElement) {
-			if (get_class($objElement) == "VF_Fieldset") {				
-				$objFields = $objElement->getFields();
-				foreach ($objFields as $objField) {
-					if ($objField->getName() == $strFieldName) {
-						//*** Remove the field from the collection and add to the fieldset that corresponds to the desired position.
-						$objSeekField = $objField;
-						$objFields->remove($objSeekField);
-						
-						break 2;
-					}
-					
-					$intCount++;
-				}
-				
-				if ($intCount < $intPosition) $intTargetFieldset++;
-			}
-		}
-		
-		//*** Find the targetPosition in the desired fieldset.
-		if ($intTargetFieldset > 0) {
-			$intCount = 0;
-			$intTargetPosition = 0;
-			foreach ($this->__elements as $objElement) {
-				if (get_class($objElement) == "VF_Fieldset") {		
-					$intCount += $objElement->getFields()->count();
-					
-					if ($intCount == $intPosition) {
-						$intTargetPosition = $intCount - $intPosition;
-						break;
-					} else if ($intCount > $intPosition) {
-						$intTargetPosition = $intCount - $intPosition - 1;
-						break;
-					}
-				}
-			}
-		} else {
-			$intTargetPosition = $intPosition;
-		}
-		
-		//*** Insert the field in the correct fieldset at the desired position.
-		if (is_object($objSeekField)) {
-			$intCount = 0;
-			foreach ($this->__elements as $objElement) {
-				if (get_class($objElement) == "VF_Fieldset") {		
-					if ($intCount == $intTargetFieldset) {
-						$objElement->fields->addObjectAtPosition($objSeekField, $intTargetPosition);
-						break;
-					}
-					
-					$intCount++;
-				}
-			}
-		}
-	}
 
 	public function addJSEvent($strEvent, $strMethod) {
 		$this->__jsEvents[$strEvent] = $strMethod;
@@ -370,7 +303,13 @@ class ValidForm extends ClassDynamic {
 		if (!empty($this->__description)) $strOutput .= "<div class=\"vf__description\"><p>{$this->__description}</p></div>\n";
 
 		$blnNavigation = false;
-		$strOutput .= $this->fieldsToHtml($blnForceSubmitted, $blnNavigation, !$blnForceSubmitted);
+		foreach ($this->__elements as $element) {
+			$strOutput .= $element->toHtml($this->isSubmitted($blnForceSubmitted), false, true, !$blnForceSubmitted);
+
+			if (get_class($element) == "VF_Navigation") {
+				$blnNavigation = true;
+			}
+		}
 
 		if (!$blnNavigation) {
 			$strOutput .= "<div class=\"vf__navigation vf__cf\">\n<input type=\"hidden\" name=\"vf__dispatch\" value=\"{$this->__name}\" />\n";
@@ -381,51 +320,12 @@ class ValidForm extends ClassDynamic {
 
 		return $strOutput;
 	}
-	
-	public function fieldsToHtml($blnForceSubmitted = false, &$blnNavigation = false, $blnShowErrors = null) {
-		$strReturn = "";
-		
-		$blnShowErrors = (is_null($blnShowErrors)) ? !$blnForceSubmitted : $blnShowErrors;
-		
-		foreach ($this->__elements as $element) {
-			$strReturn .= $element->toHtml($this->isSubmitted($blnForceSubmitted), false, true, $blnShowErrors);
-		
-			if (get_class($element) == "VF_Navigation") {
-				$blnNavigation = true;
-			}
-		}
-		
-		return $strReturn;
-	}
 
-	/**
-	 * Serialize the form using serialize, gzip compression and base64 encoding.
-	 * 
-	 * @param boolean $blnSubmittedValues Indicate if an internal submit should be forced. This is mostly used by the dynamic fields.
-	 * @return string A base64 string
-	 */
 	public function serialize($blnSubmittedValues = true) {
 		// Validate & cache all values
 		$this->valuesAsHtml($blnSubmittedValues); // Especially dynamic counters need this!
 
 		return base64_encode(gzcompress(serialize($this)));
-	}
-
-	/**
-	 * Unserialize a ValidForm object that was serialized using ValidForm::serialize().
-	 * 
-	 * @param string $strSerialized The serialized string
-	 * @return ValidForm A ValidForm object if the class name matched, otherwise NULL
-	 */
-	public static function unserialize($strSerialized) {
-		$objReturn = null;
-
-		$objForm = unserialize(gzuncompress(base64_decode($strSerialized)));
-		if (get_class($objForm) == "ValidForm") {
-			$objReturn = $objForm;
-		}
-
-		return $objReturn;
 	}
 
 	/**
@@ -531,78 +431,74 @@ class ValidForm extends ClassDynamic {
 	}
 
 	public function fieldsetAsHtml($objFieldset, &$strSet, $hideEmpty = false) {
-		$strReturn = "";
-		$strHeader = "";
+		$strTableOutput = "";
 
-		if ($objFieldset->hasFields()) {
-			foreach ($objFieldset->getFields() as $objField) {
-				if (is_object($objField)) {
-					$strValue = (is_array($objField->getValue())) ? implode(", ", $objField->getValue()) : $objField->getValue();
-	
-					if ((!empty($strValue) && $hideEmpty) || (!$hideEmpty && !is_null($strValue))) {
-						if ($objField->hasFields()) {
+		foreach ($objFieldset->getFields() as $objField) {
+			if (is_object($objField)) {
+				$strValue = (is_array($objField->getValue())) ? implode(", ", $objField->getValue()) : $objField->getValue();
+
+				if ((!empty($strValue) && $hideEmpty) || (!$hideEmpty && !is_null($strValue))) {
+					if ($objField->hasFields()) {
+						switch (get_class($objField)) {
+							case "VF_MultiField":
+								$strSet .= $this->multiFieldAsHtml($objField, $hideEmpty);
+
+								break;
+							default:
+								$strSet .= $this->areaAsHtml($objField, $hideEmpty);
+						}
+					} else {
+						$strSet .= $this->fieldAsHtml($objField, $hideEmpty);
+					}
+				}
+
+				if ($objField->isDynamic()) {
+					$intDynamicCount = $objField->getDynamicCount();
+
+					if ($intDynamicCount > 0) {
+						for ($intCount = 1; $intCount <= $intDynamicCount; $intCount++) {
 							switch (get_class($objField)) {
 								case "VF_MultiField":
-									$strSet .= $this->multiFieldAsHtml($objField, $hideEmpty);
+									$strSet .= $this->multiFieldAsHtml($objField, $hideEmpty, $intCount);
 
 									break;
+
+								case "VF_Area":
+									$strSet .= $this->areaAsHtml($objField, $hideEmpty, $intCount);
+
+									break;
+
 								default:
-									$strSet .= $this->areaAsHtml($objField, $hideEmpty);
-							}
-						} else {
-							$strSet .= $this->fieldAsHtml($objField, $hideEmpty);
-						}
-					}
-	
-					if ($objField->isDynamic()) {
-						$intDynamicCount = $objField->getDynamicCount();
-
-						if ($intDynamicCount > 0) {
-							for ($intCount = 1; $intCount <= $intDynamicCount; $intCount++) {
-								switch (get_class($objField)) {
-									case "VF_MultiField":
-										$strSet .= $this->multiFieldAsHtml($objField, $hideEmpty, $intCount);
-	
-										break;
-	
-									case "VF_Area":
-										$strSet .= $this->areaAsHtml($objField, $hideEmpty, $intCount);
-	
-										break;
-
-									default:
-										$strSet .= $this->fieldAsHtml($objField, $hideEmpty, $intCount);
-								}
+									$strSet .= $this->fieldAsHtml($objField, $hideEmpty, $intCount);
 							}
 						}
 					}
 				}
-			}
-
-			$strHeader = $objFieldset->getHeader();
+				}
 		}
 
+		$strHeader = $objFieldset->getHeader();
 		if (!empty($strHeader) && !empty($strSet)) {
-			$strReturn .= "<tr>";
-			$strReturn .= "<td colspan=\"3\">&nbsp;</td>\n";
-			$strReturn .= "</tr>";
-			$strReturn .= "<tr>";
-			$strReturn .= "<td colspan=\"3\"><b>{$strHeader}</b></td>\n";
-			$strReturn .= "</tr>";
+			$strTableOutput .= "<tr>";
+			$strTableOutput .= "<td colspan=\"3\">&nbsp;</td>\n";
+			$strTableOutput .= "</tr>";
+			$strTableOutput .= "<tr>";
+			$strTableOutput .= "<td colspan=\"3\"><b>{$strHeader}</b></td>\n";
+			$strTableOutput .= "</tr>";
 		}
 
 		if (!empty($strSet)) {
-			$strReturn .= $strSet;
+			$strTableOutput .= $strSet;
 		}
 
-		return $strReturn;
+		return $strTableOutput;
 	}
 
 	private function areaAsHtml($objField, $hideEmpty = FALSE, $intDynamicCount = 0) {
 		$strReturn = "";
 		$strSet = "";
 
-		if ($objField->hasFields() && $objField->hasContent($intDynamicCount)) {
+		if ($objField->hasContent($intDynamicCount)) {
 			foreach ($objField->getFields() as $objSubField) {
 				switch (get_class($objSubField)) {
 					case "VF_MultiField":
@@ -633,8 +529,8 @@ class ValidForm extends ClassDynamic {
 
 			$strReturn .= $strSet;
 		} else {
-			if (!empty($this->__novaluesmessage) && !$objField->isActive()) {
-				return $strReturn . "<tr><td colspan=\"3\">{$this->__novaluesmessage}</td></tr></table>";
+			if (!empty($this->__novaluesmessage) && $objField->isActive()) {
+				return $strReturn . "<tr><td colspan=\"3\">{$this->__novaluesmessage}</td></tr>";
 			} else {
 				return "";
 			}
@@ -646,29 +542,31 @@ class ValidForm extends ClassDynamic {
 	private function multiFieldAsHtml($objField, $hideEmpty = FALSE, $intDynamicCount = 0) {
 		$strReturn = "";
 
-		if ($objField->hasFields() && $objField->hasContent($intDynamicCount)) {
-			$strValue = "";
-			$objSubFields = $objField->getFields();
+		if ($objField->hasContent($intDynamicCount)) {
+			if ($objField->hasFields()) {
+				$strValue = "";
+				$objSubFields = $objField->getFields();
 
-			$intCount = 0;
-			foreach ($objSubFields as $objSubField) {
-				$intCount++;
+				$intCount = 0;
+				foreach ($objSubFields as $objSubField) {
+					$intCount++;
 
-				if (get_class($objSubField) == "VF_Hidden" && $objSubField->isDynamicCounter()) {
-					continue;
+					if (get_class($objSubField) == "VF_Hidden" && $objSubField->isDynamicCounter()) {
+						continue;
+					}
+
+					$varValue = $objSubField->getValue($intDynamicCount);
+					$strValue .= (is_array($varValue)) ? implode(", ", $varValue) : $varValue;
+					$strValue .= ($objSubFields->count() > $intCount) ? " " : "";
 				}
 
-				$varValue = $objSubField->getValue($intDynamicCount);
-				$strValue .= (is_array($varValue)) ? implode(", ", $varValue) : $varValue;
-				$strValue .= ($objSubFields->count() > $intCount) ? " " : "";
-			}
+				$strValue = trim($strValue);
 
-			$strValue = trim($strValue);
-
-			if ((!empty($strValue) && $hideEmpty) || (!$hideEmpty && !empty($strValue))) {
-				$strReturn .= "<tr class=\"vf__field_value\">";
-				$strReturn .= "<td valign=\"top\" style=\"white-space:nowrap; padding-right: 20px\" class=\"vf__field\">{$objField->getLabel()}</td><td valign=\"top\" class=\"vf__value\"><strong>" . nl2br($strValue) . "</strong></td>\n";
-				$strReturn .= "</tr>";
+				if ((!empty($strValue) && $hideEmpty) || (!$hideEmpty && !empty($strValue))) {
+					$strReturn .= "<tr class=\"vf__field_value\">";
+					$strReturn .= "<td valign=\"top\" style=\"white-space:nowrap; padding-right: 20px\" class=\"vf__field\">{$objField->getLabel()}</td><td valign=\"top\" class=\"vf__value\"><strong>" . nl2br($strValue) . "</strong></td>\n";
+					$strReturn .= "</tr>";
+				}
 			}
 		}
 
