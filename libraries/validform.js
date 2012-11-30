@@ -1096,23 +1096,6 @@ ValidForm.prototype.dynamicDuplication = function () {
 				__this.addElement(objCopy);
 			});
 
-			//*** Fix click event on active areas.
-			if (copy.hasClass("vf__area")) {
-				var copiedTrigger = jQuery("legend :checkbox", copy);
-				if (copiedTrigger.length > 0) {
-					var counter = $("#" + copiedTrigger.attr("name") + "_dynamic");
-
-					// +1 on the counter
-					counter.val(parseInt(counter.val()) + 1);
-
-					copiedTrigger.attr("id", copiedTrigger.attr("id") + "_" + counter.val());
-					copiedTrigger.attr("name", copiedTrigger.attr("name") + "_" + counter.val());
-					copiedTrigger.parent("label").attr("for", copiedTrigger.attr("id"));
-
-					__this.attachAreaEvents(copiedTrigger);
-				}
-			}
-
 			//*** Remove 'required' styling.
 			copy
 				.find(".vf__required")
@@ -1127,6 +1110,29 @@ ValidForm.prototype.dynamicDuplication = function () {
 			copy.find(".vf__error").removeClass("vf__error");
 
 			jQuery(this).parent().before(copy);
+
+			//*** Fix click event on active areas.
+			if (copy.hasClass("vf__area")) {
+				var copiedTrigger = jQuery("legend :checkbox", copy);
+				var originalTrigger = jQuery("legend :checkbox", $original);
+
+				if (copiedTrigger.length > 0) {
+					var counter = $("#" + copiedTrigger.attr("name") + "_dynamic");
+
+					// +1 on the counter
+					counter.val(parseInt(counter.val()) + 1);
+
+					copiedTrigger.attr("id", copiedTrigger.attr("id") + "_" + counter.val());
+					copiedTrigger.attr("name", copiedTrigger.attr("name") + "_" + counter.val());
+					copiedTrigger.parent("label").attr("for", copiedTrigger.attr("id"));
+
+					if (originalTrigger.attr("checked") == "checked") {
+						copiedTrigger.attr("checked", "checked");
+					}
+
+					__this.attachAreaEvents(copiedTrigger);
+				}
+			}
 
 			//*** Call custom event if set.
 			jQuery("#" + __this.id).trigger("VF_AfterDynamicChange", [{ValidForm: __this, objAnchor: $anchor, objCopy: copy}]);
