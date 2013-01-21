@@ -63,7 +63,7 @@ define('VFORM_URL', 21);
  * ValidForm Builder base class
  *
  * @package ValidForm
- * @author Felix Langfeldt
+ * @author Felix Langfeldt, Robin van Baalen
  * @version Release: 0.2.7
  *
  */
