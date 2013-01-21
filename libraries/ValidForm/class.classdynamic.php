@@ -1,12 +1,12 @@
 <?php
 /***************************
  * ValidForm Builder - build valid and secure web forms quickly
- * 
+ *
  * Copyright (c) 2009-2012, Felix Langfeldt <flangfeldt@felix-it.com>.
  * All rights reserved.
- * 
+ *
  * This software is released under the GNU GPL v2 License <http://www.gnu.org/licenses/old-licenses/gpl-2.0.html>
- * 
+ *
  * @package    ValidForm
  * @author     Felix Langfeldt <flangfeldt@felix-it.com>
  * @copyright  2009-2012 Felix Langfeldt <flangfeldt@felix-it.com>
@@ -15,12 +15,11 @@
  ***************************/
 
 /**
- * 
+ *
  * ClassDynamic Class
- * 
+ *
  * @package ValidForm
- * @author Felix Langfeldt
- * @author Robin van Baalen
+ * @author Felix Langfeldt, Robin van Baalen
  * @version Release: 0.3
  *
  * CHANGELOG
@@ -42,7 +41,7 @@ class ClassDynamic {
 
 	public function __set($property, $value) {
 		$property = strtolower("__" . $property);
-		
+
 		if (property_exists($this, $property)) {
 			$this->$property = $value;
 		} else {
