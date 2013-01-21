@@ -14,7 +14,7 @@
  * @link       http://code.google.com/p/validformbuilder/
  ***************************/
 
-require_once('class.classdynamic.php');
+require_once('class.vf_element.php');
 
 /**
  *
@@ -33,7 +33,7 @@ class VF_SelectOption extends VF_Element {
 
 	public function __construct($label, $value, $selected = FALSE, $meta = array()) {
 		if (is_null($meta)) $meta = array();
-		
+
 		$this->__label = $label;
 		$this->__value = $value;
 		$this->__selected = $selected;
@@ -51,14 +51,14 @@ class VF_SelectOption extends VF_Element {
 	public function getValue() {
 		return $this->__value;
 	}
-	
+
 	protected function __getMetaString() {
 		$strOutput = "";
-		
+
 		foreach ($this->__meta as $key => $value) {
 			$strOutput .= " {$key}=\"{$value}\"";
 		}
-		
+
 		return $strOutput;
 	}
 
