@@ -8,6 +8,7 @@ class VF_ButtonTest extends PHPUnit_Framework_TestCase
      * @var VF_Button
      */
     protected $object;
+    protected $label;
 
     /**
      * Sets up the fixture, for example, opens a network connection.
@@ -15,7 +16,8 @@ class VF_ButtonTest extends PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-        $this->object = new VF_Button;
+        $this->label = Random::string(); // 10 character random string
+        $this->object = new VF_Button($this->label);
     }
 
     /**

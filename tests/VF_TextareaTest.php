@@ -8,6 +8,8 @@ class VF_TextareaTest extends PHPUnit_Framework_TestCase
      * @var VF_Textarea
      */
     protected $object;
+    protected $name;
+    protected $type;
 
     /**
      * Sets up the fixture, for example, opens a network connection.
@@ -15,7 +17,9 @@ class VF_TextareaTest extends PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-        $this->object = new VF_Textarea;
+        $this->name = Random::string();
+        $this->type = VFORM_TEXT;
+        $this->object = new VF_Textarea($this->name, $this->type);
     }
 
     /**

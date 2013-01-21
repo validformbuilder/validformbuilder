@@ -8,6 +8,8 @@ class VF_GroupTest extends PHPUnit_Framework_TestCase
      * @var VF_Group
      */
     protected $object;
+    protected $name;
+    protected $type;
 
     /**
      * Sets up the fixture, for example, opens a network connection.
@@ -15,7 +17,10 @@ class VF_GroupTest extends PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-        $this->object = new VF_Group;
+        $this->name = Random::string();
+        $this->type = VFORM_CHECK_LIST; // or VFORM_RADIO_LIST
+
+        $this->object = new VF_Group($this->name, $this->type);
     }
 
     /**

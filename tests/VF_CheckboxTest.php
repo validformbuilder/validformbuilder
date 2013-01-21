@@ -8,6 +8,8 @@ class VF_CheckboxTest extends PHPUnit_Framework_TestCase
      * @var VF_Checkbox
      */
     protected $object;
+    protected $label;
+    protected $type;
 
     /**
      * Sets up the fixture, for example, opens a network connection.
@@ -15,7 +17,9 @@ class VF_CheckboxTest extends PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-        $this->object = new VF_Checkbox;
+        $this->label = Random::string();
+        $this->type = VFORM_BOOLEAN;
+        $this->object = new VF_Checkbox($this->label, $this->type);
     }
 
     /**

@@ -8,6 +8,7 @@ class VF_StringTest extends PHPUnit_Framework_TestCase
      * @var VF_String
      */
     protected $object;
+    protected $string;
 
     /**
      * Sets up the fixture, for example, opens a network connection.
@@ -15,7 +16,8 @@ class VF_StringTest extends PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-        $this->object = new VF_String;
+        $this->string = Random::string();
+        $this->object = new VF_String($this->string);
     }
 
     /**

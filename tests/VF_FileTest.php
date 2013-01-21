@@ -8,6 +8,8 @@ class VF_FileTest extends PHPUnit_Framework_TestCase
      * @var VF_File
      */
     protected $object;
+    protected $name;
+    protected $type;
 
     /**
      * Sets up the fixture, for example, opens a network connection.
@@ -15,7 +17,10 @@ class VF_FileTest extends PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-        $this->object = new VF_File;
+        $this->name = Random::string();
+        $this->type = VFORM_FILE;
+
+        $this->object = new VF_File($this->name, $this->type);
     }
 
     /**

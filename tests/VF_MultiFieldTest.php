@@ -8,6 +8,7 @@ class VF_MultiFieldTest extends PHPUnit_Framework_TestCase
      * @var VF_MultiField
      */
     protected $object;
+    protected $label;
 
     /**
      * Sets up the fixture, for example, opens a network connection.
@@ -15,7 +16,9 @@ class VF_MultiFieldTest extends PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-        $this->object = new VF_MultiField;
+        $this->label = Random::string();
+
+        $this->object = new VF_MultiField($this->label);
     }
 
     /**

@@ -8,6 +8,8 @@ class VF_HiddenTest extends PHPUnit_Framework_TestCase
      * @var VF_Hidden
      */
     protected $object;
+    protected $name;
+    protected $type;
 
     /**
      * Sets up the fixture, for example, opens a network connection.
@@ -15,7 +17,10 @@ class VF_HiddenTest extends PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-        $this->object = new VF_Hidden;
+        $this->name = Random::string();
+        $this->type = VFORM_STRING;
+
+        $this->object = new VF_Hidden($this->name, $this->type);
     }
 
     /**

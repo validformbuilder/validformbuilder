@@ -8,6 +8,8 @@ class VF_FieldValidatorTest extends PHPUnit_Framework_TestCase
      * @var VF_FieldValidator
      */
     protected $object;
+    protected $name;
+    protected $type;
 
     /**
      * Sets up the fixture, for example, opens a network connection.
@@ -15,7 +17,10 @@ class VF_FieldValidatorTest extends PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-        $this->object = new VF_FieldValidator;
+        $this->name = Random::string();
+        $this->type = VFORM_STRING;
+
+        $this->object = new VF_FieldValidator($this->name, $this->type, array(), array());
     }
 
     /**

@@ -8,6 +8,8 @@ class VF_CaptchaTest extends PHPUnit_Framework_TestCase
      * @var VF_Captcha
      */
     protected $object;
+    protected $label;
+    protected $type;
 
     /**
      * Sets up the fixture, for example, opens a network connection.
@@ -15,7 +17,9 @@ class VF_CaptchaTest extends PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-        $this->object = new VF_Captcha;
+        $this->label = Random::string(); // 10 character random string
+        $this->type = VFORM_STRING;
+        $this->object = new VF_Captcha($this->label, $this->type);
     }
 
     /**

@@ -8,6 +8,8 @@ class VF_PasswordTest extends PHPUnit_Framework_TestCase
      * @var VF_Password
      */
     protected $object;
+    protected $label;
+    protected $type;
 
     /**
      * Sets up the fixture, for example, opens a network connection.
@@ -15,7 +17,10 @@ class VF_PasswordTest extends PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-        $this->object = new VF_Password;
+        $this->label = Random::string();
+        $this->type = VFORM_PASSWORD;
+
+        $this->object = new VF_Password($this->label, $this->type);
     }
 
     /**

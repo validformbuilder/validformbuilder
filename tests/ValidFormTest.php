@@ -28,7 +28,6 @@ class ValidFormTest extends PHPUnit_Framework_TestCase
 
     /**
      * @covers ValidForm::setSubmitLabel
-     * @todo   Implement testSetSubmitLabel().
      */
     public function testSetSubmitLabel()
     {
@@ -39,13 +38,12 @@ class ValidFormTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers ValidForm::getSubmitLabel
-     * @todo   Implement testGetSubmitLabel().
+     * @covers ValidForm::getSubmitLabel]
      * @depends testSetSubmitLabel
      */
     public function testGetSubmitLabel()
     {
-        $strLabel = Random::string();
+        $strLabel = Random::string(); // 10 character random string
         $this->object->setSubmitLabel($strLabel);
 
         $this->assertEquals($this->object->getSubmitLabel(), $strLabel);
@@ -53,14 +51,11 @@ class ValidFormTest extends PHPUnit_Framework_TestCase
 
     /**
      * @covers ValidForm::addHtml
-     * @todo   Implement testAddHtml().
      */
-    public function testAddHtml()
+    public function testAddHtmlReturnsInstanceOfVFString()
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
+        $objString = $this->object->addHtml("<div></div>");
+        $this->assertInstanceOf("VF_String", $objString);
     }
 
     /**

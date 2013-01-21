@@ -9,13 +9,25 @@ class VF_GroupFieldTest extends PHPUnit_Framework_TestCase
      */
     protected $object;
 
+    protected $id;
+    protected $name;
+    protected $type;
+    protected $label;
+    protected $value;
+
     /**
      * Sets up the fixture, for example, opens a network connection.
      * This method is called before a test is executed.
      */
     protected function setUp()
     {
-        $this->object = new VF_GroupField;
+        $this->id = Random::string();
+        $this->name = Random::string();
+        $this->type = "radio"; // or 'checklist'
+        $this->label = Random::string();
+        $this->value = Random::string();
+
+        $this->object = new VF_GroupField($this->id, $this->name, $this->type, $this->label, $this->value);
     }
 
     /**

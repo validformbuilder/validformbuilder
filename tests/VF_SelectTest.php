@@ -8,6 +8,8 @@ class VF_SelectTest extends PHPUnit_Framework_TestCase
      * @var VF_Select
      */
     protected $object;
+    protected $type;
+    protected $label;
 
     /**
      * Sets up the fixture, for example, opens a network connection.
@@ -15,7 +17,10 @@ class VF_SelectTest extends PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-        $this->object = new VF_Select;
+        $this->name = Random::string();
+        $this->type = VFORM_SELECT_LIST;
+
+        $this->object = new VF_Select($this->name, $this->type);
     }
 
     /**
