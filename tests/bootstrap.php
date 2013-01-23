@@ -86,7 +86,7 @@ class Random {
 }
 
 if (!defined("VFORM_TEXT")) {
-	require_once("vf_constantes.php");
+	require_once("vf_constants.php");
 }
 
 echo "Include path set to: " . get_include_path() . "\n\n";

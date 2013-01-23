@@ -52,82 +52,126 @@ class ValidFormTest extends PHPUnit_Framework_TestCase
     /**
      * @covers ValidForm::addHtml
      */
-    public function testAddHtmlReturnsInstanceOfVFString()
+    public function testAddHtmlReturnsInstanceOfVF_String()
     {
-        $objString = $this->object->addHtml("<div></div>");
-        $this->assertInstanceOf("VF_String", $objString);
+        $objTest = $this->object->addHtml("<div></div>");
+        $this->assertInstanceOf("VF_String", $objTest);
     }
 
     /**
      * @covers ValidForm::addNavigation
-     * @todo   Implement testAddNavigation().
      */
-    public function testAddNavigation()
+    public function testAddNavigationReturnsInstanceOfVF_Navigation()
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
+        $objTest = $this->object->addNavigation();
+        $this->assertInstanceOf("VF_Navigation", $objTest);
     }
 
     /**
      * @covers ValidForm::addFieldset
-     * @todo   Implement testAddFieldset().
      */
-    public function testAddFieldset()
+    public function testAddFieldsetReturnsInstanceOfVF_Fieldset()
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
+        $objTest = $this->object->addFieldset();
+        $this->assertInstanceOf("VF_Fieldset", $objTest);
     }
 
     /**
      * @covers ValidForm::addHiddenField
-     * @todo   Implement testAddHiddenField().
      */
-    public function testAddHiddenField()
+    public function testAddHiddenFieldReturnsInstanceOfVF_Hidden()
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
+        $objTest = $this->object->addHiddenField(Random::string(), VFORM_STRING);
+        $this->assertInstanceOf("VF_Hidden", $objTest);
     }
 
     /**
      * @covers ValidForm::renderField
-     * @todo   Implement testRenderField().
      */
-    public function testRenderField()
+    public function testRenderFieldReturnsInstanceOfVF_Text()
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
+        $strName = Random::string();
+        $strLabel = Random::string();
+
+        $this->assertInstanceOf("VF_Text", $this->object->renderField($strName, $strLabel, VFORM_STRING, array(), array(), array()));
+        $this->assertInstanceOf("VF_Text", $this->object->renderField($strName, $strLabel, VFORM_WORD, array(), array(), array()));
+        $this->assertInstanceOf("VF_Text", $this->object->renderField($strName, $strLabel, VFORM_EMAIL, array(), array(), array()));
+        $this->assertInstanceOf("VF_Text", $this->object->renderField($strName, $strLabel, VFORM_URL, array(), array(), array()));
+        $this->assertInstanceOf("VF_Text", $this->object->renderField($strName, $strLabel, VFORM_SIMPLEURL, array(), array(), array()));
+        $this->assertInstanceOf("VF_Text", $this->object->renderField($strName, $strLabel, VFORM_CUSTOM, array(), array(), array()));
+        $this->assertInstanceOf("VF_Text", $this->object->renderField($strName, $strLabel, VFORM_CURRENCY, array(), array(), array()));
+        $this->assertInstanceOf("VF_Text", $this->object->renderField($strName, $strLabel, VFORM_DATE, array(), array(), array()));
+        $this->assertInstanceOf("VF_Text", $this->object->renderField($strName, $strLabel, VFORM_NUMERIC, array(), array(), array()));
+        $this->assertInstanceOf("VF_Text", $this->object->renderField($strName, $strLabel, VFORM_INTEGER, array(), array(), array()));
+    }
+
+    /**
+     * @covers ValidForm::renderField
+     */
+    public function testRenderFieldReturnsInstanceOfVF_Password()
+    {
+        $strName = Random::string();
+        $strLabel = Random::string();
+
+        $this->assertInstanceOf("VF_Password", $this->object->renderField($strName, $strLabel, VFORM_PASSWORD, array(), array(), array()));
+    }
+
+    /**
+     * @covers ValidForm::renderField
+     */
+    public function testRenderFieldReturnsInstanceOfVF_Captcha()
+    {
+        $strName = Random::string();
+        $strLabel = Random::string();
+
+        $this->assertInstanceOf("VF_Captcha", $this->object->renderField($strName, $strLabel, VFORM_CAPTCHA, array(), array(), array()));
+    }
+
+    /**
+     * @covers ValidForm::renderField
+     */
+    public function testRenderFieldReturnsInstanceOfVF_Textarea()
+    {
+        $strName = Random::string();
+        $strLabel = Random::string();
+
+        $this->assertInstanceOf("VF_Textarea", $this->object->renderField($strName, $strLabel, VFORM_HTML, array(), array(), array()));
+        $this->assertInstanceOf("VF_Textarea", $this->object->renderField($strName, $strLabel, VFORM_CUSTOM_TEXT, array(), array(), array()));
+        $this->assertInstanceOf("VF_Textarea", $this->object->renderField($strName, $strLabel, VFORM_TEXT, array(), array(), array()));
+    }
+
+    /**
+     * @covers ValidForm::renderField
+     */
+    public function testRenderFieldReturnsInstanceOfVF_File()
+    {
+        $strName = Random::string();
+        $strLabel = Random::string();
+
+        $this->assertInstanceOf("VF_File", $this->object->renderField($strName, $strLabel, VFORM_FILE, array(), array(), array()));
     }
 
     /**
      * @covers ValidForm::addField
-     * @todo   Implement testAddField().
+     * @depends testRenderFieldReturnsInstanceOfVF_Text
      */
-    public function testAddField()
+    public function testAddFieldReturnsInstanceOfVF_Element()
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
+        $strName = Random::string();
+        $strLabel = Random::string();
+
+        $this->assertInstanceOf("VF_Text", $this->object->addField($strName, $strLabel, VFORM_STRING, array(), array(), array()));
     }
 
     /**
      * @covers ValidForm::addParagraph
-     * @todo   Implement testAddParagraph().
      */
-    public function testAddParagraph()
+    public function testAddParagraphReturnsVF_Paragraph()
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
+        $string1 = Random::string(600); // returns a 600 character random string
+        $string2 = Random::string();
+
+        $this->assertInstanceOf("VF_Paragraph", $this->object->addParagraph($string1, $string2));
     }
 
     /**
