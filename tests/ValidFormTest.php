@@ -194,8 +194,8 @@ class ValidFormTest extends PHPUnit_Framework_TestCase
                                         "VFORM_INTEGER"
                                      );
 
-        foreach ($arrVFTextFieldTypes as $intFieldType) {
-            $this->assertInstanceOf("VF_Text", $this->object->renderField($strName, $strLabel, $intFieldType, array(), array(), array()));
+        foreach ($arrVFTextFieldTypes as $strFieldType) {
+            $this->assertInstanceOf("VF_Text", $this->object->renderField($strName, $strLabel, constant($strFieldType), array(), array(), array()), "addField with field type " . $strFieldType . " does not return expected instance of VF_Text.");
         }
     }
 
