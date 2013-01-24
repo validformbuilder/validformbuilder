@@ -27,6 +27,94 @@ class ValidFormTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * @covers ValidForm::$__description
+     */
+    public function testValidFormHasAttributeDescription()
+    {
+        $this->assertClassHasAttribute('__description', get_class($this->object), "Description property missing in class " . get_class($this->object));
+    }
+
+    /**
+     * @covers ValidForm::$__meta
+     */
+    public function testValidFormHasAttributeMeta()
+    {
+        $this->assertClassHasAttribute('__meta', get_class($this->object), "Meta property missing in class " . get_class($this->object));
+    }
+
+    /**
+     * @covers ValidForm::$__action
+     */
+    public function testValidFormHasAttributeAction()
+    {
+        $this->assertClassHasAttribute('__action', get_class($this->object), "Action property missing in class " . get_class($this->object));
+    }
+
+    /**
+     * @covers ValidForm::$__submitLabel
+     */
+    public function testValidFormHasAttributeSubmitLabel()
+    {
+        $this->assertClassHasAttribute('__submitLabel', get_class($this->object), "SubmitLabel property missing in class " . get_class($this->object));
+    }
+
+    /**
+     * @covers ValidForm::$__jsevents
+     */
+    public function testValidFormHasAttributeJsEvents()
+    {
+        $this->assertClassHasAttribute('__jsevents', get_class($this->object), "JsEvents property missing in class " . get_class($this->object));
+    }
+
+    /**
+     * @covers ValidForm::$__elements
+     */
+    public function testValidFormHasAttributeElements()
+    {
+        $this->assertClassHasAttribute('__elements', get_class($this->object), "Elements property missing in class " . get_class($this->object));
+    }
+
+    /**
+     * @covers ValidForm::$__name
+     */
+    public function testValidFormHasAttributeName()
+    {
+        $this->assertClassHasAttribute('__name', get_class($this->object), "Name property missing in class " . get_class($this->object));
+    }
+
+    /**
+     * @covers ValidForm::$__mainalert
+     */
+    public function testValidFormHasAttributeMainAlert()
+    {
+        $this->assertClassHasAttribute('__mainalert', get_class($this->object), "MainAlert property missing in class " . get_class($this->object));
+    }
+
+    /**
+     * @covers ValidForm::$__requiredstyle
+     */
+    public function testValidFormHasAttributeRequiredStyle()
+    {
+        $this->assertClassHasAttribute('__requiredstyle', get_class($this->object), "RequiredStyle property missing in class " . get_class($this->object));
+    }
+
+    /**
+     * @covers ValidForm::$__novaluesmessage
+     */
+    public function testValidFormHasAttributeNoValuesMessage()
+    {
+        $this->assertClassHasAttribute('__novaluesmessage', get_class($this->object), "NoValuesMessage property missing in class " . get_class($this->object));
+    }
+
+    /**
+     * @covers ValidForm::$__invalidfields
+     */
+    public function testValidFormHasAttributeInvalidFields()
+    {
+        $this->assertClassHasAttribute('__invalidfields', get_class($this->object), "InvalidFields property missing in class " . get_class($this->object));
+    }
+
+    /**
      * @covers ValidForm::setSubmitLabel
      */
     public function testSetSubmitLabel()
@@ -93,16 +181,22 @@ class ValidFormTest extends PHPUnit_Framework_TestCase
         $strName = Random::string();
         $strLabel = Random::string();
 
-        $this->assertInstanceOf("VF_Text", $this->object->renderField($strName, $strLabel, VFORM_STRING, array(), array(), array()));
-        $this->assertInstanceOf("VF_Text", $this->object->renderField($strName, $strLabel, VFORM_WORD, array(), array(), array()));
-        $this->assertInstanceOf("VF_Text", $this->object->renderField($strName, $strLabel, VFORM_EMAIL, array(), array(), array()));
-        $this->assertInstanceOf("VF_Text", $this->object->renderField($strName, $strLabel, VFORM_URL, array(), array(), array()));
-        $this->assertInstanceOf("VF_Text", $this->object->renderField($strName, $strLabel, VFORM_SIMPLEURL, array(), array(), array()));
-        $this->assertInstanceOf("VF_Text", $this->object->renderField($strName, $strLabel, VFORM_CUSTOM, array(), array(), array()));
-        $this->assertInstanceOf("VF_Text", $this->object->renderField($strName, $strLabel, VFORM_CURRENCY, array(), array(), array()));
-        $this->assertInstanceOf("VF_Text", $this->object->renderField($strName, $strLabel, VFORM_DATE, array(), array(), array()));
-        $this->assertInstanceOf("VF_Text", $this->object->renderField($strName, $strLabel, VFORM_NUMERIC, array(), array(), array()));
-        $this->assertInstanceOf("VF_Text", $this->object->renderField($strName, $strLabel, VFORM_INTEGER, array(), array(), array()));
+        $arrVFTextFieldTypes = array(
+                                        "VFORM_STRING",
+                                        "VFORM_WORD",
+                                        "VFORM_EMAIL",
+                                        "VFORM_URL",
+                                        "VFORM_SIMPLEURL",
+                                        "VFORM_CUSTOM",
+                                        "VFORM_CURRENCY",
+                                        "VFORM_DATE",
+                                        "VFORM_NUMERIC",
+                                        "VFORM_INTEGER"
+                                     );
+
+        foreach ($arrVFTextFieldTypes as $intFieldType) {
+            $this->assertInstanceOf("VF_Text", $this->object->renderField($strName, $strLabel, $intFieldType, array(), array(), array()));
+        }
     }
 
     /**
@@ -160,7 +254,8 @@ class ValidFormTest extends PHPUnit_Framework_TestCase
         $strName = Random::string();
         $strLabel = Random::string();
 
-        $this->assertInstanceOf("VF_Text", $this->object->addField($strName, $strLabel, VFORM_STRING, array(), array(), array()));
+        // Feed a non-existing field type to addField using Random::string(). This will cause addField to generate a blanc VF_Element.
+        $this->assertInstanceOf("VF_Element", $this->object->addField($strName, $strLabel, Random::string()));
     }
 
     /**
@@ -238,7 +333,7 @@ class ValidFormTest extends PHPUnit_Framework_TestCase
     public function testIsSubmitted()
     {
         $blnForce = false;
-        
+
         if (ValidForm::get("vf__dispatch") == $this->object->getName() || $blnForce) {
             $this->assertEquals($this->object->isSubmitted(), true);
         } else {
@@ -258,20 +353,19 @@ class ValidFormTest extends PHPUnit_Framework_TestCase
      * @covers ValidForm::getFields
      */
     public function testGetFieldsReturnsVF_Collection()
-    {  
+    {
         $this->assertInstanceOf("VF_Collection", $this->object->getFields());
     }
 
     /**
      * @covers ValidForm::getValidField
-     * @todo   Implement testGetValidField().
      */
     public function testGetValidField()
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
+        $strName = Random::string();
+
+        $objVformString = $this->object->addField($strName, Random::string(), VFORM_STRING);
+        $this->assertEquals($this->object->getValidField($strName), $objVformString);
     }
 
     /**
