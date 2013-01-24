@@ -28,37 +28,54 @@ class ClassDynamicTest extends PHPUnit_Framework_TestCase
 
     /**
      * @covers ClassDynamic::__get
-     * @todo   Implement test__get().
+     * @expectedException BadMethodCallException
      */
-    public function test__get()
+    public function test__getTrowsBadMethodCallException()
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
+        $this->object->__get(Random::string());
     }
 
     /**
      * @covers ClassDynamic::__set
-     * @todo   Implement test__set().
+     * @expectedException BadMethodCallException
      */
-    public function test__set()
+    public function test__setTrowsBadMethodCallException()
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
+        $this->object->__set(Random::string(), Random::string());
     }
 
     /**
      * @covers ClassDynamic::__call
-     * @todo   Implement test__call().
+     * @expectedException BadMethodCallException
      */
-    public function test__call()
+    public function test__callTrowsBadMethodCallException()
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
+        $this->object->__call(Random::string(), Random::string());
+    }
+
+    /**
+     * @covers ClassDynamic::__get
+     */
+    public function test__getReturnsFormName()
+    {
+        $strFormName = Random::string();
+        $objForm = new ValidForm($strFormName);
+
+        $this->assertEquals($objForm->getName(), $strFormName);
+    }
+
+    /**
+     * @covers ClassDynamic::__set
+     */
+    public function test__setSetsNewFormName()
+    {
+        $strFormName = Random::string();
+        $strNewFormName = Random::string();
+
+        $objForm = new ValidForm($strFormName);
+        $objForm->setName($strNewFormName);
+
+        $this->assertNotEquals($objForm->getName(), $strFormName);
+        $this->assertEquals($objForm->getName(), $strNewFormName);
     }
 }
