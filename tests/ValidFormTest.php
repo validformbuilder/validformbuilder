@@ -176,26 +176,18 @@ class ValidFormTest extends PHPUnit_Framework_TestCase
 
     /**
      * @covers ValidForm::addArea
-     * @todo   Implement testAddArea().
      */
-    public function testAddArea()
+    public function testAddAreaReturnsVF_Area()
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
+        $this->assertInstanceOf("VF_Area", $this->object->addArea());
     }
 
     /**
      * @covers ValidForm::addMultiField
-     * @todo   Implement testAddMultiField().
      */
-    public function testAddMultiField()
+    public function testAddMultiFieldReturnsVF_MultiField()
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
+        $this->assertInstanceOf("VF_MultiField", $this->object->addMultiField());
     }
 
     /**
@@ -204,10 +196,18 @@ class ValidFormTest extends PHPUnit_Framework_TestCase
      */
     public function testAddJSEvent()
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
+        $strEventName = Random::string(); // Random 10 character string.
+        $strEventCode = Random::string(100); // Random 100 character string.
+
+        // Add a random "js event"
+        $this->object->addJSEvent($strEventName, $strEventCode);
+
+        // Get the javascript events storage
+        $arrJsEvents = $this->object->getJsEvents();
+
+        // Check if it's all in there.
+        $this->assertArrayHasKey($strEventName, $arrJsEvents);
+        $this->assertContains($strEventCode, $arrJsEvents);
     }
 
     /**
@@ -224,38 +224,42 @@ class ValidFormTest extends PHPUnit_Framework_TestCase
 
     /**
      * @covers ValidForm::serialize
-     * @todo   Implement testSerialize().
      */
     public function testSerialize()
     {
+        $this->object->valuesAsHtml();
         // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
+        $this->assertEquals($this->object->serialize(), base64_encode(gzcompress(serialize($this->object))));
     }
 
     /**
      * @covers ValidForm::isSubmitted
-     * @todo   Implement testIsSubmitted().
      */
     public function testIsSubmitted()
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
+        $blnForce = false;
+        
+        if (ValidForm::get("vf__dispatch") == $this->object->getName() || $blnForce) {
+            $this->assertEquals($this->object->isSubmitted(), true);
+        } else {
+            $this->assertEquals($this->object->isSubmitted(), false);
+        }
+    }
+
+    /**
+     * @covers ValidForm::isSubmitted
+     */
+    public function testForceIsSubmitted()
+    {
+        $this->assertEquals($this->object->isSubmitted(true), true);
     }
 
     /**
      * @covers ValidForm::getFields
-     * @todo   Implement testGetFields().
      */
-    public function testGetFields()
-    {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
+    public function testGetFieldsReturnsVF_Collection()
+    {  
+        $this->assertInstanceOf("VF_Collection", $this->object->getFields());
     }
 
     /**

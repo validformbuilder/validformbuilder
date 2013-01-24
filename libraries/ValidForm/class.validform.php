@@ -56,7 +56,7 @@ class ValidForm extends ClassDynamic {
 	protected $__meta;
 	protected $__action;
 	protected $__submitLabel;
-	protected $__jsEvents = array();
+	protected $__jsevents = array(); // Keep it lowercase to enable magic methods from ClassDynamic
 	protected $__elements;
 	protected $__name;
 	protected $__mainalert;
@@ -261,7 +261,7 @@ class ValidForm extends ClassDynamic {
 	}
 
 	public function addJSEvent($strEvent, $strMethod) {
-		$this->__jsEvents[$strEvent] = $strMethod;
+		$this->__jsevents[$strEvent] = $strMethod;
 	}
 
 	public function toHtml($blnClientSide = true, $blnForceSubmitted = false, $strCustomJs = "") {
@@ -606,7 +606,7 @@ class ValidForm extends ClassDynamic {
 		}
 
 		//*** Form Events.
-		foreach ($this->__jsEvents as $event => $method) {
+		foreach ($this->__jsevents as $event => $method) {
 			$strJs .= "\tobjForm.addEvent(\"{$event}\", {$method});\n";
 		}
 
