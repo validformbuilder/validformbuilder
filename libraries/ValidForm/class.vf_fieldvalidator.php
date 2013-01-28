@@ -1,26 +1,26 @@
 <?php
 /***************************
  * ValidForm Builder - build valid and secure web forms quickly
- * 
+ *
  * Copyright (c) 2009-2012, Felix Langfeldt <flangfeldt@felix-it.com>.
  * All rights reserved.
- * 
+ *
  * This software is released under the GNU GPL v2 License <http://www.gnu.org/licenses/old-licenses/gpl-2.0.html>
- * 
+ *
  * @package    ValidForm
  * @author     Felix Langfeldt <flangfeldt@felix-it.com>
  * @copyright  2009-2012 Felix Langfeldt <flangfeldt@felix-it.com>
  * @license    http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU GPL v2
  * @link       http://code.google.com/p/validformbuilder/
  ***************************/
- 
+
 require_once('class.classdynamic.php');
 require_once('class.vf_validator.php');
 
 /**
- * 
+ *
  * FieldValidator Class
- * 
+ *
  * @package ValidForm
  * @author Felix Langfeldt
  * @version Release: 0.2.2
@@ -51,7 +51,7 @@ class VF_FieldValidator extends ClassDynamic {
 	protected $__filetypeerror = "Invalid file types selected. Only types of %s are permitted.";
 	protected $__hinterror = "The value is the hint value. Enter your own value.";
 	protected $__errors = array();
-	
+
 	public function __construct($fieldName, $fieldType, $validationRules, $errorHandlers, $fieldHint = NULL) {
 		foreach ($validationRules as $key => $value) {
 			$property = strtolower("__" . $key);
@@ -59,14 +59,14 @@ class VF_FieldValidator extends ClassDynamic {
 				$this->$property = $value;
 			}
 		}
-		
+
 		foreach ($errorHandlers as $key => $value) {
 			$property = strtolower("__" . $key . "error");
 			if (property_exists($this, $property)) {
 				$this->$property = $value;
 			}
 		}
-		
+
 		$this->__fieldname = str_replace("[]", "", $fieldName);
 		$this->__type = $fieldType;
 		$this->__fieldhint = $fieldHint;
@@ -77,11 +77,11 @@ class VF_FieldValidator extends ClassDynamic {
 
 		if (isset($this->__validvalues[$intDynamicPosition])) {
 			$varReturn = $this->__validvalues[$intDynamicPosition];
-		} 
+		}
 
 		return $varReturn;
 	}
-	
+
 	/**
 	 * Get the value to validate from either the global request variable or the cached __validvalues array.
 	 * @param  integer $intDynamicPosition [Using the intDynamicPosition parameter, you can get the specific value of a dynamic field.]
@@ -96,14 +96,14 @@ class VF_FieldValidator extends ClassDynamic {
 			$varValidValue = (isset($this->__validvalues[$intDynamicPosition])) ? $this->__validvalues[$intDynamicPosition] : null;
 			$strReturn = (isset($_REQUEST[$strFieldName])) ? $_REQUEST[$strFieldName] : $varValidValue;
 		}
-		
+
 		return $strReturn;
 	}
-	
+
 	/**
-	 * The most important function of ValidForm Builder library. This function 
-	 * handles all the server-side field validation logic. 
-	 * 
+	 * The most important function of ValidForm Builder library. This function
+	 * handles all the server-side field validation logic.
+	 *
 	 * @param  integer $intDynamicPosition Using the intDynamicPosition parameter, you can validate a specific dynamic field, if necessary.
 	 * @return boolean	                   True if the current field validates, false if not.
 	 */
@@ -121,12 +121,12 @@ class VF_FieldValidator extends ClassDynamic {
 			$intCount 		= 0;
 
 			foreach ($value as $valueItem) {
-			
+
 				// Check if empty
 				if (is_object($this->__targetfield)) {
-			
+
 					if ($valueItem == $this->__targetfield->getName()) {
-			
+
 						// Validate target field and set error/validvalue
 						if ($this->__targetfield->getValidator()->validate($intDynamicPosition)) {
 							$valueItem = $this->__targetfield->getValidator()->getValidValue($intDynamicPosition);
@@ -179,7 +179,7 @@ class VF_FieldValidator extends ClassDynamic {
 					$this->__errors[$intDynamicPosition] = $this->__requirederror;
 				} else {
 					unset($this->__validvalues[$intDynamicPosition]);
-					
+
 					if (empty($this->__matchwith)) return TRUE;
 				}
 			}
@@ -214,7 +214,7 @@ class VF_FieldValidator extends ClassDynamic {
 				}
 			}
 		}
-						
+
 		//*** Check minimum input length.
 		if (!$this->__hasError($intDynamicPosition)) {
 			if ($this->__minlength > 0	&& is_array($value)) {
@@ -242,14 +242,14 @@ class VF_FieldValidator extends ClassDynamic {
 				$this->__errors[$intDynamicPosition] = sprintf($this->__maxlengtherror, $this->__maxlength);
 			}
 		}
-		
+
 		//*** Check matching values.
 		if (!$this->__hasError($intDynamicPosition)) {
 			if (!empty($this->__matchwith)) {
 				$matchValue = $this->__matchwith->getValue();
 				if (empty($matchValue)) $matchValue = NULL;
 				if (empty($value)) $value = NULL;
-				
+
 				if ($matchValue !== $value) {
 					unset($this->__validvalues[$intDynamicPosition]);
 					$this->__errors[$intDynamicPosition] = $this->__matchwitherror;
@@ -258,7 +258,7 @@ class VF_FieldValidator extends ClassDynamic {
 				}
 			}
 		}
-		
+
 		//*** Check specific types.
 		if (!$this->__hasError($intDynamicPosition)) {
 			switch ($this->__type) {
@@ -277,16 +277,16 @@ class VF_FieldValidator extends ClassDynamic {
 				$this->__validvalues[$intDynamicPosition] = $value;
 			}
 		}
-		
+
 		//*** Override error.
 		if (isset($this->__overrideerrors[$intDynamicPosition]) && !empty($this->__overrideerrors[$intDynamicPosition])) {
 			unset($this->__validvalues[$intDynamicPosition]);
 			$this->__errors[$intDynamicPosition] = $this->__overrideerrors[$intDynamicPosition];
 		}
-		
+
 		return (!isset($this->__validvalues[$intDynamicPosition])) ? false : true;
 	}
-	
+
 	public function setError($strError, $intDynamicPosition = 0) {
 		$this->__overrideerrors[$intDynamicPosition] = $strError;
 	}
@@ -294,10 +294,10 @@ class VF_FieldValidator extends ClassDynamic {
 	public function getError($intDynamicPosition = 0) {
 		return (isset($this->__errors[$intDynamicPosition]) && !empty($this->__errors[$intDynamicPosition])) ? $this->__errors[$intDynamicPosition] : "";
 	}
-	
+
 	public function getCheck() {
 		$strReturn = "";
-	
+
 		switch ($this->__type) {
 			case VFORM_CUSTOM:
 			case VFORM_CUSTOM_TEXT:
@@ -306,14 +306,14 @@ class VF_FieldValidator extends ClassDynamic {
 			default:
 				$strReturn = VF_Validator::getCheck($this->__type);
 		}
-		
+
 		return $strReturn;
 	}
 
 	private function __hasError($intDynamicPosition = 0) {
 		return (isset($this->__errors[$intDynamicPosition]) && !empty($this->__errors[$intDynamicPosition]));
 	}
-	
+
 }
 
 ?>

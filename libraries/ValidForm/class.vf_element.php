@@ -269,6 +269,7 @@ class VF_Element extends ClassDynamic {
 
 	/**
 	 * If an element's name is updated, also update the name in it's corresponding validator.
+	 * Therefore, we cannot use the default 'magic method' getName()
 	 * @param string $strName The new name
 	 */
 	public function setName($strName) {

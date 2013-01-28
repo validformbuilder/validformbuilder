@@ -108,35 +108,21 @@ class ValidWizard extends ValidForm {
 		return $objField;
 	}
 
-	public static function unserialize($strSerialized, $strUniqueId = "") {
-		$objReturn = null;
+	/**
+	 * Get a page from the collection based on it's zero-based position in the elements collection
+	 * @param  Integer $intIndex Zero-based position
+	 * @return VF_Page           VF_Page element, if found.
+	 */
+	public function getPage($intIndex = 0) {
+		$intIndex--; // Convert page no. to index no.
+		$this->__elements->seek($intIndex);
 
-		$objForm = unserialize(gzuncompress(base64_decode($strSerialized)));
-		if (get_class($objForm) == "ValidWizard") {
-			$objReturn = $objForm;
-			if (!empty($strUniqueId)) $objReturn->__setUniqueId($strUniqueId);
+		$objReturn = $this->__elements->current();
+		if ($objReturn === false || get_class($objReturn) !== "VF_Page") {
+			$objReturn = null;
 		}
 
 		return $objReturn;
-	}
-
-	private function __wizardJs($strCustomJs = "", $blnFromSession = false) {
-		$strReturn = "";
-
-		// Optionally set a custom first visibile page.
-		$intPage = ($this->__currentpage > 1) ? $this->__currentpage : "";
-
-		$strReturn .= "objForm.setLabel('next', '" . $this->__nextlabel . "');\n\t";
-		$strReturn .= "objForm.setLabel('previous', '" . $this->__previouslabel . "');\n\t";
-		$strReturn .= "objForm.initWizard({$intPage});\n\n" . $strCustomJs;
-
-		return $strReturn;
-	}
-
-	public function getPage($intIndex) {
-		$intIndex--; // Convert page no. to index no.
-		$this->__pages->seek($intIndex);
-		return $this->__elements->current();
 	}
 
 	public function addPage($id = "", $header = "", $meta = array()) {
@@ -154,7 +140,7 @@ class ValidWizard extends ValidForm {
 	}
 
 	public function addField($name, $label, $type, $validationRules = array(), $errorHandlers = array(), $meta = array(), $blnJustRender = FALSE) {
-		$objField = ValidForm::renderField($name, $label, $type, $validationRules, $errorHandlers, $meta);
+		$objField = parent::renderField($name, $label, $type, $validationRules, $errorHandlers, $meta);
 
 		//*** Fieldset already defined?
 		if ($this->__elements->count() == 0 && !$blnJustRender) {
@@ -207,6 +193,29 @@ class ValidWizard extends ValidForm {
 				return "";
 			}
 		}
+	}
+
+	public static function unserialize($strSerialized, $strUniqueId = "") {
+		$objReturn = parent::unserialize($strSerialized);
+
+		if (get_class($objReturn) == "ValidWizard" && !empty($strUniqueId)) {
+			$objReturn->__setUniqueId($strUniqueId);
+		}
+
+		return $objReturn;
+	}
+
+	private function __wizardJs($strCustomJs = "", $blnFromSession = false) {
+		$strReturn = "";
+
+		// Optionally set a custom first visibile page.
+		$intPage = ($this->__currentpage > 1) ? $this->__currentpage : "";
+
+		$strReturn .= "objForm.setLabel('next', '" . $this->__nextlabel . "');\n\t";
+		$strReturn .= "objForm.setLabel('previous', '" . $this->__previouslabel . "');\n\t";
+		$strReturn .= "objForm.initWizard({$intPage});\n\n" . $strCustomJs;
+
+		return $strReturn;
 	}
 
 	private function __addHiddenFields() {

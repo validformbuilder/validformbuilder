@@ -305,11 +305,20 @@ class ValidForm extends ClassDynamic {
 		return $strOutput;
 	}
 
+	/**
+	 * Serialize, compress and encode the entire form including it's values
+	 * @param  boolean $blnSubmittedValues Whether or not to include submitted values or only serialize default values.
+	 * @return String                      Base64 encoded, gzcompressed, serialized form.
+	 */
 	public function serialize($blnSubmittedValues = true) {
 		// Validate & cache all values
 		$this->valuesAsHtml($blnSubmittedValues); // Especially dynamic counters need this!
 
 		return base64_encode(gzcompress(serialize($this)));
+	}
+
+	public static function unserialize($strSerialized) {
+		return unserialize(gzuncompress(base64_decode($strSerialized)));
 	}
 
 	/**

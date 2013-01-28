@@ -1,12 +1,12 @@
 <?php
 /***************************
  * ValidForm Builder - build valid and secure web forms quickly
- * 
+ *
  * Copyright (c) 2009-2012, Felix Langfeldt <flangfeldt@felix-it.com>.
  * All rights reserved.
- * 
+ *
  * This software is released under the GNU GPL v2 License <http://www.gnu.org/licenses/old-licenses/gpl-2.0.html>
- * 
+ *
  * @package    ValidForm
  * @author     Felix Langfeldt <flangfeldt@felix-it.com>
  * @copyright  2009-2012 Felix Langfeldt <flangfeldt@felix-it.com>
@@ -28,7 +28,7 @@ class VF_Collection implements Iterator {
 
 	/**
 	 * Constructor method
-	 * 
+	 *
 	 * @param array $initArray
 	 */
 	public function __construct($initArray = array()) {
@@ -39,7 +39,7 @@ class VF_Collection implements Iterator {
 
     /**
      * Add object to the collection
-     * 
+     *
      * @param object The object
      * @param boolean Add object to beginning of array or not
      */
@@ -53,14 +53,14 @@ class VF_Collection implements Iterator {
 
     /**
      * Add object to the collection at a specified position
-     * 
+     *
      * @param object $value The object
      * @param integer $intPosition The position the object should be placed at.
      */
     public function addObjectAtPosition($value, $intPosition) {
     	$arrTempCollection = array();
     	$intCount = 0;
-    	
+
     	if ($intPosition >= $this->count()) {
     		//*** Position is greater than the collection count. Just add at the end.
     		$this->addObject($value);
@@ -70,12 +70,12 @@ class VF_Collection implements Iterator {
 	    			//*** Insert the new object.
 	    			array_push($arrTempCollection, $value);
 	    		}
-		
+
 	    		//*** Insert the existing object.
 	    		array_push($arrTempCollection, $varObject);
 	    		$intCount++;
 	    	}
-	    	
+
 	    	//*** Replace the collection.
 	    	$this->collection = $arrTempCollection;
     	}
@@ -83,7 +83,7 @@ class VF_Collection implements Iterator {
 
     /**
      * Add objects to the collection
-     * 
+     *
      * @param array An array of items / collection of objects to be added
      * @param boolean Add objects to beginning of array or not
      */
@@ -95,13 +95,13 @@ class VF_Collection implements Iterator {
 
 	/**
 	 * Advance internal pointer to a specific index
-	 * 
+	 *
 	 * @param integer $intPosition
 	 */
 	public function seek($intPosition) {
         if (is_numeric($intPosition) && $intPosition < count($this->collection)) {
         	reset($this->collection);
-			while($intPosition > key($this->collection)) {
+			while($intPosition < key($this->collection)) {
 				next($this->collection);
 			}
         }
@@ -114,12 +114,12 @@ class VF_Collection implements Iterator {
 	 */
     public function random() {
     	$objReturn = null;
-    	
+
     	$intIndex = rand(0, (count($this->collection) - 1));
     	if (isset($this->collection[$intIndex])) {
 			$objReturn = $this->collection[$intIndex];
     	}
-    	
+
     	return $objReturn;
     }
 
@@ -194,12 +194,12 @@ class VF_Collection implements Iterator {
 
     /**
      * Get last element in collection
-     * @param string $strType Optional type to search for 
+     * @param string $strType Optional type to search for
      * @return mixed Returns last element in collection, null if collection is empty
      */
     public function getLast($strType = "") {
         $varReturn = null;
-        
+
         if (count($this->collection) > 0) {
         	if (!empty($strType)) {
         		$arrTemp = array_reverse($this->collection);
@@ -240,7 +240,7 @@ class VF_Collection implements Iterator {
 		if (!$this->isSeek) {
 			reset($this->collection);
 		}
-    	
+
     	return $this;
     }
 
@@ -265,16 +265,16 @@ class VF_Collection implements Iterator {
     public function rebuild() {
         $this->collection = array_values($this->collection);
     }
-    
+
     /**
      * Check if an object is in the collection
-     * 
+     *
      * @param variable $varValue
      */
     public function inCollection($varValue, $blnReturnKey = false) {
 		$varReturn = FALSE;
     	foreach ($this->collection as $object) {
-    		if ($object == $varValue) {
+    		if ($object == $varValue || $varValue === get_class($object)) {
     			$varReturn = ($blnReturnKey) ? $this->key() : true;
 				break;
     		}
@@ -293,7 +293,7 @@ class VF_Collection implements Iterator {
      */
     public function remove($objElement) {
         $varKey = $this->inCollection($objElement, true);
-        
+
         if ($varKey !== false) {
             // Element found. Now remove it.
             unset($this->collection[$varKey]);
