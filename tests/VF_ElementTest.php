@@ -8,7 +8,17 @@ class VF_ElementTest extends PHPUnit_Framework_TestCase
      * @var VF_Element
      */
     protected $object;
-    protected $label;
+
+    /**
+     * Name label
+     * @var String
+     */
+    protected $name;
+
+    /**
+     * Field type ID
+     * @var Integer
+     */
     protected $type;
 
     /**
@@ -17,9 +27,8 @@ class VF_ElementTest extends PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-        $this->label = Random::string();
-        $this->type = VFORM_STRING;
-        $this->object = new VF_Element($this->label, $this->type);
+        $this->name = Random::string();
+        $this->object = new VF_Element($this->name, VFORM_STRING);
     }
 
     /**
@@ -30,207 +39,95 @@ class VF_ElementTest extends PHPUnit_Framework_TestCase
     {
     }
 
+    public function elementTypesProvider() {
+        return array(
+            array("VFORM_STRING"),
+            array("VFORM_TEXT"),
+            array("VFORM_NUMERIC"),
+            array("VFORM_INTEGER"),
+            array("VFORM_WORD"),
+            array("VFORM_EMAIL"),
+            array("VFORM_PASSWORD"),
+            array("VFORM_SIMPLEURL"),
+            array("VFORM_FILE"),
+            array("VFORM_BOOLEAN"),
+            array("VFORM_CAPTCHA"),
+            array("VFORM_RADIO_LIST"),
+            array("VFORM_CHECK_LIST"),
+            array("VFORM_SELECT_LIST"),
+            array("VFORM_PARAGRAPH"),
+            array("VFORM_CURRENCY"),
+            array("VFORM_DATE"),
+            array("VFORM_CUSTOM"),
+            array("VFORM_CUSTOM_TEXT"),
+            array("VFORM_HTML"),
+            array("VFORM_URL")
+        );
+    }
+
     /**
      * @covers VF_Element::toHtml
-     * @todo   Implement testToHtml().
      */
     public function testToHtml()
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
+        $this->assertEquals($this->object->toHtml(), "Field type not defined.");
     }
 
     /**
      * @covers VF_Element::__toHtml
-     * @todo   Implement test__toHtml().
      */
     public function test__toHtml()
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
-    }
-
-    /**
-     * @covers VF_Element::setError
-     * @todo   Implement testSetError().
-     */
-    public function testSetError()
-    {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
+        $this->assertEquals($this->object->toHtml(), "Field type not defined.");
     }
 
     /**
      * @covers VF_Element::toJS
-     * @todo   Implement testToJS().
      */
     public function testToJS()
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
-    }
-
-    /**
-     * @covers VF_Element::getRandomId
-     * @todo   Implement testGetRandomId().
-     */
-    public function testGetRandomId()
-    {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
-    }
-
-    /**
-     * @covers VF_Element::isValid
-     * @todo   Implement testIsValid().
-     */
-    public function testIsValid()
-    {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
-    }
-
-    /**
-     * @covers VF_Element::isDynamic
-     * @todo   Implement testIsDynamic().
-     */
-    public function testIsDynamic()
-    {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
+        $this->assertEquals($this->object->toJS(), "alert('Field type not defined.');\n");
     }
 
     /**
      * @covers VF_Element::getDynamicCount
-     * @todo   Implement testGetDynamicCount().
+     * @dataProvider testGetDynamicCountProvider
      */
-    public function testGetDynamicCount()
+    public function testGetDynamicCount($intDynamicCount)
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
+        $this->object->setDynamic(true);
+        $this->object->setDynamicCounter(new VF_Hidden($this->name . "_dynamic", VFORM_INTEGER));
+
+        $_REQUEST[$this->name . "_dynamic"] = $intDynamicCount;
+
+        for ($i = 0; $i <= $intDynamicCount; $i++) {
+            $strSuffix = ($i === 0) ? "" : "_" . $i;
+            $_REQUEST[$this->name . $strSuffix] = Random::string();
+        }
+
+        $this->assertEquals($intDynamicCount, $this->object->getDynamicCount());
     }
 
     /**
-     * @covers VF_Element::setDynamicCounter
-     * @todo   Implement testSetDynamicCounter().
+     * Data provider for VF_Element::testGetDynamicCount
+     * @return Array
      */
-    public function testSetDynamicCounter()
-    {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
+    public function testGetDynamicCountProvider() {
+        return self::range(0,20);
     }
 
     /**
-     * @covers VF_Element::getValue
-     * @todo   Implement testGetValue().
+     * Range generator for dataProviders
+     * @param  Integer $start Start of the range
+     * @param  Integer $end   End of the range
+     * @return Array        An array containing arrays for each range value
      */
-    public function testGetValue()
-    {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
-    }
+    private static function range($start, $end) {
+        $arrReturn = array();
+        for ($i = $start; $i <= $end; $i++) {
+            array_push($arrReturn, array($i));
+        }
 
-    /**
-     * @covers VF_Element::hasFields
-     * @todo   Implement testHasFields().
-     */
-    public function testHasFields()
-    {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
-    }
-
-    /**
-     * @covers VF_Element::addTriggerJs
-     * @todo   Implement testAddTriggerJs().
-     */
-    public function testAddTriggerJs()
-    {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
-    }
-
-    /**
-     * @covers VF_Element::setTrigger
-     * @todo   Implement testSetTrigger().
-     */
-    public function testSetTrigger()
-    {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
-    }
-
-    /**
-     * @covers VF_Element::hasTrigger
-     * @todo   Implement testHasTrigger().
-     */
-    public function testHasTrigger()
-    {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
-    }
-
-    /**
-     * @covers VF_Element::setName
-     * @todo   Implement testSetName().
-     */
-    public function testSetName()
-    {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
-    }
-
-    /**
-     * @covers VF_Element::setData
-     * @todo   Implement testSetData().
-     */
-    public function testSetData()
-    {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
-    }
-
-    /**
-     * @covers VF_Element::getData
-     * @todo   Implement testGetData().
-     */
-    public function testGetData()
-    {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
+        return $arrReturn;
     }
 }
