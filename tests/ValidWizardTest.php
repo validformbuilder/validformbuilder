@@ -15,7 +15,7 @@ class ValidWizardTest extends PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-        $this->object = new ValidWizard;
+        $this->object = new ValidWizard();
     }
 
     /**
@@ -27,99 +27,85 @@ class ValidWizardTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers ValidWizard::toHtml
-     * @todo   Implement testToHtml().
-     */
-    public function testToHtml()
-    {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
-    }
-
-    /**
-     * @covers ValidWizard::isSubmitted
-     * @todo   Implement testIsSubmitted().
-     */
-    public function testIsSubmitted()
-    {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
-    }
-
-    /**
      * @covers ValidWizard::addMultiField
-     * @todo   Implement testAddMultiField().
      */
-    public function testAddMultiField()
+    public function testAddMultiFieldReturnsVF_MultiField()
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
-    }
-
-    /**
-     * @covers ValidWizard::unserialize
-     * @todo   Implement testUnserialize().
-     */
-    public function testUnserialize()
-    {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
+        $this->assertInstanceOf("VF_MultiField", $this->object->addMultiField());
     }
 
     /**
      * @covers ValidWizard::getPage
-     * @todo   Implement testGetPage().
      */
-    public function testGetPage()
+    public function testGetPageReturnsNullAsDefaultValue()
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
+        $this->assertNull($this->object->getPage());
     }
 
     /**
      * @covers ValidWizard::addPage
-     * @todo   Implement testAddPage().
      */
     public function testAddPage()
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
+        $objPage = $this->object->addPage();
+        $this->assertTrue($this->object->getElements()->inCollection($objPage));
+
+        return $objPage;
+    }
+
+    /**
+     * @covers ValidWizard::addPage
+     * @depends testAddPage
+     */
+    public function testAddPageReturnsVF_Page($objPage)
+    {
+        $this->assertInstanceOf("VF_Page", $objPage);
     }
 
     /**
      * @covers ValidWizard::addField
-     * @todo   Implement testAddField().
      */
-    public function testAddField()
+    public function addFieldAddsPageWhenWizardHasNoElements()
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
+        // The collection should be empty by default.
+        $this->assertEquals(0, $this->object->getElements()->count(), "ValidWizard collection not empty by default.");
+
+        // Add a field and automatically add a page element to the collection
+        $this->object->addField(Random::string(), Random::string(), VFORM_STRING);
+
+        // Check that two elements are added to the collection
+        $this->assertEquals(2, $this->object->getElements()->count(), "ValidWizard did not add two elements to the collection when adding one field element.");
+
+        // Check that these elements are both a VF_Page and a VF_Text element.
+        $this->assertTrue($this->object->getElements()->inCollection("VF_Page"), "No VF_Page element found in ValidWizard collection.");
+        $this->assertTrue($this->object->getElements()->getLast("VF_Page")->getElements()->inCollection("VF_Text"), "No VF_Text element found in ValidWizard collection.");
     }
 
     /**
      * @covers ValidWizard::addFieldset
-     * @todo   Implement testAddFieldset().
      */
-    public function testAddFieldset()
+    public function testAddFieldsetReturnsVF_Fieldset()
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
+        $this->assertInstanceOf("VF_Fieldset", $this->object->addFieldset());
+    }
+
+    /**
+     * @covers ValidWizard::addFieldset
+     */
+    public function testAddFieldsetAddsPageIfCollectionIsEmpty()
+    {
+        // The collection should be empty by default.
+        $this->assertEquals(0, $this->object->getElements()->count());
+
+        // Add a fieldset and automatically add a page element to the collection
+        $this->object->addFieldset();
+
+        // Check that two elements are added to the collection
+        $this->assertEquals(2, $this->object->getElements()->count(), "ValidWizard did not add two elements to the collection when adding one field element.");
+
+        // Check that these elements are both a VF_Page and a VF_Text element.
+        $this->assertTrue($this->object->getElements()->inCollection("VF_Page"), "No VF_Page element found in ValidWizard collection.");
+        $this->assertTrue($this->object->getElements()->getLast("VF_Page")->getElements()->inCollection("VF_Fieldset"), "No VF_Fieldset element found in ValidWizard collection.");
     }
 
     /**
@@ -163,42 +149,6 @@ class ValidWizardTest extends PHPUnit_Framework_TestCase
      * @todo   Implement testGetFields().
      */
     public function testGetFields()
-    {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
-    }
-
-    /**
-     * @covers ValidWizard::isValid
-     * @todo   Implement testIsValid().
-     */
-    public function testIsValid()
-    {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
-    }
-
-    /**
-     * @covers ValidWizard::generateId
-     * @todo   Implement testGenerateId().
-     */
-    public function testGenerateId()
-    {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
-    }
-
-    /**
-     * @covers ValidWizard::getUniqueId
-     * @todo   Implement testGetUniqueId().
-     */
-    public function testGetUniqueId()
     {
         // Remove the following lines when you implement this test.
         $this->markTestIncomplete(
