@@ -63,6 +63,11 @@ function include_exists($file) {
  * Class to hold all randomize logic.
  */
 class Random {
+	/**
+	 * Create a random string
+	 * @param  integer $length String length
+	 * @return string          The random string
+	 */
 	public static function string ($length = 10) {
 		$randstr = "";
 
@@ -89,5 +94,11 @@ if (!defined("VFORM_TEXT")) {
 	require_once("vf_constants.php");
 }
 
-echo "Include path set to: " . get_include_path() . "\n\n";
+
+echo "============================================================\n";
+echo "Include path set to:\n";
+foreach (explode(PATH_SEPARATOR, get_include_path()) as $strPath) {
+	echo $strPath . "\n";
+}
+echo "============================================================\n\n";
 ?>
