@@ -40,8 +40,8 @@ class VF_Element extends ClassDynamic {
 	protected $__dynamicLabel = null;
 	protected $__requiredstyle;
 	protected $__validator;
-	protected $__targetfield = null;
-	protected $__triggerfield = null;
+	// protected $__targetfield = null;
+	// protected $__triggerfield = null;
 	protected $__reservedmeta = array("data", "dynamicCounter", "tip", "hint", "default", "width", "height", "length", "start", "end", "path", "labelStyle", "labelClass", "labelRange", "valueRange", "dynamic", "dynamicLabel", "matchWith");
 
 	public function __construct($name, $type, $label = "", $validationRules = array(), $errorHandlers = array(), $meta = array()) {
@@ -236,36 +236,27 @@ class VF_Element extends ClassDynamic {
 	}
 
 	/**
-	 * Add javascript code for trigger fields. This code executed by the element's toJs() method.
+	 * DEPRECATED METHOD
 	 */
 	public function addTriggerJs() {
-		switch (get_class($this->__triggerfield)) {
-			case "VF_SelectOption":
-				$strSelector = "[value='" . $this->__triggerfield->getValue() . "']";
-				break;
-			default:
-				$strSelector = "#" . $this->__triggerfield->getId();
-				break;
-		}
-
-		return "objForm.addTrigger(\"{$strSelector}\", \"{$this->__id}\");\n";
+		return "objForm.addTrigger(\"deprecated\", \"deprecated\");\n";
 	}
 
 	/**
 	 * Link a field to this element. If the trigger field is selected / checked, this element will become enabled.
 	 * @param vf_element $objField ValidForm Builder field element
 	 */
-	public function setTrigger($objField) {
-		$this->__triggerfield = $objField;
-	}
+	// public function setTrigger($objField) {
+	// 	$this->__triggerfield = $objField;
+	// }
 
 	/**
 	 * Check if this element has a triggerfield.
 	 * @return boolean True if a triggerfield is set, false if not.
 	 */
-	public function hasTrigger() {
-		return is_object($this->__triggerfield);
-	}
+	// public function hasTrigger() {
+	// 	return is_object($this->__triggerfield);
+	// }
 
 	/**
 	 * If an element's name is updated, also update the name in it's corresponding validator.

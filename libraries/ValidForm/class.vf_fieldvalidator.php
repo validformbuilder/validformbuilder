@@ -34,7 +34,7 @@ class VF_FieldValidator extends ClassDynamic {
 	protected $__minlength;
 	protected $__maxlength;
 	protected $__matchwith;
-	protected $__targetfield;
+	// protected $__targetfield;
 	protected $__required = FALSE;
 	protected $__maxfiles = 1;
 	protected $__maxsize = 3000;
@@ -117,27 +117,27 @@ class VF_FieldValidator extends ClassDynamic {
 		//*** Check "required" option.
 		if (is_array($value)) {
 			$blnEmpty 		= TRUE;
-			$strTargetError = "";
+			// $strTargetError = "";
 			$intCount 		= 0;
 
 			foreach ($value as $valueItem) {
 
 				// Check if empty
-				if (is_object($this->__targetfield)) {
+				// if (is_object($this->__targetfield)) {
 
-					if ($valueItem == $this->__targetfield->getName()) {
+				// 	if ($valueItem == $this->__targetfield->getName()) {
 
-						// Validate target field and set error/validvalue
-						if ($this->__targetfield->getValidator()->validate($intDynamicPosition)) {
-							$valueItem = $this->__targetfield->getValidator()->getValidValue($intDynamicPosition);
+				// 		// Validate target field and set error/validvalue
+				// 		if ($this->__targetfield->getValidator()->validate($intDynamicPosition)) {
+				// 			$valueItem = $this->__targetfield->getValidator()->getValidValue($intDynamicPosition);
 
-						} else {
-							$valueItem 		= "";
-							$strTargetError = $this->__targetfield->getValidator()->getError($intDynamicPosition);
-							break;
-						}
-					}
-				}
+				// 		} else {
+				// 			$valueItem 		= "";
+				// 			$strTargetError = $this->__targetfield->getValidator()->getError($intDynamicPosition);
+				// 			break;
+				// 		}
+				// 	}
+				// }
 
 				if (!empty($valueItem)) {
 					$blnEmpty = FALSE;
@@ -157,22 +157,24 @@ class VF_FieldValidator extends ClassDynamic {
 				}
 			}
 		} else {
-			$blnTargetError = false;
-			if (is_object($this->__targetfield)) {
-				if ($value == $this->__targetfield->getName()) {
-					// Validate target field and set error/validvalue
-					if ($this->__targetfield->getValidator()->validate($intDynamicPosition)) {
-						$value = $this->__targetfield->getValidator()->getValidValue($intDynamicPosition);
-					} else {
-						$blnTargetError = true;
-						$this->__errors[$intDynamicPosition] = $this->__targetfield->getValidator()->getError($intDynamicPosition);
-					}
+			// $blnTargetError = false;
+			// if (is_object($this->__targetfield)) {
+			// 	if ($value == $this->__targetfield->getName()) {
+			// 		// Validate target field and set error/validvalue
+			// 		if ($this->__targetfield->getValidator()->validate($intDynamicPosition)) {
+			// 			$value = $this->__targetfield->getValidator()->getValidValue($intDynamicPosition);
+			// 		} else {
+			// 			$blnTargetError = true;
+			// 			$this->__errors[$intDynamicPosition] = $this->__targetfield->getValidator()->getError($intDynamicPosition);
+			// 		}
 
-					// return $blnReturn;
-				}
-			}
+			// 		// return $blnReturn;
+			// 	}
+			// }
 
-			if (empty($value) && !$blnTargetError) {
+			if (empty($value)
+			    // && !$blnTargetError
+			    ) {
 				if ($this->__required && $intDynamicPosition == 0) {
 					//*** Only the first dynamic field has a required check. We asume by design that "real" dynamic fields are not required.
 					unset($this->__validvalues[$intDynamicPosition]);
@@ -186,24 +188,24 @@ class VF_FieldValidator extends ClassDynamic {
 		}
 
 		//** Overwrite 'fieldname value' in triggerfield with it's targetfield's value
-		if (is_array($value)) {
-			$intCount = 0;
-			foreach ($value as $strValue) {
-				if (is_object($this->__targetfield)) {
-					if ($this->__targetfield->getName() == $strValue) {
+		// if (is_array($value)) {
+		// 	$intCount = 0;
+		// 	foreach ($value as $strValue) {
+		// 		if (is_object($this->__targetfield)) {
+		// 			if ($this->__targetfield->getName() == $strValue) {
 
-						if ($this->__targetfield->getValidator()->validate($intDynamicPosition)) {
-							$value[$intCount] = $this->__targetfield->getValidator()->getValidValue($intDynamicPosition);
-						} else {
-							unset($this->__validvalues[$intDynamicPosition]);
-							$this->__errors[$intDynamicPosition] = $this->__targetfield->getValidator()->getError($intDynamicPosition);
-						}
-					}
-				}
+		// 				if ($this->__targetfield->getValidator()->validate($intDynamicPosition)) {
+		// 					$value[$intCount] = $this->__targetfield->getValidator()->getValidValue($intDynamicPosition);
+		// 				} else {
+		// 					unset($this->__validvalues[$intDynamicPosition]);
+		// 					$this->__errors[$intDynamicPosition] = $this->__targetfield->getValidator()->getError($intDynamicPosition);
+		// 				}
+		// 			}
+		// 		}
 
-				$intCount++;
-			}
-		}
+		// 		$intCount++;
+		// 	}
+		// }
 
 		//*** Check if value is hint value.
 		if (!$this->__hasError($intDynamicPosition)) {

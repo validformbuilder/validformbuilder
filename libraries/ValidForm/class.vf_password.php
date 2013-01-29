@@ -35,7 +35,7 @@ class VF_Password extends VF_Element {
 
 			$strClass = ($this->__validator->getRequired()) ? "vf__required" : "vf__optional";
 			$strClass = ($blnError) ? $strClass . " vf__error" : $strClass;
-			$strClass = ($this->hasTrigger()) ? $strClass . " vf__targetfield" : $strClass;
+			// $strClass = ($this->hasTrigger()) ? $strClass . " vf__targetfield" : $strClass;
 			$strClass = (!$blnLabel) ? $strClass . " vf__nolabel" : $strClass;
 			$strClass = (empty($this->__hint)) ? $strClass : $strClass . " vf__hint";
 
@@ -80,9 +80,9 @@ class VF_Password extends VF_Element {
 			$strOutput .= "objForm.matchfields('" . $this->__id . "', '" . $objMatchWith->getId() . "', '" . $this->__validator->getMatchWithError() . "');\n";
 		}
 
-		if ($this->hasTrigger()) {
-			$strOutput .= $this->addTriggerJs();
-		}
+		// if ($this->hasTrigger()) {
+		// 	$strOutput .= $this->addTriggerJs();
+		// }
 
 		return $strOutput;
 	}

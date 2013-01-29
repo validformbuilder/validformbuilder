@@ -62,7 +62,7 @@ class VF_Select extends VF_Element {
 			$strClass = ($this->__validator->getRequired() && $intCount == 0) ? "vf__required" : "vf__optional";
 
 			$strClass = ($blnError) ? $strClass . " vf__error" : $strClass;
-			$strClass = ($this->hasTrigger()) ? $strClass . " vf__targetfield" : $strClass;
+			// $strClass = ($this->hasTrigger()) ? $strClass . " vf__targetfield" : $strClass;
 			$strClass = (!$blnLabel) ? $strClass . " vf__nolabel" : $strClass;
 
 			$strOutput .= "<div class=\"{$strClass}\">\n";
@@ -77,9 +77,9 @@ class VF_Select extends VF_Element {
 			$strOutput = "<div class=\"vf__multifielditem\">\n";
 		}
 
-		if (is_object($this->__targetfield)) {
-			$strOutput .= "<div class=\"vf__targetfieldwrap\">";
-		}
+		// if (is_object($this->__targetfield)) {
+		// 	$strOutput .= "<div class=\"vf__targetfieldwrap\">";
+		// }
 
 		$strOutput .= "<select name=\"{$strName}\" id=\"{$strId}\" {$this->__getMetaString()}>\n";
 
@@ -117,10 +117,10 @@ class VF_Select extends VF_Element {
 
 		if (!empty($this->__tip)) $strOutput .= "<small class=\"vf__tip\">{$this->__tip}</small>\n";
 
-		if (is_object($this->__targetfield)) {
-			$strOutput .= $this->__targetfield->toHtml($submitted, $blnSimpleLayout, false, $blnDisplayErrors, $intCount);
-			$strOutput .= "</div>\n";
-		}
+		// if (is_object($this->__targetfield)) {
+		// 	$strOutput .= $this->__targetfield->toHtml($submitted, $blnSimpleLayout, false, $blnDisplayErrors, $intCount);
+		// 	$strOutput .= "</div>\n"; // End of the targetfieldwrap
+		// }
 
 		$strOutput .= "</div>\n";
 
@@ -164,9 +164,9 @@ class VF_Select extends VF_Element {
 			$strOutput = "objForm.addElement('{$this->__id}', '{$this->__name}', {$strCheck}, {$strRequired}, {$intMaxLength}, {$intMinLength}, '" . addslashes($this->__validator->getFieldHint()) . "', '" . addslashes($this->__validator->getTypeError()) . "', '" . addslashes($this->__validator->getRequiredError()) . "', '" . addslashes($this->__validator->getHintError()) . "', '" . addslashes($this->__validator->getMinLengthError()) . "', '" . addslashes($this->__validator->getMaxLengthError()) . "');\n";
 		}
 
-		if (is_object($this->__targetfield)) {
-			$strOutput .= $this->__targetfield->toJs();
-		}
+		// if (is_object($this->__targetfield)) {
+		// 	$strOutput .= $this->__targetfield->toJs();
+		// }
 
 		return $strOutput;
 	}
@@ -178,25 +178,25 @@ class VF_Select extends VF_Element {
 		return $objOption;
 	}
 
-	public function addFieldObject($objTarget, $checked = false) {
-		// Add checkbox
-		$objTrigger = $this->addField($objTarget->getLabel(), $this->getName(true) . "_triggerfield", $checked);
+	// public function addFieldObject($objTarget, $checked = false) {
+	// 	// Add checkbox
+	// 	$objTrigger = $this->addField($objTarget->getLabel(), $this->getName(true) . "_triggerfield", $checked);
 
-		// Set the defaults on the target element
-		$objTarget->setName($this->getName(true) . "_triggerfield");
-		$objTarget->setId($this->getRandomId($objTarget->getName()));
+	// 	// Set the defaults on the target element
+	// 	$objTarget->setName($this->getName(true) . "_triggerfield");
+	// 	$objTarget->setId($this->getRandomId($objTarget->getName()));
 
-		// Set the trigger field.
-		$objTarget->setTrigger($objTrigger);
+	// 	// Set the trigger field.
+	// 	$objTarget->setTrigger($objTrigger);
 
-		// This group has a trigger element.
-		$this->__targetfield = $objTarget;
+	// 	// This group has a trigger element.
+	// 	$this->__targetfield = $objTarget;
 
-		// Add to validator
-		$this->__validator->setTargetField($objTarget);
+	// 	// Add to validator
+	// 	$this->__validator->setTargetField($objTarget);
 
-		// $this->__options->addObject($objTarget);
-	}
+	// 	// $this->__options->addObject($objTarget);
+	// }
 
 	public function addGroup($label) {
 		$objGroup = new VF_SelectGroup($label);
