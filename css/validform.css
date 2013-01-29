@@ -81,6 +81,11 @@ form.validform div.vf__required {
 	height: 1%;
 	margin: 7px 0 0 0;
 	padding: 1px 3px;
+	border-color: transparent;
+	-webkit-transition: border-color 0.5s linear;
+    -moz-transition: border-color 0.5s linear;
+    -o-transition: border-color 0.5s linear;
+    transition: border-color 0.5s linear;
 }
 
 form.validform div.vf__hint input,

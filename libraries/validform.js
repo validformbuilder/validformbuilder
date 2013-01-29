@@ -373,20 +373,6 @@ ValidForm.prototype.addPage = function (strPageId) {
 		var blnIsConfirmPage = (strPageId == "vf_confirm_" + this.id);
 		this.addPreviousButton(strPageId, blnIsConfirmPage);
 	}
-
-	//*** Due to incomplete functionality, this is temporarily disabled. ***//
-	// jQuery("#" + strPageId).on("keyup", function (e) {
-	// 	if (event.keyCode == 13) {
-	// 		var target;
-	// 		if (e.target) target = jQuery(e.target);
-	// 		else if (e.srcElement) target = jQuery(e.srcElement);
-
-	// 		if (!target.is("textarea")) {
-	// 			// Simulate submit
-	// 			jQuery(this).find("#next_" + jQuery(this).attr("id")).trigger("click", [true]);
-	// 		}
-	// 	}
-	// });
 };
 
 ValidForm.prototype.addPreviousButton = function (strPageId, blnIsConfirmPage) {
@@ -460,10 +446,16 @@ ValidForm.prototype.nextPage = function () {
 	}
 };
 
+/**
+ * valuesAsHtml
+ * DO NOT USE THIS METHOD. IT WILL BE DEPRECATED SOON!
+ * @param  {boolean} blnHideEmpty Hide empty fields
+ * @return {jQuery}              jQuery object with generated HTML output
+ */
 ValidForm.prototype.valuesAsHtml = function (blnHideEmpty) {
 	var __this = this;
 
-	// 'Constantes'
+	// 'Constants'
 	var VF_List 		= 1;
 	var VF_MultiField 	= 2;
 
@@ -748,45 +740,27 @@ ValidForm.prototype.valuesAsHtml = function (blnHideEmpty) {
 			var $objReturn 	= tpl.field();
 			var strValue 	= $field.val().replace(/\r?\n/g, "<br />");
 
-			//*** Skip trigger fields, their values are parsed already.
-			if (!/triggerfield/.test($field.attr("name"))) {
-				// Check if we've got an 'input' triggerfield here
-				$objTargetField = $("#" + __this.id + " input[name='" + strValue + "'], #" + __this.id + " textarea[name='" + strValue + "']");
-				if ($objTargetField.length > 0) {
-					if ($objTargetField.attr("type") == "password") {
-						strValue = "*****";
-					} else {
-						strValue = $objTargetField.val().replace(/\r?\n/g, "<br />");
-					}
+			if (strValue == "" && blnHideEmpty) {
+				// Do nothing
+				$objReturn = $();
+			} else {
+				$objReturn.attr("id", $field.attr("id") + "_confirm");
+
+				// Set the (optional) alternative or normal label.
+				var strShortLabel 	= $field.data("overviewlabel")
+				,	strLabel 		= (typeof strShortLabel !== "undefined") ? strShortLabel : $field.prev().text();
+
+				$objLabel = tpl.label();
+				$objLabel.text(strLabel);
+				$objLabel.appendTo($objReturn);
+
+				if ($field.attr("type") == "password") {
+					strValue = "*****";
 				}
 
-				if (strValue == "" && blnHideEmpty) {
-					// Do nothing
-					$objReturn = $();
-				} else {
-					$objReturn.attr("id", $field.attr("id") + "_confirm");
-
-					// Set the (optional) alternative or normal label.
-					var strShortLabel 	= $field.data("overviewlabel")
-					,	strLabel 		= (typeof strShortLabel !== "undefined") ? strShortLabel : $field.prev().text();
-
-					if ($field.is("select") && $objTargetField.length > 0) {
-						// Select boxes only.
-						strLabel = $field.parent().prev().text();
-					}
-
-					$objLabel = tpl.label();
-					$objLabel.text(strLabel);
-					$objLabel.appendTo($objReturn);
-
-					if ($field.attr("type") == "password") {
-						strValue = "*****";
-					}
-
-					$objValue = tpl.value();
-					$objValue.html(strValue);
-					$objValue.appendTo($objReturn);
-				}
+				$objValue = tpl.value();
+				$objValue.html(strValue);
+				$objValue.appendTo($objReturn);
 			}
 
 		} else {
@@ -815,16 +789,6 @@ ValidForm.prototype.valuesAsHtml = function (blnHideEmpty) {
 					var $objListItem 	= tpl.listItem();
 					var $objValue		= tpl.value();
 					var strValue		= $(this).val();
-
-					// Check if we've got an 'input' triggerfield here
-					$objTargetField = $("#" + __this.id + " input[name='" + strValue + "'], #" + __this.id + " textarea[name='" + strValue + "']");
-					if ($objTargetField.length > 0) {
-						if ($objTargetField.attr("type") == "password") {
-							strValue = "*****";
-						} else {
-							strValue = $objTargetField.val();
-						}
-					}
 
 					$objValue.text(strValue);
 					$objValue.appendTo($objListItem);
@@ -1202,62 +1166,17 @@ ValidForm.prototype.inArray = function(arrToSearch, value) {
 	return false;
 };
 
+/**
+ * DEPRECATED METHOD
+ * @param {String} strSelector [description]
+ * @param {String} strTargetId [description]
+ */
 ValidForm.prototype.addTrigger = function(strSelector, strTargetId) {
-	var $trigger 	= jQuery(strSelector);
-	var $target 	= jQuery("#" + strTargetId);
-	var blnIsOption	= $trigger.is("option");
-	var __this		= this;
-
-	var toggleTrigger = function () {
-		if (blnIsOption) {
-			if ($trigger.is(":selected")) {
-				$target.parent().show();
-			} else {
-				// Clear all previous errors.
-				var objTargetElement = __this.getElement($target.attr("name"));
-				objTargetElement.validator.removeAlert();
-
-				// Hide the target element and reset it's value.
-				$target.parent().hide();
-				$target.val("");
-			}
-		} else {
-			if ($trigger.is(":checked")) {
-				$target.parent().show();
-			} else {
-				$target.parent().hide();
-				$target.val("");
-			}
-		}
-	};
-
-	if ($trigger.is(":checkbox") || $trigger.is(":radio")) {
-		jQuery("input[name='" + $trigger.attr("name") + "']").on("change", function () {
-			toggleTrigger();
-		});
-		toggleTrigger();
-
-		// Store the triggerfield
-		$target.data("vf_triggerField", $trigger);
-
-	} else if (blnIsOption) {
-		// Select option
-		$trigger.parent().on("change", function () {
-			toggleTrigger();
-		});
-		toggleTrigger();
-
-		// Store the triggerfield
-		$target.data("vf_triggerField", $trigger);
-
+	if (typeof console !== "undefined") {
+		console.warn("WARNING: Using deprecated ValidForm.addTrigger method!");
 	} else {
-		throw new Error("Invalid Trigger type in addTrigger. Trigger should be a checkbox, radiobutton or selectlist option : '" + strTriggerId + "'.");
+		alert("WARNING: Using deprecated ValidForm.addTrigger method!");
 	}
-
-	//*** Make sure the targetfield is shown after a page was hidden and shown again.
-	jQuery("#" + this.id).on("VF_AfterShowPage", function () {
-		$trigger.trigger("change");
-	});
 };
 
 ValidForm.prototype.addElement = function() {
@@ -1331,17 +1250,6 @@ ValidForm.prototype.addElement = function() {
 		}
 
 		this.elements[strElementName] = new ValidFormElement(this.id, strElementName, strElementId, strValidation, required, maxLength, minLength, hint, typeError, requiredError, hintError, minLengthError, maxLengthError);
-
-		// Slightly experimental, but seems to work so far.
-		// This event listener listens for change events on all form elements.
-		// As soon as they are changes, the corresponding error message
-		// will be removed.
-		// Update (Robin): This is disabled due to unwanted visual behaviour.
-
-		// var self = this;
-		// $("[name='" + strElementName + "']").on("change", function () {
-		// 	self.elements[strElementName].validator.removeAlert();
-		// });
 	}
 };
 
@@ -1387,14 +1295,15 @@ ValidForm.prototype.reset = function() {
 	}
 };
 
+/**
+ * Validate method
+ * Uses the ValidForms, ValidForm, ValidElement and ValidFormAlerter
+ * objects to validate form elements.
+ *
+ * @param  {String} strSelector Optional selector to specify validation limits
+ * @return {Boolean}             True if all fields are valid, false if not.
+ */
 ValidForm.prototype.validate = function(strSelector) {
-	/*************************/
-	/* validate function     *********************************************/
-	/*
-	/* Uses the ValidForms, ValidForm, ValidElement and ValidFormAlerter
-	/* objects to validate form elements.
-	/*********************************************************************/
-
 	this.valid = true;
 	var objDOMForm = null;
 	var blnReturn = false;
@@ -1540,31 +1449,6 @@ ValidFormFieldValidator.prototype.validate = function(value) {
 			if (this.required && value == "") {
 				this.showAlert(this.requiredError);
 				return false;
-			} else if (!this.required && value == "") {
-				// If the triggerfield is checked, the targetfield (objElement) becomes required.
-				var objTrigger = objElement.data("vf_triggerField");
-
-				if (typeof objTrigger !== "undefined") {
-					if (objTrigger.is("option")) {
-						// The trigger is an option in a select list.
-						objTrigger = objTrigger.parent(); // Get the select list instead of the option element
-
-						if (objTrigger.val() == objElement.attr("name")) {
-							this.showAlert(this.requiredError);
-							return false;
-						}
-
-					} else {
-						// The trigger is a checkbox or radiobutton
-						if (objTrigger[0].checked) {
-							this.showAlert(this.requiredError);
-							return false;
-
-						}
-					}
-				}
-
-				return true;
 			}
 
 			//*** Check if there is a matchWith field to validate against
