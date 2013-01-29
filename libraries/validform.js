@@ -6,56 +6,114 @@
  *
  * This software is released under the GNU GPL v2 License <http://www.gnu.org/licenses/old-licenses/gpl-2.0.html>
  *
- * @package    ValidForm
  * @author     Felix Langfeldt <flangfeldt@felix-it.com>
- * @copyright  2009-2012 Felix Langfeldt <flangfeldt@felix-it.com>
- * @license    http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU GPL v2
+ * @license    http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU GPL v2.
  * @link       http://code.google.com/p/validformbuilder/
- * @version    Release: 0.2.7
  ***************************/
 
+/**
+ * ValidFormValidator class
+ * Display class used to push alerts regarding form validation
+ * to the browser.
+ *
+ * @param {String} strFormId The form ID.
+ */
 function ValidFormValidator(strFormId) {
-	/****************************/
-	/* ValidFormValidator Class ******************************************/
-	/*
-	/* Display class used to push alerts regarding form validation
-	/* to the browser.
-	/*********************************************************************/
-
+	/**
+	 * Form id
+	 * @type {String}
+	 */
 	this.id 				= strFormId;
+
+	/**
+	 * Main alert
+	 * @type {String}
+	 */
 	this.mainAlert			= "";
 }
 
+/**
+ * ValidFormValidator Class
+ * Display class used to push alerts regarding form validation
+ * to the browser.
+ *
+ * @param {String} strElementId   ID of the form element to validate
+ * @param {String} strElementName Name of the form element to validate
+ */
 function ValidFormFieldValidator(strElementId, strElementName) {
-	/****************************/
-	/* ValidFormValidator Class ******************************************/
-	/*
-	/* Display class used to push alerts regarding form validation
-	/* to the browser.
-	/*********************************************************************/
-
+	/**
+	 * Form element ID
+	 * @type {String}
+	 */
 	this.id 				= strElementId;
+	/**
+	 * Form element name
+	 * @type {String}
+	 */
 	this.name 				= strElementName;
+	/**
+	 * Element's disabled status
+	 * @type {Boolean}
+	 */
 	this.disabled 			= !!($("#" + strElementId).attr("disabled") === "disabled");
+
 	this.check				= null;
+	/**
+	 * Type error message
+	 * @type {String}
+	 */
 	this.typeError			= "";
+	/**
+	 * Required status
+	 * @type {Boolean}
+	 */
 	this.required			= false;
+	/**
+	 * Required error message
+	 * @type {String}
+	 */
 	this.requiredError		= "";
+	/**
+	 * Hint message
+	 * @type {String}
+	 */
 	this.hint				= null;
+	/**
+	 * Hint error message
+	 * @type {String}
+	 */
 	this.hintError			= "";
+	/**
+	 * Minimum input length
+	 * @type {Integer}
+	 */
 	this.minLength			= null;
+	/**
+	 * Minimum input length error
+	 * @type {String}
+	 */
 	this.minLengthError		= "";
+	/**
+	 * Maximum input length
+	 * @type {Integer}
+	 */
 	this.maxLength			= null;
+	/**
+	 * Maximum input length error
+	 * @type {String}
+	 */
 	this.maxLengthError		= "";
 }
 
+/**
+ * ValidFormElement Class
+ * Holds an element that can be validated
+ * @param {String} strFormId      Form ID
+ * @param {String} strElementName Form element name
+ * @param {String} strElementId   Form element ID
+ * @param {String} strValidation  Validation regular expression
+ */
 function ValidFormElement(strFormId, strElementName, strElementId, strValidation) {
-	/**************************/
-	/* ValidFormElement Class ********************************************/
-	/*
-	/* Holds an element that can be validated.
-	/*********************************************************************/
-
 	this.formId					= strFormId;
 	this.id 					= strElementId;
 	this.name 					= strElementName;
@@ -120,12 +178,12 @@ function ValidFormElement(strFormId, strElementName, strElementId, strValidation
 	}
 }
 
-function ValidConfirmForm(strFormId) {
-	this.id = strFormId;
-
-	this.init();
-}
-
+/**
+ * ValidForm class
+ * @param {String} strFormId            The form ID
+ * @param {String} strMainAlert         The main form alert
+ * @param {Boolean} blnAllowPreviousPage If true, users can click 'previous' in wizards. If false, this is disabled.
+ */
 function ValidForm(strFormId, strMainAlert, blnAllowPreviousPage) {
 	this.id = strFormId;
 	this.elements = {};
@@ -151,8 +209,6 @@ function ValidForm(strFormId, strMainAlert, blnAllowPreviousPage) {
 		"afterDynamicChange",
 		"afterValidate"
 	];
-	this.hashPageIndex = 1;
-	this.hashPrefix = "vf_page";
 	this.labels = {};
 	this.allowPreviousPage = (typeof blnAllowPreviousPage !== "undefined") ? blnAllowPreviousPage : true;
 	this.__continueExecution = true;
@@ -173,7 +229,6 @@ function ValidForm(strFormId, strMainAlert, blnAllowPreviousPage) {
  * This enables us to push validation errors from ajax return objects.
  *
  * @param  {object} objFields The fields object which contains fieldname-error pairs
- *
  */
 ValidForm.prototype.showAlerts = function (objFields) {
 	var __this = this;
@@ -251,10 +306,6 @@ ValidForm.prototype.initWizard = function (intPageIndex) {
 		this.currentPage.hide();
 		this.currentPage = $objPage;
 
-		if (typeof _hash == "object") {
-			_hash.set(this.hashPrefix, intPageIndex);
-		}
-
 		this.showPage(this.currentPage);
 	}
 
@@ -273,7 +324,6 @@ ValidForm.prototype.initWizard = function (intPageIndex) {
 		}
 	}
 
-	this.hashChange();
 };
 
 ValidForm.prototype.addConfirmPage = function () {
@@ -289,49 +339,6 @@ ValidForm.prototype.setLabel = function (key, value) {
 	}
 }
 
-/**
- * This function handles the hashchange and hashupdated events if the _hash library is included.<br />
- * This is an optional library and hashChange won't work if _hash is not initiated before <br />
- * loading validform.js
- */
-ValidForm.prototype.hashChange = function () {
-	if (typeof _hash == "object") {
-		var __this = this;
-
-		jQuery(window).on("hashchange hashset hashupdated", function (e, updatedHashIndex) {
-			var pageIndex = _hash.get(__this.hashPageIndex);
-			var valid = true;
-
-			// If there are any, show the first page with errors.
-			__this.showFirstError();
-
-			// If the page set by a hash is valid and it's index is within
-			// the maximum number of pages, show that page and set this.currentPage.
-			if (pageIndex <= __this.pages.length && valid) {
-				var $newPage = jQuery("#" + __this.pages[pageIndex - 1]);
-
-				if (!$newPage.is(":visible")) {
-					// Do a page switch
-					__this.currentPage.hide();
-
-					if (__this.validate("#" + __this.currentPage.attr("id"))) {
-						__this.currentPage = __this.showPage($newPage, true);
-					} else {
-						// If there are any, show the first page with errors.
-						__this.showFirstError();
-					}
-				}
-			// Show first page by force, hash page index is not a valid index for the this.pages array.
-			} else if (pageIndex > __this.pages.length) {
-				_hash.set(__this.hashPrefix, 1);
-				__this.currentPage = __this.showPage(jQuery("#" + __this.id + " .vf__page:first"));
-			}
-		});
-
-		jQuery(window).trigger("hashset");
-	}
-};
-
 ValidForm.prototype.showFirstError = function () {
 	var __this = this;
 
@@ -339,7 +346,6 @@ ValidForm.prototype.showFirstError = function () {
 		var $error 	= jQuery(".vf__error:first");
 		var $page 	= $error.parentsUntil(".vf__page").parent();
 
-		_hash.set(__this.hashPrefix, jQuery("#" + __this.id + " .vf__page").index($page) + 1);
 		__this.currentPage.hide();
 		__this.showPage($page);
 	}
@@ -445,11 +451,6 @@ ValidForm.prototype.nextPage = function () {
 			// Set the next page as the new current page.
 			this.currentPage = this.currentPage.next(".vf__page");
 			this.showPage(this.currentPage);
-
-			// Try to update the current hash if hash-based navigation is enabled
-			if (typeof _hash == "object" && typeof _hash.set == "function") {
-				_hash.set(this.hashPrefix, jQuery("#" + this.id + " .vf__page").index(this.currentPage) + 1);
-			}
 
 			jQuery("#" + this.id).trigger("VF_AfterNextPage", [{ValidForm: this}]);
 			if (typeof this.events.afterNextPage == "function") {
@@ -918,11 +919,6 @@ ValidForm.prototype.previousPage = function () {
 	// Set the next page as the new current page.
 	this.currentPage = this.currentPage.prev(".vf__page");
 	this.showPage(this.currentPage);
-
-	// Try to update the current hash if hash-based navigation is enabled
-	if (typeof _hash == "object" && typeof _hash.set == "function") {
-		_hash.set(this.hashPrefix, jQuery("#" + this.id + " .vf__page").index(this.currentPage) + 1);
-	}
 
 	jQuery("#" + this.id).trigger("VF_AfterPreviousPage", [{ValidForm: this}]);
 	if (typeof this.events.afterPreviousPage == "function") {
@@ -1463,20 +1459,6 @@ ValidForm.prototype.validate = function(strSelector) {
 
 	return blnReturn;
 };
-
-ValidConfirmForm.prototype.init = function () {
-	var __this = this;
-
-	$("#confirm_" + __this.id + "_previous").on("click", function () {
-		var $objForm = $("#" + __this.id);
-		var $objDispatch = $objForm.find("input[name='vf__dispatch']");
-
-		$objDispatch.val(__this.id + "_correct");
-		$objDispatch.after($("<input type='hidden' name='vf__back' value='true' />"));
-
-		$objForm.find("input[type='submit']:first").attr("disabled", true);
-	});
-}
 
 ValidFormElement.prototype.validate = function() {
 	return this.validator.validate();
