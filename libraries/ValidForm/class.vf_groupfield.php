@@ -48,7 +48,7 @@ class VF_GroupField extends VF_Element {
 		$this->__labelmeta = $labelMeta;
 	}
 
-	public function toHtml($value = NULL, $submitted = FALSE, $objTarget = null) {
+	public function toHtml($value = NULL, $submitted = FALSE) {
 		$strChecked = "";
 
 		// if (is_object($objTarget) && $objTarget->getName() == $this->__value) {
