@@ -35,7 +35,7 @@ class VF_File extends VF_Element {
 
 			$strClass = ($this->__validator->getRequired()) ? "vf__required" : "vf__optional";
 			$strClass = ($blnError) ? $strClass . " vf__error" : $strClass;
-			$strClass = ($this->hasTrigger()) ? $strClass . " vf__targetfield" : $strClass;
+			// $strClass = ($this->hasTrigger()) ? $strClass . " vf__targetfield" : $strClass;
 			$strClass = (!$blnLabel) ? $strClass . " vf__nolabel" : $strClass;
 
 			$strOutput = "<div class=\"{$strClass}\">\n";
@@ -72,9 +72,9 @@ class VF_File extends VF_Element {
 
 		$strOutput = "objForm.addElement('{$this->__id}', '{$this->__name}', {$strCheck}, {$strRequired}, {$intMaxLength}, {$intMinLength}, '" . addslashes($this->__validator->getFieldHint()) . "', '" . addslashes($this->__validator->getTypeError()) . "', '" . addslashes($this->__validator->getRequiredError()) . "', '" . addslashes($this->__validator->getHintError()) . "', '" . addslashes($this->__validator->getMinLengthError()) . "', '" . addslashes($this->__validator->getMaxLengthError()) . "');\n";
 
-		if ($this->hasTrigger()) {
-			$strOutput .= $this->addTriggerJs();
-		}
+		// if ($this->hasTrigger()) {
+		// 	$strOutput .= $this->addTriggerJs();
+		// }
 
 		return $strOutput;
 	}

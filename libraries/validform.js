@@ -6,56 +6,114 @@
  *
  * This software is released under the GNU GPL v2 License <http://www.gnu.org/licenses/old-licenses/gpl-2.0.html>
  *
- * @package    ValidForm
  * @author     Felix Langfeldt <flangfeldt@felix-it.com>
- * @copyright  2009-2012 Felix Langfeldt <flangfeldt@felix-it.com>
- * @license    http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU GPL v2
+ * @license    http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU GPL v2.
  * @link       http://code.google.com/p/validformbuilder/
- * @version    Release: 0.2.7
  ***************************/
 
+/**
+ * ValidFormValidator class
+ * Display class used to push alerts regarding form validation
+ * to the browser.
+ *
+ * @param {String} strFormId The form ID.
+ */
 function ValidFormValidator(strFormId) {
-	/****************************/
-	/* ValidFormValidator Class ******************************************/
-	/*
-	/* Display class used to push alerts regarding form validation
-	/* to the browser.
-	/*********************************************************************/
-
+	/**
+	 * Form id
+	 * @type {String}
+	 */
 	this.id 				= strFormId;
+
+	/**
+	 * Main alert
+	 * @type {String}
+	 */
 	this.mainAlert			= "";
 }
 
+/**
+ * ValidFormValidator Class
+ * Display class used to push alerts regarding form validation
+ * to the browser.
+ *
+ * @param {String} strElementId   ID of the form element to validate
+ * @param {String} strElementName Name of the form element to validate
+ */
 function ValidFormFieldValidator(strElementId, strElementName) {
-	/****************************/
-	/* ValidFormValidator Class ******************************************/
-	/*
-	/* Display class used to push alerts regarding form validation
-	/* to the browser.
-	/*********************************************************************/
-
+	/**
+	 * Form element ID
+	 * @type {String}
+	 */
 	this.id 				= strElementId;
+	/**
+	 * Form element name
+	 * @type {String}
+	 */
 	this.name 				= strElementName;
+	/**
+	 * Element's disabled status
+	 * @type {Boolean}
+	 */
 	this.disabled 			= !!($("#" + strElementId).attr("disabled") === "disabled");
+
 	this.check				= null;
+	/**
+	 * Type error message
+	 * @type {String}
+	 */
 	this.typeError			= "";
+	/**
+	 * Required status
+	 * @type {Boolean}
+	 */
 	this.required			= false;
+	/**
+	 * Required error message
+	 * @type {String}
+	 */
 	this.requiredError		= "";
+	/**
+	 * Hint message
+	 * @type {String}
+	 */
 	this.hint				= null;
+	/**
+	 * Hint error message
+	 * @type {String}
+	 */
 	this.hintError			= "";
+	/**
+	 * Minimum input length
+	 * @type {Integer}
+	 */
 	this.minLength			= null;
+	/**
+	 * Minimum input length error
+	 * @type {String}
+	 */
 	this.minLengthError		= "";
+	/**
+	 * Maximum input length
+	 * @type {Integer}
+	 */
 	this.maxLength			= null;
+	/**
+	 * Maximum input length error
+	 * @type {String}
+	 */
 	this.maxLengthError		= "";
 }
 
+/**
+ * ValidFormElement Class
+ * Holds an element that can be validated
+ * @param {String} strFormId      Form ID
+ * @param {String} strElementName Form element name
+ * @param {String} strElementId   Form element ID
+ * @param {String} strValidation  Validation regular expression
+ */
 function ValidFormElement(strFormId, strElementName, strElementId, strValidation) {
-	/**************************/
-	/* ValidFormElement Class ********************************************/
-	/*
-	/* Holds an element that can be validated.
-	/*********************************************************************/
-
 	this.formId					= strFormId;
 	this.id 					= strElementId;
 	this.name 					= strElementName;
@@ -120,12 +178,12 @@ function ValidFormElement(strFormId, strElementName, strElementId, strValidation
 	}
 }
 
-function ValidConfirmForm(strFormId) {
-	this.id = strFormId;
-
-	this.init();
-}
-
+/**
+ * ValidForm class
+ * @param {String} strFormId            The form ID
+ * @param {String} strMainAlert         The main form alert
+ * @param {Boolean} blnAllowPreviousPage If true, users can click 'previous' in wizards. If false, this is disabled.
+ */
 function ValidForm(strFormId, strMainAlert, blnAllowPreviousPage) {
 	this.id = strFormId;
 	this.elements = {};
@@ -151,8 +209,6 @@ function ValidForm(strFormId, strMainAlert, blnAllowPreviousPage) {
 		"afterDynamicChange",
 		"afterValidate"
 	];
-	this.hashPageIndex = 1;
-	this.hashPrefix = "vf_page";
 	this.labels = {};
 	this.allowPreviousPage = (typeof blnAllowPreviousPage !== "undefined") ? blnAllowPreviousPage : true;
 	this.__continueExecution = true;
@@ -173,7 +229,6 @@ function ValidForm(strFormId, strMainAlert, blnAllowPreviousPage) {
  * This enables us to push validation errors from ajax return objects.
  *
  * @param  {object} objFields The fields object which contains fieldname-error pairs
- *
  */
 ValidForm.prototype.showAlerts = function (objFields) {
 	var __this = this;
@@ -251,10 +306,6 @@ ValidForm.prototype.initWizard = function (intPageIndex) {
 		this.currentPage.hide();
 		this.currentPage = $objPage;
 
-		if (typeof _hash == "object") {
-			_hash.set(this.hashPrefix, intPageIndex);
-		}
-
 		this.showPage(this.currentPage);
 	}
 
@@ -273,7 +324,6 @@ ValidForm.prototype.initWizard = function (intPageIndex) {
 		}
 	}
 
-	this.hashChange();
 };
 
 ValidForm.prototype.addConfirmPage = function () {
@@ -289,49 +339,6 @@ ValidForm.prototype.setLabel = function (key, value) {
 	}
 }
 
-/**
- * This function handles the hashchange and hashupdated events if the _hash library is included.<br />
- * This is an optional library and hashChange won't work if _hash is not initiated before <br />
- * loading validform.js
- */
-ValidForm.prototype.hashChange = function () {
-	if (typeof _hash == "object") {
-		var __this = this;
-
-		jQuery(window).on("hashchange hashset hashupdated", function (e, updatedHashIndex) {
-			var pageIndex = _hash.get(__this.hashPageIndex);
-			var valid = true;
-
-			// If there are any, show the first page with errors.
-			__this.showFirstError();
-
-			// If the page set by a hash is valid and it's index is within
-			// the maximum number of pages, show that page and set this.currentPage.
-			if (pageIndex <= __this.pages.length && valid) {
-				var $newPage = jQuery("#" + __this.pages[pageIndex - 1]);
-
-				if (!$newPage.is(":visible")) {
-					// Do a page switch
-					__this.currentPage.hide();
-
-					if (__this.validate("#" + __this.currentPage.attr("id"))) {
-						__this.currentPage = __this.showPage($newPage, true);
-					} else {
-						// If there are any, show the first page with errors.
-						__this.showFirstError();
-					}
-				}
-			// Show first page by force, hash page index is not a valid index for the this.pages array.
-			} else if (pageIndex > __this.pages.length) {
-				_hash.set(__this.hashPrefix, 1);
-				__this.currentPage = __this.showPage(jQuery("#" + __this.id + " .vf__page:first"));
-			}
-		});
-
-		jQuery(window).trigger("hashset");
-	}
-};
-
 ValidForm.prototype.showFirstError = function () {
 	var __this = this;
 
@@ -339,7 +346,6 @@ ValidForm.prototype.showFirstError = function () {
 		var $error 	= jQuery(".vf__error:first");
 		var $page 	= $error.parentsUntil(".vf__page").parent();
 
-		_hash.set(__this.hashPrefix, jQuery("#" + __this.id + " .vf__page").index($page) + 1);
 		__this.currentPage.hide();
 		__this.showPage($page);
 	}
@@ -367,20 +373,6 @@ ValidForm.prototype.addPage = function (strPageId) {
 		var blnIsConfirmPage = (strPageId == "vf_confirm_" + this.id);
 		this.addPreviousButton(strPageId, blnIsConfirmPage);
 	}
-
-	//*** Due to incomplete functionality, this is temporarily disabled. ***//
-	// jQuery("#" + strPageId).on("keyup", function (e) {
-	// 	if (event.keyCode == 13) {
-	// 		var target;
-	// 		if (e.target) target = jQuery(e.target);
-	// 		else if (e.srcElement) target = jQuery(e.srcElement);
-
-	// 		if (!target.is("textarea")) {
-	// 			// Simulate submit
-	// 			jQuery(this).find("#next_" + jQuery(this).attr("id")).trigger("click", [true]);
-	// 		}
-	// 	}
-	// });
 };
 
 ValidForm.prototype.addPreviousButton = function (strPageId, blnIsConfirmPage) {
@@ -446,11 +438,6 @@ ValidForm.prototype.nextPage = function () {
 			this.currentPage = this.currentPage.next(".vf__page");
 			this.showPage(this.currentPage);
 
-			// Try to update the current hash if hash-based navigation is enabled
-			if (typeof _hash == "object" && typeof _hash.set == "function") {
-				_hash.set(this.hashPrefix, jQuery("#" + this.id + " .vf__page").index(this.currentPage) + 1);
-			}
-
 			jQuery("#" + this.id).trigger("VF_AfterNextPage", [{ValidForm: this}]);
 			if (typeof this.events.afterNextPage == "function") {
 				this.events.afterNextPage(this);
@@ -459,10 +446,16 @@ ValidForm.prototype.nextPage = function () {
 	}
 };
 
+/**
+ * valuesAsHtml
+ * DO NOT USE THIS METHOD. IT WILL BE DEPRECATED SOON!
+ * @param  {boolean} blnHideEmpty Hide empty fields
+ * @return {jQuery}              jQuery object with generated HTML output
+ */
 ValidForm.prototype.valuesAsHtml = function (blnHideEmpty) {
 	var __this = this;
 
-	// 'Constantes'
+	// 'Constants'
 	var VF_List 		= 1;
 	var VF_MultiField 	= 2;
 
@@ -747,45 +740,27 @@ ValidForm.prototype.valuesAsHtml = function (blnHideEmpty) {
 			var $objReturn 	= tpl.field();
 			var strValue 	= $field.val().replace(/\r?\n/g, "<br />");
 
-			//*** Skip trigger fields, their values are parsed already.
-			if (!/triggerfield/.test($field.attr("name"))) {
-				// Check if we've got an 'input' triggerfield here
-				$objTargetField = $("#" + __this.id + " input[name='" + strValue + "'], #" + __this.id + " textarea[name='" + strValue + "']");
-				if ($objTargetField.length > 0) {
-					if ($objTargetField.attr("type") == "password") {
-						strValue = "*****";
-					} else {
-						strValue = $objTargetField.val().replace(/\r?\n/g, "<br />");
-					}
+			if (strValue == "" && blnHideEmpty) {
+				// Do nothing
+				$objReturn = $();
+			} else {
+				$objReturn.attr("id", $field.attr("id") + "_confirm");
+
+				// Set the (optional) alternative or normal label.
+				var strShortLabel 	= $field.data("overviewlabel")
+				,	strLabel 		= (typeof strShortLabel !== "undefined") ? strShortLabel : $field.prev().text();
+
+				$objLabel = tpl.label();
+				$objLabel.text(strLabel);
+				$objLabel.appendTo($objReturn);
+
+				if ($field.attr("type") == "password") {
+					strValue = "*****";
 				}
 
-				if (strValue == "" && blnHideEmpty) {
-					// Do nothing
-					$objReturn = $();
-				} else {
-					$objReturn.attr("id", $field.attr("id") + "_confirm");
-
-					// Set the (optional) alternative or normal label.
-					var strShortLabel 	= $field.data("overviewlabel")
-					,	strLabel 		= (typeof strShortLabel !== "undefined") ? strShortLabel : $field.prev().text();
-
-					if ($field.is("select") && $objTargetField.length > 0) {
-						// Select boxes only.
-						strLabel = $field.parent().prev().text();
-					}
-
-					$objLabel = tpl.label();
-					$objLabel.text(strLabel);
-					$objLabel.appendTo($objReturn);
-
-					if ($field.attr("type") == "password") {
-						strValue = "*****";
-					}
-
-					$objValue = tpl.value();
-					$objValue.html(strValue);
-					$objValue.appendTo($objReturn);
-				}
+				$objValue = tpl.value();
+				$objValue.html(strValue);
+				$objValue.appendTo($objReturn);
 			}
 
 		} else {
@@ -814,16 +789,6 @@ ValidForm.prototype.valuesAsHtml = function (blnHideEmpty) {
 					var $objListItem 	= tpl.listItem();
 					var $objValue		= tpl.value();
 					var strValue		= $(this).val();
-
-					// Check if we've got an 'input' triggerfield here
-					$objTargetField = $("#" + __this.id + " input[name='" + strValue + "'], #" + __this.id + " textarea[name='" + strValue + "']");
-					if ($objTargetField.length > 0) {
-						if ($objTargetField.attr("type") == "password") {
-							strValue = "*****";
-						} else {
-							strValue = $objTargetField.val();
-						}
-					}
 
 					$objValue.text(strValue);
 					$objValue.appendTo($objListItem);
@@ -918,11 +883,6 @@ ValidForm.prototype.previousPage = function () {
 	// Set the next page as the new current page.
 	this.currentPage = this.currentPage.prev(".vf__page");
 	this.showPage(this.currentPage);
-
-	// Try to update the current hash if hash-based navigation is enabled
-	if (typeof _hash == "object" && typeof _hash.set == "function") {
-		_hash.set(this.hashPrefix, jQuery("#" + this.id + " .vf__page").index(this.currentPage) + 1);
-	}
 
 	jQuery("#" + this.id).trigger("VF_AfterPreviousPage", [{ValidForm: this}]);
 	if (typeof this.events.afterPreviousPage == "function") {
@@ -1206,62 +1166,17 @@ ValidForm.prototype.inArray = function(arrToSearch, value) {
 	return false;
 };
 
+/**
+ * DEPRECATED METHOD
+ * @param {String} strSelector [description]
+ * @param {String} strTargetId [description]
+ */
 ValidForm.prototype.addTrigger = function(strSelector, strTargetId) {
-	var $trigger 	= jQuery(strSelector);
-	var $target 	= jQuery("#" + strTargetId);
-	var blnIsOption	= $trigger.is("option");
-	var __this		= this;
-
-	var toggleTrigger = function () {
-		if (blnIsOption) {
-			if ($trigger.is(":selected")) {
-				$target.parent().show();
-			} else {
-				// Clear all previous errors.
-				var objTargetElement = __this.getElement($target.attr("name"));
-				objTargetElement.validator.removeAlert();
-
-				// Hide the target element and reset it's value.
-				$target.parent().hide();
-				$target.val("");
-			}
-		} else {
-			if ($trigger.is(":checked")) {
-				$target.parent().show();
-			} else {
-				$target.parent().hide();
-				$target.val("");
-			}
-		}
-	};
-
-	if ($trigger.is(":checkbox") || $trigger.is(":radio")) {
-		jQuery("input[name='" + $trigger.attr("name") + "']").on("change", function () {
-			toggleTrigger();
-		});
-		toggleTrigger();
-
-		// Store the triggerfield
-		$target.data("vf_triggerField", $trigger);
-
-	} else if (blnIsOption) {
-		// Select option
-		$trigger.parent().on("change", function () {
-			toggleTrigger();
-		});
-		toggleTrigger();
-
-		// Store the triggerfield
-		$target.data("vf_triggerField", $trigger);
-
+	if (typeof console !== "undefined") {
+		console.warn("WARNING: Using deprecated ValidForm.addTrigger method!");
 	} else {
-		throw new Error("Invalid Trigger type in addTrigger. Trigger should be a checkbox, radiobutton or selectlist option : '" + strTriggerId + "'.");
+		alert("WARNING: Using deprecated ValidForm.addTrigger method!");
 	}
-
-	//*** Make sure the targetfield is shown after a page was hidden and shown again.
-	jQuery("#" + this.id).on("VF_AfterShowPage", function () {
-		$trigger.trigger("change");
-	});
 };
 
 ValidForm.prototype.addElement = function() {
@@ -1335,15 +1250,6 @@ ValidForm.prototype.addElement = function() {
 		}
 
 		this.elements[strElementName] = new ValidFormElement(this.id, strElementName, strElementId, strValidation, required, maxLength, minLength, hint, typeError, requiredError, hintError, minLengthError, maxLengthError);
-
-		// Slightly experimental, but seems to work so far.
-		// This event listener listens for change events on all form elements.
-		// As soon as they are changes, the corresponding error message
-		// will be removed.
-		var self = this;
-		$("[name='" + strElementName + "']").on("change", function () {
-			self.elements[strElementName].validator.removeAlert();
-		});
 	}
 };
 
@@ -1389,14 +1295,15 @@ ValidForm.prototype.reset = function() {
 	}
 };
 
+/**
+ * Validate method
+ * Uses the ValidForms, ValidForm, ValidElement and ValidFormAlerter
+ * objects to validate form elements.
+ *
+ * @param  {String} strSelector Optional selector to specify validation limits
+ * @return {Boolean}             True if all fields are valid, false if not.
+ */
 ValidForm.prototype.validate = function(strSelector) {
-	/*************************/
-	/* validate function     *********************************************/
-	/*
-	/* Uses the ValidForms, ValidForm, ValidElement and ValidFormAlerter
-	/* objects to validate form elements.
-	/*********************************************************************/
-
 	this.valid = true;
 	var objDOMForm = null;
 	var blnReturn = false;
@@ -1463,20 +1370,6 @@ ValidForm.prototype.validate = function(strSelector) {
 
 	return blnReturn;
 };
-
-ValidConfirmForm.prototype.init = function () {
-	var __this = this;
-
-	$("#confirm_" + __this.id + "_previous").on("click", function () {
-		var $objForm = $("#" + __this.id);
-		var $objDispatch = $objForm.find("input[name='vf__dispatch']");
-
-		$objDispatch.val(__this.id + "_correct");
-		$objDispatch.after($("<input type='hidden' name='vf__back' value='true' />"));
-
-		$objForm.find("input[type='submit']:first").attr("disabled", true);
-	});
-}
 
 ValidFormElement.prototype.validate = function() {
 	return this.validator.validate();
@@ -1556,31 +1449,6 @@ ValidFormFieldValidator.prototype.validate = function(value) {
 			if (this.required && value == "") {
 				this.showAlert(this.requiredError);
 				return false;
-			} else if (!this.required && value == "") {
-				// If the triggerfield is checked, the targetfield (objElement) becomes required.
-				var objTrigger = objElement.data("vf_triggerField");
-
-				if (typeof objTrigger !== "undefined") {
-					if (objTrigger.is("option")) {
-						// The trigger is an option in a select list.
-						objTrigger = objTrigger.parent(); // Get the select list instead of the option element
-
-						if (objTrigger.val() == objElement.attr("name")) {
-							this.showAlert(this.requiredError);
-							return false;
-						}
-
-					} else {
-						// The trigger is a checkbox or radiobutton
-						if (objTrigger[0].checked) {
-							this.showAlert(this.requiredError);
-							return false;
-
-						}
-					}
-				}
-
-				return true;
 			}
 
 			//*** Check if there is a matchWith field to validate against
@@ -1669,6 +1537,7 @@ ValidFormFieldValidator.prototype.validate = function(value) {
 
 ValidFormFieldValidator.prototype.removeAlert = function() {
 	var objElement = jQuery("#" + this.id);
+
 	if (objElement.length == 0) {
 		objElement = jQuery("input[name='" + this.name + "']:first").parent().parent();
 	}
@@ -1700,16 +1569,12 @@ ValidFormFieldValidator.prototype.showAlert = function(strAlert) {
 };
 
 /**
- * jQuery.ScrollTo - Easy element scrolling using jQuery.
- * Copyright (c) 2007-2008 Ariel Flesler - aflesler(at)gmail(dot)com | http://flesler.blogspot.com
+ * Copyright (c) 2007-2012 Ariel Flesler - aflesler(at)gmail(dot)com | http://flesler.blogspot.com
  * Dual licensed under MIT and GPL.
- * Date: 9/11/2008
  * @author Ariel Flesler
- * @version 1.4
- *
- * http://flesler.blogspot.com/2007/10/jqueryscrollto.html
+ * @version 1.4.3.1
  */
-(function(h){var m=h.scrollTo=function(b,c,g){h(window).scrollTo(b,c,g)};m.defaults={axis:'y',duration:1};m.window=function(b){return h(window).scrollable()};h.fn.scrollable=function(){return this.map(function(){var b=this.parentWindow||this.defaultView,c=this.nodeName=='#document'?b.frameElement||b:this,g=c.contentDocument||(c.contentWindow||c).document,i=c.setInterval;return c.nodeName=='IFRAME'||i&&h.browser.safari?g.body:i?g.documentElement:this})};h.fn.scrollTo=function(r,j,a){if(typeof j=='object'){a=j;j=0}if(typeof a=='function')a={onAfter:a};a=h.extend({},m.defaults,a);j=j||a.speed||a.duration;a.queue=a.queue&&a.axis.length>1;if(a.queue)j/=2;a.offset=n(a.offset);a.over=n(a.over);return this.scrollable().each(function(){var k=this,o=h(k),d=r,l,e={},p=o.is('html,body');switch(typeof d){case'number':case'string':if(/^([+-]=)?\d+(px)?$/.test(d)){d=n(d);break}d=h(d,this);case'object':if(d.is||d.style)l=(d=h(d)).offset()}h.each(a.axis.split(''),function(b,c){var g=c=='x'?'Left':'Top',i=g.toLowerCase(),f='scroll'+g,s=k[f],t=c=='x'?'Width':'Height',v=t.toLowerCase();if(l){e[f]=l[i]+(p?0:s-o.offset()[i]);if(a.margin){e[f]-=parseInt(d.css('margin'+g))||0;e[f]-=parseInt(d.css('border'+g+'Width'))||0}e[f]+=a.offset[i]||0;if(a.over[i])e[f]+=d[v]()*a.over[i]}else e[f]=d[i];if(/^\d+$/.test(e[f]))e[f]=e[f]<=0?0:Math.min(e[f],u(t));if(!b&&a.queue){if(s!=e[f])q(a.onAfterFirst);delete e[f]}});q(a.onAfter);function q(b){o.animate(e,j,a.easing,b&&function(){b.call(this,r,a)})};function u(b){var c='scroll'+b,g=k.ownerDocument;return p?Math.max(g.documentElement[c],g.body[c]):k[c]}}).end()};function n(b){return typeof b=='object'?b:{top:b,left:b}}})(jQuery);
+;(function($){var h=$.scrollTo=function(a,b,c){$(window).scrollTo(a,b,c)};h.defaults={axis:'xy',duration:parseFloat($.fn.jquery)>=1.3?0:1,limit:true};h.window=function(a){return $(window)._scrollable()};$.fn._scrollable=function(){return this.map(function(){var a=this,isWin=!a.nodeName||$.inArray(a.nodeName.toLowerCase(),['iframe','#document','html','body'])!=-1;if(!isWin)return a;var b=(a.contentWindow||a).document||a.ownerDocument||a;return/webkit/i.test(navigator.userAgent)||b.compatMode=='BackCompat'?b.body:b.documentElement})};$.fn.scrollTo=function(e,f,g){if(typeof f=='object'){g=f;f=0}if(typeof g=='function')g={onAfter:g};if(e=='max')e=9e9;g=$.extend({},h.defaults,g);f=f||g.duration;g.queue=g.queue&&g.axis.length>1;if(g.queue)f/=2;g.offset=both(g.offset);g.over=both(g.over);return this._scrollable().each(function(){if(e==null)return;var d=this,$elem=$(d),targ=e,toff,attr={},win=$elem.is('html,body');switch(typeof targ){case'number':case'string':if(/^([+-]=)?\d+(\.\d+)?(px|%)?$/.test(targ)){targ=both(targ);break}targ=$(targ,this);if(!targ.length)return;case'object':if(targ.is||targ.style)toff=(targ=$(targ)).offset()}$.each(g.axis.split(''),function(i,a){var b=a=='x'?'Left':'Top',pos=b.toLowerCase(),key='scroll'+b,old=d[key],max=h.max(d,a);if(toff){attr[key]=toff[pos]+(win?0:old-$elem.offset()[pos]);if(g.margin){attr[key]-=parseInt(targ.css('margin'+b))||0;attr[key]-=parseInt(targ.css('border'+b+'Width'))||0}attr[key]+=g.offset[pos]||0;if(g.over[pos])attr[key]+=targ[a=='x'?'width':'height']()*g.over[pos]}else{var c=targ[pos];attr[key]=c.slice&&c.slice(-1)=='%'?parseFloat(c)/100*max:c}if(g.limit&&/^\d+$/.test(attr[key]))attr[key]=attr[key]<=0?0:Math.min(attr[key],max);if(!i&&g.queue){if(old!=attr[key])animate(g.onAfterFirst);delete attr[key]}});animate(g.onAfter);function animate(a){$elem.animate(attr,f,g.easing,a&&function(){a.call(this,e,g)})}}).end()};h.max=function(a,b){var c=b=='x'?'Width':'Height',scroll='scroll'+c;if(!$(a).is('html,body'))return a[scroll]-$(a)[c.toLowerCase()]();var d='client'+c,html=a.ownerDocument.documentElement,body=a.ownerDocument.body;return Math.max(html[scroll],body[scroll])-Math.min(html[d],body[d])};function both(a){return typeof a=='object'?a:{top:a,left:a}}})(jQuery);
 
 /**
  * sprintf() for JavaScript 0.7-beta1

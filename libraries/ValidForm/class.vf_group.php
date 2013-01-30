@@ -40,11 +40,11 @@ class VF_Group extends VF_Element {
 		if (!$blnSimpleLayout) {
 			$strClass = ($this->__validator->getRequired()) ? "vf__required" : "vf__optional";
 			$strClass = ($blnError) ? $strClass . " vf__error" : $strClass;
-			$strClass = ($this->hasTrigger()) ? $strClass . " vf__targetfield" : $strClass;
+			// $strClass = ($this->hasTrigger()) ? $strClass . " vf__targetfield" : $strClass;
 			$strClass = (!$blnLabel) ? $strClass . " vf__nolabel" : $strClass;
-	
+
 			$strOutput = "<div class=\"{$strClass}\" {$this->__getMetaString()}>\n";
-	
+
 			if ($blnError) {
 				$strOutput .= "<p class=\"vf__error\">{$this->__validator->getError()}</p>";
 			}
@@ -57,17 +57,17 @@ class VF_Group extends VF_Element {
 			$strClass = ($blnError) ? $strClass . " vf__error" : $strClass;
 			$strOutput = "<div class=\"vf__multifielditem{$strClass}\">\n";
 		}
-		
+
 		$strOutput .= "<fieldset class=\"vf__list\">\n";
 
 		foreach ($this->__fields as $objField) {
 			switch (get_class($objField)) {
 				case "VF_GroupField":
-					$strOutput .= $objField->toHtml($this->__getValue($submitted), $submitted, $this->__targetfield);
+					$strOutput .= $objField->toHtml($this->__getValue($submitted), $submitted);
 
 					break;
 				default: //*** Targetfield.
-					$strOutput .= $objField->toHtml($this->__getValue($submitted), $submitted, false);
+					// $strOutput .= $objField->toHtml($this->__getValue($submitted), $submitted, false);
 
 					break;
 			}
@@ -93,11 +93,11 @@ class VF_Group extends VF_Element {
 
 		$strOutput .= "objForm.addElement('{$id}', '{$name}', {$strCheck}, {$strRequired}, {$intMaxLength}, {$intMinLength}, '" . addslashes($this->__validator->getFieldHint()) . "', '" . addslashes($this->__validator->getTypeError()) . "', '" . addslashes($this->__validator->getRequiredError()) . "', '" . addslashes($this->__validator->getHintError()) . "', '" . addslashes($this->__validator->getMinLengthError()) . "', '" . addslashes($this->__validator->getMaxLengthError()) . "');\n";
 
-		foreach ($this->__fields as $field) {
-			if ($field->hasTrigger()) {
-				$strOutput .= $field->toJs();
-			}
-		}
+		// foreach ($this->__fields as $field) {
+		// 	if ($field->hasTrigger()) {
+		// 		$strOutput .= $field->toJs();
+		// 	}
+		// }
 
 		return $strOutput;
 	}
@@ -141,28 +141,33 @@ class VF_Group extends VF_Element {
 		return $objField;
 	}
 
-	public function addFieldObject($objTarget, $checked = false) {
-		// For now, we only support one targetfield per group object.
-		if (!is_object($this->__targetfield)) {
-			// Add checkbox
-			$objTrigger = $this->addField($objTarget->getLabel(), $objTarget->getName(true) . "_triggerfield", $checked);
+	/**
+	 * DEPRECATED METHOD
+	 * @param object  $objTarget
+	 * @param boolean $checked
+	 */
+	// public function addFieldObject($objTarget, $checked = false) {
+	// 	// For now, we only support one targetfield per group object.
+	// 	if (!is_object($this->__targetfield)) {
+	// 		// Add checkbox
+	// 		$objTrigger = $this->addField($objTarget->getLabel(), $objTarget->getName(true) . "_triggerfield", $checked);
 
-			// Set the defaults on the target element
-			$objTarget->setName($objTarget->getName(true) . "_triggerfield");
-			$objTarget->setId($this->getRandomId($objTarget->getName()));
+	// 		// Set the defaults on the target element
+	// 		$objTarget->setName($objTarget->getName(true) . "_triggerfield");
+	// 		$objTarget->setId($this->getRandomId($objTarget->getName()));
 
-			// Set the trigger field.
-			$objTarget->setTrigger($objTrigger);
+	// 		// Set the trigger field.
+	// 		$objTarget->setTrigger($objTrigger);
 
-			// This group has a trigger element.
-			$this->__targetfield = $objTarget;
+	// 		// This group has a trigger element.
+	// 		$this->__targetfield = $objTarget;
 
-			// Add to validator
-			$this->__validator->setTargetField($objTarget);
+	// 		// Add to validator
+	// 		$this->__validator->setTargetField($objTarget);
 
-			$this->__fields->addObject($objTarget);
-		}
-	}
+	// 		$this->__fields->addObject($objTarget);
+	// 	}
+	// }
 
 	protected function __getMetaString() {
 		$strOutput = "";
