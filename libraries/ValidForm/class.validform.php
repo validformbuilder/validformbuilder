@@ -39,6 +39,8 @@ require_once('class.vf_multifield.php');
 require_once('class.vf_captcha.php');
 require_once('class.vf_fieldvalidator.php');
 require_once('class.vf_page.php');
+require_once('class.vf_condition.php');
+require_once('class.vf_comparison.php');
 
 require_once('vf_constants.php');
 

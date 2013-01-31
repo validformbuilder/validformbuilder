@@ -40,10 +40,7 @@ class VF_Element extends ClassDynamic {
 	protected $__dynamicLabel = null;
 	protected $__requiredstyle;
 	protected $__validator;
-	protected $__condition = null;
 
-	// protected $__targetfield = null;
-	// protected $__triggerfield = null;
 	protected $__reservedmeta = array("data", "dynamicCounter", "tip", "hint", "default", "width", "height", "length", "start", "end", "path", "labelStyle", "labelClass", "labelRange", "valueRange", "dynamic", "dynamicLabel", "matchWith");
 
 	public function __construct($name, $type, $label = "", $validationRules = array(), $errorHandlers = array(), $meta = array()) {
@@ -135,7 +132,29 @@ class VF_Element extends ClassDynamic {
 	 * @return boolean          True if element has condition object set, false if not
 	 */
 	public function hasCondition($strType) {
-		return (is_object($this->__condition) && get_class($this->__condition) == "VF_Condition");
+		return $this->__validator->hasCondition($strType);
+	}
+
+	/**
+	 * Add a new condition to the current field
+	 * @param [type] $strType           [description]
+	 * @param [type] $blnValue          [description]
+	 * @param [type] $arrComparisons    [description]
+	 * @param [type] $intComparisonType [description]
+	 */
+	public function addCondition($strType, $blnValue, $arrComparisons, $intComparisonType = VFORM_MATCH_ANY) {
+		$this->__validator->addCondition($this, $strType, $blnValue, $arrComparisons, $intComparisonType = VFORM_MATCH_ANY);
+	}
+
+	public function getCondition($strType) {
+		$objConditions = $this->__validator->getConditions();
+
+		foreach ($objConditions as $objCondition) {
+			if ($objCondition->getType() === strtolower($strType)) {
+				$blnReturn = true;
+				break;
+			}
+		}
 	}
 
 	public function toHtml($submitted = FALSE, $blnSimpleLayout = FALSE, $blnLabel = true, $blnDisplayErrors = true) {
@@ -169,7 +188,7 @@ class VF_Element extends ClassDynamic {
 
 	/**
 	 * Validate the current field. This is a wrapper method to call the FieldValidator->validate() method.
-	 * @return boolean [True if field validates, false if not.]
+	 * @return boolean 	True if field validates, false if not.
 	 */
 	public function isValid($intCount = null) {
 		$blnReturn = false;

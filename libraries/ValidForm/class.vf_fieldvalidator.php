@@ -34,12 +34,12 @@ class VF_FieldValidator extends ClassDynamic {
 	protected $__minlength;
 	protected $__maxlength;
 	protected $__matchwith;
-	// protected $__targetfield;
 	protected $__required = FALSE;
 	protected $__maxfiles = 1;
 	protected $__maxsize = 3000;
 	protected $__filetypes;
 	protected $__validation;
+	protected $__conditions = array();
 	protected $__minlengtherror = "The input is too short. The minimum is %s characters.";
 	protected $__maxlengtherror = "The input is too long. The maximum is %s characters.";
 	protected $__matchwitherror = "The values do not match.";
@@ -100,6 +100,51 @@ class VF_FieldValidator extends ClassDynamic {
 		return $strReturn;
 	}
 
+	public function addCondition($objField, $strType, $blnValue, $arrComparisons, $intComparisonType = VFORM_MATCH_ANY) {
+		if ($this->hasCondition($strType)) {
+			// Get an existing condition if it's already there.
+			$objCondition = $this->getCondition($strType);
+		} else {
+			// Add a new one if this condition type doesn't exist yet.
+			$objCondition = new VF_Condition($objField, $strType, $blnValue);
+		}
+
+		if (is_array($arrComparisons) && count($arrComparisons) > 0) {
+			foreach ($arrComparisons as $arrComparison) {
+				if (is_array($arrComparison)) {
+					try {
+						$objCondition->addComparison($arrComparison);
+					} catch (InvalidArgumentException $e) {
+						throw new Exception("Could not set condition.", $e->getCode(), $e);
+					}
+				} else {
+					throw new InvalidArgumentException("Invalid or no comparison(s) supplied.", 1);
+				}
+			}
+
+			array_push($this->__conditions, $objCondition);
+		} else {
+			throw new InvalidArgumentException("Invalid or no comparison(s) supplied.", 1);
+		}
+	}
+
+	public function hasCondition($strType) {
+		$blnReturn = false;
+
+		foreach ($this->__conditions as $objCondition) {
+			if ($objCondition->getType() === strtolower($strType)) {
+				$blnReturn = true;
+				break;
+			}
+		}
+
+		return $blnReturn;
+	}
+
+	public function hasConditions() {
+		return (count($this->__conditions) > 0);
+	}
+
 	/**
 	 * The most important function of ValidForm Builder library. This function
 	 * handles all the server-side field validation logic.
@@ -121,24 +166,6 @@ class VF_FieldValidator extends ClassDynamic {
 			$intCount 		= 0;
 
 			foreach ($value as $valueItem) {
-
-				// Check if empty
-				// if (is_object($this->__targetfield)) {
-
-				// 	if ($valueItem == $this->__targetfield->getName()) {
-
-				// 		// Validate target field and set error/validvalue
-				// 		if ($this->__targetfield->getValidator()->validate($intDynamicPosition)) {
-				// 			$valueItem = $this->__targetfield->getValidator()->getValidValue($intDynamicPosition);
-
-				// 		} else {
-				// 			$valueItem 		= "";
-				// 			$strTargetError = $this->__targetfield->getValidator()->getError($intDynamicPosition);
-				// 			break;
-				// 		}
-				// 	}
-				// }
-
 				if (!empty($valueItem)) {
 					$blnEmpty = FALSE;
 					break;
@@ -157,24 +184,12 @@ class VF_FieldValidator extends ClassDynamic {
 				}
 			}
 		} else {
-			// $blnTargetError = false;
-			// if (is_object($this->__targetfield)) {
-			// 	if ($value == $this->__targetfield->getName()) {
-			// 		// Validate target field and set error/validvalue
-			// 		if ($this->__targetfield->getValidator()->validate($intDynamicPosition)) {
-			// 			$value = $this->__targetfield->getValidator()->getValidValue($intDynamicPosition);
-			// 		} else {
-			// 			$blnTargetError = true;
-			// 			$this->__errors[$intDynamicPosition] = $this->__targetfield->getValidator()->getError($intDynamicPosition);
-			// 		}
+			if (empty($value)) {
 
-			// 		// return $blnReturn;
-			// 	}
-			// }
+				if ($this->hasCondition("required")) {
 
-			if (empty($value)
-			    // && !$blnTargetError
-			    ) {
+				}
+
 				if ($this->__required && $intDynamicPosition == 0) {
 					//*** Only the first dynamic field has a required check. We asume by design that "real" dynamic fields are not required.
 					unset($this->__validvalues[$intDynamicPosition]);

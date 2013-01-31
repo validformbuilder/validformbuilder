@@ -1,5 +1,10 @@
 <?php
-
+/**
+ * VF_Condition class
+ * A condition object is a set of one or more comparisons.
+ *
+ * @author Robin van Baalen <robin@neverwoods.com>
+ */
 class VF_Condition extends ClassDynamic {
 	protected $__field;
 	protected $__type;
@@ -9,7 +14,7 @@ class VF_Condition extends ClassDynamic {
 
 	private $__conditionTypes = array("disabled", "visible", "required");
 
-	public function __construct ($objField, $strType = null, $blnResult) {
+	public function __construct ($objField, $strType = null, $blnResult, $intComparisonType = VFORM_MATCH_ANY) {
 		if (is_object($objField)) {
 			$this->__field = $objField;
 		} else {
@@ -26,7 +31,7 @@ class VF_Condition extends ClassDynamic {
 		 * Set the default Comparison type for this Condition
 		 * @var constant
 		 */
-		$this->__comparisontype = VFORM_MATCH_ANY;
+		$this->__comparisontype = $intComparisonType;
 
 		$this->__result = $blnResult;
 	}
@@ -36,7 +41,6 @@ class VF_Condition extends ClassDynamic {
 	 * @param VF_Comparison|Array $varComparison Comparison array or VF_Comparison object
 	 */
 	public function addComparison($varComparison) {
-		$arrRequiredKeys = VF_Comparison::requiredKeys();
 		$objComparison = null;
 
 		if (is_array($varComparison)) {
@@ -54,9 +58,31 @@ class VF_Condition extends ClassDynamic {
 		}
 	}
 
+	public function getResult($intDynamicPosition = 0) {
+		switch ($this->__comparisontype) {
+			default:
+			case VFORM_MATCH_ANY:
+				$blnResult = false;
+				foreach ($this->__comparisons as $objComparison) {
+					if ($objComparison->check($intDynamicPosition)) {
+						$blnResult = true; // One of the comparisons is true, that's good enough.
+						break;
+					}
+				}
 
-	public function checkConditions() {
+				break;
+			case VFORM_MATCH_ALL:
+				$blnResult = true;
+				foreach ($this->__comparisons as $objComparison) {
+					if (!$objComparison->check()) {
+						$blnResult = false; // One of the comparisons failed, that's unacceptable.
+						break;
+					}
+				}
+				break;
+		}
 
+		return $blnResult;
 	}
 
 }
