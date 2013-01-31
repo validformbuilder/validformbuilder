@@ -31,6 +31,7 @@ class VF_Fieldset extends ClassDynamic {
 	protected $__class;
 	protected $__style;
 	protected $__fields;
+	protected $__condition;
 	
 	public function __construct($header = NULL, $noteHeader = NULL, $noteBody = NULL, $meta = array()) {
 		$this->__header = $header;
@@ -42,6 +43,15 @@ class VF_Fieldset extends ClassDynamic {
 		if (!empty($noteHeader) || !empty($noteBody)) {
 			$this->__note = new VF_Note($noteHeader, $noteBody);
 		}
+	}
+
+	/**
+	 * Check if the current fields contains a condition object
+	 * @param  String  $strType Condition type (e.g. 'required', 'disabled', 'visible' etc.)
+	 * @return boolean          True if element has condition object set, false if not
+	 */
+	public function hasCondition($strType) {
+		return (is_object($this->__condition) && get_class($this->__condition) == "VF_Condition");
 	}
 	
 	public function addField($field) {

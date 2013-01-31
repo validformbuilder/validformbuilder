@@ -36,6 +36,7 @@ class VF_Area extends ClassDynamic {
 	protected $__dynamicLabel;
 	protected $__requiredstyle;
 	protected $__fields;
+	protected $__condition;
 
 	public function __construct($label, $active = FALSE, $name = NULL, $checked = FALSE, $meta = array()) {
 		$this->__label = $label;
@@ -63,6 +64,15 @@ class VF_Area extends ClassDynamic {
 		}
 
 		return $objField;
+	}
+
+	/**
+	 * Check if the current fields contains a condition object
+	 * @param  String  $strType Condition type (e.g. 'required', 'disabled', 'visible' etc.)
+	 * @return boolean          True if element has condition object set, false if not
+	 */
+	public function hasCondition($strType) {
+		return (is_object($this->__condition) && get_class($this->__condition) == "VF_Condition");
 	}
 
 	public function addParagraph($strBody, $strHeader = "") {
