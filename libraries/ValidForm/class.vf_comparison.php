@@ -26,7 +26,7 @@ class VF_Comparison extends ClassDynamic {
 			}
 
 			if (in_array($this->__comparison, self::$__numericComparisons)
-			    && ($this->__subject->getType() === VFORM_NUMERIC || $this->__subject->getType() === VFORM_INTEGER)
+			    && ($this->__subject->getType() !== VFORM_NUMERIC || $this->__subject->getType() !== VFORM_INTEGER)
 			) {
 				throw new Exception("Numeric comparisons can only be applied on VFORM_INTEGER or VFORM_NUMERIC subjects. Trying to apply on field {$this->__subject->getName()} with type {$this->__subject->getType()}.", 1);
 			}
