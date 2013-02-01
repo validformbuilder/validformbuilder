@@ -8,13 +8,13 @@
 class VF_Condition extends ClassDynamic {
 	protected $__field;
 	protected $__type;
-	protected $__result;
+	protected $__value;
 	protected $__comparisons = array();
 	protected $__comparisontype;
 
 	private $__conditionTypes = array("disabled", "visible", "required");
 
-	public function __construct ($objField, $strType = null, $blnResult, $intComparisonType = VFORM_MATCH_ANY) {
+	public function __construct ($objField, $strType = null, $blnValue, $intComparisonType = VFORM_MATCH_ANY) {
 		if (is_object($objField)) {
 			$this->__field = $objField;
 		} else {
@@ -33,7 +33,7 @@ class VF_Condition extends ClassDynamic {
 		 */
 		$this->__comparisontype = $intComparisonType;
 
-		$this->__result = $blnResult;
+		$this->__value = $blnValue;
 	}
 
 	/**
@@ -71,14 +71,22 @@ class VF_Condition extends ClassDynamic {
 				}
 
 				break;
+
 			case VFORM_MATCH_ALL:
-				$blnResult = true;
+				$blnResult = false;
+				$intComparisonsLength = count($this->__comparisons);
+				$intValidComparisons = 0;
+
 				foreach ($this->__comparisons as $objComparison) {
-					if (!$objComparison->check()) {
-						$blnResult = false; // One of the comparisons failed, that's unacceptable.
-						break;
+					if ($objComparison->check()) {
+						$intValidComparisons++;
 					}
 				}
+
+				if ($intValidComparisons === $intComparisonsLength) {
+					$blnResult = true;
+				}
+
 				break;
 		}
 

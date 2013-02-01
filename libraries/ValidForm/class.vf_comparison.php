@@ -27,27 +27,14 @@ class VF_Comparison extends ClassDynamic {
 	public function check($intDynamicPosition = 0) {
 		$blnReturn = false;
 
-		switch (get_class($this->__subject)) {
-			default:
-				if ($this->__subject instanceof VF_Element) {
-					// Any element based on VF_Element
-					$strValue = $this->__subject->getValue($intDynamicPosition);
-					if (!is_null($strValue)) {
-						$blnReturn = $this->__verify($strValue);
-					}
-				} else {
-					throw new Exception("Invalid subject supplied in VF_Comparison. Class " . get_class($this->__subject) . " given. Expecting instance of VF_Element." , 1);
-				}
-				break;
-			case "VF_Area":
-
-				break;
-			case "VF_Fieldset":
-
-				break;
-			case "VF_Paragraph":
-
-				break;
+		if ($this->__subject instanceof VF_Element) {
+			// Any element based on VF_Element
+			$strValue = $this->__subject->getValue($intDynamicPosition);
+			if (!is_null($strValue)) {
+				$blnReturn = $this->__verify($strValue);
+			}
+		} else {
+			throw new Exception("Invalid subject supplied in VF_Comparison. Class " . get_class($this->__subject) . " given. Expecting instance of VF_Element." , 1);
 		}
 
 		return $blnReturn;
@@ -57,6 +44,11 @@ class VF_Comparison extends ClassDynamic {
 		return self::$__requiredKeys;
 	}
 
+	/**
+	 * Verify this comparison against the actual value
+	 * @param  String $strValue The actual value that is submitted
+	 * @return Boolean           True if comparison succeeded, false if not.
+	 */
 	private function __verify($strValue) {
 		$blnReturn = false;
 
@@ -66,12 +58,6 @@ class VF_Comparison extends ClassDynamic {
 				break;
 			case VFORM_COMPARISON_NOT_EQUAL:
 				$blnReturn = ($strValue != $this->__value);
-				break;
-			case VFORM_COMPARISON_IDENTICAL:
-				$blnReturn = ($strValue === $this->__value);
-				break;
-			case VFORM_COMPARISON_NOT_IDENTICAL:
-				$blnReturn = ($strValue !== $this->__value);
 				break;
 			case VFORM_COMPARISON_LESS_THAN:
 				$blnReturn = ($strValue < $this->__value);
@@ -84,6 +70,22 @@ class VF_Comparison extends ClassDynamic {
 				break;
 			case VFORM_COMPARISON_GREATER_THAN_OR_EQUAL:
 				$blnReturn = ($strValue >= $this->__value);
+				break;
+			case VFORM_COMPARISON_EMPTY:
+				$blnReturn = empty($strValue);
+				break;
+			case VFORM_COMPARISON_NOT_EMPTY:
+				$blnReturn = !empty($strValue);
+				break;
+			case VFORM_COMPARISON_STARTS_WITH:
+				// strpos is faster than substr and way faster than preg_match.
+				$blnReturn = (strpos($strValue, $this->__value) === 0);
+				break;
+			case VFORM_COMPARISON_ENDS_WITH:
+				$blnReturn = (strlen($strValue) - strlen($this->__value) == strrpos($strValue, $this->__value));
+				break;
+			case VFORM_COMPARISON_CONTAINS:
+				$blnReturn = (strpos($strValue, $this->__value) !== false);
 				break;
 		}
 

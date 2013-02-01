@@ -135,6 +135,10 @@ class VF_Element extends ClassDynamic {
 		return $this->__validator->hasCondition($strType);
 	}
 
+	public function getCondition($strType) {
+		return $this->__validator->getCondition($strType);
+	}
+
 	/**
 	 * Add a new condition to the current field
 	 * @param [type] $strType           [description]
@@ -144,17 +148,6 @@ class VF_Element extends ClassDynamic {
 	 */
 	public function addCondition($strType, $blnValue, $arrComparisons, $intComparisonType = VFORM_MATCH_ANY) {
 		$this->__validator->addCondition($this, $strType, $blnValue, $arrComparisons, $intComparisonType = VFORM_MATCH_ANY);
-	}
-
-	public function getCondition($strType) {
-		$objConditions = $this->__validator->getConditions();
-
-		foreach ($objConditions as $objCondition) {
-			if ($objCondition->getType() === strtolower($strType)) {
-				$blnReturn = true;
-				break;
-			}
-		}
 	}
 
 	public function toHtml($submitted = FALSE, $blnSimpleLayout = FALSE, $blnLabel = true, $blnDisplayErrors = true) {

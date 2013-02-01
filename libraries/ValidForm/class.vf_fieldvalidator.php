@@ -128,6 +128,26 @@ class VF_FieldValidator extends ClassDynamic {
 		}
 	}
 
+	/**
+	 * Get element's VF_Condition object
+	 * Note: When chaining methods, always use hasCondition() first before chaining
+	 * for example 'getCondition()->getResult()'.
+	 * @param  String $strType 		Condition type e.g. 'required', 'visibile' and 'disabled'
+	 * @return VF_Condition|null    The found condition or null if no condition is found.
+	 */
+	public function getCondition($strType) {
+		$objConditions = $this->getConditions();
+		$objCondition = null;
+
+		foreach ($objConditions as $objCondition) {
+			if ($objCondition->getType() === strtolower($strType)) {
+				break;
+			}
+		}
+
+		return $objCondition;
+	}
+
 	public function hasCondition($strType) {
 		$blnReturn = false;
 
@@ -186,8 +206,9 @@ class VF_FieldValidator extends ClassDynamic {
 		} else {
 			if (empty($value)) {
 
-				if ($this->hasCondition("required")) {
-
+				$objCondition = $this->getCondition("required");
+				if (!is_null($objCondition) && $objCondition->getResult($intDynamicPosition)) {
+					$this->__required = $objCondition->getValue();
 				}
 
 				if ($this->__required && $intDynamicPosition == 0) {
