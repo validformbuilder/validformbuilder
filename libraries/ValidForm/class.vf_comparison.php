@@ -6,16 +6,20 @@ class VF_Comparison extends ClassDynamic {
 	private static $__requiredKeys = array("subject", "comparison", "value");
 
 	public function __construct(Array $arrData) {
-		if (in_array("subject", self::requiredKeys())
-			&& in_array("comparison", self::requiredKeys())
-			&& in_array("value", self::requiredKeys())
-		) {
+		if ((isset($arrData["comparison"]) && isset($arrData["subject"]))) {
+			if (($arrData["comparison"] !== VFORM_COMPARISON_EMPTY && $arrData["comparison"] !== VFORM_COMPARISON_NOT_EMPTY) && !isset($arrData["value"])) {
+				// If the comparison is not 'empty' or 'not empty', a 'value' key is required in the 'arrData' argument.
+				throw new InvalidArgumentException("'Value' key is required in VF_Comparison construct.", 1);
+			}
+
 			foreach ($arrData as $strKey => $strValue) {
 				if (property_exists($this, strtolower("__" . $strKey))) {
 					$strMethod = "set" . ucfirst(strtolower($strKey));
 					$this->$strMethod($strValue);
 				}
 			}
+		} else {
+			throw new InvalidArgumentException("Invalid array supplied in VF_Comparison.", 1);
 		}
 	}
 
