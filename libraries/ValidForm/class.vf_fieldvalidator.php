@@ -106,7 +106,7 @@ class VF_FieldValidator extends ClassDynamic {
 			$objCondition = $this->getCondition($strType);
 		} else {
 			// Add a new one if this condition type doesn't exist yet.
-			$objCondition = new VF_Condition($objField, $strType, $blnValue);
+			$objCondition = new VF_Condition($objField, $strType, $blnValue, $intComparisonType);
 		}
 
 		if (is_array($arrComparisons) && count($arrComparisons) > 0) {

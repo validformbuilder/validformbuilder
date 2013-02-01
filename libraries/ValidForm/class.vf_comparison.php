@@ -82,7 +82,7 @@ class VF_Comparison extends ClassDynamic {
 				$blnReturn = (strpos($strValue, $this->__value) === 0);
 				break;
 			case VFORM_COMPARISON_ENDS_WITH:
-				$blnReturn = (strlen($strValue) - strlen($this->__value) == strrpos($strValue, $this->__value));
+				$blnReturn = (substr($strValue, -strlen($this->__value)) === $this->__value);
 				break;
 			case VFORM_COMPARISON_CONTAINS:
 				$blnReturn = (strpos($strValue, $this->__value) !== false);

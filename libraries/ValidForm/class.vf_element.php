@@ -147,7 +147,7 @@ class VF_Element extends ClassDynamic {
 	 * @param [type] $intComparisonType [description]
 	 */
 	public function addCondition($strType, $blnValue, $arrComparisons, $intComparisonType = VFORM_MATCH_ANY) {
-		$this->__validator->addCondition($this, $strType, $blnValue, $arrComparisons, $intComparisonType = VFORM_MATCH_ANY);
+		$this->__validator->addCondition($this, $strType, $blnValue, $arrComparisons, $intComparisonType);
 	}
 
 	public function toHtml($submitted = FALSE, $blnSimpleLayout = FALSE, $blnLabel = true, $blnDisplayErrors = true) {
