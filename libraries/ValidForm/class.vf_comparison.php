@@ -18,6 +18,11 @@ class VF_Comparison extends ClassDynamic {
 					$this->$strMethod($strValue);
 				}
 			}
+
+			// If the subject is a required field, we cannot set the VFORM_COMPARISON_EMPTY check
+			if ($this->__subject->getValidator()->getRequired() && $this->__comparison === VFORM_COMPARISON_EMPTY) {
+				throw new Exception("Cannot add 'empty' comparison to required field '{$this->__subject->getName()}'.", 1);
+			}
 		} else {
 			throw new InvalidArgumentException("Invalid array supplied in VF_Comparison.", 1);
 		}
