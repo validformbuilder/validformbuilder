@@ -115,7 +115,7 @@ class VF_FieldValidator extends ClassDynamic {
 					try {
 						$objCondition->addComparison($arrComparison);
 					} catch (InvalidArgumentException $e) {
-						throw new Exception("Could not set condition.", $e->getCode(), $e);
+						throw new Exception("Could not set condition: " . $e->getMessage(), 1);
 					}
 				} else {
 					throw new InvalidArgumentException("Invalid or no comparison(s) supplied.", 1);

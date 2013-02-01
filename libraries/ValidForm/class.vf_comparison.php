@@ -4,6 +4,7 @@ class VF_Comparison extends ClassDynamic {
 	protected $__comparison;
 	protected $__value;
 	private static $__requiredKeys = array("subject", "comparison", "value");
+	private static $__numericComparisons = array(VFORM_COMPARISON_LESS_THAN, VFORM_COMPARISON_GREATER_THAN, VFORM_COMPARISON_LESS_THAN_OR_EQUAL, VFORM_COMPARISON_GREATER_THAN_OR_EQUAL);
 
 	public function __construct(Array $arrData) {
 		if ((isset($arrData["comparison"]) && isset($arrData["subject"]))) {
@@ -22,6 +23,12 @@ class VF_Comparison extends ClassDynamic {
 			// If the subject is a required field, we cannot set the VFORM_COMPARISON_EMPTY check
 			if ($this->__subject->getValidator()->getRequired() && $this->__comparison === VFORM_COMPARISON_EMPTY) {
 				throw new Exception("Cannot add 'empty' comparison to required field '{$this->__subject->getName()}'.", 1);
+			}
+
+			if (in_array($this->__comparison, self::$__numericComparisons)
+			    && ($this->__subject->getType() === VFORM_NUMERIC || $this->__subject->getType() === VFORM_INTEGER)
+			) {
+				throw new Exception("Numeric comparisons can only be applied on VFORM_INTEGER or VFORM_NUMERIC subjects. Trying to apply on field {$this->__subject->getName()} with type {$this->__subject->getType()}.", 1);
 			}
 		} else {
 			throw new InvalidArgumentException("Invalid array supplied in VF_Comparison.", 1);
