@@ -627,7 +627,7 @@ class ValidForm extends ClassDynamic {
 		$strReturn .= "<script type=\"text/javascript\">\n";
 		$strReturn .= "// <![CDATA[\n";
 		$strReturn .= "function {$this->__name}_init() {\n";
-		$strReturn .= "\tvar objForm = new ValidForm(\"{$this->__name}\", \"{$this->__mainalert}\");\n";
+		$strReturn .= "\tvar objForm = new " . get_called_class() . "(\"{$this->__name}\", \"{$this->__mainalert}\");\n";
 		$strReturn .= $strJs;
 		if (!empty($strCustomJs)) $strReturn .= $strCustomJs;
 		$strReturn .= "\t$(\"#{$this->__name}\").data(\"vf__formElement\", objForm);";
