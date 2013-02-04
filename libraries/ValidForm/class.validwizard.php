@@ -29,6 +29,8 @@ class ValidWizard extends ValidForm {
 	protected 	$__currentpage = 1;
 	protected 	$__previouslabel;
 	protected 	$__nextlabel;
+	protected 	$__hasconfirmpage = false;
+
 	private 	$__uniqueid;
 
 	/**
@@ -47,11 +49,11 @@ class ValidWizard extends ValidForm {
 		$this->__previouslabel = (isset($meta["previousLabel"])) ? $meta["previousLabel"] : "&larr; Previous";
 	}
 
-	public function toHtml($blnClientSide = true, $blnForceSubmitted = false, $strJs = "", $blnFromSession = false) {
+	public function toHtml($blnClientSide = true, $blnForceSubmitted = false, $strJs = "") {
 		$strReturn = null;
 
 		if (is_null($strReturn)) {
-			$strReturn = parent::toHtml($blnClientSide, $blnForceSubmitted, $this->__wizardJs($strJs, $blnFromSession));
+			$strReturn = parent::toHtml($blnClientSide, $blnForceSubmitted);
 		}
 
 		return $strReturn;
@@ -139,6 +141,16 @@ class ValidWizard extends ValidForm {
 		return $objPage;
 	}
 
+	/**
+	 * Wrapper method for setting the $__hasconfirmpage property
+	 */
+	public function addConfirmPage() {
+		$this->__hasconfirmpage = true;
+	}
+	public function removeConfirmPage() {
+		$this->__hasconfirmpage = false;
+	}
+
 	public function addField($name, $label, $type, $validationRules = array(), $errorHandlers = array(), $meta = array(), $blnJustRender = FALSE) {
 		$objField = parent::renderField($name, $label, $type, $validationRules, $errorHandlers, $meta);
 
@@ -205,17 +217,21 @@ class ValidWizard extends ValidForm {
 		return $objReturn;
 	}
 
-	private function __wizardJs($strCustomJs = "", $blnFromSession = false) {
-		$strReturn = "";
+	protected function __toJs($strCustomJs = "", $blnFromSession = false) {
+		// Add extra arguments to javascript initialization method.
+		$arrInitArguments = array();
+		if($this->__currentpage > 1) array_push($arrInitArguments, $this->__currentpage);
+		array_push($arrInitArguments, ($this->__hasconfirmpage) ? "true" : "false");
 
-		// Optionally set a custom first visibile page.
-		$intPage = ($this->__currentpage > 1) ? $this->__currentpage : "";
+		$strJs = "";
+		$strJs .= "objForm.setLabel('next', '" . $this->__nextlabel . "');\n\t";
+		$strJs .= "objForm.setLabel('previous', '" . $this->__previouslabel . "');\n\t";
 
-		$strReturn .= "objForm.setLabel('next', '" . $this->__nextlabel . "');\n\t";
-		$strReturn .= "objForm.setLabel('previous', '" . $this->__previouslabel . "');\n\t";
-		$strReturn .= "objForm.initWizard({$intPage});\n\n" . $strCustomJs;
+		if (strlen($strCustomJs) > 0) {
+			$strJs .= $strCustomJs;
+		}
 
-		return $strReturn;
+		return parent::__toJs($strJs, $arrInitArguments);
 	}
 
 	private function __addHiddenFields() {

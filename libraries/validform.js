@@ -218,6 +218,43 @@ function ValidForm(strFormId, strMainAlert, blnAllowPreviousPage) {
 }
 
 /**
+ * Initialize ValidForm Builder client side after all elements are added to the collection.
+ */
+ValidForm.prototype.init = function() {
+	var __this = this;
+
+	// Handle disabled elements and make sure all sub-elements are disabled as well.
+	this.traverseDisabledElements();
+
+	// This is where the magic happens: onSubmit; validate form.
+	jQuery("#" + __this.id).bind("submit", function(){
+		jQuery("#" + this.id).trigger("VF_BeforeSubmit", [{ValidForm: __this}]);
+		if (typeof __this.events.beforeSubmit == "function") {
+			__this.events.beforeSubmit(__this);
+		}
+
+		if (__this.__continueExecution) {
+			if (__this.pages.length > 1) {
+				// Validation has been done on each page individually.
+				// No need to re-validate here.
+				return true;
+			} else {
+				return __this.validate();
+			}
+		} else {
+			return false;
+		}
+	});
+
+	// Dynamic duplication logic.
+	this.dynamicDuplication();
+};
+
+ValidForm.prototype.initialize = function () {
+	// Placeholder method for deferred initialization
+}
+
+/**
  * Parse field errors from javascript object as such:
  *
  * [
@@ -261,76 +298,6 @@ ValidForm.prototype.showAlerts = function (objFields) {
 	}
 }
 
-/**
- * Initialize ValidForm Builder client side after all elements are added to the collection.
- */
-ValidForm.prototype.init = function() {
-	var __this = this;
-
-	// Handle disabled elements and make sure all sub-elements are disabled as well.
-	this.traverseDisabledElements();
-
-	// This is where the magic happens: onSubmit; validate form.
-	jQuery("#" + __this.id).bind("submit", function(){
-		jQuery("#" + this.id).trigger("VF_BeforeSubmit", [{ValidForm: __this}]);
-		if (typeof __this.events.beforeSubmit == "function") {
-			__this.events.beforeSubmit(__this);
-		}
-
-		if (__this.__continueExecution) {
-			if (__this.pages.length > 1) {
-				// Validation has been done on each page individually.
-				// No need to re-validate here.
-				return true;
-			} else {
-				return __this.validate();
-			}
-		} else {
-			return false;
-		}
-	});
-
-	// Dynamic duplication logic.
-	this.dynamicDuplication();
-};
-
-/**
- * This function only gets called when the ValidWizard contains more than one page.
- */
-ValidForm.prototype.initWizard = function (intPageIndex) {
-	this.currentPage = jQuery("#" + this.id + " .vf__page:first");
-
-	if (typeof intPageIndex !== "undefined") {
-		var $objPage = jQuery("#" + this.id + " .vf__page:eq(" + (parseInt(intPageIndex) - 1) + ")");
-
-		this.currentPage.hide();
-		this.currentPage = $objPage;
-
-		this.showPage(this.currentPage);
-	}
-
-	this.addConfirmPage();
-
-	// Get the next & previous labels and set them on all page navigation elements.
-	for (var key in this.labels) {
-		if (this.labels.hasOwnProperty(key)) {
-			if (key == "next" || key == "previous") {
-				for (strPageId in this.pages) {
-					if (this.pages.hasOwnProperty(strPageId)) {
-						$("#" + key + "_" + this.pages[strPageId]).html(this.labels[key]);
-					}
-				}
-			}
-		}
-	}
-
-};
-
-ValidForm.prototype.addConfirmPage = function () {
-	$("#" + this.pages[this.pages.length - 1]).after("<div class='vf__page' id='vf_confirm_" + this.id + "'></div>");
-	this.addPage("vf_confirm_" + this.id);
-}
-
 ValidForm.prototype.setLabel = function (key, value) {
 	if (typeof value !== "undefined") {
 		this.labels[key] = value;
@@ -349,621 +316,13 @@ ValidForm.prototype.showFirstError = function () {
 		__this.currentPage.hide();
 		__this.showPage($page);
 	}
-};
-
-ValidForm.prototype.addPage = function (strPageId) {
-	var __this = this;
-	var $page = jQuery("#" + strPageId);
-
-	// Add page to the pages collection
-	this.pages.push(strPageId);
-
-	// Add next / prev navigation
-	this.addPageNavigation(strPageId);
-
-	// If this is not the first page, hide it.
-	$page.hide();
-	jQuery("#" + __this.id).find(".vf__navigation").hide();
-
-	if (this.pages.length == 1) {
-		this.showPage($page);
-	}
-
-	if (this.pages.length > 1) {
-		var blnIsConfirmPage = (strPageId == "vf_confirm_" + this.id);
-		this.addPreviousButton(strPageId, blnIsConfirmPage);
-	}
-};
-
-ValidForm.prototype.addPreviousButton = function (strPageId, blnIsConfirmPage) {
-	var __this		= this;
-
-	//*** Call custom event if set.
-	jQuery("#" + this.id).trigger("VF_BeforeAddPreviousButton", [__this, {ValidForm: __this, pageId: strPageId}]);
-	if (typeof __this.events.beforeAddPreviousButton == "function") {
-		__this.events.beforeAddPreviousButton(strPageId);
-	}
-
-	var $page 		= jQuery("#" + strPageId);
-
-	var $pagenav 	= $page.find(".vf__pagenavigation");
-	var $nav 		= ($pagenav.length > 0 && !blnIsConfirmPage) ? $pagenav : $("#" + this.id).find(".vf__navigation");
-
-	$nav.append(jQuery("<a href='#' id='previous_" + strPageId + "' class='vf__button vf__previous'></a>"));
-
-	jQuery("#previous_" + strPageId).on("click", function () {
-		__this.previousPage();
-		return false;
-	});
-
-	//*** Call custom event if set.
-	jQuery("#" + this.id).trigger("VF_AfterAddPreviousButton", [{ValidForm: __this, pageId: strPageId}]);
-	if (typeof __this.events.afterAddPreviousButton == "function") {
-		__this.events.afterAddPreviousButton(strPageId);
-	} else {
-		this.cachedEvents.push({"afterAddPreviousButton": strPageId});
-	}
-};
-
-ValidForm.prototype.getPages = function () {
-	var __this 		= this;
-	var objReturn 	= {};
-
-	for (i in this.pages) {
-		if (this.pages.hasOwnProperty(i)) {
-			objReturn[this.pages[i]] = jQuery("#" + __this.pages[i]);
-		}
-	}
-
-	return objReturn;
-};
-
-ValidForm.prototype.nextPage = function () {
-	this.__continueExecution = true; // reset before triggering custom events
-
-	jQuery("#" + this.id).trigger("VF_BeforeNextPage", [{ValidForm: this}]);
-	if (this.__continueExecution) {
-		if (typeof this.events.beforeNextPage == "function") {
-			this.events.beforeNextPage(this);
-		}
-
-		if (this.validate("#" + this.currentPage.attr("id"))) {
-			if (this.nextIsLast()) {
-				this.valuesAsHtml(true);
-			}
-
-			this.currentPage.hide();
-
-			// Set the next page as the new current page.
-			this.currentPage = this.currentPage.next(".vf__page");
-			this.showPage(this.currentPage);
-
-			jQuery("#" + this.id).trigger("VF_AfterNextPage", [{ValidForm: this}]);
-			if (typeof this.events.afterNextPage == "function") {
-				this.events.afterNextPage(this);
-			}
-		}
-	}
-};
-
-/**
- * valuesAsHtml
- * DO NOT USE THIS METHOD. IT WILL BE DEPRECATED SOON!
- * @param  {boolean} blnHideEmpty Hide empty fields
- * @return {jQuery}              jQuery object with generated HTML output
- */
-ValidForm.prototype.valuesAsHtml = function (blnHideEmpty) {
-	var __this = this;
-
-	// 'Constants'
-	var VF_List 		= 1;
-	var VF_MultiField 	= 2;
-
-	// Set default value on hideEmpty
-	blnHideEmpty = (typeof blnHideEmpty == "undefined") ? false : true;
-
-	// Tempaltes used for parsing
-	var tpl = {
-		wrapper: function () {
-			return $("#vf_confirm_" + __this.id).addClass("vf__confirm");
-		},
-		page: function () {
-			return $("<div class='vf__overviewpage vf__cf'></div>");
-		},
-		pageLabel: function () {
-			return $("<h2></h2>");
-		},
-		fieldset: function () {
-			return $("<div class='vf__fieldset vf__cf'></div>");
-		},
-		fieldsetLabel: function () {
-			return $("<h3></h3>");
-		},
-		field: function () {
-			return $("<div class='vf__field vf__cf'></div>");
-		},
-		label: function () {
-			return $("<span class='vf__label'></span>");
-		},
-		value: function () {
-			return $("<strong class='vf__value'></strong>");
-		},
-		multifield: function () {
-			return $("<div class='vf__multifield vf__cf'></div>");
-		},
-		multifieldItem: function () {
-			return $("<div class='vf__multifielditem'></div>");
-		},
-		multifieldItems: function () {
-			return $("<div class='vf__multifieldvalue vf__cf'></div>");
-		},
-		list: function () {
-			return $("<div class='vf__list vf__cf'><ul></ul></div>");
-		},
-		listItem: function () {
-			return $("<li class='vf__list_item'></li>");
-		}
-	}
-
-	__this.init = function (blnHideEmpty) {
-		var $objReturn = tpl.wrapper();
-		var $objNavigation = $objReturn.find(".vf__pagenavigation");
-
-		// Trigger custom event
-		$("#" + __this.id).trigger("VF_beforeValuesAsHtml", [{ValidForm: __this}]);
-
-		// Clean it up before we start
-		$objReturn.html("");
-
-		$("#" + this.id).find(".vf__page").not("#vf_confirm_" + this.id).each(function () {
-			try {
-				$objReturn.append(__this.pageAsHtml($(this), blnHideEmpty));
-			} catch (e) {
-				try { // Log hard...
-					console.error("Parsing page failed in valuesAsHtml: " + e.message);
-				}
-				catch (e) {}; // .. or die trying
-			}
-		});
-
-		// Clean up afterwards.
-		var __setListWidth = function () {
-			$(".vf__list", $objReturn).each(function () {
-				var $objList 	= $(this);
-				var formWidth 	= $objList.parentsUntil(".validform").parent().width();
-				var labelWidth 	= $objList.find("span").width();
-
-				$objList.find("ul").width(formWidth - labelWidth - 30);
-
-			});
-		}
-
-		var __setValueWidth = function () {
-			var labelWidth = 0;
-
-			// First, get the widest label width.
-			$(".vf__value", $objReturn).each(function () {
-				var $objValue 	= $(this);
-				var formWidth 	= $objValue.parentsUntil(".validform").parent().width();
-				var blnIsMulti	= false;
-
-				// This is a list item, we handle them separately.
-				if ($objValue.parent().is("li")) {
-					return true; // Continue
-				}
-
-				// Get parent object
-				if ($objValue.parent().is(".vf__field")) {
-					var $objParent 	= $objValue.parent();
-					blnIsMulti = false;
-
-				} else if ($objValue.parent().is(".vf__multifielditem")) {
-					var $objParent	= $objValue.parent().parent().parent();
-					blnIsMulti = true;
-
-				} else {
-					var $objParent 	= $objValue.parentsUntil(".vf__field").parent();
-					blnIsMulti = false;
-
-				}
-
-				if (blnIsMulti) {
-					$objValue = $objParent.find(".vf__multifieldvalue");
-				}
-
-				var newLabelWidth 	= $objParent.find(".vf__label").outerWidth();
-				labelWidth = (newLabelWidth > labelWidth) ? newLabelWidth : labelWidth;
-			});
-
-			$(".vf__value", $objReturn).each(function () {
-				var $objValue 	= $(this);
-				var formWidth 	= $objValue.parentsUntil(".validform").parent().width();
-				var blnIsMulti	= ($objValue.parent().is(".vf__multifielditem")) ? true : false;
-
-				// This is a list item, we handle them separately.
-				if ($objValue.parent().is("li")) {
-					return true; // Continue
-				}
-
-				if (blnIsMulti) {
-					$objValue = $objValue.parent().parent().parent().find(".vf__multifieldvalue");
-				}
-
-				$objValue.width(formWidth - labelWidth - 30);
-			});
-		}
-
-		// Directly on init
-		$("#" + __this.id)
-			.one("VF_AfterShowPage", function () {
-				// Page is visible, now we can measure the elements.
-				__setValueWidth();
-				__setListWidth();
-			});
-
-		// And listen for resize events.
-		var _timer;
-		$(window).on("resize", function () {
-			var timeout = 0; // Make this 50 or higher if you're experiencing performance issues.
-			clearTimeout(_timer);
-
-			_timer = setTimeout(function () {
-				__setValueWidth();
-				__setListWidth();
-			}, timeout);
-		});
-
-		// Trigger custom event
-		$("#" + __this.id).trigger("VF_afterValuesAsHtml", [{ValidForm: __this, values: $objReturn}]);
-
-		return $objReturn;
-	}
-
-	__this.pageAsHtml = function ($page, blnHideEmpty) {
-		var $objReturn = tpl.page();
-
-		var $objPageTitle = $page.find("h2:first");
-		if ($objPageTitle.length > 0) {
-			// This page has a title
-			var $tplPageTitle = tpl.pageLabel();
-			$objReturn.append($tplPageTitle.text($objPageTitle.text()));
-		}
-
-		$page.find("> fieldset:not(.vf__list, .vf__area)").each (function () {
-			// if ($(this).has("p")) return true; // == continue
-
-			var $fieldset = __this.fieldsetAsHtml($(this), blnHideEmpty);
-			if (!$fieldset.is(":empty")) {
-				$objReturn.append($fieldset);
-			}
-		});
-
-		if ($objReturn.find("strong.vf__value").length <= 0 && blnHideEmpty) {
-			// It's an empty page.
-			$objReturn = $();
-		}
-
-		return $objReturn;
-	}
-
-	__this.fieldsetAsHtml = function ($fieldset, blnHideEmpty) {
-		var $objReturn = tpl.fieldset();
-
-		// Handle all other fields.
-		var $subFieldsets = $fieldset.find("> fieldset:not(:has(p))");
-		if ($subFieldsets.length > 0) {
-			$subFieldsets.each(function () {
-				// Parse sub-fieldset such as (active) area's
-				var $fieldset = __this.fieldsetAsHtml($(this), blnHideEmpty);
-				if (!$fieldset.is(":empty")) {
-					$objReturn.append($fieldset);
-				}
-			});
-		} else {
-			// Parse the fields inside the fieldset
-			$fieldset.find("input:not([type='hidden']), textarea, select, fieldset, div.vf__multifield").each(function () {
-				var $element 	= $(this);
-				var $parent 	= $element.parent();
-
-				switch ($element.prop("nodeName").toLowerCase()) {
-					case "div":
-						// This is a multifield
-						$objReturn.append(__this.multiFieldAsHtml($element, blnHideEmpty));
-						break;
-					case "fieldset":
-						// This is a list/area element
-						if ($element.hasClass("vf__list")) {
-							// List
-							$objReturn.append(__this.listAsHtml($element, blnHideEmpty));
-						}
-						break;
-					case "input":
-
-						switch($element.attr("type")) {
-							default:
-								if (!$element.parent().hasClass("vf__multifielditem") && !$element.parent().parent().hasClass("vf__list")) {
-									// Not part of a multifield
-									$objReturn.append(__this.fieldAsHtml($element, blnHideEmpty));
-								}
-								break;
-							case "radio":
-							case "checkbox":
-								if ($element.parent().is("div")) {
-									// This is a boolean field.
-									$objReturn.append(__this.fieldAsHtml($element, blnHideEmpty));
-
-								} else if ($element.parent().parent().is("legend")) {
-									return;
-								} else {
-									// Do nothing. This field is parsed inside the 'listAsHtml' method.
-								}
-								break;
-						}
-
-						break;
-					case "textarea":
-						if (!$element.parent().hasClass("vf__multifielditem") && !$element.parent().parent().hasClass("vf__list")) {
-							// Not part of a multifield
-							$objReturn.append(__this.fieldAsHtml($element, blnHideEmpty));
-						}
-						break;
-					case "select":
-						if (!$element.parent().hasClass("vf__multifielditem")) {
-							// Not part of a multifield
-							$objReturn.append(__this.fieldAsHtml($element, blnHideEmpty));
-						}
-						break;
-				}
-			}); // end input,textarea,select loop
-
-			// Add title to fieldset overview.
-			var $legend = $fieldset.find("legend");
-			if ($legend.length > 0 && !$objReturn.is(":empty")) {
-				$fieldsetLabel = tpl.fieldsetLabel();
-
-				$objReturn.prepend($fieldsetLabel.text($legend.text()));
-			}
-
-			// Clear this fieldset if it's active and not checked.
-			var $activeInput = $legend.find("input");
-			if ($activeInput.length > 0 && !$activeInput.is(":checked")) {
-				$objReturn = $();
-			}
-
-		}
-
-		return $objReturn;
-	} // end fieldsetAsHtml
-
-	__this.fieldAsHtml = function ($field, blnHideEmpty) {
-		if (__this.getElement($field.attr("name")) !== null && $field.attr("disabled") !== "disabled") {
-			var $objReturn 	= tpl.field();
-			var strValue 	= $field.val().replace(/\r?\n/g, "<br />");
-
-			if (strValue == "" && blnHideEmpty) {
-				// Do nothing
-				$objReturn = $();
-			} else {
-				$objReturn.attr("id", $field.attr("id") + "_confirm");
-
-				// Set the (optional) alternative or normal label.
-				var strShortLabel 	= $field.data("overviewlabel")
-				,	strLabel 		= (typeof strShortLabel !== "undefined") ? strShortLabel : $field.prev().text();
-
-				$objLabel = tpl.label();
-				$objLabel.text(strLabel);
-				$objLabel.appendTo($objReturn);
-
-				if ($field.attr("type") == "password") {
-					strValue = "*****";
-				}
-
-				$objValue = tpl.value();
-				$objValue.html(strValue);
-				$objValue.appendTo($objReturn);
-			}
-
-		} else {
-			return $(); // This is not a valid element
-		}
-
-		return $objReturn;
-	}
-
-	__this.listAsHtml = function ($list, blnHideEmpty) {
-		var $objReturn 		= tpl.list();
-		var strShortLabel 	= $list.parent().data("overviewlabel");
-		var strLabel 		= (typeof strShortLabel !== "undefined") ? strShortLabel : $list.prev().text();
-		var strValue		= $list.find("input:not(legend>label>input):checked:first").val();
-
-		if (typeof strValue == "undefined") {
-			// No item is checked
-			if (blnHideEmpty) {
-				$objReturn = $(); // Return empty
-			}
-		} else {
-			// There is a checked item, continue parsing.
-			var $inputs = $list.find("input:not(legend>label>input):checked");
-			if ($inputs.length > 1) {
-				$inputs.each(function () {
-					var $objListItem 	= tpl.listItem();
-					var $objValue		= tpl.value();
-					var strValue		= $(this).val();
-
-					$objValue.text(strValue);
-					$objValue.appendTo($objListItem);
-
-
-					$objListItem.appendTo($objReturn.find("ul"));
-				});
-			} else if ($inputs.length == 1) {
-				$objReturn = __this.fieldAsHtml($inputs, blnHideEmpty);
-			} else {
-				// Nothin' up.
-			}
-		}
-
-		// Add label
-		$objLabel = tpl.label();
-		$objLabel.text(strLabel);
-		$objLabel.prependTo($objReturn);
-
-		return $objReturn;
-	}
-
-	__this.multiFieldAsHtml = function ($multifield, blnHideEmpty) {
-		var $objReturn		= tpl.multifield();
-		var strShortLabel 	= $multifield.data("overviewlabel");
-		var strLabel 		= (typeof strShortLabel !== "undefined") ? strShortLabel : $multifield.find("label:first").text();
-		var strValue		= "";
-
-		// Check if first field is empty
-		var $objFirstSelect = $multifield.find("select:first");
-		if ($objFirstSelect.length > 0 && __this.getElement($objFirstSelect.attr("name")) !== null && $objFirstSelect.attr("disabled") !== "disabled") {
-			strValue = $objFirstSelect.val();
-		}
-
-		var $objFirstInput = $multifield.find("input:not([type='hidden']):first");
-		if ($objFirstInput.length > 0 && __this.getElement($objFirstInput.attr("name")) !== null && $objFirstInput.attr("disabled") !== "disabled") {
-			strValue = $objFirstInput.val();
-		}
-
-		// Add label
-		$objLabel = tpl.label();
-		$objLabel.text(strLabel);
-		$objLabel.appendTo($objReturn);
-
-		if (strValue !== "") {
-			strValue = ""; // reset value
-
-			// Continue parsing multifield.
-			$objMultiFieldItems = tpl.multifieldItems();
-
-			var $items = $multifield.find("input:not([type='hidden']), select");
-			$items.each(function () {
-				if (__this.getElement($(this).attr("name")) !== null) {
-					var $objItem 	= tpl.multifieldItem();
-					var $objValue 	= tpl.value();
-
-					$objValue.text($(this).val());
-					$objValue.appendTo($objItem);
-
-					$objItem.appendTo($objMultiFieldItems);
-				}
-			});
-
-			$objMultiFieldItems.appendTo($objReturn);
-		} else {
-			if (blnHideEmpty) {
-				$objReturn = $();
-			}
-		}
-
-		return $objReturn;
-	}
-
-	return __this.init(blnHideEmpty);
 }
-
-ValidForm.prototype.nextIsLast = function () {
-	var $next = this.currentPage.next(".vf__page");
-	var index = (jQuery("#" + this.id + " .vf__page").index($next) + 1);
-
-	return (this.pages.length == index);
-};
-
-ValidForm.prototype.previousPage = function () {
-	jQuery("#" + this.id).trigger("VF_BeforePreviousPage", [{ValidForm: this}]);
-	if (typeof this.events.beforePreviousPage == "function") {
-		this.events.beforePreviousPage(this);
-	}
-
-	this.currentPage.hide();
-
-	// Set the next page as the new current page.
-	this.currentPage = this.currentPage.prev(".vf__page");
-	this.showPage(this.currentPage);
-
-	jQuery("#" + this.id).trigger("VF_AfterPreviousPage", [{ValidForm: this}]);
-	if (typeof this.events.afterPreviousPage == "function") {
-		this.events.afterPreviousPage(this);
-	}
-};
-
-ValidForm.prototype.showPage = function ($objPage) {
-	var __this = this;
-
-	if (typeof $objPage == "object" && $objPage instanceof jQuery) {
-		jQuery("#" + this.id).trigger("VF_BeforeShowPage", [{ValidForm: __this, objPage: $objPage}]);
-
-		if (typeof this.events.beforeShowPage == "function") {
-			this.events.beforeShowPage($objPage);
-		} else {
-			this.cachedEvents.push({"beforeShowPage": $objPage});
-		}
-
-		$objPage.show(0, function () {
-			jQuery("#" + this.id).trigger("VF_AfterShowPage", [{ValidForm: __this, objPage: $objPage}]);
-			if (typeof __this.events.afterShowPage == "function") {
-				__this.events.afterShowPage($objPage);
-			} else {
-				__this.cachedEvents.push({"afterShowPage": $objPage});
-			}
-		});
-
-		// Check if this is the last page.
-		// If that is the case, set the 'next button'-label the submit button value to
-		// simulate a submit button
-		var pageIndex = jQuery("#" + this.id + " .vf__page").index($objPage);
-		if (pageIndex > 0 && pageIndex == this.pages.length - 1) {
-			jQuery("#" + this.id).find(".vf__navigation").show();
-			$objPage.find(".vf__pagenavigation").remove();
-
-			// jQuery("#next_" + this.pages[pageIndex - 1]).text(jQuery("#" + this.id).find("input[type='submit']").val());
-		} else {
-			jQuery("#" + this.id).find(".vf__navigation").hide();
-		}
-	} else {
-		throw new Error("Invalid object passed to ValidForm.showPage().");
-	}
-
-	return $objPage;
-};
-
-ValidForm.prototype.addPageNavigation = function (strPageId) {
-	var __this 			= this;
-	//*** Call custom event if set.
-	jQuery("#" + this.id).trigger("VF_BeforeAddPageNavigation", [{ValidForm: __this, pageId: strPageId}]);
-	if (typeof __this.events.beforeAddPageNavigation == "function") {
-		__this.events.beforeAddPageNavigation(strPageId);
-	}
-
-	// Button label will be set later in initWizard
-	var $page 			= jQuery("#" + strPageId);
-	var $nextNavigation = jQuery("<div class='vf__pagenavigation vf__cf'><a href='#' id='next_" + strPageId + "' class='vf__button'></a></div>");
-
-	jQuery("#" + strPageId).append($nextNavigation);
-
-	jQuery("#next_" + strPageId).on("click", function () {
-		__this.nextPage();
-
-		return false;
-	});
-
-	//*** Call custom event if set.
-	jQuery("#" + this.id).trigger("VF_AfterAddPageNavigation", [{ValidForm: __this, pageId: strPageId}]);
-	if (typeof __this.events.afterAddPageNavigation == "function") {
-		__this.events.afterAddPageNavigation(strPageId);
-	} else {
-		this.cachedEvents.push({"afterAddPageNavigation": strPageId});
-	}
-};
 
 ValidForm.prototype.matchfields = function (strSecondFieldId, strFirstFieldId, strMatchError) {
 	var objElement = this.getElement(jQuery("#" + strSecondFieldId).attr("name"));
 	objElement.validator.matchWith = this.getElement(jQuery("#" + strFirstFieldId).attr("name"));
 	objElement.validator.matchError = strMatchError;
-};
+}
 
 ValidForm.prototype.traverseDisabledElements = function () {
 	var __this = this;
@@ -978,7 +337,7 @@ ValidForm.prototype.traverseDisabledElements = function () {
 
 		__this.attachAreaEvents(jQuery("legend input", fieldset));
 	});
-};
+}
 
 ValidForm.prototype.dynamicDuplication = function () {
 	var __this 	= this;
@@ -1157,26 +516,12 @@ ValidForm.prototype.attachAreaEvents = function(objActiveTrigger) {
 };
 
 ValidForm.prototype.inArray = function(arrToSearch, value) {
-	var i;
-	for (i=0; i < arrToSearch.length; i++) {
+	for (var i=0; i < arrToSearch.length; i++) {
 		if (arrToSearch[i] === value) {
 			return true;
 		}
 	}
 	return false;
-};
-
-/**
- * DEPRECATED METHOD
- * @param {String} strSelector [description]
- * @param {String} strTargetId [description]
- */
-ValidForm.prototype.addTrigger = function(strSelector, strTargetId) {
-	if (typeof console !== "undefined") {
-		console.warn("WARNING: Using deprecated ValidForm.addTrigger method!");
-	} else {
-		alert("WARNING: Using deprecated ValidForm.addTrigger method!");
-	}
 };
 
 ValidForm.prototype.addElement = function() {

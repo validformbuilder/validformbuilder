@@ -607,7 +607,7 @@ class ValidForm extends ClassDynamic {
 		return $strReturn;
 	}
 
-	protected function __toJS($strCustomJs = "") {
+	protected function __toJS($strCustomJs = "", $arrInitArguments = array()) {
 		$strReturn = "";
 		$strJs = "";
 
@@ -627,9 +627,14 @@ class ValidForm extends ClassDynamic {
 		$strReturn .= "<script type=\"text/javascript\">\n";
 		$strReturn .= "// <![CDATA[\n";
 		$strReturn .= "function {$this->__name}_init() {\n";
-		$strReturn .= "\tvar objForm = new " . get_called_class() . "(\"{$this->__name}\", \"{$this->__mainalert}\");\n";
+
+		$strCalledClass = get_called_class();
+		$strArguments = (count($arrInitArguments) > 0) ? "\"{$this->__name}\", \"{$this->__mainalert}\", " . implode(", ", $arrInitArguments) : "\"{$this->__name}\", \"{$this->__mainalert}\"";
+		$strReturn .= "\tvar objForm = (typeof {$strCalledClass} !== \"undefined\") ? new {$strCalledClass}({$strArguments}) : new ValidForm(\"{$this->__name}\", \"{$this->__mainalert}\");\n";
+
 		$strReturn .= $strJs;
 		if (!empty($strCustomJs)) $strReturn .= $strCustomJs;
+		$strReturn .= "\tobjForm.initialize();\n";
 		$strReturn .= "\t$(\"#{$this->__name}\").data(\"vf__formElement\", objForm);";
 		$strReturn .= "};\n";
 		$strReturn .= "\n";
