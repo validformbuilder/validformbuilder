@@ -19,6 +19,7 @@
  ***************************/
 
 require_once('class.classdynamic.php');
+require_once('class.vf_base.php');
 require_once('class.vf_collection.php');
 require_once('class.vf_fieldset.php');
 require_once('class.vf_note.php');
@@ -57,7 +58,7 @@ class ValidForm extends ClassDynamic {
 	protected $__description;
 	protected $__meta;
 	protected $__action;
-	protected $__submitLabel;
+	protected $__submitlabel;
 	protected $__jsevents = array(); // Keep it lowercase to enable magic methods from ClassDynamic
 	protected $__elements;
 	protected $__name;
@@ -87,23 +88,6 @@ class ValidForm extends ClassDynamic {
 		} else {
 			$this->__action = $action;
 		}
-	}
-
-	/**
-	 *
-	 * Set the label of the forms submit button.
-	 * @param string label of the button
-	 */
-	public function setSubmitLabel($label) {
-		$this->__submitLabel = $label;
-	}
-
-	/**
-	 *
-	 * Get the label of the forms submit button.
-	 */
-	public function getSubmitLabel() {
-		return $this->__submitLabel;
 	}
 
 	/**
