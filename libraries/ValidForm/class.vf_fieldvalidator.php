@@ -2,14 +2,14 @@
 /***************************
  * ValidForm Builder - build valid and secure web forms quickly
  *
- * Copyright (c) 2009-2012, Felix Langfeldt <flangfeldt@felix-it.com>.
+ * Copyright (c) 2009-2013 Neverwoods Internet Technology
  * All rights reserved.
  *
  * This software is released under the GNU GPL v2 License <http://www.gnu.org/licenses/old-licenses/gpl-2.0.html>
  *
  * @package    ValidForm
- * @author     Felix Langfeldt <flangfeldt@felix-it.com>
- * @copyright  2009-2012 Felix Langfeldt <flangfeldt@felix-it.com>
+ * @author     Felix Langfeldt <felix@neverwoods.com>, Robin van Baalen <robin@neverwoods.com>
+ * @copyright  2009-2013 Neverwoods Internet Technology
  * @license    http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU GPL v2
  * @link       http://code.google.com/p/validformbuilder/
  ***************************/
@@ -22,15 +22,19 @@ require_once('class.vf_validator.php');
  * FieldValidator Class
  *
  * @package ValidForm
- * @author Felix Langfeldt
- * @version Release: 0.2.2
+ * @author Felix Langfeldt, Robin van Baalen
+ * @version Release: 1.0
  *
  */
 class VF_FieldValidator extends ClassDynamic {
-	protected $__fieldname;
+	// Base properties
+	protected $__field;
 	protected $__type;
+	protected $__fieldname; // Not the same as __field->getName()
 	protected $__fieldhint;
 	protected $__validvalues = array();
+
+	// Validation rules
 	protected $__minlength;
 	protected $__maxlength;
 	protected $__matchwith;
@@ -39,7 +43,8 @@ class VF_FieldValidator extends ClassDynamic {
 	protected $__maxsize = 3000;
 	protected $__filetypes;
 	protected $__validation;
-	protected $__conditions = array();
+
+	// Error handling
 	protected $__minlengtherror = "The input is too short. The minimum is %s characters.";
 	protected $__maxlengtherror = "The input is too long. The maximum is %s characters.";
 	protected $__matchwitherror = "The values do not match.";
@@ -52,24 +57,27 @@ class VF_FieldValidator extends ClassDynamic {
 	protected $__hinterror = "The value is the hint value. Enter your own value.";
 	protected $__errors = array();
 
-	public function __construct($fieldName, $fieldType, $validationRules, $errorHandlers, $fieldHint = NULL) {
-		foreach ($validationRules as $key => $value) {
+	// public function __construct($fieldName, $fieldType, $validationRules, $errorHandlers, $fieldHint = NULL) {
+	public function __construct(VF_Element $objField, Array $arrValidationRules = array(), Array $arrErrorHandlers = array()) {
+
+		foreach ($arrValidationRules as $key => $value) {
 			$property = strtolower("__" . $key);
 			if (property_exists($this, $property)) {
 				$this->$property = $value;
 			}
 		}
 
-		foreach ($errorHandlers as $key => $value) {
+		foreach ($arrErrorHandlers as $key => $value) {
 			$property = strtolower("__" . $key . "error");
 			if (property_exists($this, $property)) {
 				$this->$property = $value;
 			}
 		}
 
-		$this->__fieldname = str_replace("[]", "", $fieldName);
-		$this->__type = $fieldType;
-		$this->__fieldhint = $fieldHint;
+		$this->__field = $objField;
+		$this->__type = $objField->getType();
+		$this->__fieldname = str_replace("[]", "", $objField->getName());
+		$this->__fieldhint = $objField->getHint();
 	}
 
 	public function getValidValue($intDynamicPosition = 0) {
@@ -90,79 +98,15 @@ class VF_FieldValidator extends ClassDynamic {
 	public function getValue($intDynamicPosition = 0) {
 		if (isset($this->__overrideerrors[$intDynamicPosition]) && empty($this->__overrideerrors[$intDynamicPosition])) {
 			$strReturn = NULL;
-		} else {
 
+		} else {
 			$strFieldName = ($intDynamicPosition > 0) ? $this->__fieldname . "_" . $intDynamicPosition : $this->__fieldname;
 			$varValidValue = (isset($this->__validvalues[$intDynamicPosition])) ? $this->__validvalues[$intDynamicPosition] : null;
 			$strReturn = (isset($_REQUEST[$strFieldName])) ? $_REQUEST[$strFieldName] : $varValidValue;
+
 		}
 
 		return $strReturn;
-	}
-
-	public function addCondition($objField, $strType, $blnValue, $arrComparisons, $intComparisonType = VFORM_MATCH_ANY) {
-		if ($this->hasCondition($strType)) {
-			// Get an existing condition if it's already there.
-			$objCondition = $this->getCondition($strType);
-		} else {
-			// Add a new one if this condition type doesn't exist yet.
-			$objCondition = new VF_Condition($objField, $strType, $blnValue, $intComparisonType);
-		}
-
-		if (is_array($arrComparisons) && count($arrComparisons) > 0) {
-			foreach ($arrComparisons as $arrComparison) {
-				if (is_array($arrComparison)) {
-					try {
-						$objCondition->addComparison($arrComparison);
-					} catch (InvalidArgumentException $e) {
-						throw new Exception("Could not set condition: " . $e->getMessage(), 1);
-					}
-				} else {
-					throw new InvalidArgumentException("Invalid or no comparison(s) supplied.", 1);
-				}
-			}
-
-			array_push($this->__conditions, $objCondition);
-		} else {
-			throw new InvalidArgumentException("Invalid or no comparison(s) supplied.", 1);
-		}
-	}
-
-	/**
-	 * Get element's VF_Condition object
-	 * Note: When chaining methods, always use hasCondition() first before chaining
-	 * for example 'getCondition()->getResult()'.
-	 * @param  String $strType 		Condition type e.g. 'required', 'visibile' and 'disabled'
-	 * @return VF_Condition|null    The found condition or null if no condition is found.
-	 */
-	public function getCondition($strType) {
-		$objConditions = $this->getConditions();
-		$objCondition = null;
-
-		foreach ($objConditions as $objCondition) {
-			if ($objCondition->getType() === strtolower($strType)) {
-				break;
-			}
-		}
-
-		return $objCondition;
-	}
-
-	public function hasCondition($strType) {
-		$blnReturn = false;
-
-		foreach ($this->__conditions as $objCondition) {
-			if ($objCondition->getType() === strtolower($strType)) {
-				$blnReturn = true;
-				break;
-			}
-		}
-
-		return $blnReturn;
-	}
-
-	public function hasConditions() {
-		return (count($this->__conditions) > 0);
 	}
 
 	/**
@@ -206,7 +150,7 @@ class VF_FieldValidator extends ClassDynamic {
 		} else {
 			if (empty($value)) {
 
-				$objCondition = $this->getCondition("required");
+				$objCondition = $this->__field->getCondition("required");
 				if (!is_null($objCondition) && $objCondition->getResult($intDynamicPosition)) {
 					$this->__required = $objCondition->getValue();
 				}
@@ -223,30 +167,11 @@ class VF_FieldValidator extends ClassDynamic {
 			}
 		}
 
-		//** Overwrite 'fieldname value' in triggerfield with it's targetfield's value
-		// if (is_array($value)) {
-		// 	$intCount = 0;
-		// 	foreach ($value as $strValue) {
-		// 		if (is_object($this->__targetfield)) {
-		// 			if ($this->__targetfield->getName() == $strValue) {
-
-		// 				if ($this->__targetfield->getValidator()->validate($intDynamicPosition)) {
-		// 					$value[$intCount] = $this->__targetfield->getValidator()->getValidValue($intDynamicPosition);
-		// 				} else {
-		// 					unset($this->__validvalues[$intDynamicPosition]);
-		// 					$this->__errors[$intDynamicPosition] = $this->__targetfield->getValidator()->getError($intDynamicPosition);
-		// 				}
-		// 			}
-		// 		}
-
-		// 		$intCount++;
-		// 	}
-		// }
-
 		//*** Check if value is hint value.
 		if (!$this->__hasError($intDynamicPosition)) {
-			if (!empty($this->__fieldhint) && !is_array($value)) {
-				if ($this->__fieldhint == $value) {
+			$strHint = $this->__field->getHint();
+			if (!empty($strHint) && !is_array($value)) {
+				if ($strHint == $value) {
 					unset($this->__validvalues[$intDynamicPosition]);
 					$this->__errors[$intDynamicPosition] = $this->__hinterror;
 				}
@@ -299,13 +224,13 @@ class VF_FieldValidator extends ClassDynamic {
 
 		//*** Check specific types.
 		if (!$this->__hasError($intDynamicPosition)) {
-			switch ($this->__type) {
+			switch ($this->__field->getType()) {
 				case VFORM_CUSTOM:
 				case VFORM_CUSTOM_TEXT:
 					$blnValidType = VF_Validator::validate($this->__validation, $value);
 					break;
 				default:
-					$blnValidType = VF_Validator::validate($this->__type, ($this->__type == VFORM_CAPTCHA) ? $this->__fieldname : $value);
+					$blnValidType = VF_Validator::validate($this->__field->getType(), ($this->__field->getType() == VFORM_CAPTCHA) ? $this->__fieldname : $value);
 			}
 
 			if (!$blnValidType) {
@@ -336,13 +261,13 @@ class VF_FieldValidator extends ClassDynamic {
 	public function getCheck() {
 		$strReturn = "";
 
-		switch ($this->__type) {
+		switch ($this->__field->getType()) {
 			case VFORM_CUSTOM:
 			case VFORM_CUSTOM_TEXT:
 				$strReturn = $this->__validation;
 				break;
 			default:
-				$strReturn = VF_Validator::getCheck($this->__type);
+				$strReturn = VF_Validator::getCheck($this->__field->getType());
 		}
 
 		return $strReturn;

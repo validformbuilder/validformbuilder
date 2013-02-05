@@ -27,12 +27,7 @@ class VF_Condition extends ClassDynamic {
 			throw new InvalidArgumentException("Invalid type specified in VF_Condition constructor.", 1);
 		}
 
-		/**
-		 * Set the default Comparison type for this Condition
-		 * @var constant
-		 */
 		$this->__comparisontype = $intComparisonType;
-
 		$this->__value = $blnValue;
 	}
 

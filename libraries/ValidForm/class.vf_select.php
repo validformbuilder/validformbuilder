@@ -32,6 +32,11 @@ class VF_Select extends VF_Element {
 		$this->__options = new VF_Collection();
 
 		parent::__construct($name, $type, $label, $validationRules, $errorHandlers, $meta);
+
+		//*** Parse ranges if meta ranges are set. Thisway, the VF_Select element is filled before calling toHtml and therefore ready for custom manipulation
+		if ($this->__options->count() == 0) {
+			$this->__parseRanges();
+		}
 	}
 
 	public function toHtml($submitted = FALSE, $blnSimpleLayout = FALSE, $blnLabel = true, $blnDisplayErrors = true) {
@@ -77,36 +82,11 @@ class VF_Select extends VF_Element {
 			$strOutput = "<div class=\"vf__multifielditem\">\n";
 		}
 
-		// if (is_object($this->__targetfield)) {
-		// 	$strOutput .= "<div class=\"vf__targetfieldwrap\">";
-		// }
-
 		$strOutput .= "<select name=\"{$strName}\" id=\"{$strId}\" {$this->__getMetaString()}>\n";
 
+		//*** If no option elements are available, parse ranges
 		if ($this->__options->count() == 0) {
-			if (isset($this->__meta["labelRange"]) && is_array($this->__meta["labelRange"])) {
-				if (isset($this->__meta["valueRange"]) && is_array($this->__meta["valueRange"]) && count($this->__meta["labelRange"]) == count($this->__meta["valueRange"])) {
-					$intIndex = 0;
-					foreach ($this->__meta["labelRange"] as $strLabel) {
-						$this->addField($strLabel, $this->__meta["valueRange"][$intIndex]);
-						$intIndex++;
-					}
-				} else {
-					foreach ($this->__meta["labelRange"] as $strLabel) {
-						$this->addField($strLabel, $strLabel);
-					}
-				}
-			} else if (isset($this->__meta["start"]) && is_numeric($this->__meta["start"]) && isset($this->__meta["end"]) && is_numeric($this->__meta["end"])) {
-				if ($this->__meta["start"] < $this->__meta["end"]) {
-					for ($intIndex = $this->__meta["start"]; $intIndex <= $this->__meta["end"]; $intIndex++) {
-						$this->addField($intIndex, $intIndex);
-					}
-				} else {
-					for ($intIndex = $this->__meta["start"]; $intIndex >= $this->__meta["end"]; $intIndex--) {
-						$this->addField($intIndex, $intIndex);
-					}
-				}
-			}
+			$this->__parseRanges();
 		}
 
 		foreach ($this->__options as $option) {
@@ -117,11 +97,6 @@ class VF_Select extends VF_Element {
 
 		if (!empty($this->__tip)) $strOutput .= "<small class=\"vf__tip\">{$this->__tip}</small>\n";
 
-		// if (is_object($this->__targetfield)) {
-		// 	$strOutput .= $this->__targetfield->toHtml($submitted, $blnSimpleLayout, false, $blnDisplayErrors, $intCount);
-		// 	$strOutput .= "</div>\n"; // End of the targetfieldwrap
-		// }
-
 		$strOutput .= "</div>\n";
 
 		if (!$blnSimpleLayout && $intCount == $this->getDynamicCount()) {
@@ -129,6 +104,32 @@ class VF_Select extends VF_Element {
 		}
 
 		return $strOutput;
+	}
+
+	protected function __parseRanges() {
+		if (isset($this->__meta["labelRange"]) && is_array($this->__meta["labelRange"])) {
+			if (isset($this->__meta["valueRange"]) && is_array($this->__meta["valueRange"]) && count($this->__meta["labelRange"]) == count($this->__meta["valueRange"])) {
+				$intIndex = 0;
+				foreach ($this->__meta["labelRange"] as $strLabel) {
+					$this->addField($strLabel, $this->__meta["valueRange"][$intIndex]);
+					$intIndex++;
+				}
+			} else {
+				foreach ($this->__meta["labelRange"] as $strLabel) {
+					$this->addField($strLabel, $strLabel);
+				}
+			}
+		} else if (isset($this->__meta["start"]) && is_numeric($this->__meta["start"]) && isset($this->__meta["end"]) && is_numeric($this->__meta["end"])) {
+			if ($this->__meta["start"] < $this->__meta["end"]) {
+				for ($intIndex = $this->__meta["start"]; $intIndex <= $this->__meta["end"]; $intIndex++) {
+					$this->addField($intIndex, $intIndex);
+				}
+			} else {
+				for ($intIndex = $this->__meta["start"]; $intIndex >= $this->__meta["end"]; $intIndex--) {
+					$this->addField($intIndex, $intIndex);
+				}
+			}
+		}
 	}
 
 	protected function __addDynamicHtml() {

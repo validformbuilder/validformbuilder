@@ -26,7 +26,7 @@ require_once('class.classdynamic.php');
  * @version Release: 0.2.2
  *
  */
-class VF_Area extends ClassDynamic {
+class VF_Area extends VF_Base {
 	protected $__label;
 	protected $__active;
 	protected $__name;
