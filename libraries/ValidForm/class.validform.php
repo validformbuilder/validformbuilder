@@ -78,7 +78,7 @@ class ValidForm extends ClassDynamic {
 	public function __construct($name = NULL, $description = NULL, $action = NULL, $meta = array()) {
 		$this->__name = (is_null($name)) ? $this->__generateName() : $name;
 		$this->__description = $description;
-		$this->__submitLabel = "Submit";
+		$this->__submitlabel = "Submit";
 		$this->__meta = $meta;
 
 		$this->__elements = new VF_Collection();
@@ -283,7 +283,7 @@ class ValidForm extends ClassDynamic {
 
 		if (!$blnNavigation) {
 			$strOutput .= "<div class=\"vf__navigation vf__cf\">\n<input type=\"hidden\" name=\"vf__dispatch\" value=\"{$this->__name}\" />\n";
-			$strOutput .= "<input type=\"submit\" value=\"{$this->__submitLabel}\" class=\"vf__button\" />\n</div>\n";
+			$strOutput .= "<input type=\"submit\" value=\"{$this->__submitlabel}\" class=\"vf__button\" />\n</div>\n";
 		}
 
 		$strOutput .= "</form>";

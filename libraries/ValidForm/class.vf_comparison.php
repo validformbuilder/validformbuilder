@@ -69,6 +69,16 @@ class VF_Comparison extends ClassDynamic {
 		return self::$__requiredKeys;
 	}
 
+	public function jsonSerialize() {
+		$arrReturn = array(
+			"subject" => $this->__subject->getName(), // For now, this ony applies to fields and should apply to both fields, area's, fieldsets and paragraphs.
+			"comparison" => $this->__comparison,
+			"value" => $this->__value
+		);
+
+		return $arrReturn;
+	}
+
 	/**
 	 * Verify this comparison against the actual value
 	 * @param  String $strValue The actual value that is submitted

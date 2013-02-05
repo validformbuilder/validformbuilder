@@ -6,13 +6,12 @@
  * @author Robin van Baalen <robin@neverwoods.com>
  */
 class VF_Condition extends ClassDynamic {
-	protected $__field;
-	protected $__type;
-	protected $__value;
-	protected $__comparisons = array();
-	protected $__comparisontype;
-
-	private $__conditionTypes = array("disabled", "visible", "required");
+	protected 	$__field;
+	protected	$__type;
+	protected 	$__value;
+	protected 	$__comparisons = array();
+	protected 	$__comparisontype;
+	private 	$__conditionTypes = array("disabled", "visible", "required");
 
 	public function __construct ($objField, $strType = null, $blnValue, $intComparisonType = VFORM_MATCH_ANY) {
 		if (is_object($objField)) {
@@ -86,6 +85,32 @@ class VF_Condition extends ClassDynamic {
 		}
 
 		return $blnResult;
+	}
+
+	/**
+	 * toJson method creates an array representation of the current condition object and all
+	 * of it's comparions.
+	 *
+	 * In the future this class should extend the JsonSerializable interface
+	 * (http://php.net/manual/en/class.jsonserializable.php). Since this is only
+	 * supported in PHP >= 5.4, we now use our own implementation.
+	 *
+	 * @return array An array representation of this object and it's comparisons.
+	 */
+	public function jsonSerialize() {
+		$arrReturn = array(
+			"field" => $this->__field->getName(),
+			"type" => $this->__type,
+			"value" => $this->__value,
+			"comparisonType" => $this->__comparisontype,
+			"comparisons" => array()
+		);
+
+		foreach ($this->__comparisons as $objComparison) {
+			array_push($arrReturn["comparisons"], $objComparison->jsonSerialize());
+		}
+
+		return $arrReturn;
 	}
 
 }

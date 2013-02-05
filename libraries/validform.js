@@ -254,6 +254,10 @@ ValidForm.prototype.initialize = function () {
 	// Placeholder method for deferred initialization
 }
 
+ValidForm.prototype.addCondition = function (objComparison) {
+
+}
+
 /**
  * Parse field errors from javascript object as such:
  *
