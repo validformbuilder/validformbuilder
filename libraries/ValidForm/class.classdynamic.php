@@ -45,7 +45,7 @@ class ClassDynamic {
 		if (property_exists($this, $property)) {
 			$this->$property = $value;
 		} else {
-			throw new BadMethodCallException("Property Error in " . get_class($this) . "::set({$property}) on line " . __LINE__ . ".");
+			throw new BadMethodCallException("Property Error in " . get_class($this) . "::set({$property}, {$value}) on line " . __LINE__ . ".");
 		}
 	}
 
