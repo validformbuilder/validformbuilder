@@ -40,7 +40,8 @@ class VF_Hidden extends VF_Element {
 		$this->__default = (array_key_exists("default", $meta)) ? $meta["default"] : NULL;
 		$this->__dynamiccounter = (array_key_exists("dynamicCounter", $meta)) ? $meta["dynamicCounter"] : false;
 
-		$this->__validator = new VF_FieldValidator($name, $type, array(), array(), $this->__hint);
+		// $this->__validator = new VF_FieldValidator($name, $type, array(), array(), $this->__hint);
+		$this->__validator = new VF_FieldValidator($this);
 	}
 
 	public function toHtml($submitted = FALSE, $blnSimpleLayout = FALSE, $blnLabel = true, $blnDisplayError = true) {

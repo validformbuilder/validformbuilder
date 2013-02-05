@@ -25,7 +25,7 @@ require_once('class.classdynamic.php');
  * @version 0.2.2
  *
  */
-class VF_Element extends ClassDynamic {
+class VF_Element extends VF_Base {
 	protected $__id;
 	protected $__name;
 	protected $__label;
@@ -67,7 +67,8 @@ class VF_Element extends ClassDynamic {
 		$this->__dynamicLabel = (array_key_exists("dynamicLabel", $meta)) ? $meta["dynamicLabel"] : $this->__dynamicLabel;
 		$this->__dynamiccounter = (array_key_exists("dynamicCounter", $meta)) ? true : $this->__dynamiccounter;
 
-		$this->__validator = new VF_FieldValidator($name, $type, $validationRules, $errorHandlers, $this->__hint);
+		// $this->__validator = new VF_FieldValidator($name, $type, $validationRules, $errorHandlers, $this->__hint);
+		$this->__validator = new VF_FieldValidator($this, $validationRules, $errorHandlers);
 	}
 
 	protected function setClass($type, &$meta) {
@@ -124,30 +125,6 @@ class VF_Element extends ClassDynamic {
 		if (!empty($strClass)) {
 			$meta["class"] = (isset($meta["class"])) ? $meta["class"] .= " " . $strClass : $strClass;
 		}
-	}
-
-	/**
-	 * Check if the current fields contains a condition object
-	 * @param  String  $strType Condition type (e.g. 'required', 'disabled', 'visible' etc.)
-	 * @return boolean          True if element has condition object set, false if not
-	 */
-	public function hasCondition($strType) {
-		return $this->__validator->hasCondition($strType);
-	}
-
-	public function getCondition($strType) {
-		return $this->__validator->getCondition($strType);
-	}
-
-	/**
-	 * Add a new condition to the current field
-	 * @param [type] $strType           [description]
-	 * @param [type] $blnValue          [description]
-	 * @param [type] $arrComparisons    [description]
-	 * @param [type] $intComparisonType [description]
-	 */
-	public function addCondition($strType, $blnValue, $arrComparisons, $intComparisonType = VFORM_MATCH_ANY) {
-		$this->__validator->addCondition($this, $strType, $blnValue, $arrComparisons, $intComparisonType);
 	}
 
 	public function toHtml($submitted = FALSE, $blnSimpleLayout = FALSE, $blnLabel = true, $blnDisplayErrors = true) {
@@ -257,29 +234,6 @@ class VF_Element extends ClassDynamic {
 	public function hasFields() {
 		return FALSE;
 	}
-
-	/**
-	 * DEPRECATED METHOD
-	 */
-	public function addTriggerJs() {
-		return "objForm.addTrigger(\"deprecated\", \"deprecated\");\n";
-	}
-
-	/**
-	 * Link a field to this element. If the trigger field is selected / checked, this element will become enabled.
-	 * @param vf_element $objField ValidForm Builder field element
-	 */
-	// public function setTrigger($objField) {
-	// 	$this->__triggerfield = $objField;
-	// }
-
-	/**
-	 * Check if this element has a triggerfield.
-	 * @return boolean True if a triggerfield is set, false if not.
-	 */
-	// public function hasTrigger() {
-	// 	return is_object($this->__triggerfield);
-	// }
 
 	/**
 	 * If an element's name is updated, also update the name in it's corresponding validator.
