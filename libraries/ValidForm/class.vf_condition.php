@@ -6,27 +6,25 @@
  * @author Robin van Baalen <robin@neverwoods.com>
  */
 class VF_Condition extends ClassDynamic {
-	protected 	$__field;
-	protected	$__type;
+	protected 	$__subject;
+	protected	$__property;
 	protected 	$__value;
 	protected 	$__comparisons = array();
 	protected 	$__comparisontype;
-	private 	$__conditionTypes = array("disabled", "visible", "required");
+	private 	$__conditionProperties = array("disabled", "visible", "required");
 
-	public function __construct ($objField, $strType = null, $blnValue, $intComparisonType = VFORM_MATCH_ANY) {
-		if (is_object($objField)) {
-			$this->__field = $objField;
-		} else {
+	public function __construct ($objField, $strProperty = null, $blnValue, $strComparisonType = VFORM_MATCH_ANY) {
+		if (!is_object($objField)) {
 			throw new InvalidArgumentException("No valid object passed to VF_Condition.", 1);
 		}
 
-		if (in_array($strType, $this->__conditionTypes)) {
-			$this->__type = $strType;
-		} else {
+		if (!in_array($strProperty, $this->__conditionProperties)) {
 			throw new InvalidArgumentException("Invalid type specified in VF_Condition constructor.", 1);
 		}
 
-		$this->__comparisontype = $intComparisonType;
+		$this->__subject = $objField;
+		$this->__property = $strProperty;
+		$this->__comparisontype = $strComparisonType;
 		$this->__value = $blnValue;
 	}
 
@@ -84,7 +82,8 @@ class VF_Condition extends ClassDynamic {
 				break;
 		}
 
-		return $blnResult;
+		// return $blnResult;
+		return true;
 	}
 
 	/**
@@ -99,8 +98,8 @@ class VF_Condition extends ClassDynamic {
 	 */
 	public function jsonSerialize() {
 		$arrReturn = array(
-			"field" => $this->__field->getName(),
-			"type" => $this->__type,
+			"subject" => $this->__subject->getName(),
+			"property" => $this->__property,
 			"value" => $this->__value,
 			"comparisonType" => $this->__comparisontype,
 			"comparisons" => array()

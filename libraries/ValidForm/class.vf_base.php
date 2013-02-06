@@ -4,7 +4,10 @@
  * All ValidForm classes share this base logic.
  */
 class VF_Base extends ClassDynamic {
+	protected $__id;
 	protected $__conditions = array();
+	protected $__meta;
+	protected $__reservedmeta = array("data", "dynamicCounter", "tip", "hint", "default", "width", "height", "length", "start", "end", "path", "labelStyle", "labelClass", "labelRange", "valueRange", "dynamic", "dynamicLabel", "matchWith");
 
 	/**
 	 * Add a new condition to the current field
@@ -82,6 +85,58 @@ class VF_Base extends ClassDynamic {
 
 	public function hasConditions() {
 		return (count($this->__conditions) > 0);
+	}
+
+	public function setConditionalStyling() {
+		foreach ($this->getConditions() as $objCondition) {
+			$blnResult = $objCondition->getResult();
+
+			switch ($objCondition->getProperty()) {
+				case "visible":
+					// This can be applied on all sorts of subjects.
+					if ($blnResult && !$objCondition->getValue()) {
+						$this->setMeta("style", "display: none;");
+					}
+					break;
+
+				case "disabled":
+					// This can only be applied on all subjects except for Paragraphs
+					if (get_class($objCondition->getSubject()) !== "VF_Paragraph") {
+
+					}
+					break;
+
+				case "required":
+
+					break;
+			}
+		}
+	}
+
+	/**
+	 * Set meta property.
+	 * @param string  	$property     Property name.
+	 * @param mixed  	$value        Property value.
+	 * @param boolean 	$blnOverwrite Overwrite previous property value.
+	 */
+	public function setMeta($property, $value, $blnOverwrite = false) {
+		if ($blnOverwrite) {
+			$this->__meta[$property] = $value;
+		} else {
+			$varMeta = (isset($this->__meta[$property])) ? $this->__meta[$property] : "";
+			$varMeta .= " " . $value;
+			$this->__meta[$property] = $varMeta;
+			$this->__meta[$property] = ltrim($this->__meta[$property]);
+		}
+	}
+
+	/**
+	 * Get meta property.
+	 * @param  string $property Property to get from internal meta array.
+	 * @return string           Property value or empty string of none is set.
+	 */
+	public function getMeta($property) {
+		return (isset($this->__meta[$property]) && !empty($this->__meta["property"])) ? $this->__meta[$property] : "";
 	}
 }
 ?>

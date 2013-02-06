@@ -595,7 +595,7 @@ class ValidForm extends ClassDynamic {
 		$strReturn = "";
 		$strJs = "";
 
-		//*** Form.
+		//*** Loop through all form elements and get their javascript code.
 		foreach ($this->__elements as $element) {
 			$strJs .= $element->toJS();
 		}

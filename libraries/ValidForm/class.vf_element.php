@@ -26,12 +26,10 @@ require_once('class.classdynamic.php');
  *
  */
 class VF_Element extends VF_Base {
-	protected $__id;
 	protected $__name;
 	protected $__label;
 	protected $__tip = null;
 	protected $__type;
-	protected $__meta;
 	protected $__labelmeta;
 	protected $__hint = null;
 	protected $__default = null;
@@ -40,8 +38,6 @@ class VF_Element extends VF_Base {
 	protected $__dynamicLabel = null;
 	protected $__requiredstyle;
 	protected $__validator;
-
-	protected $__reservedmeta = array("data", "dynamicCounter", "tip", "hint", "default", "width", "height", "length", "start", "end", "path", "labelStyle", "labelClass", "labelRange", "valueRange", "dynamic", "dynamicLabel", "matchWith");
 
 	public function __construct($name, $type, $label = "", $validationRules = array(), $errorHandlers = array(), $meta = array()) {
 		if (is_null($validationRules)) $validationRules = array();

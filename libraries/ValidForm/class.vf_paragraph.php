@@ -28,9 +28,6 @@ require_once('class.classdynamic.php');
 class VF_Paragraph extends VF_Base {
 	protected $__header;
 	protected $__body;
-	protected $__id;
-	protected $__meta;
-	protected $__condition;
 
 	public function __construct($header = NULL, $body = NULL, $meta = array()) {
 		$this->__header = $header;
@@ -39,7 +36,14 @@ class VF_Paragraph extends VF_Base {
 	}
 
 	public function toHtml($submitted = FALSE, $blnSimpleLayout = FALSE, $blnLabel = true, $blnDisplayError = true) {
+		// Call this before __getMetaString();
+		$this->setConditionalStyling();
+
 		$strOutput = "<div {$this->__getMetaString()}>\n";
+
+		if ($this->hasConditions()) {
+			$strOutput .= "<span>Conditional paragraph:</span>";
+		}
 
 		if (!empty($this->__header)) $strOutput .= "<h3>{$this->__header}</h3>\n";
 		if (!empty($this->__body)) {
@@ -54,20 +58,13 @@ class VF_Paragraph extends VF_Base {
 		return $strOutput;
 	}
 
-	/**
-	 * Check if the current fields contains a condition object
-	 * @param  String  $strType Condition type (e.g. 'required', 'disabled', 'visible' etc.)
-	 * @return boolean          True if element has condition object set, false if not
-	 */
-	public function hasCondition($strType) {
-		return (is_object($this->__condition) && get_class($this->__condition) == "VF_Condition");
-	}
-
 	protected function __getMetaString() {
 		$strOutput = "";
 
 		foreach ($this->__meta as $key => $value) {
-			$strOutput .= " {$key}=\"{$value}\"";
+			if (!empty($value)) {
+				$strOutput .= " {$key}=\"{$value}\"";
+			}
 		}
 
 		return $strOutput;
