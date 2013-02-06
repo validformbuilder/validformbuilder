@@ -1,181 +1,168 @@
 /***************************
  * ValidForm Builder - build valid and secure web forms quickly
  *
- * Copyright (c) 2009-2012, Felix Langfeldt <flangfeldt@felix-it.com>.
+ * Copyright (c) 2009-2013 Neverwoods.
  * All rights reserved.
  *
  * This software is released under the GNU GPL v2 License <http://www.gnu.org/licenses/old-licenses/gpl-2.0.html>
  *
- * @author     Felix Langfeldt <flangfeldt@felix-it.com>
+ * @author     Felix Langfeldt <felix@neverwoods.com>, Robin van Baalen <robin@neverwoods.com>
  * @license    http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU GPL v2.
  * @link       http://code.google.com/p/validformbuilder/
  ***************************/
 
-/**
- * ValidFormValidator class
- * Display class used to push alerts regarding form validation
- * to the browser.
- *
- * @param {String} strFormId The form ID.
- */
-function ValidFormValidator(strFormId) {
-	/**
-	 * Form id
-	 * @type {String}
-	 */
-	this.id 				= strFormId;
+function ValidFormComparison (objForm, objComparison) {
+	this.subject 	= objForm.getElement(objComparison.subject);
+	this.comparison = objComparison.comparison;
+	this.value 		= objComparison.value;
+	this.eventType 	= "";
 
-	/**
-	 * Main alert
-	 * @type {String}
-	 */
-	this.mainAlert			= "";
+	this.init();
 }
 
-/**
- * ValidFormValidator Class
- * Display class used to push alerts regarding form validation
- * to the browser.
- *
- * @param {String} strElementId   ID of the form element to validate
- * @param {String} strElementName Name of the form element to validate
- */
-function ValidFormFieldValidator(strElementId, strElementName) {
-	/**
-	 * Form element ID
-	 * @type {String}
-	 */
-	this.id 				= strElementId;
-	/**
-	 * Form element name
-	 * @type {String}
-	 */
-	this.name 				= strElementName;
-	/**
-	 * Element's disabled status
-	 * @type {Boolean}
-	 */
-	this.disabled 			= !!($("#" + strElementId).attr("disabled") === "disabled");
+ValidFormComparison.prototype.init = function () {
+	var self 		= this
+	,	$objSubject = $("#" + this.subject.id);
 
-	this.check				= null;
-	/**
-	 * Type error message
-	 * @type {String}
-	 */
-	this.typeError			= "";
-	/**
-	 * Required status
-	 * @type {Boolean}
-	 */
-	this.required			= false;
-	/**
-	 * Required error message
-	 * @type {String}
-	 */
-	this.requiredError		= "";
-	/**
-	 * Hint message
-	 * @type {String}
-	 */
-	this.hint				= null;
-	/**
-	 * Hint error message
-	 * @type {String}
-	 */
-	this.hintError			= "";
-	/**
-	 * Minimum input length
-	 * @type {Integer}
-	 */
-	this.minLength			= null;
-	/**
-	 * Minimum input length error
-	 * @type {String}
-	 */
-	this.minLengthError		= "";
-	/**
-	 * Maximum input length
-	 * @type {Integer}
-	 */
-	this.maxLength			= null;
-	/**
-	 * Maximum input length error
-	 * @type {String}
-	 */
-	this.maxLengthError		= "";
-}
-
-/**
- * ValidFormElement Class
- * Holds an element that can be validated
- * @param {String} strFormId      Form ID
- * @param {String} strElementName Form element name
- * @param {String} strElementId   Form element ID
- * @param {String} strValidation  Validation regular expression
- */
-function ValidFormElement(strFormId, strElementName, strElementId, strValidation) {
-	this.formId					= strFormId;
-	this.id 					= strElementId;
-	this.name 					= strElementName;
-	this.disabled 				= !!($("#" + strElementId).attr("disabled") === "disabled");
-	this.validator 				= new ValidFormFieldValidator(strElementId, strElementName);
-	this.validator.check 		= strValidation;
-	this.validator.required		= false;
-	this.validator.minLength	= null;
-	this.validator.maxLength	= null;
-
-	if (ValidFormElement.arguments.length > 4) {
-		this.validator.required = ValidFormElement.arguments[4];
-	}
-
-	if (ValidFormElement.arguments.length > 5) {
-		this.validator.maxLength = ValidFormElement.arguments[5];
-	}
-
-	if (ValidFormElement.arguments.length > 6) {
-		this.validator.minLength = ValidFormElement.arguments[6];
-	}
-
-	if (ValidFormElement.arguments.length > 7) {
-		this.validator.hint = ValidFormElement.arguments[7];
-
-		var __this = this;
-		if (this.validator.hint != "") {
-			jQuery("#" + this.id)
-				.bind("focus", function(){
-					if (jQuery(this).val() == __this.validator.hint) {
-						jQuery(this).val("");
-						jQuery(this).parent().removeClass("vf__hint");
-					}
-				})
-				.bind("blur", function(){
-					if (jQuery(this).val() == "" && __this.validator.required) {
-						jQuery(this).val(__this.validator.hint);
-						jQuery(this).parent().addClass("vf__hint");
-					}
-				});
+	if ($objSubject.is("input") || $objSubject.is("textarea")) {
+		if ($objSubject.attr("type") !== "checkbox" && $objSubject.attr("type") !== "radio") {
+			// This is a text element, listen for 'keyup' event
+			self.eventType = "keyup";
+		} else {
+			// This is a checkbox or radio button, listen for 'change' event
+			self.eventType = "change";
+		}
+	} else {
+		// This probably is a 'select' element
+		if ($objSubject.is("select")) {
+			self.eventType = "change";
+		} else {
+			// For now, throw an error. Thisway we know which field types we didn't think of
+			// as soon as they are encountered.
+			throw new Error("Unknown field type in .addComparison(): " + $objSubject.prop("nodeName").toLowerCase());
 		}
 	}
+}
 
-	if (ValidFormElement.arguments.length > 8) {
-		this.validator.typeError = ValidFormElement.arguments[8];
+ValidFormComparison.prototype.check = function () {
+	var blnReturn 	= false
+	,	self		= this;
+
+	if (this.eventType.length == "undefined" || this.eventType.length <= 0) {
+		throw new Error("Event type not set in ValidFormComparison.check()");
 	}
 
-	if (ValidFormElement.arguments.length > 9) {
-		this.validator.requiredError = ValidFormElement.arguments[9];
+	$("#" + this.subject.id).on(self.eventType, function (event) {
+		console.log("Event " + event.type + " triggered.");
+
+		switch (objComparison.comparison) {
+			case "equal":
+				if ($(this).val() == self.value) {
+					// Comparison met.
+					alert("Comparison met.");
+				}
+				break;
+			case "notequal":
+				if ($(this).val() != self.value) {
+					// Comparison met.
+					alert("Comparison met.");
+				}
+				break;
+			case "empty":
+				if ($(this).val() === "") {
+					// Comparison met.
+					alert("Comparison met.");
+				}
+				break;
+			case "notempty":
+				if ($(this).val() != "") {
+					// Comparison met.
+					alert("Comparison met.");
+				}
+				break;
+			case "lessthan":
+				var intCurrentValue = parseInt($(this).val());
+				if (!isNaN(intCurrentValue) && (intCurrentValue < self.value)) {
+					// Comparison met.
+					alert("Comparison met.");
+				}
+				break;
+			case "greaterthan":
+				var intCurrentValue = parseInt($(this).val());
+				if (!isNaN(intCurrentValue) && (intCurrentValue > self.value)) {
+					// Comparison met.
+					alert("Comparison met.");
+				}
+				break;
+			case "lessthanorequal":
+				var intCurrentValue = parseInt($(this).val());
+				if (!isNaN(intCurrentValue) && (intCurrentValue <= self.value)) {
+					// Comparison met.
+					alert("Comparison met.");
+				}
+				break;
+			case "greaterthanorequal":
+				var intCurrentValue = parseInt($(this).val());
+				if (!isNaN(intCurrentValue) && (intCurrentValue >= self.value)) {
+					// Comparison met.
+					alert("Comparison met.");
+				}
+				break;
+			case "contains":
+				if ($(this).val().indexOf(self.value) !== -1) {
+					// Comparison met.
+					alert("Comparison met.");
+				}
+				break;
+			case "startswith":
+				if ($(this).val().indexOf(self.value) === 0) {
+					// Comparison met.
+					alert("Comparison met.");
+				}
+				break;
+			case "endswith":
+				if ($(this).val().slice(-self.value.length) == self.value) {
+					// Comparison met.
+					alert("Comparison met.");
+				}
+				break;
+		}
+	});
+
+	return blnReturn;
+}
+
+function ValidFormCondition (objForm, objCondition) {
+	if (typeof objCondition !== "object" || objCondition == null) {
+		throw new Error("Invalid condition object supplied in ValidFormCondition construct.");
+
 	}
 
-	if (ValidFormElement.arguments.length > 10) {
-		this.validator.hintError = ValidFormElement.arguments[10];
+	if (typeof objForm === "undefined" || !(objForm instanceof ValidForm)) {
+		throw new Error("Form object undefined or not an instance of ValidForm in ValidFormCondition construct.");
+
 	}
 
-	if (ValidFormElement.arguments.length > 11) {
-		this.validator.minLengthError = ValidFormElement.arguments[11];
-	}
+	try {
+		this.validform 		= objForm;
+		this.element 		= this.validform.getElement(objCondition.element);
+		this.type 			= objCondition.type;
+		this.value 			= objCondition.value;
+		this.comparisonType = objCondition.comparisonType;
+		this.comparisons 	= [];
 
-	if (ValidFormElement.arguments.length > 12) {
-		this.validator.maxLengthError = ValidFormElement.arguments[12];
+	} catch (e) {
+		throw new Error("Failed to set default values in ValidFormCondition construct: " + e.message);
+
 	}
+}
+
+ValidFormCondition.prototype.addComparison = function () {
+
+}
+
+ValidFormCondition.prototype.getResult = function () {
+
 }
 
 /**
@@ -185,33 +172,34 @@ function ValidFormElement(strFormId, strElementName, strElementId, strValidation
  * @param {Boolean} blnAllowPreviousPage If true, users can click 'previous' in wizards. If false, this is disabled.
  */
 function ValidForm(strFormId, strMainAlert, blnAllowPreviousPage) {
-	this.id = strFormId;
-	this.elements = {};
-	this.pages = [];
-	this.valid = false;
-	this.validator = new ValidFormValidator(this.id);
-	this.validator.mainAlert = strMainAlert;
-	this.events = [];
-	this.cachedEvents = [];
-	this.customEvents = [
-		"beforeSubmit",
-		"beforeNextPage",
-		"afterNextPage",
-		"beforePreviousPage",
-		"afterPreviousPage",
-		"beforeAddPreviousButton",
-		"afterAddPreviousButton",
-		"beforeShowPage",
-		"afterShowPage",
-		"beforeAddPageNavigation",
-		"afterAddPageNavigation",
-		"beforeDynamicChange",
-		"afterDynamicChange",
-		"afterValidate"
-	];
-	this.labels = {};
-	this.allowPreviousPage = (typeof blnAllowPreviousPage !== "undefined") ? blnAllowPreviousPage : true;
-	this.__continueExecution = true;
+	this.id 					= strFormId;
+	this.elements 				= {};
+	this.pages 					= [];
+	this.valid 					= false;
+	this.validator 				= new ValidFormValidator(this.id);
+	this.validator.mainAlert 	= strMainAlert;
+	this.events 				= [];
+	this.cachedEvents 			= [];
+	this.conditions 			= [];
+	this.customEvents 			= [
+									"beforeSubmit",
+									"beforeNextPage",
+									"afterNextPage",
+									"beforePreviousPage",
+									"afterPreviousPage",
+									"beforeAddPreviousButton",
+									"afterAddPreviousButton",
+									"beforeShowPage",
+									"afterShowPage",
+									"beforeAddPageNavigation",
+									"afterAddPageNavigation",
+									"beforeDynamicChange",
+									"afterDynamicChange",
+									"afterValidate"
+								];
+	this.labels 				= {};
+	this.allowPreviousPage 		= (typeof blnAllowPreviousPage !== "undefined") ? !!blnAllowPreviousPage : true;
+	this.__continueExecution 	= true;
 
 	// Initialize ValidForm class
 	this.init();
@@ -254,8 +242,8 @@ ValidForm.prototype.initialize = function () {
 	// Placeholder method for deferred initialization
 }
 
-ValidForm.prototype.addCondition = function (objComparison) {
-
+ValidForm.prototype.addCondition = function (objCondition) {
+	this.conditions.push(new ValidFormCondition(this, objCondition));
 }
 
 /**
@@ -529,10 +517,10 @@ ValidForm.prototype.inArray = function(arrToSearch, value) {
 };
 
 ValidForm.prototype.addElement = function() {
-	if (arguments.length > 0 && typeof(arguments[0]) == "object") {
-		this.elements[arguments[0].name] = arguments[0];
+	var objAddedElement = null;
 
-		return true;
+	if (arguments.length > 0 && typeof(arguments[0]) == "object") {
+		objAddedElement = this.elements[arguments[0].name] = arguments[0];
 	} else {
 		var typeError		= "";
 		var required		= false;
@@ -598,8 +586,10 @@ ValidForm.prototype.addElement = function() {
 			maxLengthError = arguments[11];
 		}
 
-		this.elements[strElementName] = new ValidFormElement(this.id, strElementName, strElementId, strValidation, required, maxLength, minLength, hint, typeError, requiredError, hintError, minLengthError, maxLengthError);
+		objAddedElement = this.elements[strElementName] = new ValidFormElement(this.id, strElementName, strElementId, strValidation, required, maxLength, minLength, hint, typeError, requiredError, hintError, minLengthError, maxLengthError);
 	}
+
+	return objAddedElement;
 };
 
 ValidForm.prototype.getElement = function(strElementName){
@@ -720,10 +710,93 @@ ValidForm.prototype.validate = function(strSelector) {
 	return blnReturn;
 };
 
+/**
+ * ValidFormElement Class
+ * Holds an element that can be validated
+ * @param {String} strFormId      Form ID
+ * @param {String} strElementName Form element name
+ * @param {String} strElementId   Form element ID
+ * @param {String} strValidation  Validation regular expression
+ */
+function ValidFormElement(strFormId, strElementName, strElementId, strValidation) {
+	this.formId					= strFormId;
+	this.id 					= strElementId;
+	this.name 					= strElementName;
+	this.disabled 				= !!($("#" + strElementId).attr("disabled") === "disabled");
+	this.validator 				= new ValidFormFieldValidator(strElementId, strElementName);
+	this.validator.check 		= strValidation;
+	this.validator.required		= false;
+	this.validator.minLength	= null;
+	this.validator.maxLength	= null;
+
+	// Rewritten 'ValidFormElement.arguments' to just 'arguments' -Robin
+	// http://aptana.com/reference/api/Arguments.html
+	if (arguments.length > 4) {
+		this.validator.required = arguments[4];
+	}
+
+	if (arguments.length > 5) {
+		this.validator.maxLength = arguments[5];
+	}
+
+	if (arguments.length > 6) {
+		this.validator.minLength = arguments[6];
+	}
+
+	if (arguments.length > 7) {
+		this.validator.hint = arguments[7];
+
+		var __this = this;
+		if (this.validator.hint != "") {
+			jQuery("#" + this.id)
+				.bind("focus", function(){
+					if (jQuery(this).val() == __this.validator.hint) {
+						jQuery(this).val("");
+						jQuery(this).parent().removeClass("vf__hint");
+					}
+				})
+				.bind("blur", function(){
+					if (jQuery(this).val() == "" && __this.validator.required) {
+						jQuery(this).val(__this.validator.hint);
+						jQuery(this).parent().addClass("vf__hint");
+					}
+				});
+		}
+	}
+
+	if (arguments.length > 8) {
+		this.validator.typeError = arguments[8];
+	}
+
+	if (arguments.length > 9) {
+		this.validator.requiredError = arguments[9];
+	}
+
+	if (arguments.length > 10) {
+		this.validator.hintError = arguments[10];
+	}
+
+	if (arguments.length > 11) {
+		this.validator.minLengthError = arguments[11];
+	}
+
+	if (arguments.length > 12) {
+		this.validator.maxLengthError = arguments[12];
+	}
+}
+
+/**
+ * Validate this form element
+ * @return {boolean} True if valid, false if not
+ */
 ValidFormElement.prototype.validate = function() {
 	return this.validator.validate();
 };
 
+/**
+ * Reset the form element
+ * @return {void}
+ */
 ValidFormElement.prototype.reset = function() {
 	this.validator.removeAlert();
 
@@ -731,6 +804,31 @@ ValidFormElement.prototype.reset = function() {
 	objElement.val("");
 };
 
+/**
+ * ValidFormValidator class
+ * Display class used to push alerts regarding form validation
+ * to the browser.
+ *
+ * @param {String} strFormId The form ID.
+ */
+function ValidFormValidator(strFormId) {
+	/**
+	 * Form id
+	 * @type {String}
+	 */
+	this.id 				= strFormId;
+
+	/**
+	 * Main alert
+	 * @type {String}
+	 */
+	this.mainAlert			= "";
+}
+
+/**
+ * Remove main form error message
+ * @return {void}
+ */
 ValidFormValidator.prototype.removeMain = function() {
 	jQuery("#" + this.id + " div.vf__main_error").remove();
 };
@@ -763,6 +861,79 @@ ValidFormValidator.prototype.showPage = function (strAlert) {
 
 ValidFormValidator.prototype.removePage = function() {
 	jQuery("#" + this.id + " .vf__page:visible div.vf__page_error").remove();
+}
+
+/**
+ * ValidFormValidator Class
+ * Display class used to push alerts regarding form validation
+ * to the browser.
+ *
+ * @param {String} strElementId   ID of the form element to validate
+ * @param {String} strElementName Name of the form element to validate
+ */
+function ValidFormFieldValidator(strElementId, strElementName) {
+	/**
+	 * Form element ID
+	 * @type {String}
+	 */
+	this.id 				= strElementId;
+	/**
+	 * Form element name
+	 * @type {String}
+	 */
+	this.name 				= strElementName;
+	/**
+	 * Element's disabled status
+	 * @type {Boolean}
+	 */
+	this.disabled 			= !!($("#" + strElementId).attr("disabled") === "disabled");
+
+	this.check				= null;
+	/**
+	 * Type error message
+	 * @type {String}
+	 */
+	this.typeError			= "";
+	/**
+	 * Required status
+	 * @type {Boolean}
+	 */
+	this.required			= false;
+	/**
+	 * Required error message
+	 * @type {String}
+	 */
+	this.requiredError		= "";
+	/**
+	 * Hint message
+	 * @type {String}
+	 */
+	this.hint				= null;
+	/**
+	 * Hint error message
+	 * @type {String}
+	 */
+	this.hintError			= "";
+	/**
+	 * Minimum input length
+	 * @type {Integer}
+	 */
+	this.minLength			= null;
+	/**
+	 * Minimum input length error
+	 * @type {String}
+	 */
+	this.minLengthError		= "";
+	/**
+	 * Maximum input length
+	 * @type {Integer}
+	 */
+	this.maxLength			= null;
+	/**
+	 * Maximum input length error
+	 * @type {String}
+	 */
+	this.maxLengthError		= "";
 }
 
 /**
