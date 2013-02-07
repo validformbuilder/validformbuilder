@@ -11,7 +11,7 @@ class VF_Condition extends ClassDynamic {
 	protected 	$__value;
 	protected 	$__comparisons = array();
 	protected 	$__comparisontype;
-	private 	$__conditionProperties = array("disabled", "visible", "required");
+	private 	$__conditionProperties = array("visible", "enabled", "required");
 
 	public function __construct ($objField, $strProperty = null, $blnValue, $strComparisonType = VFORM_MATCH_ANY) {
 		if (!is_object($objField)) {
@@ -50,7 +50,7 @@ class VF_Condition extends ClassDynamic {
 		}
 	}
 
-	public function getResult($intDynamicPosition = 0) {
+	public function isMet($intDynamicPosition = 0) {
 		switch ($this->__comparisontype) {
 			default:
 			case VFORM_MATCH_ANY:

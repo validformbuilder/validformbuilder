@@ -39,13 +39,11 @@ class VF_Paragraph extends VF_Base {
 		// Call this before __getMetaString();
 		$this->setConditionalStyling();
 
-		$strOutput = "<div {$this->__getMetaString()}>\n";
+		$strOutput = "<div {$this->__getMetaString()} id=\"{$this->getName()}\">\n";
 
-		if ($this->hasConditions()) {
-			$strOutput .= "<span>Conditional paragraph:</span>";
-		}
-
+		// Add header if not empty.
 		if (!empty($this->__header)) $strOutput .= "<h3>{$this->__header}</h3>\n";
+
 		if (!empty($this->__body)) {
 			if (preg_match("/<p.*?>/", $this->__body) > 0) {
 				$strOutput .= "{$this->__body}\n";
@@ -56,22 +54,6 @@ class VF_Paragraph extends VF_Base {
 		$strOutput .= "</div>\n";
 
 		return $strOutput;
-	}
-
-	protected function __getMetaString() {
-		$strOutput = "";
-
-		foreach ($this->__meta as $key => $value) {
-			if (!empty($value)) {
-				$strOutput .= " {$key}=\"{$value}\"";
-			}
-		}
-
-		return $strOutput;
-	}
-
-	public function toJS() {
-		return NULL;
 	}
 
 	public function isValid() {
@@ -93,7 +75,6 @@ class VF_Paragraph extends VF_Base {
 	public function getFields() {
 		return array();
 	}
-
 }
 
 ?>

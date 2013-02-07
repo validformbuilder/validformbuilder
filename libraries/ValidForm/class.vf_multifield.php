@@ -37,7 +37,7 @@ class VF_MultiField extends ClassDynamic {
 	public function __construct($label, $meta = array()) {
 		$this->__label = $label;
 		$this->__meta = $meta;
-		
+
 		$labelMeta = (isset($meta['labelStyle'])) ? array("style" => $meta['labelStyle']) : array();
 		if (isset($meta['labelClass'])) $labelMeta["class"] = $meta['labelClass'];
 		$this->__labelmeta = $labelMeta;
@@ -67,11 +67,11 @@ class VF_MultiField extends ClassDynamic {
 
 		return $objField;
 	}
-	
+
 	public function addText($strText, $meta = array()) {
 		$objString = new VF_String($strText, $meta);
 		$this->__fields->addObject($objString);
-		
+
 		return $objString;
 	}
 
@@ -100,12 +100,12 @@ class VF_MultiField extends ClassDynamic {
 			if (empty($strId)) {
 				$strId = ($intCount == 0) ? $field->id : $field->id . "_" . $intCount;
 			}
-			
+
 			if (is_object($field->getValidator())) {
 				if ($field->getValidator()->getRequired()) {
 					$blnRequired = TRUE;
 				}
-	
+
 				if ($submitted && !$field->getValidator()->validate($intCount) && $blnDisplayError) {
 					$blnError = TRUE;
 					$strError .= "<p class=\"vf__error\">{$field->getValidator()->getError($intCount)}</p>";
@@ -306,21 +306,6 @@ class VF_MultiField extends ClassDynamic {
 		}
 
 		return $varReturn;
-	}
-
-	protected function __getMetaString() {
-		$strOutput = "";
-
-		// Create a dummy element to get the reserved meta array.
-		$objDummy = new VF_Element("dummy", VFORM_TEXT);
-
-		foreach ($this->__meta as $key => $value) {
-			if (!in_array($key, $objDummy->getReservedMeta()) && !empty($value)) {
-				$strOutput .= " {$key}=\"{$value}\"";
-			}
-		}
-
-		return $strOutput;
 	}
 
 	protected function __getLabelMetaString() {

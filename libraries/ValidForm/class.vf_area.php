@@ -29,14 +29,11 @@ require_once('class.classdynamic.php');
 class VF_Area extends VF_Base {
 	protected $__label;
 	protected $__active;
-	protected $__name;
 	protected $__checked;
-	protected $__meta;
 	protected $__dynamic;
 	protected $__dynamicLabel;
 	protected $__requiredstyle;
 	protected $__fields;
-	protected $__condition;
 
 	public function __construct($label, $active = FALSE, $name = NULL, $checked = FALSE, $meta = array()) {
 		$this->__label = $label;
@@ -64,15 +61,6 @@ class VF_Area extends VF_Base {
 		}
 
 		return $objField;
-	}
-
-	/**
-	 * Check if the current fields contains a condition object
-	 * @param  String  $strType Condition type (e.g. 'required', 'disabled', 'visible' etc.)
-	 * @return boolean          True if element has condition object set, false if not
-	 */
-	public function hasCondition($strType) {
-		return (is_object($this->__condition) && get_class($this->__condition) == "VF_Condition");
 	}
 
 	public function addParagraph($strBody, $strHeader = "") {
@@ -144,8 +132,8 @@ class VF_Area extends VF_Base {
 		return $blnReturn;
 	}
 
-	protected function __toHtml($submitted = false, $blnSimpleLayout = FALSE, $blnLabel = true, $blnDisplayErrors = true, $intCount = 0) {
-		$strName 	= ($intCount == 0) ? $this->__name : $this->__name . "_" . $intCount;
+	protected function __toHtml($submitted = false, $blnSimpleLayout = false, $blnLabel = true, $blnDisplayErrors = true, $intCount = 0) {
+		$strName 	= ($intCount == 0) ? $this->getName() : $this->getName() . "_" . $intCount;
 
 		$strChecked = ($this->__active && $this->__checked && !$submitted) ? " checked=\"checked\"" : "";
 		$strChecked = ($this->__active && $submitted && $this->hasContent($intCount)) ? " checked=\"checked\"" : $strChecked;
@@ -153,7 +141,7 @@ class VF_Area extends VF_Base {
 		$strClass = (array_key_exists("class", $this->__meta)) ? " " . $this->__meta["class"] : "";
 		$strClass = ($this->__active && empty($strChecked) && empty($strChecked)) ? $strClass . " vf__disabled" : $strClass;
 
-		$strOutput = "<fieldset class=\"vf__area{$strClass}\">\n";
+		$strOutput = "<fieldset class=\"vf__area{$strClass}\" id=\"{$this->getName()}\">\n";
 
 		if ($this->__active) {
 
@@ -227,6 +215,9 @@ class VF_Area extends VF_Base {
 		foreach ($this->__fields as $field) {
 			$strReturn .= $field->toJS($this->__dynamic);
 		}
+
+		// Parent::toJs generates conditional js if there is any.
+		$strReturn .= parent::toJs();
 
 		return $strReturn;
 	}

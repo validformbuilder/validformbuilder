@@ -322,18 +322,6 @@ class VF_Element extends VF_Base {
 		return $varReturn;
 	}
 
-	protected function __getMetaString() {
-		$strOutput = "";
-
-		foreach ($this->__meta as $key => $value) {
-			if (!in_array($key, $this->__reservedmeta)) {
-				$strOutput .= " {$key}=\"{$value}\"";
-			}
-		}
-
-		return $strOutput;
-	}
-
 	protected function __getLabelMetaString() {
 		$strOutput = "";
 

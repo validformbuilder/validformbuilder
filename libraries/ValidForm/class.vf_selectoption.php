@@ -52,16 +52,6 @@ class VF_SelectOption extends VF_Element {
 		return $this->__value;
 	}
 
-	protected function __getMetaString() {
-		$strOutput = "";
-
-		foreach ($this->__meta as $key => $value) {
-			$strOutput .= " {$key}=\"{$value}\"";
-		}
-
-		return $strOutput;
-	}
-
 }
 
 ?>

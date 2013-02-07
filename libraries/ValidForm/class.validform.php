@@ -635,19 +635,19 @@ class ValidForm extends ClassDynamic {
 		return $strReturn;
 	}
 
-	private function __generateName() {
-		/**
-		 * Generate a random name for the form.
-		 * @return string the random name
-		 */
-		return "validform_" . mt_rand();
+	/**
+	 * Generate a random name for the form.
+	 * @return string the random name
+	 */
+	protected function __generateName() {
+		return strtolower(get_class($this)) . "_" . mt_rand();
 	}
 
+	/**
+	 * Generate a random number between 10000000 and 90000000.
+	 * @return int the generated random number
+	 */
 	private function __random() {
-		/**
-		 * Generate a random number between 10000000 and 90000000.
-		 * @return int the generated random number
-		 */
 		return rand(10000000, 90000000);
 	}
 

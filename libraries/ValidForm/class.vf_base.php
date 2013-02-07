@@ -5,6 +5,7 @@
  */
 class VF_Base extends ClassDynamic {
 	protected $__id;
+	protected $__name;
 	protected $__conditions = array();
 	protected $__meta;
 	protected $__reservedmeta = array("data", "dynamicCounter", "tip", "hint", "default", "width", "height", "length", "start", "end", "path", "labelStyle", "labelClass", "labelRange", "valueRange", "dynamic", "dynamicLabel", "matchWith");
@@ -47,16 +48,16 @@ class VF_Base extends ClassDynamic {
 	/**
 	 * Get element's VF_Condition object
 	 * Note: When chaining methods, always use hasCondition() first before chaining
-	 * for example 'getCondition()->getResult()'.
+	 * for example 'getCondition()->isMet()'.
 	 * @param  String $strType 		Condition type e.g. 'required', 'visibile' and 'disabled'
 	 * @return VF_Condition|null    The found condition or null if no condition is found.
 	 */
-	public function getCondition($strType) {
+	public function getCondition($strProperty) {
 		$objConditions = $this->getConditions();
 		$objCondition = null;
 
 		foreach ($objConditions as $objCondition) {
-			if ($objCondition->getType() === strtolower($strType)) {
+			if ($objCondition->getProperty() === strtolower($strProperty)) {
 				break;
 			}
 		}
@@ -89,17 +90,17 @@ class VF_Base extends ClassDynamic {
 
 	public function setConditionalStyling() {
 		foreach ($this->getConditions() as $objCondition) {
-			$blnResult = $objCondition->getResult();
+			$blnResult = $objCondition->isMet();
 
 			switch ($objCondition->getProperty()) {
 				case "visible":
 					// This can be applied on all sorts of subjects.
-					if ($blnResult && !$objCondition->getValue()) {
+					if ($objCondition->isMet() && !$objCondition->getValue()) {
 						$this->setMeta("style", "display: none;");
 					}
 					break;
 
-				case "disabled":
+				case "enabled":
 					// This can only be applied on all subjects except for Paragraphs
 					if (get_class($objCondition->getSubject()) !== "VF_Paragraph") {
 
@@ -111,6 +112,25 @@ class VF_Base extends ClassDynamic {
 					break;
 			}
 		}
+	}
+
+	public function isVisible() {
+		$blnReturn = true;
+		$objCondition = $this->getCondition("visible");
+
+		if (!is_null($objCondition) && $objCondition->isMet()) {
+			$blnReturn = $objCondition->getValue();
+		}
+
+		return $blnReturn;
+	}
+
+	public function isEnabled() {
+		return true;
+	}
+
+	public function isRequired() {
+		return false;
 	}
 
 	/**
@@ -136,7 +156,52 @@ class VF_Base extends ClassDynamic {
 	 * @return string           Property value or empty string of none is set.
 	 */
 	public function getMeta($property) {
-		return (isset($this->__meta[$property]) && !empty($this->__meta["property"])) ? $this->__meta[$property] : "";
+		return (isset($this->__meta[$property]) && !empty($this->__meta[$property])) ? $this->__meta[$property] : "";
+	}
+
+	public function getName() {
+		$strName = parent::getName();
+		if (empty($strName)) {
+			$strName = $this->__name = $this->__generateName();
+		}
+
+		return $strName;
+	}
+
+	public function toJS() {
+		$strOutput = "";
+
+		if ($this->hasConditions() && (count($this->getConditions() > 0))) {
+			foreach ($this->getConditions() as $objCondition) {
+				$strOutput .= "objForm.addCondition(" . json_encode($objCondition->jsonSerialize()) . ");\n";
+			}
+		}
+
+		return $strOutput;
+	}
+
+	protected function __generateName() {
+		return strtolower(get_class($this)) . "_" . mt_rand();
+	}
+
+	protected function __getMetaString() {
+		$strOutput = "";
+
+		foreach ($this->__meta as $key => $value) {
+			if (!in_array($key, $this->__reservedmeta)) {
+				$strOutput .= " {$key}=\"{$value}\"";
+			}
+		}
+
+		return $strOutput;
+	}
+
+	private function __checkConditionProperty($strProp) {
+		$blnReturn = false;
+
+		if ($this->hasCondition($strProp) && $this->getCondition($strProp)->isMet()) {
+			$blnReturn = $this->getCondition($strProp)->getValue();
+		}
 	}
 }
 ?>

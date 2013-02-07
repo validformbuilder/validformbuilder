@@ -630,7 +630,11 @@ ValidForm.prototype.reset = function() {
 	this.validator.removeMain();
 	for (var strElement in this.elements) {
 		var objElement = this.elements[strElement];
-		objElement.reset();
+
+		// Only reset if this is an element that can be reset.
+		if (typeof objElement.reset == "function") {
+			objElement.reset();
+		}
 	}
 };
 

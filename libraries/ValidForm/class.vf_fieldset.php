@@ -28,14 +28,10 @@ require_once('class.vf_base.php');
 class VF_Fieldset extends VF_Base {
 	protected $__header;
 	protected $__note;
-	protected $__class;
-	protected $__style;
 	protected $__fields;
 
 	public function __construct($header = NULL, $noteHeader = NULL, $noteBody = NULL, $meta = array()) {
 		$this->__header = $header;
-		$this->__class = (isset($meta["class"])) ? $meta["class"] : "";
-		$this->__style = (isset($meta["style"])) ? $meta["style"] : "";
 
 		$this->__fields = new VF_Collection();
 
@@ -59,14 +55,19 @@ class VF_Fieldset extends VF_Base {
 	}
 
 	public function toHtml($submitted = FALSE, $blnSimpleLayout = FALSE, $blnLabel = true, $blnDisplayErrors = true) {
-		$strClass = (!empty($this->__class)) ? " class=\"{$this->__class}\"" : "";
-		$strStyle = (!empty($this->__style)) ? " style=\"{$this->__style}\"" : "";
-		$strOutput = "<fieldset{$strClass}{$strStyle}>\n";
+		// Call this before __getMetaString();
+		$this->setConditionalStyling();
+
+		$strOutput = "<fieldset{$this->__getMetaString()} id=\"{$this->getName()}\">\n";
 		if (!empty($this->__header)) $strOutput .= "<legend><span>{$this->__header}</span></legend>\n";
 
 		if (is_object($this->__note)) $strOutput .= $this->__note->toHtml();
 
 		foreach ($this->__fields as $field) {
+			if (!$this->isVisible()
+			    || !$this->isEnabled()) {
+				$field->setMeta("disabled", "disabled");
+			}
 			$strOutput .= $field->toHtml($submitted, $blnSimpleLayout, $blnLabel, $blnDisplayErrors);
 		}
 
@@ -81,6 +82,9 @@ class VF_Fieldset extends VF_Base {
 		foreach ($this->__fields as $field) {
 			$strReturn .= $field->toJS();
 		}
+
+		// Parent::toJs generates conditional js if there is any.
+		$strReturn .= parent::toJs();
 
 		return $strReturn;
 	}
