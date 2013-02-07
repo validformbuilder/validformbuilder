@@ -62,7 +62,7 @@ class VF_Element extends VF_Base {
 		$this->__default = (isset($meta["default"])) ? $meta["default"] : $this->__default;
 		$this->__dynamic = (isset($meta["dynamic"])) ? $meta["dynamic"] : $this->__dynamic;
 		$this->__dynamicLabel = (isset($meta["dynamicLabel"])) ? $meta["dynamicLabel"] : $this->__dynamicLabel;
-		$this->__dynamiccounter = (isset($meta["dynamicCounter"])) ? true : $this->__dynamicCounter;
+		$this->__dynamiccounter = (isset($meta["dynamicCounter"])) ? true : $this->__dynamiccounter;
 
 		// $this->__validator = new VF_FieldValidator($name, $type, $validationRules, $errorHandlers, $this->__hint);
 		$this->__validator = new VF_FieldValidator($this, $validationRules, $errorHandlers);

@@ -8,7 +8,7 @@ class VF_Base extends ClassDynamic {
 	protected $__name;
 	protected $__parent;
 	protected $__conditions = array();
-	protected $__meta;
+	protected $__meta = array();
 	protected $__reservedmeta = array("parent", "data", "dynamicCounter", "tip", "hint", "default", "width", "height", "length", "start", "end", "path", "labelStyle", "labelClass", "labelRange", "valueRange", "dynamic", "dynamicLabel", "matchWith");
 
 	/**
@@ -70,6 +70,25 @@ class VF_Base extends ClassDynamic {
 			$objReturn = $this->__parent->getCondition($strProperty);
 		}
 
+		return $objReturn;
+	}
+	
+	public function getMetCondition($strProperty) {
+		$objReturn = null;
+
+		$objConditions = $this->getConditions();
+		foreach ($objConditions as $objCondition) {
+			if ($objCondition->getProperty() === strtolower($strProperty) && $objCondition->isMet()) {
+				$objReturn = $objCondition;
+				break;
+			}
+		}
+		
+		if (is_null($objReturn) && is_object($this->__parent)) {
+			//*** Find condition in parent.
+			$objReturn = $this->__parent->getMetCondition($strProperty);
+		}
+		
 		return $objReturn;
 	}
 
@@ -165,7 +184,8 @@ class VF_Base extends ClassDynamic {
 			
 			//*** Add the value to the property string.
 			$arrMeta = explode($strDelimiter, $varMeta);
-			$varMeta = implode($strDelimiter, array_push($arrMeta, $value));
+			$arrMeta[] = $value;
+			$varMeta = implode($strDelimiter, $arrMeta);
 			
 			$this->__meta[$property] = $varMeta;
 		}

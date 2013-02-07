@@ -64,10 +64,10 @@ class VF_Fieldset extends VF_Base {
 		if (is_object($this->__note)) $strOutput .= $this->__note->toHtml();
 
 		foreach ($this->__fields as $field) {
-			if (!$this->isVisible()
-			    || !$this->isEnabled()) {
-				$field->setMeta("disabled", "disabled");
-			}
+// 			if (!$this->isVisible()
+// 			    || !$this->isEnabled()) {
+// 				$field->setMeta("disabled", "disabled");
+// 			}
 			$strOutput .= $field->toHtml($submitted, $blnSimpleLayout, $blnLabel, $blnDisplayErrors);
 		}
 
