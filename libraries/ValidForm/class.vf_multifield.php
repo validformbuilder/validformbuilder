@@ -14,7 +14,7 @@
  * @link       http://code.google.com/p/validformbuilder/
  ***************************/
 
-require_once('class.classdynamic.php');
+require_once('class.vf_base.php');
 
 /**
  *
@@ -25,9 +25,8 @@ require_once('class.classdynamic.php');
  * @version Release: 0.2.2
  *
  */
-class VF_MultiField extends ClassDynamic {
+class VF_MultiField extends VF_Base {
 	protected $__label;
-	protected $__meta;
 	protected $__labelmeta;
 	protected $__dynamic;
 	protected $__dynamicLabel;
@@ -52,6 +51,9 @@ class VF_MultiField extends ClassDynamic {
 		// Creating dynamic fields inside a multifield is not supported.
 		if (array_key_exists("dynamic", $meta)) unset($meta["dynamic"]);
 		if (array_key_exists("dynamicLabel", $meta)) unset($meta["dynamicLabel"]);
+		
+		//*** Set the parent for the new field.
+		$meta["parent"] = $this;
 
 		// Render the field and add it to the multifield field collection.
 		$objField = ValidForm::renderField($name, "", $type, $validationRules, $errorHandlers, $meta);

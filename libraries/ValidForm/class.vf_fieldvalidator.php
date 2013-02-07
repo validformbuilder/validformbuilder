@@ -59,7 +59,6 @@ class VF_FieldValidator extends ClassDynamic {
 
 	// public function __construct($fieldName, $fieldType, $validationRules, $errorHandlers, $fieldHint = NULL) {
 	public function __construct(VF_Element $objField, Array $arrValidationRules = array(), Array $arrErrorHandlers = array()) {
-
 		foreach ($arrValidationRules as $key => $value) {
 			$property = strtolower("__" . $key);
 			if (property_exists($this, $property)) {
@@ -139,31 +138,28 @@ class VF_FieldValidator extends ClassDynamic {
 			}
 
 			if ($blnEmpty) {
-				if ($this->__required || !empty($strTargetError)) {
+				if ($this->__required) {
 					unset($this->__validvalues[$intDynamicPosition]);
-					$this->__errors[$intDynamicPosition] = (!empty($strTargetError)) ? $strTargetError : $this->__requirederror;
+					$this->__errors[$intDynamicPosition] = $this->__requirederror;
 				} else {
 					$this->__validvalues[$intDynamicPosition] = "";
 					return TRUE;
 				}
 			}
-		} else {
-			if (empty($value)) {
+		} else if (empty($value) && $value !== 0) {
+			$objCondition = $this->__field->getCondition("required");
+			if (is_object($objCondition) && $objCondition->isMet($intDynamicPosition)) {
+				$this->__required = $objCondition->getValue();
+			}
 
-				$objCondition = $this->__field->getCondition("required");
-				if (!is_null($objCondition) && $objCondition->getResult($intDynamicPosition)) {
-					$this->__required = $objCondition->getValue();
-				}
+			if ($this->__required && $intDynamicPosition == 0) {
+				//*** Only the first dynamic field has a required check. We asume by design that "real" dynamic fields are not required.
+				unset($this->__validvalues[$intDynamicPosition]);
+				$this->__errors[$intDynamicPosition] = $this->__requirederror;
+			} else {
+				unset($this->__validvalues[$intDynamicPosition]);
 
-				if ($this->__required && $intDynamicPosition == 0) {
-					//*** Only the first dynamic field has a required check. We asume by design that "real" dynamic fields are not required.
-					unset($this->__validvalues[$intDynamicPosition]);
-					$this->__errors[$intDynamicPosition] = $this->__requirederror;
-				} else {
-					unset($this->__validvalues[$intDynamicPosition]);
-
-					if (empty($this->__matchwith)) return TRUE;
-				}
+				if (empty($this->__matchwith)) return TRUE;
 			}
 		}
 

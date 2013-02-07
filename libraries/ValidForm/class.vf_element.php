@@ -56,12 +56,13 @@ class VF_Element extends VF_Base {
 		$this->__type = $type;
 		$this->__meta = $meta;
 		$this->__labelmeta = $labelMeta;
-		$this->__tip = (array_key_exists("tip", $meta)) ? $meta["tip"] : $this->__tip;
-		$this->__hint = (array_key_exists("hint", $meta)) ? $meta["hint"] : $this->__hint;
-		$this->__default = (array_key_exists("default", $meta)) ? $meta["default"] : $this->__default;
-		$this->__dynamic = (array_key_exists("dynamic", $meta)) ? $meta["dynamic"] : $this->__dynamic;
-		$this->__dynamicLabel = (array_key_exists("dynamicLabel", $meta)) ? $meta["dynamicLabel"] : $this->__dynamicLabel;
-		$this->__dynamiccounter = (array_key_exists("dynamicCounter", $meta)) ? true : $this->__dynamiccounter;
+		$this->__parent = (isset($meta["parent"])) ? $meta["parent"] : null;
+		$this->__tip = (isset($meta["tip"])) ? $meta["tip"] : $this->__tip;
+		$this->__hint = (isset($meta["hint"])) ? $meta["hint"] : $this->__hint;
+		$this->__default = (isset($meta["default"])) ? $meta["default"] : $this->__default;
+		$this->__dynamic = (isset($meta["dynamic"])) ? $meta["dynamic"] : $this->__dynamic;
+		$this->__dynamicLabel = (isset($meta["dynamicLabel"])) ? $meta["dynamicLabel"] : $this->__dynamicLabel;
+		$this->__dynamiccounter = (isset($meta["dynamicCounter"])) ? true : $this->__dynamicCounter;
 
 		// $this->__validator = new VF_FieldValidator($name, $type, $validationRules, $errorHandlers, $this->__hint);
 		$this->__validator = new VF_FieldValidator($this, $validationRules, $errorHandlers);

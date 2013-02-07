@@ -6,9 +6,10 @@
 class VF_Base extends ClassDynamic {
 	protected $__id;
 	protected $__name;
+	protected $__parent;
 	protected $__conditions = array();
 	protected $__meta;
-	protected $__reservedmeta = array("data", "dynamicCounter", "tip", "hint", "default", "width", "height", "length", "start", "end", "path", "labelStyle", "labelClass", "labelRange", "valueRange", "dynamic", "dynamicLabel", "matchWith");
+	protected $__reservedmeta = array("parent", "data", "dynamicCounter", "tip", "hint", "default", "width", "height", "length", "start", "end", "path", "labelStyle", "labelClass", "labelRange", "valueRange", "dynamic", "dynamicLabel", "matchWith");
 
 	/**
 	 * Add a new condition to the current field
@@ -49,33 +50,40 @@ class VF_Base extends ClassDynamic {
 	 * Get element's VF_Condition object
 	 * Note: When chaining methods, always use hasCondition() first before chaining
 	 * for example 'getCondition()->isMet()'.
+	 * 
 	 * @param  String $strType 		Condition type e.g. 'required', 'visibile' and 'disabled'
 	 * @return VF_Condition|null    The found condition or null if no condition is found.
 	 */
 	public function getCondition($strProperty) {
-		$objConditions = $this->getConditions();
-		$objCondition = null;
+		$objReturn = null;
 
+		$objConditions = $this->getConditions();
 		foreach ($objConditions as $objCondition) {
 			if ($objCondition->getProperty() === strtolower($strProperty)) {
+				$objReturn = $objCondition;
 				break;
 			}
 		}
+		
+		if (is_null($objReturn) && is_object($this->__parent)) {
+			//*** Find condition in parent.
+			$objReturn = $this->__parent->getCondition($strProperty);
+		}
 
-		return $objCondition;
+		return $objReturn;
 	}
 
 
 	/**
 	 * Check if the current fields contains a condition object
-	 * @param  String  $strType Condition type (e.g. 'required', 'disabled', 'visible' etc.)
+	 * @param  String  $strProperty Condition type (e.g. 'required', 'disabled', 'visible' etc.)
 	 * @return boolean          True if element has condition object set, false if not
 	 */
-	public function hasCondition($strType) {
+	public function hasCondition($strProperty) {
 		$blnReturn = false;
 
 		foreach ($this->__conditions as $objCondition) {
-			if ($objCondition->getType() === strtolower($strType)) {
+			if ($objCondition->getProperty() === strtolower($strProperty)) {
 				$blnReturn = true;
 				break;
 			}
@@ -89,7 +97,7 @@ class VF_Base extends ClassDynamic {
 	}
 
 	public function setConditionalStyling() {
-		foreach ($this->getConditions() as $objCondition) {
+		foreach ($this->__conditions as $objCondition) {
 			$blnResult = $objCondition->isMet();
 
 			switch ($objCondition->getProperty()) {
@@ -114,24 +122,24 @@ class VF_Base extends ClassDynamic {
 		}
 	}
 
-	public function isVisible() {
-		$blnReturn = true;
-		$objCondition = $this->getCondition("visible");
+// 	public function isVisible() {
+// 		$blnReturn = true;
+// 		$objCondition = $this->getCondition("visible");
 
-		if (!is_null($objCondition) && $objCondition->isMet()) {
-			$blnReturn = $objCondition->getValue();
-		}
+// 		if (!is_null($objCondition) && $objCondition->isMet()) {
+// 			$blnReturn = $objCondition->getValue();
+// 		}
 
-		return $blnReturn;
-	}
+// 		return $blnReturn;
+// 	}
 
-	public function isEnabled() {
-		return true;
-	}
+// 	public function isEnabled() {
+// 		return true;
+// 	}
 
-	public function isRequired() {
-		return false;
-	}
+// 	public function isRequired() {
+// 		return false;
+// 	}
 
 	/**
 	 * Set meta property.
@@ -144,9 +152,22 @@ class VF_Base extends ClassDynamic {
 			$this->__meta[$property] = $value;
 		} else {
 			$varMeta = (isset($this->__meta[$property])) ? $this->__meta[$property] : "";
-			$varMeta .= " " . $value;
+			
+			//*** Define delimiter per meta property.
+			switch ($property) {
+				case "style":
+					$strDelimiter = ";";
+					break;
+					
+				default: 
+					$strDelimiter = " ";
+			}
+			
+			//*** Add the value to the property string.
+			$arrMeta = explode($strDelimiter, $varMeta);
+			$varMeta = implode($strDelimiter, array_push($arrMeta, $value));
+			
 			$this->__meta[$property] = $varMeta;
-			$this->__meta[$property] = ltrim($this->__meta[$property]);
 		}
 	}
 
@@ -156,7 +177,7 @@ class VF_Base extends ClassDynamic {
 	 * @return string           Property value or empty string of none is set.
 	 */
 	public function getMeta($property) {
-		return (isset($this->__meta[$property]) && !empty($this->__meta[$property])) ? $this->__meta[$property] : "";
+		return (isset($this->__meta[$property]) && !is_null($this->__meta[$property])) ? $this->__meta[$property] : "";
 	}
 
 	public function getName() {
