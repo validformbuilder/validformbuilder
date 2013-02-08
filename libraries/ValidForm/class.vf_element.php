@@ -40,10 +40,6 @@ class VF_Element extends VF_Base {
 	protected $__validator;
 
 	public function __construct($name, $type, $label = "", $validationRules = array(), $errorHandlers = array(), $meta = array()) {
-		if (is_null($validationRules)) $validationRules = array();
-		if (is_null($errorHandlers)) $errorHandlers = array();
-		if (is_null($meta)) $meta = array();
-
 		// Set meta class
 		$this->setClass($type, $meta);
 
