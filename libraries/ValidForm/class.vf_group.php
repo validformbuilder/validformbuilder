@@ -55,7 +55,12 @@ class VF_Group extends VF_Element {
 			}
 		} else {
 			$strClass = ($blnError) ? $strClass . " vf__error" : $strClass;
+			
 			$strOutput = "<div class=\"vf__multifielditem{$strClass}\">\n";
+
+			if ($blnError) {
+				$strOutput .= "<p class=\"vf__error\">{$this->__validator->getError($intCount)}</p>";
+			}
 		}
 
 		$strOutput .= "<fieldset class=\"vf__list\">\n";

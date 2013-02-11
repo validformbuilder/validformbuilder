@@ -80,8 +80,8 @@ class VF_Text extends VF_Element {
 		$strName 	= ($intCount == 0) ? $this->__name : $this->__name . "_" . $intCount;
 		$strId 		= ($intCount == 0) ? $this->__id : $this->__id . "_" . $intCount;
 
+		$blnError = ($submitted && !$this->__validator->validate($intCount) && $blnDisplayErrors) ? TRUE : FALSE;
 		if (!$blnSimpleLayout) {
-			$blnError = ($submitted && !$this->__validator->validate($intCount) && $blnDisplayErrors) ? TRUE : FALSE;
 
 			//*** We asume that all dynamic fields greater than 0 are never required.
 			$strClass = ($this->__validator->getRequired() && $intCount == 0) ? "vf__required" : "vf__optional";
@@ -103,7 +103,13 @@ class VF_Text extends VF_Element {
 			}
 		} else {
 			$strClass = (empty($this->__hint)) ? "" : " vf__hint";
+			$strClass = ($blnError) ? $strClass . " vf__error" : $strClass;
+			
 			$strOutput = "<div class=\"vf__multifielditem{$strClass}\">\n";
+
+			if ($blnError) {
+				$strOutput .= "<p class=\"vf__error\">{$this->__validator->getError($intCount)}</p>";
+			}
 		}
 
 		//*** Add max-length attribute to the meta array. This is being read by the getMetaString method.

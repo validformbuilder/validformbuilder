@@ -28,10 +28,10 @@ require_once('class.vf_element.php');
 class VF_Password extends VF_Element {
 
 	public function toHtml($submitted = FALSE, $blnSimpleLayout = FALSE, $blnLabel = true, $blnDisplayError = true) {
-		$strOutput = "";
+		$strOutput 	= "";
+		$blnError 	= ($submitted && !$this->__validator->validate() && $blnDisplayError) ? TRUE : FALSE;
 
 		if (!$blnSimpleLayout) {
-			$blnError = ($submitted && !$this->__validator->validate() && $blnDisplayError) ? TRUE : FALSE;
 
 			$strClass = ($this->__validator->getRequired()) ? "vf__required" : "vf__optional";
 			$strClass = ($blnError) ? $strClass . " vf__error" : $strClass;
@@ -49,7 +49,15 @@ class VF_Password extends VF_Element {
 			}
 		} else {
 			$strClass = (empty($this->__hint)) ? "" : " vf__hint";
+			$strClass = ($blnError) ? $strClass . " vf__error" : $strClass;
+			
 			$strOutput = "<div class=\"vf__multifielditem{$strClass}\">\n";
+
+			if ($blnError) {
+				$strOutput .= "<p class=\"vf__error\">{$this->__validator->getError($intCount)}</p>";
+			}
+			
+			// $strOutput = "<div class=\"vf__multifielditem{$strClass}\">\n";
 		}
 
 		//*** Add maxlength attribute to the meta array. This is being read by the getMetaString method.

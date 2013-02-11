@@ -94,8 +94,7 @@ class VF_MultiField extends VF_Base {
 
 	public function __toHtml($submitted = FALSE, $blnSimpleLayout = FALSE, $blnLabel = true, $blnDisplayError = true, $intCount = 0) {
 		$blnRequired = FALSE;
-		$blnError = FALSE;
-		$strError = "";
+		$blnError = ($submitted && !$this->__validate($intCount));
 		$strId = "";
 
 		foreach ($this->__fields as $field) {
@@ -103,14 +102,10 @@ class VF_MultiField extends VF_Base {
 				$strId = ($intCount == 0) ? $field->id : $field->id . "_" . $intCount;
 			}
 
-			if (is_object($field->getValidator())) {
-				if ($field->getValidator()->getRequired()) {
+			$objValidator = $field->getValidator();
+			if (is_object($objValidator)) {
+				if ($objValidator->getRequired()) {
 					$blnRequired = TRUE;
-				}
-
-				if ($submitted && !$field->getValidator()->validate($intCount) && $blnDisplayError) {
-					$blnError = TRUE;
-					$strError .= "<p class=\"vf__error\">{$field->getValidator()->getError($intCount)}</p>";
 				}
 			}
 		}
@@ -122,7 +117,7 @@ class VF_MultiField extends VF_Base {
 		$strClass 	= ($blnError) ? $strClass . " vf__error" : $strClass;
 		$strOutput 	= "<div class=\"vf__multifield vf__cf {$strClass}\" {$this->__getMetaString()}>\n";
 
-		if ($blnError) $strOutput .= $strError;
+		// if ($blnError) $strOutput .= $strError;
 
 		$strLabel = (!empty($this->__requiredstyle) && $blnRequired) ? sprintf($this->__requiredstyle, $this->__label) : $this->__label;
 		if(!empty($this->__label)) $strOutput .= "<label for=\"{$strId}\"{$this->__getLabelMetaString()}>{$strLabel}</label>\n";

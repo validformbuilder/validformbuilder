@@ -1066,11 +1066,11 @@ ValidFormFieldValidator.prototype.removeAlert = function() {
 		objElement = jQuery("input[name='" + this.name + "']:first").parent().parent();
 	}
 
-	if (objElement.parent("div").hasClass("vf__multifielditem")) {
-		objElement.parent("div").removeClass("vf__error");
-		if (objElement.parent("div").parent("div").find(".vf__error").length < 2) {
-			objElement.parent("div").parent("div").removeClass("vf__error").find("p.vf__error").remove();
-		}
+	var objMultifieldItem = objElement.parent("div");
+	if (objMultifieldItem.hasClass("vf__multifielditem")) {
+		objMultifieldItem.removeClass("vf__error");
+
+		objMultifieldItem.parent("div").removeClass("vf__error");
 	} else {
 		objElement.parent("div").removeClass("vf__error").find("p.vf__error").remove();
 	}
@@ -1082,11 +1082,13 @@ ValidFormFieldValidator.prototype.showAlert = function(strAlert) {
 		objElement = jQuery("input[name='" + this.name + "']:first").parent().parent();
 	}
 
-	if (objElement.parent("div").hasClass("vf__multifielditem")) {
-		objElement.parent("div").addClass("vf__error");
-		if (!objElement.parent("div").parent("div").hasClass("vf__error")) {
-			objElement.parent("div").parent("div").addClass("vf__error").prepend("<p class=\"vf__error\">" + strAlert + "</p>");
-		}
+	var objMultifieldItem = objElement.parent("div");
+	if (objMultifieldItem.hasClass("vf__multifielditem")) {
+		objMultifieldItem
+			.addClass("vf__error")
+			.prepend("<p class=\"vf__error\">" + strAlert + "</p>");
+
+		objMultifieldItem.parent("div").addClass("vf__error");
 	} else {
 		objElement.parent("div").addClass("vf__error").prepend("<p class=\"vf__error\">" + strAlert + "</p>");
 	}

@@ -30,8 +30,8 @@ class VF_File extends VF_Element {
 	public function toHtml($submitted = FALSE, $blnSimpleLayout = FALSE, $blnLabel = true, $blnDisplayError = true) {
 		$strOutput = "";
 
+		$blnError = ($submitted && !$this->__validator->validate() && $blnDisplayError) ? TRUE : FALSE;
 		if (!$blnSimpleLayout) {
-			$blnError = ($submitted && !$this->__validator->validate() && $blnDisplayError) ? TRUE : FALSE;
 
 			$strClass = ($this->__validator->getRequired()) ? "vf__required" : "vf__optional";
 			$strClass = ($blnError) ? $strClass . " vf__error" : $strClass;
@@ -47,7 +47,13 @@ class VF_File extends VF_Element {
 				if (!empty($this->__label)) $strOutput .= "<label for=\"{$this->__id}\"{$this->__getLabelMetaString()}>{$strLabel}</label>\n";
 			}
 		} else {
-			$strOutput = "<div class=\"vf__multifielditem\">\n";
+			$strClass = ($blnError) ? $strClass . " vf__error" : $strClass;
+			
+			$strOutput = "<div class=\"vf__multifielditem{$strClass}\">\n";
+
+			if ($blnError) {
+				$strOutput .= "<p class=\"vf__error\">{$this->__validator->getError($intCount)}</p>";
+			}
 		}
 
 		//*** Fixing an unusual uploading bug.

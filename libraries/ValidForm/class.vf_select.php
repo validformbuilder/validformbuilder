@@ -59,9 +59,9 @@ class VF_Select extends VF_Element {
 
 		$strName 	= ($intCount == 0) ? $this->__name : $this->__name . "_" . $intCount;
 		$strId 		= ($intCount == 0) ? $this->__id : $this->__id . "_" . $intCount;
+		$blnError 	= ($submitted && !$this->__validator->validate($intCount) && $blnDisplayErrors) ? TRUE : FALSE;
 
 		if (!$blnSimpleLayout) {
-			$blnError = ($submitted && !$this->__validator->validate($intCount) && $blnDisplayErrors) ? TRUE : FALSE;
 
 			//*** We asume that all dynamic fields greater than 0 are never required.
 			$strClass = ($this->__validator->getRequired() && $intCount == 0) ? "vf__required" : "vf__optional";
@@ -79,7 +79,15 @@ class VF_Select extends VF_Element {
 			$strLabel = (!empty($this->__requiredstyle) && $this->__validator->getRequired()) ? sprintf($this->__requiredstyle, $this->__label) : $this->__label;
 			if (!empty($this->__label)) $strOutput .= "<label for=\"{$strId}\"{$this->__getLabelMetaString()}>{$strLabel}</label>\n";
 		} else {
-			$strOutput = "<div class=\"vf__multifielditem\">\n";
+			$strClass = ($blnError) ? $strClass . " vf__error" : $strClass;
+			
+			$strOutput = "<div class=\"vf__multifielditem{$strClass}\">\n";
+
+			if ($blnError) {
+				$strOutput .= "<p class=\"vf__error\">{$this->__validator->getError($intCount)}</p>";
+			}
+
+			// $strOutput = "<div class=\"vf__multifielditem\">\n";
 		}
 
 		$strOutput .= "<select name=\"{$strName}\" id=\"{$strId}\" {$this->__getMetaString()}>\n";

@@ -46,7 +46,7 @@ class VF_String extends ClassDynamic {
 			$strOutput = $this->__body;
 		} else {
 			$strClass = (array_key_exists("class", $this->__meta)) ? $this->__meta["class"] : "";
-			$strOutput = "<div class=\"vf__multifielditem {$strClass}\">{$this->__body}</div>\n";
+			$strOutput = "<div class=\"vf__multifielditem {$strClass}\"><span>{$this->__body}</span></div>\n";
 		}
 		
 		return $strOutput;

@@ -353,8 +353,24 @@ form.validform div.vf__multifielditem {
 	margin: 0 6px 0 0;
 }
 
+form.validform div.vf__multifielditem p.vf__error {
+	margin-left: 0;
+}
+
 form.validform div.vf__multifielditem .vf__tip {
 	margin-left: 0;
+}
+
+/* These padding values depend on the font size. If you change font size, change these values as well! */
+form.validform div.vf__multifield.vf__error > * {
+	padding-top: 28px; /* font-size dependent */
+}
+form.validform div.vf__multifield.vf__error > label {
+	padding-top: 33px; /* font-size dependent */
+}
+
+form.validform div.vf__multifield.vf__error > .vf__error {
+	padding-top: inherit;
 }
 
 form.validform div.vf__multifield div.vf__error {
