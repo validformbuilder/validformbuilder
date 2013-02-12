@@ -38,7 +38,14 @@ class VF_Condition extends ClassDynamic {
 		$objComparison = null;
 
 		if (is_array($varComparison)) {
-			$objComparison = new VF_Comparison($varComparison);
+			$varArguments = (isset($varComparison["subject"])) ? array_values($varComparison) : array_keys($varComparison);
+
+			try {
+				$objReflection = new ReflectionClass("VF_Comparison");
+				$objComparison = $objReflection->newInstanceArgs($varArguments);
+			} catch (Exception $e) {
+				throw new Exception("Failed to add Comparison: " . $e->getMessage(), 1);
+			}
 
 			if (is_object($objComparison)) {
 				array_push($this->__comparisons, $objComparison);
@@ -82,8 +89,7 @@ class VF_Condition extends ClassDynamic {
 				break;
 		}
 
-		// return $blnResult;
-		return true;
+		return $blnResult;
 	}
 
 	/**

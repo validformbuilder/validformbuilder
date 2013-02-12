@@ -15,33 +15,28 @@ class VF_Comparison extends ClassDynamic {
 		VFORM_COMPARISON_GREATER_THAN_OR_EQUAL
 	);
 
-	public function __construct(Array $arrData) {
-		if ((isset($arrData["comparison"]) && isset($arrData["subject"]))) {
-			if (($arrData["comparison"] !== VFORM_COMPARISON_EMPTY && $arrData["comparison"] !== VFORM_COMPARISON_NOT_EMPTY) && !isset($arrData["value"])) {
-				// If the comparison is not 'empty' or 'not empty', a 'value' key is required in the 'arrData' argument.
-				throw new InvalidArgumentException("'Value' key is required in VF_Comparison construct.", 1);
-			}
-
-			foreach ($arrData as $strKey => $strValue) {
-				if (property_exists($this, strtolower("__" . $strKey))) {
-					$strMethod = "set" . ucfirst(strtolower($strKey));
-					$this->$strMethod($strValue);
-				}
-			}
-
-			// If the subject is a required field, we cannot set the VFORM_COMPARISON_EMPTY check
-			if ($this->__subject->getValidator()->getRequired() && $this->__comparison === VFORM_COMPARISON_EMPTY) {
-				throw new Exception("Cannot add 'empty' comparison to required field '{$this->__subject->getName()}'.", 1);
-			}
-
-			if (in_array($this->__comparison, self::$__numericComparisons)
-			    && !($this->__subject->getType() === VFORM_NUMERIC || $this->__subject->getType() === VFORM_INTEGER)
-			) {
-				throw new Exception("Numeric comparisons can only be applied on VFORM_INTEGER or VFORM_NUMERIC subjects. Trying to apply on field {$this->__subject->getName()} with type {$this->__subject->getType()}.", 1);
-			}
-		} else {
-			throw new InvalidArgumentException("Invalid array supplied in VF_Comparison.", 1);
+	public function __construct($objSubject, $varComparison, $varValue = null) {
+		if (($varComparison !== VFORM_COMPARISON_EMPTY && $varComparison !== VFORM_COMPARISON_NOT_EMPTY) && is_null($varValue)) {
+			// If the comparison is not 'empty' or 'not empty', a 'value' key is required in the 'arrData' argument.
+			throw new InvalidArgumentException("Value is required in VF_Comparison construct when using comparison '" . $varComparison . "'.", 1);
 		}
+
+		// If the subject is a required field, we cannot set the VFORM_COMPARISON_EMPTY check
+		if ($objSubject->getValidator()->getRequired() && $varComparison === VFORM_COMPARISON_EMPTY) {
+			throw new Exception("Cannot add 'empty' comparison to required field '{$this->__subject->getName()}'.", 1);
+		}
+
+		// Check subject's fieldtype if doing a numeric comparison
+		if (in_array($varComparison, self::$__numericComparisons)
+		    && !($objSubject->getType() === VFORM_NUMERIC || $objSubject->getType() === VFORM_INTEGER)
+		) {
+			throw new Exception("Numeric comparisons can only be applied on VFORM_INTEGER or VFORM_NUMERIC subjects. Trying to apply on field {$this->__subject->getName()} with type {$this->__subject->getType()}.", 1);
+		}
+
+		// It's all good, populate the local properties.
+		$this->__subject = $objSubject;
+		$this->__comparison = $varComparison;
+		$this->__value = $varValue;
 	}
 
 	/**

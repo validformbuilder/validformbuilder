@@ -49,7 +49,8 @@ class VF_Text extends VF_Element {
 		$intMaxLength = ($this->__validator->getMaxLength() > 0) ? $this->__validator->getMaxLength() : "null";
 		$intMinLength = ($this->__validator->getMinLength() > 0) ? $this->__validator->getMinLength() : "null";
 
-		$strOutput = "";
+		$strOutput = parent::toJs();
+		
 		if ($this->__dynamic || $blnParentIsDynamic) {
 			$intDynamicCount = $this->getDynamicCount($blnParentIsDynamic);
 			for($intCount = 0; $intCount <= $intDynamicCount; $intCount++) {

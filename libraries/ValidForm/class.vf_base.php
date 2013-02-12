@@ -28,10 +28,11 @@ class VF_Base extends ClassDynamic {
 		}
 
 		if (is_array($arrComparisons) && count($arrComparisons) > 0) {
-			foreach ($arrComparisons as $arrComparison) {
-				if (is_array($arrComparison)) {
+			/* @var $varComparison Array|VF_Comparison */
+			foreach ($arrComparisons as $varComparison) {
+				if (is_array($varComparison) || get_class($varComparison) === "VF_Comparison") {
 					try {
-						$objCondition->addComparison($arrComparison);
+						$objCondition->addComparison($varComparison);
 					} catch (InvalidArgumentException $e) {
 						throw new Exception("Could not set condition: " . $e->getMessage(), 1);
 					}

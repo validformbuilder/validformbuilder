@@ -11,123 +11,107 @@
  * @link       http://code.google.com/p/validformbuilder/
  ***************************/
 
-function ValidFormComparison (objForm, objComparison) {
-	this.subject 	= objForm.getElement(objComparison.subject);
-	this.comparison = objComparison.comparison;
-	this.value 		= objComparison.value;
-	this.eventType 	= "";
+function ValidFormComparison (objForm, subject, comparison, value) {
+	this.subject 	= objForm.getElement(subject);
+	this.comparison = comparison;
+	this.value 		= value || null;
+	this.isMet		= false;
 
-	this.init();
+	this._init();
 }
 
-ValidFormComparison.prototype.init = function () {
+ValidFormComparison.prototype._init = function () {
 	var self 		= this
 	,	$objSubject = $("#" + this.subject.id);
 
 	if ($objSubject.is("input") || $objSubject.is("textarea")) {
 		if ($objSubject.attr("type") !== "checkbox" && $objSubject.attr("type") !== "radio") {
-			// This is a text element, listen for 'keyup' event
-			self.eventType = "keyup";
-		} else {
-			// This is a checkbox or radio button, listen for 'change' event
-			self.eventType = "change";
-		}
-	} else {
-		// This probably is a 'select' element
-		if ($objSubject.is("select")) {
-			self.eventType = "change";
-		} else {
-			// For now, throw an error. Thisway we know which field types we didn't think of
-			// as soon as they are encountered.
-			throw new Error("Unknown field type in .addComparison(): " + $objSubject.prop("nodeName").toLowerCase());
+			
+			var delay;
+			$objSubject.on("keyup", function () {
+				var $self = $(this);
+
+				clearTimeout(delay);
+				delay = setTimeout(function () {
+					$self.trigger("change");
+				}, 300);
+			});
 		}
 	}
+
+	$objSubject.on("change", function () {
+		self.isMet = self.check();
+	});
 }
 
 ValidFormComparison.prototype.check = function () {
 	var blnReturn 	= false
-	,	self		= this;
+	,	self		= this
+	,	strValue	= self.subject.getValue();
 
-	if (this.eventType.length == "undefined" || this.eventType.length <= 0) {
-		throw new Error("Event type not set in ValidFormComparison.check()");
+	switch (self.comparison) {
+		case "equal":
+			if (strValue == self.value) {
+				// Comparison met.
+				blnReturn = true;
+			}
+			break;
+		case "notequal":
+			if (strValue != self.value) {
+				// Comparison met.
+				blnReturn = true;
+			}
+			break;
+		case "empty":
+			if (strValue === "") {
+				blnReturn = true;
+			}
+			break;
+		case "notempty":
+			if (strValue != "") {
+				blnReturn = true;
+			}
+			break;
+		case "lessthan":
+			var intCurrentValue = parseInt(strValue);
+			if (!isNaN(intCurrentValue) && (intCurrentValue < self.value)) {
+				blnReturn = true;
+			}
+			break;
+		case "greaterthan":
+			var intCurrentValue = parseInt(strValue);
+			if (!isNaN(intCurrentValue) && (intCurrentValue > self.value)) {
+				blnReturn = true;
+			}
+			break;
+		case "lessthanorequal":
+			var intCurrentValue = parseInt(strValue);
+			if (!isNaN(intCurrentValue) && (intCurrentValue <= self.value)) {
+				blnReturn = true;
+			}
+			break;
+		case "greaterthanorequal":
+			var intCurrentValue = parseInt(strValue);
+			if (!isNaN(intCurrentValue) && (intCurrentValue >= self.value)) {
+				blnReturn = true;
+			}
+			break;
+		case "contains":
+			if (tstrValue.indexOf(self.value) !== -1) {
+				blnReturn = true;
+			}
+			break;
+		case "startswith":
+			if (strValue.indexOf(self.value) === 0) {
+				blnReturn = true;
+			}
+			break;
+		case "endswith":
+			if (strValue.slice(-self.value.length) == self.value) {
+				blnReturn = true;
+			}
+			break;
 	}
-
-	$("#" + this.subject.id).on(self.eventType, function (event) {
-		console.log("Event " + event.type + " triggered.");
-
-		switch (objComparison.comparison) {
-			case "equal":
-				if ($(this).val() == self.value) {
-					// Comparison met.
-					alert("Comparison met.");
-				}
-				break;
-			case "notequal":
-				if ($(this).val() != self.value) {
-					// Comparison met.
-					alert("Comparison met.");
-				}
-				break;
-			case "empty":
-				if ($(this).val() === "") {
-					// Comparison met.
-					alert("Comparison met.");
-				}
-				break;
-			case "notempty":
-				if ($(this).val() != "") {
-					// Comparison met.
-					alert("Comparison met.");
-				}
-				break;
-			case "lessthan":
-				var intCurrentValue = parseInt($(this).val());
-				if (!isNaN(intCurrentValue) && (intCurrentValue < self.value)) {
-					// Comparison met.
-					alert("Comparison met.");
-				}
-				break;
-			case "greaterthan":
-				var intCurrentValue = parseInt($(this).val());
-				if (!isNaN(intCurrentValue) && (intCurrentValue > self.value)) {
-					// Comparison met.
-					alert("Comparison met.");
-				}
-				break;
-			case "lessthanorequal":
-				var intCurrentValue = parseInt($(this).val());
-				if (!isNaN(intCurrentValue) && (intCurrentValue <= self.value)) {
-					// Comparison met.
-					alert("Comparison met.");
-				}
-				break;
-			case "greaterthanorequal":
-				var intCurrentValue = parseInt($(this).val());
-				if (!isNaN(intCurrentValue) && (intCurrentValue >= self.value)) {
-					// Comparison met.
-					alert("Comparison met.");
-				}
-				break;
-			case "contains":
-				if ($(this).val().indexOf(self.value) !== -1) {
-					// Comparison met.
-					alert("Comparison met.");
-				}
-				break;
-			case "startswith":
-				if ($(this).val().indexOf(self.value) === 0) {
-					// Comparison met.
-					alert("Comparison met.");
-				}
-				break;
-			case "endswith":
-				if ($(this).val().slice(-self.value.length) == self.value) {
-					// Comparison met.
-					alert("Comparison met.");
-				}
-				break;
-		}
-	});
 
 	return blnReturn;
 }
@@ -145,8 +129,8 @@ function ValidFormCondition (objForm, objCondition) {
 
 	try {
 		this.validform 		= objForm;
-		this.element 		= this.validform.getElement(objCondition.element);
-		this.type 			= objCondition.type;
+		this.element 		= this.validform.getElement(objCondition.subject);
+		this.property 		= objCondition.property;
 		this.value 			= objCondition.value;
 		this.comparisonType = objCondition.comparisonType;
 		this.comparisons 	= [];
@@ -155,14 +139,86 @@ function ValidFormCondition (objForm, objCondition) {
 		throw new Error("Failed to set default values in ValidFormCondition construct: " + e.message);
 
 	}
+
+	this._init(objCondition);
 }
 
-ValidFormCondition.prototype.addComparison = function () {
+ValidFormCondition.prototype._init = function (objCondition) {
+	var Comparisons = objCondition.comparisons;
 
+	try {
+		if (typeof Comparisons === "object" && Comparisons.length > 0) {
+			for (var i = 0; i < Comparisons.length; i++) {
+				var Comparison = Comparisons[i];
+				this.addComparison(new ValidFormComparison(this.validform, Comparison.subject, Comparison.comparison, Comparison.value));
+			}
+		}
+
+		if (this.element === null || this.element.id == "undefined") {
+			throw new Error("No valid subject element supplied in condition.", 1);
+		}
+
+		$("#" + this.element.id)
+			.on("change", function () {
+				if (self.isMet()) {
+					// This is the fastest way of Javascript string capitalization.
+					// See: http://wp.me/p39sgU-2y for more info and proofing tests.
+					var strType = self.type[0].toUpperCase() + self.type.substring(1).toLowerCase();
+					self["set" + strType](self.value);
+				}
+			});
+
+	} catch (e) {
+		throw new Error("Failed to initialize Condition: " + e.message, 1);
+	}
 }
 
-ValidFormCondition.prototype.getResult = function () {
+ValidFormCondition.prototype.addComparison = function (objComparison) {
+	if (!objComparison instanceof ValidFormComparison) {
+		throw new Error("Invalid argument: objComparison is no ValidFormComparison type in ValidFormCondition.addCondition()", 1);
+	}
+	
+	this.comparisons.push(objComparison);
+}
 
+ValidFormCondition.prototype.isMet = function () {
+	var self = this
+	,	blnResult = false;
+
+	switch (self.comparisonType) {
+		default:
+		case "any":
+			var Comparisons = self.comparisons;
+			for (var i = 0; i < Comparisons.length; i++) {
+				console.log(Comparisons[i]);
+				if (Comparisons[i].isMet) {
+					blnResult = true;
+					break;
+				}
+			}
+
+			break;
+		case "all":
+			var blnFailed = false;
+			for (var Comparison in self.comparisons) {
+				if (self.comparisons.hasOwnProperty(Comparison)) {
+					if (!Comparison.isMet) {
+						blnFailed = true;
+						break;
+					}
+				}
+			}
+
+			blnResult = !blnFailed;
+
+			break;
+	}
+
+	return blnResult;
+}
+
+ValidFormCondition.prototype.setRequired = function (blnValue) {
+	this.element.setRequired(!!blnValue);
 }
 
 /**
@@ -795,7 +851,17 @@ function ValidFormElement(strFormId, strElementName, strElementId, strValidation
  */
 ValidFormElement.prototype.validate = function() {
 	return this.validator.validate();
-};
+}
+
+ValidFormElement.prototype.getValue = function () {
+	return jQuery("#" + this.id).val();
+}
+
+ValidFormElement.prototype.setRequired = function (blnValue) {
+	this.validator.required = !!blnValue;
+
+	$("#" + this.id).parent().removeClass("vf__optional").addClass("vf__required");
+}
 
 /**
  * Reset the form element
