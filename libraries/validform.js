@@ -12,7 +12,7 @@
  ***************************/
 
 function ValidFormComparison (objForm, subject, comparison, value) {
-	this.subject 	= objForm.getElement(subject);
+	this.subject 	= this._setSubject(objForm, subject);
 	this.comparison = comparison;
 	this.value 		= value || null;
 	this.isMet		= false;
@@ -22,11 +22,12 @@ function ValidFormComparison (objForm, subject, comparison, value) {
 
 ValidFormComparison.prototype._init = function () {
 	var self 		= this
-	,	$objSubject = $("#" + this.subject.id);
+	,	$objSubject = (this.subject instanceof jQuery) ? this.subject : $("#" + this.subject.id);
 
+	//*** Set event listeners. Trigger 'change' event
 	if ($objSubject.is("input") || $objSubject.is("textarea")) {
 		if ($objSubject.attr("type") !== "checkbox" && $objSubject.attr("type") !== "radio") {
-			
+
 			var delay;
 			$objSubject.on("keyup", function () {
 				var $self = $(this);
@@ -44,10 +45,37 @@ ValidFormComparison.prototype._init = function () {
 	});
 }
 
+ValidFormComparison.prototype._setSubject = function (objForm, strSubject) {
+	var varReturn;
+
+	if (typeof objForm !== "object" || !objForm instanceof ValidForm) {
+		throw new Error("ValidForm element not set in ValidFormCondition.");
+	}
+
+	try {
+		varReturn = objForm.getElement(strSubject);
+
+		if (varReturn === null) {
+			// Element not found in ValidForm internal collection,
+			// this is probably a fieldset, area or paragraph element.
+			varReturn = $("#" + strSubject);
+
+			if (varReturn.length <= 0) {
+				varReturn = null; // Reset subject
+				throw new Error("Could not find subject element with id or name '" + strSubject + "'.", 1);
+			}
+		}
+	} catch (e) {
+		throw new Error("Failed to set subject: " + e.message, 1);
+	}
+
+	return varReturn;
+}
+
 ValidFormComparison.prototype.check = function () {
 	var blnReturn 	= false
 	,	self		= this
-	,	strValue	= self.subject.getValue();
+	,	strValue	= (self.subject instanceof jQuery) ? self.subject.val() : self.subject.getValue();
 
 	switch (self.comparison) {
 		case "equal":
@@ -97,7 +125,7 @@ ValidFormComparison.prototype.check = function () {
 			}
 			break;
 		case "contains":
-			if (tstrValue.indexOf(self.value) !== -1) {
+			if (strValue.indexOf(self.value) !== -1) {
 				blnReturn = true;
 			}
 			break;
@@ -129,24 +157,26 @@ function ValidFormCondition (objForm, objCondition) {
 
 	try {
 		this.validform 		= objForm;
-		this.element 		= this.validform.getElement(objCondition.subject);
+		this.subject 		= this._setSubject(objCondition.subject);
 		this.property 		= objCondition.property;
 		this.value 			= objCondition.value;
 		this.comparisonType = objCondition.comparisonType;
 		this.comparisons 	= [];
+		this.condition 		= objCondition;
 
 	} catch (e) {
 		throw new Error("Failed to set default values in ValidFormCondition construct: " + e.message);
 
 	}
 
-	this._init(objCondition);
+	return this;
 }
 
-ValidFormCondition.prototype._init = function (objCondition) {
-	var Comparisons = objCondition.comparisons;
-
+ValidFormCondition.prototype._init = function () {
 	try {
+		var Comparisons = this.condition.Comparisons
+		,	self		= this;
+
 		if (typeof Comparisons === "object" && Comparisons.length > 0) {
 			for (var i = 0; i < Comparisons.length; i++) {
 				var Comparison = Comparisons[i];
@@ -154,30 +184,61 @@ ValidFormCondition.prototype._init = function (objCondition) {
 			}
 		}
 
-		if (this.element === null || this.element.id == "undefined") {
-			throw new Error("No valid subject element supplied in condition.", 1);
-		}
-
-		$("#" + this.element.id)
+		(this.subject instanceof jQuery) ? this.subject : $("#" + this.subject.id)
 			.on("change", function () {
+				var blnIsMet 	= self.isMet();
+				,	strProperty = self.property[0].toUpperCase() + self.type.substring(1).toLowerCase();
+
+				self["set" + strProperty](self.value);
+				console.log("Change caught in Condition.");
 				if (self.isMet()) {
+					console.log("Condition is met.");
 					// This is the fastest way of Javascript string capitalization.
 					// See: http://wp.me/p39sgU-2y for more info and proofing tests.
-					var strType = self.type[0].toUpperCase() + self.type.substring(1).toLowerCase();
-					self["set" + strType](self.value);
+				} else {
+					console.log("Condition is not met.");
 				}
 			});
+
+		// Clear local condition object, we're done initiating the condition
+		this.condition = null;
 
 	} catch (e) {
 		throw new Error("Failed to initialize Condition: " + e.message, 1);
 	}
 }
 
+ValidFormCondition.prototype._setSubject = function (strSubject) {
+	var varReturn;
+
+	if (typeof this.validform !== "object" || !this.validform instanceof ValidForm) {
+		throw new Error("ValidForm element not set in ValidFormCondition.");
+	}
+
+	try {
+		varReturn = this.validform.getElement(strSubject);
+
+		if (varReturn === null) {
+			// Element not found in ValidForm internal collection,
+			// this is probably a fieldset, area or paragraph element.
+			varReturn = $("#" + strSubject);
+
+			if (varReturn.length <= 0) {
+				throw new Error("Could not find subject element with id or name '" + strSubject + "'.", 1);
+			}
+		}
+	} catch (e) {
+		throw new Error("Failed to set subject: " + e.message, 1);
+	}
+
+	return varReturn;
+}
+
 ValidFormCondition.prototype.addComparison = function (objComparison) {
 	if (!objComparison instanceof ValidFormComparison) {
 		throw new Error("Invalid argument: objComparison is no ValidFormComparison type in ValidFormCondition.addCondition()", 1);
 	}
-	
+
 	this.comparisons.push(objComparison);
 }
 
@@ -190,7 +251,6 @@ ValidFormCondition.prototype.isMet = function () {
 		case "any":
 			var Comparisons = self.comparisons;
 			for (var i = 0; i < Comparisons.length; i++) {
-				console.log(Comparisons[i]);
 				if (Comparisons[i].isMet) {
 					blnResult = true;
 					break;
@@ -258,32 +318,32 @@ function ValidForm(strFormId, strMainAlert, blnAllowPreviousPage) {
 	this.__continueExecution 	= true;
 
 	// Initialize ValidForm class
-	this.init();
+	this._init();
 }
 
 /**
  * Initialize ValidForm Builder client side after all elements are added to the collection.
  */
-ValidForm.prototype.init = function() {
-	var __this = this;
+ValidForm.prototype._init = function() {
+	var self = this;
 
 	// Handle disabled elements and make sure all sub-elements are disabled as well.
 	this.traverseDisabledElements();
 
 	// This is where the magic happens: onSubmit; validate form.
-	jQuery("#" + __this.id).bind("submit", function(){
-		jQuery("#" + this.id).trigger("VF_BeforeSubmit", [{ValidForm: __this}]);
-		if (typeof __this.events.beforeSubmit == "function") {
-			__this.events.beforeSubmit(__this);
+	jQuery("#" + self.id).bind("submit", function(){
+		jQuery("#" + this.id).trigger("VF_BeforeSubmit", [{ValidForm: self}]);
+		if (typeof self.events.beforeSubmit == "function") {
+			self.events.beforeSubmit(self);
 		}
 
-		if (__this.__continueExecution) {
-			if (__this.pages.length > 1) {
+		if (self.__continueExecution) {
+			if (self.pages.length > 1) {
 				// Validation has been done on each page individually.
 				// No need to re-validate here.
 				return true;
 			} else {
-				return __this.validate();
+				return self.validate();
 			}
 		} else {
 			return false;
@@ -291,11 +351,18 @@ ValidForm.prototype.init = function() {
 	});
 
 	// Dynamic duplication logic.
-	this.dynamicDuplication();
+	self.dynamicDuplication();
 };
 
 ValidForm.prototype.initialize = function () {
-	// Placeholder method for deferred initialization
+	var self = this;
+
+	for (var i = 0; i <= self.conditions.length; i++) {
+		var objCondition = self.conditions[i];
+		if (typeof objCondition !== "undefined") {
+			self.conditions[i]._init();
+		}
+	}
 }
 
 ValidForm.prototype.addCondition = function (objCondition) {
