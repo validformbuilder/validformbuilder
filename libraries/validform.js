@@ -17,32 +17,43 @@ function ValidFormComparison (objForm, subject, comparison, value) {
 	this.value 		= value || null;
 	this.isMet		= false;
 
-	this._init();
+	this._deferred	= $.Deferred();
+
+	console.log("New comparison added.");
+
+	return this._init();
 }
 
 ValidFormComparison.prototype._init = function () {
-	var self 		= this
-	,	$objSubject = (this.subject instanceof jQuery) ? this.subject : $("#" + this.subject.id);
+	try {
+		var self 		= this
+		,	$objSubject = (this.subject instanceof jQuery) ? this.subject : $("#" + this.subject.id);
 
-	//*** Set event listeners. Trigger 'change' event
-	if ($objSubject.is("input") || $objSubject.is("textarea")) {
-		if ($objSubject.attr("type") !== "checkbox" && $objSubject.attr("type") !== "radio") {
+		//*** Set event listeners. Trigger 'change' event
+		if ($objSubject.is("input") || $objSubject.is("textarea")) {
+			if ($objSubject.attr("type") !== "checkbox" && $objSubject.attr("type") !== "radio") {
 
-			var delay;
-			$objSubject.on("keyup", function () {
-				var $self = $(this);
+				var delay;
+				$objSubject.on("keyup", function () {
+					var $self = $(this);
 
-				clearTimeout(delay);
-				delay = setTimeout(function () {
-					$self.trigger("change");
-				}, 300);
-			});
+					clearTimeout(delay);
+					delay = setTimeout(function () {
+						$self.trigger("change");
+					}, 300);
+				});
+			}
 		}
+
+		$objSubject.on("change", function () {
+			self.check();
+		});
+
+	} catch (e) {
+		throw new Error("Failed to initialize ValidFormComparison: " + e.message, 1);
 	}
 
-	$objSubject.on("change", function () {
-		self.isMet = self.check();
-	});
+	return this._deferred.promise();
 }
 
 ValidFormComparison.prototype._setSubject = function (objForm, strSubject) {
@@ -141,7 +152,7 @@ ValidFormComparison.prototype.check = function () {
 			break;
 	}
 
-	return blnReturn;
+	self._deferred[(blnReturn) ? "resolve" : "reject"]();
 }
 
 function ValidFormCondition (objForm, objCondition) {
@@ -164,6 +175,8 @@ function ValidFormCondition (objForm, objCondition) {
 		this.comparisons 	= [];
 		this.condition 		= objCondition;
 
+		this._deferred		= $.Deferred();
+
 	} catch (e) {
 		throw new Error("Failed to set default values in ValidFormCondition construct: " + e.message);
 
@@ -174,38 +187,23 @@ function ValidFormCondition (objForm, objCondition) {
 
 ValidFormCondition.prototype._init = function () {
 	try {
-		var Comparisons = this.condition.Comparisons
-		,	self		= this;
+		var self = this;
 
-		if (typeof Comparisons === "object" && Comparisons.length > 0) {
-			for (var i = 0; i < Comparisons.length; i++) {
-				var Comparison = Comparisons[i];
-				this.addComparison(new ValidFormComparison(this.validform, Comparison.subject, Comparison.comparison, Comparison.value));
+		self.isMet().progress(function (blnResult, a,b,c) {
+			console.log("is met progress: ", blnResult, a,b,c)
+			if (!!blnResult) {
+				// Condition is currently met, do something with it.
+				console.log("Awesome, the condition is currently met.");
+			} else {
+				console.warn("The condition isn't met yet.");
 			}
-		}
-
-		(this.subject instanceof jQuery) ? this.subject : $("#" + this.subject.id)
-			.on("change", function () {
-				var blnIsMet 	= self.isMet()
-				,	strProperty = self.property[0].toUpperCase() + self.property.substring(1).toLowerCase();
-
-				self["set" + strProperty](self.value);
-				console.log("Change caught in Condition.");
-				if (self.isMet()) {
-					console.log("Condition is met.");
-					// This is the fastest way of Javascript string capitalization.
-					// See: http://wp.me/p39sgU-2y for more info and proofing tests.
-				} else {
-					console.log("Condition is not met.");
-				}
-			});
-
-		// Clear local condition object, we're done initiating the condition
-		this.condition = null;
+		});
 
 	} catch (e) {
 		throw new Error("Failed to initialize Condition: " + e.message, 1);
 	}
+
+	return this;
 }
 
 ValidFormCondition.prototype._setSubject = function (strSubject) {
@@ -234,7 +232,25 @@ ValidFormCondition.prototype._setSubject = function (strSubject) {
 	return varReturn;
 }
 
+ValidFormCondition.prototype.deferred = function () {
+	return this._deferred.promise();
+}
+
+ValidFormCondition.prototype.addComparisons = function (objComparisons) {
+	this.comparisons = [];
+	objComparisons = objComparisons || this.condition.comparisons;
+
+	if (typeof objComparisons === "object" && objComparisons.length > 0) {
+		for (var i = 0; i < objComparisons.length; i++) {
+			var Comparison = objComparisons[i];
+			this.addComparison(new ValidFormComparison(this.validform, Comparison.subject, Comparison.comparison, Comparison.value));
+		}
+	}
+}
+
 ValidFormCondition.prototype.addComparison = function (objComparison) {
+	var self = this;
+
 	if (!objComparison instanceof ValidFormComparison) {
 		throw new Error("Invalid argument: objComparison is no ValidFormComparison type in ValidFormCondition.addCondition()", 1);
 	}
@@ -244,37 +260,72 @@ ValidFormCondition.prototype.addComparison = function (objComparison) {
 
 ValidFormCondition.prototype.isMet = function () {
 	var self = this
-	,	blnResult = false;
+	,	def = $.Deferred()
+	,	type = (self.comparisonType === "all") ? "all" : "any";
 
-	switch (self.comparisonType) {
-		default:
-		case "any":
-			var Comparisons = self.comparisons;
-			for (var i = 0; i < Comparisons.length; i++) {
-				if (Comparisons[i].isMet) {
-					blnResult = true;
-					break;
-				}
-			}
+	if (self.comparisonType === "all") {
+		$.when.apply($, self.comparisons).done(
+			function () {
+				console.log("All comparisons are met.");
+				def.notify(true);
+			},
+			function () {
+				console.log("Not All comparisons are met..");
+				def.notify(false);
+			});
+	} else {
+		// Any
+		$.when.apply($, self.comparisons)
+			.done(function () {
+				console.log("Any comparisons are met..");
+				def.notify(true);
+			})
+			.fail(function () {
+				console.log("Not Any comparisons are met...");
+				def.notify(false);
+			});
 
-			break;
-		case "all":
-			var blnFailed = false;
-			for (var Comparison in self.comparisons) {
-				if (self.comparisons.hasOwnProperty(Comparison)) {
-					if (!Comparison.isMet) {
-						blnFailed = true;
-						break;
-					}
-				}
-			}
-
-			blnResult = !blnFailed;
-
-			break;
 	}
 
-	return blnResult;
+	self.addComparisons();
+
+	// switch (self.comparisonType) {
+	// 	default:
+	// 	case "any":
+	// 		console.log("ANY");
+
+	// 		for (var i = 0; i < self.comparisons.length; i++) {
+	// 			self.comparisons[i].progress(function (blnResult) {
+	// 				def.notify(blnResult); // The condition is currently met.
+	// 			});
+	// 		}
+
+	// 		break;
+	// 	case "all":
+	// 		console.log("ALL");
+
+	// 		var blnFailed = false;
+	// 		for (var i = 0; i < self.comparisons.length; i++) {
+	// 			self.comparisons[i].progress(function (blnResult) {
+	// 				def.notify(true); // The condition is currently met.
+	// 			});
+	// 		}
+
+	// 		for (var Comparison in self.comparisons) {
+	// 			if (self.comparisons.hasOwnProperty(Comparison)) {
+	// 				if (!Comparison.check()) {
+	// 					blnFailed = true;
+	// 					break;
+	// 				}
+	// 			}
+	// 		}
+
+	// 		def.notify(!blnFailed);
+
+	// 		break;
+	// }
+
+	return def;
 }
 
 ValidFormCondition.prototype.setRequired = function (blnValue) {
@@ -358,9 +409,14 @@ ValidForm.prototype.initialize = function () {
 	var self = this;
 
 	for (var i = 0; i <= self.conditions.length; i++) {
-		var objCondition = self.conditions[i];
-		if (typeof objCondition !== "undefined") {
-			self.conditions[i]._init();
+		if (typeof self.conditions[i] !== "undefined") {
+			self.conditions[i]
+				._init()
+				.deferred()
+				.progress(function (strSubject, strProperty, blnValue, blnIsMet) {
+					strProperty = strProperty.charAt(0).toUpperCase() + strProperty.substring(1);
+					self.getElement(strSubject)["set" + strProperty]((blnIsMet) ? blnValue : !blnValue);
+				});
 		}
 	}
 }
@@ -384,6 +440,7 @@ ValidForm.prototype.addCondition = function (objCondition) {
  */
 ValidForm.prototype.showAlerts = function (objFields) {
 	var __this = this;
+
 	try {
 		if ($(objFields).length > 0) {
 			$(objFields).each(function () {
@@ -1199,14 +1256,7 @@ ValidFormFieldValidator.prototype.removeAlert = function() {
 		objElement = jQuery("input[name='" + this.name + "']:first").parent().parent();
 	}
 
-	var objMultifieldItem = objElement.parent("div");
-	if (objMultifieldItem.hasClass("vf__multifielditem")) {
-		objMultifieldItem.removeClass("vf__error");
-
-		objMultifieldItem.parent("div").removeClass("vf__error");
-	} else {
-		objElement.parent("div").removeClass("vf__error").find("p.vf__error").remove();
-	}
+	objElement.parent("div").removeClass("vf__error").find("p.vf__error").remove();
 };
 
 ValidFormFieldValidator.prototype.showAlert = function(strAlert) {
