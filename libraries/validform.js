@@ -186,8 +186,8 @@ ValidFormCondition.prototype._init = function () {
 
 		(this.subject instanceof jQuery) ? this.subject : $("#" + this.subject.id)
 			.on("change", function () {
-				var blnIsMet 	= self.isMet();
-				,	strProperty = self.property[0].toUpperCase() + self.type.substring(1).toLowerCase();
+				var blnIsMet 	= self.isMet()
+				,	strProperty = self.property[0].toUpperCase() + self.property.substring(1).toLowerCase();
 
 				self["set" + strProperty](self.value);
 				console.log("Change caught in Condition.");
