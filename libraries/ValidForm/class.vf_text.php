@@ -50,7 +50,7 @@ class VF_Text extends VF_Element {
 		$intMinLength = ($this->__validator->getMinLength() > 0) ? $this->__validator->getMinLength() : "null";
 
 		$strOutput = parent::toJs();
-		
+
 		if ($this->__dynamic || $blnParentIsDynamic) {
 			$intDynamicCount = $this->getDynamicCount($blnParentIsDynamic);
 			for($intCount = 0; $intCount <= $intDynamicCount; $intCount++) {
@@ -81,6 +81,10 @@ class VF_Text extends VF_Element {
 		$strName 	= ($intCount == 0) ? $this->__name : $this->__name . "_" . $intCount;
 		$strId 		= ($intCount == 0) ? $this->__id : $this->__id . "_" . $intCount;
 
+		$this->setConditionalMeta();
+
+		// print_r($this->__meta);
+
 		$blnError = ($submitted && !$this->__validator->validate($intCount) && $blnDisplayErrors) ? TRUE : FALSE;
 		if (!$blnSimpleLayout) {
 
@@ -92,7 +96,9 @@ class VF_Text extends VF_Element {
 			$strClass = (!$blnLabel) ? $strClass . " vf__nolabel" : $strClass;
 			$strClass = (empty($this->__hint)) ? $strClass : $strClass . " vf__hint";
 
-			$strOutput = "<div class=\"{$strClass}\">\n";
+			$this->setMeta("class", $strClass);
+
+			$strOutput = "<div {$this->__getMetaString()}>\n";
 
 			if ($blnError) {
 				$strOutput .= "<p class=\"vf__error\">{$this->__validator->getError($intCount)}</p>";
@@ -105,7 +111,7 @@ class VF_Text extends VF_Element {
 		} else {
 			$strClass = (empty($this->__hint)) ? "" : " vf__hint";
 			$strClass = ($blnError) ? $strClass . " vf__error" : $strClass;
-			
+
 			$strOutput = "<div class=\"vf__multifielditem{$strClass}\">\n";
 
 			if ($blnError) {

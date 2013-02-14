@@ -147,7 +147,13 @@ class VF_FieldValidator extends ClassDynamic {
 				}
 			}
 		} else if (empty($value) && $value !== 0) {
+
 			$objCondition = $this->__field->getMetCondition("required");
+			if (is_object($objCondition) && $objCondition->isMet($intDynamicPosition)) {
+				$this->__required = $objCondition->getValue();
+			}
+
+			$objCondition = $this->__field->getMetCondition("visible");
 			if (is_object($objCondition) && $objCondition->isMet($intDynamicPosition)) {
 				$this->__required = $objCondition->getValue();
 			}

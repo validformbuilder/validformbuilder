@@ -19,8 +19,6 @@ function ValidFormComparison (objForm, subject, comparison, value) {
 
 	this._deferred	= $.Deferred();
 
-	console.log("New comparison added.");
-
 	return this._init();
 }
 
@@ -46,7 +44,7 @@ ValidFormComparison.prototype._init = function () {
 		}
 
 		$objSubject.on("change", function () {
-			self.check();
+			self.isMet = self.check();
 		});
 
 	} catch (e) {
@@ -152,7 +150,9 @@ ValidFormComparison.prototype.check = function () {
 			break;
 	}
 
-	self._deferred[(blnReturn) ? "resolve" : "reject"]();
+	self._deferred.notify(blnReturn);
+
+	return blnReturn;
 }
 
 function ValidFormCondition (objForm, objCondition) {
@@ -175,8 +175,6 @@ function ValidFormCondition (objForm, objCondition) {
 		this.comparisons 	= [];
 		this.condition 		= objCondition;
 
-		this._deferred		= $.Deferred();
-
 	} catch (e) {
 		throw new Error("Failed to set default values in ValidFormCondition construct: " + e.message);
 
@@ -187,17 +185,20 @@ function ValidFormCondition (objForm, objCondition) {
 
 ValidFormCondition.prototype._init = function () {
 	try {
-		var self = this;
+		var self = this
+		,	objComparisons = this.condition.comparisons;
 
-		self.isMet().progress(function (blnResult, a,b,c) {
-			console.log("is met progress: ", blnResult, a,b,c)
-			if (!!blnResult) {
-				// Condition is currently met, do something with it.
-				console.log("Awesome, the condition is currently met.");
-			} else {
-				console.warn("The condition isn't met yet.");
+		if (typeof objComparisons === "object" && objComparisons.length > 0) {
+			for (var i = 0; i < objComparisons.length; i++) {
+				var Comparison = objComparisons[i];
+				this.addComparison(new ValidFormComparison(this.validform, Comparison.subject, Comparison.comparison, Comparison.value));
 			}
-		});
+		}
+
+		self.isMet()
+			.progress(function (blnResult) {
+				self.set((blnResult) ? !!this.value : !this.value);
+			});
 
 	} catch (e) {
 		throw new Error("Failed to initialize Condition: " + e.message, 1);
@@ -232,20 +233,45 @@ ValidFormCondition.prototype._setSubject = function (strSubject) {
 	return varReturn;
 }
 
-ValidFormCondition.prototype.deferred = function () {
-	return this._deferred.promise();
-}
+ValidFormCondition.prototype.set = function (blnValue) {
+	var self = this;
 
-ValidFormCondition.prototype.addComparisons = function (objComparisons) {
-	this.comparisons = [];
-	objComparisons = objComparisons || this.condition.comparisons;
+	switch (self.property) {
+		case "visible":
+			// Applies on all kinds of elements.
+			var $objSubject = (self.subject instanceof jQuery) ? self.subject : $("#" + self.subject.id);
 
-	if (typeof objComparisons === "object" && objComparisons.length > 0) {
-		for (var i = 0; i < objComparisons.length; i++) {
-			var Comparison = objComparisons[i];
-			this.addComparison(new ValidFormComparison(this.validform, Comparison.subject, Comparison.comparison, Comparison.value));
-		}
+			if (blnValue) {
+				// $objSubject.fadeOut("fast");
+				// $objSubject.parent().fadeOut("fast");
+			} else {
+				$objSubject.fadeIn("fast");
+				$objSubject.parent().fadeIn("fast");
+			}
+
+		case "enabled":
+			// Only applies on fields
+
+			break;
+
+		case "required":
+			// Only applies on fields.
+			if (self.subject instanceof ValidFormElement) {
+				var blnDefaultState = self.subject.getRequired(true);
+
+				console.log("Default required state: ", blnDefaultState, "set to", blnValue);
+
+				self.subject.setRequired(blnValue);
+
+				// if (blnIsRequired && blnValue) {
+				// 	self.subject.setRequired(blnValue);
+				// }
+			}
+
+
+			break;
 	}
+
 }
 
 ValidFormCondition.prototype.addComparison = function (objComparison) {
@@ -260,8 +286,15 @@ ValidFormCondition.prototype.addComparison = function (objComparison) {
 
 ValidFormCondition.prototype.isMet = function () {
 	var self = this
-	,	def = $.Deferred()
-	,	type = (self.comparisonType === "all") ? "all" : "any";
+	,	def = $.Deferred();
+
+	try {
+		if (self.comparisons.length <= 0) {
+			self.addComparisons();
+		}
+	} catch (e) {
+		throw new Error("Failed to add comparisons in isMet(): " + e.message);
+	}
 
 	if (self.comparisonType === "all") {
 		$.when.apply($, self.comparisons).done(
@@ -275,61 +308,15 @@ ValidFormCondition.prototype.isMet = function () {
 			});
 	} else {
 		// Any
-		$.when.apply($, self.comparisons)
-			.done(function () {
-				console.log("Any comparisons are met..");
-				def.notify(true);
-			})
-			.fail(function () {
-				console.log("Not Any comparisons are met...");
-				def.notify(false);
+		for (var i = 0; i < self.comparisons.length; i++) {
+			self.comparisons[i].progress(function (blnResult) {
+				def.notify(blnResult);
 			});
+		}
 
 	}
 
-	self.addComparisons();
-
-	// switch (self.comparisonType) {
-	// 	default:
-	// 	case "any":
-	// 		console.log("ANY");
-
-	// 		for (var i = 0; i < self.comparisons.length; i++) {
-	// 			self.comparisons[i].progress(function (blnResult) {
-	// 				def.notify(blnResult); // The condition is currently met.
-	// 			});
-	// 		}
-
-	// 		break;
-	// 	case "all":
-	// 		console.log("ALL");
-
-	// 		var blnFailed = false;
-	// 		for (var i = 0; i < self.comparisons.length; i++) {
-	// 			self.comparisons[i].progress(function (blnResult) {
-	// 				def.notify(true); // The condition is currently met.
-	// 			});
-	// 		}
-
-	// 		for (var Comparison in self.comparisons) {
-	// 			if (self.comparisons.hasOwnProperty(Comparison)) {
-	// 				if (!Comparison.check()) {
-	// 					blnFailed = true;
-	// 					break;
-	// 				}
-	// 			}
-	// 		}
-
-	// 		def.notify(!blnFailed);
-
-	// 		break;
-	// }
-
-	return def;
-}
-
-ValidFormCondition.prototype.setRequired = function (blnValue) {
-	this.element.setRequired(!!blnValue);
+	return def.promise();
 }
 
 /**
@@ -410,13 +397,7 @@ ValidForm.prototype.initialize = function () {
 
 	for (var i = 0; i <= self.conditions.length; i++) {
 		if (typeof self.conditions[i] !== "undefined") {
-			self.conditions[i]
-				._init()
-				.deferred()
-				.progress(function (strSubject, strProperty, blnValue, blnIsMet) {
-					strProperty = strProperty.charAt(0).toUpperCase() + strProperty.substring(1);
-					self.getElement(strSubject)["set" + strProperty]((blnIsMet) ? blnValue : !blnValue);
-				});
+			self.conditions[i]._init();
 		}
 	}
 }
@@ -967,6 +948,10 @@ function ValidFormElement(strFormId, strElementName, strElementId, strValidation
 	if (arguments.length > 12) {
 		this.validator.maxLengthError = arguments[12];
 	}
+
+	this._defaultstate = {
+		"required": this.validator.required
+	}
 }
 
 /**
@@ -982,9 +967,24 @@ ValidFormElement.prototype.getValue = function () {
 }
 
 ValidFormElement.prototype.setRequired = function (blnValue) {
-	this.validator.required = !!blnValue;
+	this.validator.required = blnValue;
 
-	$("#" + this.id).parent().removeClass("vf__optional").addClass("vf__required");
+console.log("SET REQUIRED: ", blnValue);
+
+	if (blnValue) {
+		// Requried == true
+		$("#" + this.id).removeClass("vf__optional").addClass("vf__required");
+		$("#" + this.id).parent().removeClass("vf__optional").addClass("vf__required");
+	} else {
+		// Required == false
+		$("#" + this.id).addClass("vf__optional").removeClass("vf__required");
+		$("#" + this.id).parent().addClass("vf__optional").removeClass("vf__required");
+	}
+}
+
+ValidFormElement.prototype.getRequired = function (blnDefaultState) {
+	this.validator.removeAlert();
+	return (!!blnDefaultState) ? this._defaultstate.required : this.validator.required;
 }
 
 /**

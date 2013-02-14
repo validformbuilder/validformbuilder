@@ -295,7 +295,7 @@ class VF_Element extends VF_Base {
 	 * @param integer $intDynamicPosition The position of the field in a dynamic field setup.
 	 * @return Ambigous <NULL, string>
 	 */
-	protected function __getValue($submitted = FALSE, $intDynamicPosition = 0) {
+	public function __getValue($submitted = FALSE, $intDynamicPosition = 0) {
 		$varReturn = NULL;
 
 		if ($submitted) {

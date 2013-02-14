@@ -51,7 +51,7 @@ class VF_Base extends ClassDynamic {
 	 * Get element's VF_Condition object
 	 * Note: When chaining methods, always use hasCondition() first before chaining
 	 * for example 'getCondition()->isMet()'.
-	 * 
+	 *
 	 * @param  String $strType 		Condition type e.g. 'required', 'visibile' and 'disabled'
 	 * @return VF_Condition|null    The found condition or null if no condition is found.
 	 */
@@ -65,7 +65,7 @@ class VF_Base extends ClassDynamic {
 				break;
 			}
 		}
-		
+
 		if (is_null($objReturn) && is_object($this->__parent)) {
 			//*** Find condition in parent.
 			$objReturn = $this->__parent->getCondition($strProperty);
@@ -73,7 +73,7 @@ class VF_Base extends ClassDynamic {
 
 		return $objReturn;
 	}
-	
+
 	public function getMetCondition($strProperty) {
 		$objReturn = null;
 
@@ -84,12 +84,12 @@ class VF_Base extends ClassDynamic {
 				break;
 			}
 		}
-		
+
 		if (is_null($objReturn) && is_object($this->__parent)) {
 			//*** Find condition in parent.
 			$objReturn = $this->__parent->getMetCondition($strProperty);
 		}
-		
+
 		return $objReturn;
 	}
 
@@ -116,22 +116,45 @@ class VF_Base extends ClassDynamic {
 		return (count($this->__conditions) > 0);
 	}
 
-	public function setConditionalStyling() {
+	public function setConditionalMeta() {
+
 		foreach ($this->__conditions as $objCondition) {
 			$blnResult = $objCondition->isMet();
 
 			switch ($objCondition->getProperty()) {
 				case "visible":
 					// This can be applied on all sorts of subjects.
-					if ($objCondition->isMet() && !$objCondition->getValue()) {
-						$this->setMeta("style", "display: none;");
+					if ($blnResult) {
+						if ($objCondition->getValue()) {
+							$this->setMeta("style", "display: block;");
+						} else {
+							$this->setMeta("style", "display: none;");
+						}
+					} else {
+						if ($objCondition->getValue()) {
+							$this->setMeta("style", "display: none;");
+						} else {
+							$this->setMeta("style", "display: block;");
+						}
 					}
-					break;
 
 				case "enabled":
 					// This can only be applied on all subjects except for Paragraphs
 					if (get_class($objCondition->getSubject()) !== "VF_Paragraph") {
 
+						if ($blnResult) {
+							if ($objCondition->getValue()) {
+								$this->setMeta("disabled", "", true);
+							} else {
+								$this->setMeta("disabled", "disabled", true);
+							}
+						} else {
+							if ($objCondition->getValue()) {
+								$this->setMeta("disabled", "disabled", true);
+							} else {
+								$this->setMeta("disabled", "", true);
+							}
+						}
 					}
 					break;
 
@@ -142,25 +165,6 @@ class VF_Base extends ClassDynamic {
 		}
 	}
 
-// 	public function isVisible() {
-// 		$blnReturn = true;
-// 		$objCondition = $this->getCondition("visible");
-
-// 		if (!is_null($objCondition) && $objCondition->isMet()) {
-// 			$blnReturn = $objCondition->getValue();
-// 		}
-
-// 		return $blnReturn;
-// 	}
-
-// 	public function isEnabled() {
-// 		return true;
-// 	}
-
-// 	public function isRequired() {
-// 		return false;
-// 	}
-
 	/**
 	 * Set meta property.
 	 * @param string  	$property     Property name.
@@ -169,25 +173,32 @@ class VF_Base extends ClassDynamic {
 	 */
 	public function setMeta($property, $value, $blnOverwrite = false) {
 		if ($blnOverwrite) {
-			$this->__meta[$property] = $value;
+			if (empty($value) || is_null($value)) {
+				unset($this->__meta[$property]);
+			} else {
+				$this->__meta[$property] = $value;
+			}
 		} else {
 			$varMeta = (isset($this->__meta[$property])) ? $this->__meta[$property] : "";
-			
+
 			//*** Define delimiter per meta property.
 			switch ($property) {
 				case "style":
 					$strDelimiter = ";";
 					break;
-					
-				default: 
+
+				default:
 					$strDelimiter = " ";
 			}
-			
+
 			//*** Add the value to the property string.
 			$arrMeta = explode($strDelimiter, $varMeta);
 			$arrMeta[] = $value;
+
+			// Make sure no empty values are left in the array.
+			$arrMeta = array_filter($arrMeta);
 			$varMeta = implode($strDelimiter, $arrMeta);
-			
+
 			$this->__meta[$property] = $varMeta;
 		}
 	}
