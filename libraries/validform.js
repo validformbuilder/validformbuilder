@@ -197,6 +197,7 @@ ValidFormCondition.prototype._init = function () {
 
 		self.isMet()
 			.progress(function (blnResult) {
+				console.log("ismet progress", blnResult);
 				self.set((blnResult) ? !!this.value : !this.value);
 			});
 
@@ -242,15 +243,24 @@ ValidFormCondition.prototype.set = function (blnValue) {
 			var $objSubject = (self.subject instanceof jQuery) ? self.subject : $("#" + self.subject.id);
 
 			if (blnValue) {
-				// $objSubject.fadeOut("fast");
-				// $objSubject.parent().fadeOut("fast");
-			} else {
 				$objSubject.fadeIn("fast");
 				$objSubject.parent().fadeIn("fast");
+			} else {
+				$objSubject.fadeOut("fast");
+				$objSubject.parent().fadeOut("fast");
 			}
 
 		case "enabled":
 			// Only applies on fields
+			if (self.subject instanceof ValidFormElement) {
+				var blnDefaultState = self.subject.getEnabled(true);
+
+				if (blnValue) {
+					self.subject.setEnabled(blnValue);
+				} else {
+					self.subject.setEnabled(blnDefaultState);
+				}
+			}
 
 			break;
 
@@ -308,6 +318,7 @@ ValidFormCondition.prototype.isMet = function () {
 			});
 	} else {
 		// Any
+		console.log("Check any comparison");
 		for (var i = 0; i < self.comparisons.length; i++) {
 			self.comparisons[i].progress(function (blnResult) {
 				def.notify(blnResult);
@@ -949,8 +960,10 @@ function ValidFormElement(strFormId, strElementName, strElementId, strValidation
 		this.validator.maxLengthError = arguments[12];
 	}
 
+	// Keep the original values in a local cache for future reference.
 	this._defaultstate = {
-		"required": this.validator.required
+		"required": this.validator.required,
+		"enabled": !this.disabled
 	}
 }
 
@@ -969,22 +982,48 @@ ValidFormElement.prototype.getValue = function () {
 ValidFormElement.prototype.setRequired = function (blnValue) {
 	this.validator.required = blnValue;
 
-console.log("SET REQUIRED: ", blnValue);
+	// The state has changed, remove it's alert.
+	this.validator.removeAlert();
 
 	if (blnValue) {
-		// Requried == true
-		$("#" + this.id).removeClass("vf__optional").addClass("vf__required");
+		// Required == true
+		// $("#" + this.id).removeClass("vf__optional").addClass("vf__required");
 		$("#" + this.id).parent().removeClass("vf__optional").addClass("vf__required");
 	} else {
 		// Required == false
-		$("#" + this.id).addClass("vf__optional").removeClass("vf__required");
+		// $("#" + this.id).addClass("vf__optional").removeClass("vf__required");
 		$("#" + this.id).parent().addClass("vf__optional").removeClass("vf__required");
 	}
 }
 
 ValidFormElement.prototype.getRequired = function (blnDefaultState) {
-	this.validator.removeAlert();
 	return (!!blnDefaultState) ? this._defaultstate.required : this.validator.required;
+}
+
+ValidFormElement.prototype.setEnabled = function (blnValue) {
+	this.disabled = !blnValue;
+
+	if (blnValue) {
+		// Enabled == true, e.g. disabled = false
+		$("#" + this.id)
+			// .addClass("vf__optional")
+			// .removeClass("vf__required")
+			.removeAttr("disabled");
+
+		$("#" + this.id).parent().addClass("vf__optional").removeClass("vf__required");
+	} else {
+		// Enabled == false, e.g. disabled = true
+		$("#" + this.id)
+			// .removeClass("vf__optional")
+			// .addClass("vf__required")
+			.attr("disabled", "disabled");
+
+		$("#" + this.id).parent().removeClass("vf__optional").addClass("vf__required");
+	}
+}
+
+ValidFormElement.prototype.getEnabled = function (blnDefaultState) {
+	return (!!blnDefaultState) ? this._defaultstate.enabled : !this.disabled;
 }
 
 /**

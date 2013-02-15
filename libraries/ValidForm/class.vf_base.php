@@ -10,6 +10,7 @@ class VF_Base extends ClassDynamic {
 	protected $__conditions = array();
 	protected $__meta = array();
 	protected $__reservedmeta = array("parent", "data", "dynamicCounter", "tip", "hint", "default", "width", "height", "length", "start", "end", "path", "labelStyle", "labelClass", "labelRange", "valueRange", "dynamic", "dynamicLabel", "matchWith");
+	protected $__fieldmeta = array("disabled", "class");
 
 	/**
 	 * Add a new condition to the current field
@@ -237,11 +238,29 @@ class VF_Base extends ClassDynamic {
 		return strtolower(get_class($this)) . "_" . mt_rand();
 	}
 
-	protected function __getMetaString() {
+	protected function __getMetaString($blnIncludeFieldMeta = false) {
 		$strOutput = "";
 
 		foreach ($this->__meta as $key => $value) {
-			if (!in_array($key, $this->__reservedmeta)) {
+			if ($blnIncludeFieldMeta) {
+				if (!in_array($key, $this->__reservedmeta)) {
+					$strOutput .= " {$key}=\"{$value}\"";
+				}
+			} else {
+				if (!in_array($key, array_merge($this->__reservedmeta, $this->__fieldmeta))) {
+					$strOutput .= " {$key}=\"{$value}\"";
+				}
+			}
+		}
+
+		return $strOutput;
+	}
+
+	protected function __getFieldMetaString() {
+		$strOutput = "";
+
+		foreach ($this->__meta as $key => $value) {
+			if (in_array($key, array_intersect($this->__meta, $this->__fieldmeta))) {
 				$strOutput .= " {$key}=\"{$value}\"";
 			}
 		}

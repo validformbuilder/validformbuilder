@@ -124,7 +124,7 @@ class VF_Text extends VF_Element {
 			$this->__meta["maxlength"] = $this->__validator->getMaxLength();
 		}
 
-		$strOutput .= "<input type=\"text\" value=\"{$this->__getValue($submitted, $intCount)}\" name=\"{$strName}\" id=\"{$strId}\" {$this->__getMetaString()} />\n";
+		$strOutput .= "<input type=\"text\" value=\"{$this->__getValue($submitted, $intCount)}\" name=\"{$strName}\" id=\"{$strId}\" {$this->__getFieldMetaString()} />\n";
 
 		if (!empty($this->__tip)) $strOutput .= "<small class=\"vf__tip\">{$this->__tip}</small>\n";
 

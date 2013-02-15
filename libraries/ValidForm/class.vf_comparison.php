@@ -49,7 +49,7 @@ class VF_Comparison extends ClassDynamic {
 
 		if ($this->__subject instanceof VF_Element) {
 			// Any element based on VF_Element
-			$strValue = $this->__subject->getValue($intDynamicPosition);
+			$strValue = $this->__subject->__getValue($intDynamicPosition);
 			if (!is_null($strValue)) {
 				$blnReturn = $this->__verify($strValue);
 			}
