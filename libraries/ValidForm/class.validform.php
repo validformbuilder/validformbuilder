@@ -2,18 +2,18 @@
 /***************************
  * ValidForm Builder - build valid and secure web forms quickly
  *
- * Copyright (c) 2009-2013
+ * Copyright (c) 2009-2013 Neverwoods Internet Technology - http://neverwoods.com
  *
- * Felix Langfeldt <flangfeldt@felix-it.com>
- * Robin van Baalen <rvanbaalen@felix-it.com>
+ * Felix Langfeldt <felix@neverwoods.com>
+ * Robin van Baalen <robin@neverwoods.com>
  *
  * All rights reserved.
  *
  * This software is released under the GNU GPL v2 License <http://www.gnu.org/licenses/old-licenses/gpl-2.0.html>
  *
  * @package    ValidForm
- * @author     Felix Langfeldt <flangfeldt@felix-it.com>, Robin van Baalen <rvanbaalen@felix-it.com>
- * @copyright  2009-2013 Felix Langfeldt <flangfeldt@felix-it.com>, Robin van Baalen <rvanbaalen@felix-it.com>
+ * @author     Felix Langfeldt <felix@neverwoods.com>, Robin van Baalen <robin@neverwoods.com>
+ * @copyright  2009-2013 Neverwoods Internet Technology - http://neverwoods.com
  * @license    http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU GPL v2
  * @link       http://validformbuilder.org
  ***************************/
@@ -21,6 +21,7 @@
 require_once('class.classdynamic.php');
 require_once('class.vf_base.php');
 require_once('class.vf_collection.php');
+require_once('class.vf_button.php');
 require_once('class.vf_fieldset.php');
 require_once('class.vf_note.php');
 require_once('class.vf_text.php');
@@ -210,6 +211,21 @@ class ValidForm extends ClassDynamic {
 		$objFieldset->addField($objParagraph);
 
 		return $objParagraph;
+	}
+
+	public function addButton($strLabel, $arrMeta = array()) {
+		$objButton = new VF_Button($strLabel, $arrMeta);
+
+		//*** Fieldset already defined?
+		$objFieldset = $this->__elements->getLast("VF_Fieldset");
+		if ($this->__elements->count() == 0 || !is_object($objFieldset)) {
+			$objFieldset = $this->addFieldset();
+		}
+
+		//*** Add field to the fieldset.
+		$objFieldset->addField($objButton);
+
+		return $objButton;
 	}
 
 	public function addArea($label = NULL, $active = FALSE, $name = NULL, $checked = FALSE, $meta = array()) {

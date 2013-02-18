@@ -30,7 +30,6 @@ class VF_Element extends VF_Base {
 	protected $__label;
 	protected $__tip = null;
 	protected $__type;
-	protected $__labelmeta;
 	protected $__hint = null;
 	protected $__default = null;
 	protected $__dynamic = null;
@@ -43,15 +42,11 @@ class VF_Element extends VF_Base {
 		// Set meta class
 		$this->setClass($type, $meta);
 
-		$labelMeta = (isset($meta['labelStyle'])) ? array("style" => $meta['labelStyle']) : array();
-		if (isset($meta['labelClass'])) $labelMeta["class"] = $meta['labelClass'];
-
 		$this->__id = (strpos($name, "[]") !== FALSE) ? $this->getRandomId($name) : $name;
 		$this->__name = $name;
 		$this->__label = $label;
 		$this->__type = $type;
 		$this->__meta = $meta;
-		$this->__labelmeta = $labelMeta;
 		$this->__parent = (isset($meta["parent"])) ? $meta["parent"] : null;
 		$this->__tip = (isset($meta["tip"])) ? $meta["tip"] : $this->__tip;
 		$this->__hint = (isset($meta["hint"])) ? $meta["hint"] : $this->__hint;
@@ -60,12 +55,14 @@ class VF_Element extends VF_Base {
 		$this->__dynamicLabel = (isset($meta["dynamicLabel"])) ? $meta["dynamicLabel"] : $this->__dynamicLabel;
 		$this->__dynamiccounter = (isset($meta["dynamicCounter"])) ? true : $this->__dynamiccounter;
 
+		//*** Set label & field specific meta
+		$this->__initializeMeta();
+
 		// $this->__validator = new VF_FieldValidator($name, $type, $validationRules, $errorHandlers, $this->__hint);
 		$this->__validator = new VF_FieldValidator($this, $validationRules, $errorHandlers);
 	}
 
 	protected function setClass($type, &$meta) {
-		$strClass = "";
 		switch ($type) {
 			case VFORM_STRING:
 			case VFORM_WORD:
@@ -78,45 +75,33 @@ class VF_Element extends VF_Base {
 			case VFORM_NUMERIC:
 			case VFORM_INTEGER:
 			case VFORM_PASSWORD:
-				$meta["class"] = (!isset($meta["class"])) ? "vf__text" : $meta["class"] . " vf__text";
+				$this->setFieldMeta("class", "vf__text");
 				break;
 			case VFORM_CAPTCHA:
-				$meta["class"] = (!isset($meta["class"])) ? "vf__text_small" : $meta["class"] . " vf__text_small";
+				$this->setFieldMeta("class", "vf__text_small");
 				break;
 			case VFORM_HTML:
 			case VFORM_CUSTOM_TEXT:
 			case VFORM_TEXT:
-				$meta["class"] = (!isset($meta["class"])) ? "vf__text" : $meta["class"] . " vf__text";
+				$this->setFieldMeta("class", "vf__text");
 				break;
 			case VFORM_FILE:
-				$meta["class"] = (!isset($meta["class"])) ? "vf__file" : $meta["class"] . " vf__file";
+				$this->setFieldMeta("class", "vf__file");
 				break;
 			case VFORM_BOOLEAN:
-				$meta["class"] = (!isset($meta["class"])) ? "vf__checkbox" : $meta["class"] . " vf__checkbox";
+				$this->setFieldMeta("class", "vf__checkbox");
 				break;
 			case VFORM_RADIO_LIST:
 			case VFORM_CHECK_LIST:
-				$meta["class"] = (!isset($meta["class"])) ? "vf__radiobutton" : $meta["class"] . " vf__radiobutton";
+				$this->setFieldMeta("class", "vf__radiobutton");
 				break;
 			case VFORM_SELECT_LIST:
-				if (!isset($meta["class"])) {
-					if (!isset($meta["multiple"])) {
-						$meta["class"] = "vf__one";
-					} else {
-						$meta["class"] = "vf__multiple";
-					}
+				if (!isset($meta["multiple"])) {
+					$this->setFieldMeta("class", "vf__one");
 				} else {
-					if (!isset($meta["multiple"])) {
-						$meta["class"] .= " vf__one";
-					} else {
-						$meta["class"] .= " vf__multiple";
-					}
+					$this->setFieldMeta("class", "vf__multiple");
 				}
 				break;
-		}
-
-		if (!empty($strClass)) {
-			$meta["class"] = (isset($meta["class"])) ? $meta["class"] .= " " . $strClass : $strClass;
 		}
 	}
 
@@ -317,20 +302,6 @@ class VF_Element extends VF_Base {
 		}
 
 		return $varReturn;
-	}
-
-	protected function __getLabelMetaString() {
-		$strOutput = "";
-
-		if (is_array($this->__labelmeta)) {
-			foreach ($this->__labelmeta as $key => $value) {
-				if (!in_array($key, $this->__reservedmeta)) {
-					$strOutput .= " {$key}=\"{$value}\"";
-				}
-			}
-		}
-
-		return $strOutput;
 	}
 
 }

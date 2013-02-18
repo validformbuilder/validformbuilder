@@ -27,7 +27,6 @@ require_once('class.vf_base.php');
  */
 class VF_MultiField extends VF_Base {
 	protected $__label;
-	protected $__labelmeta;
 	protected $__dynamic;
 	protected $__dynamicLabel;
 	protected $__requiredstyle;
@@ -36,10 +35,7 @@ class VF_MultiField extends VF_Base {
 	public function __construct($label, $meta = array()) {
 		$this->__label = $label;
 		$this->__meta = $meta;
-
-		$labelMeta = (isset($meta['labelStyle'])) ? array("style" => $meta['labelStyle']) : array();
-		if (isset($meta['labelClass'])) $labelMeta["class"] = $meta['labelClass'];
-		$this->__labelmeta = $labelMeta;
+		$this->__initializeMeta();
 
 		$this->__fields = new VF_Collection();
 
@@ -51,7 +47,7 @@ class VF_MultiField extends VF_Base {
 		// Creating dynamic fields inside a multifield is not supported.
 		if (array_key_exists("dynamic", $meta)) unset($meta["dynamic"]);
 		if (array_key_exists("dynamicLabel", $meta)) unset($meta["dynamicLabel"]);
-		
+
 		//*** Set the parent for the new field.
 		$meta["parent"] = $this;
 
@@ -303,23 +299,6 @@ class VF_MultiField extends VF_Base {
 		}
 
 		return $varReturn;
-	}
-
-	protected function __getLabelMetaString() {
-		$strOutput = "";
-
-		// Create a dummy element to get the reserved meta array.
-		$objDummy = new VF_Element("dummy", VFORM_TEXT);
-
-		if (is_array($this->__labelmeta)) {
-			foreach ($this->__labelmeta as $key => $value) {
-				if (!in_array($key, $objDummy->getReservedMeta())) {
-					$strOutput .= " {$key}=\"{$value}\"";
-				}
-			}
-		}
-
-		return $strOutput;
 	}
 
 	private function __validate($intCount = null) {

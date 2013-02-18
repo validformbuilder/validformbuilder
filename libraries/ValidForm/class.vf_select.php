@@ -64,13 +64,17 @@ class VF_Select extends VF_Element {
 		if (!$blnSimpleLayout) {
 
 			//*** We asume that all dynamic fields greater than 0 are never required.
-			$strClass = ($this->__validator->getRequired() && $intCount == 0) ? "vf__required" : "vf__optional";
+			if ($this->__validator->getRequired() && $intCount == 0) {
+				$this->setMeta("class", "vf__required");
+			} else {
+				$this->setMeta("class", "vf__optional");
+			}
 
-			$strClass = ($blnError) ? $strClass . " vf__error" : $strClass;
-			// $strClass = ($this->hasTrigger()) ? $strClass . " vf__targetfield" : $strClass;
-			$strClass = (!$blnLabel) ? $strClass . " vf__nolabel" : $strClass;
+			//*** Set custom meta.
+			if ($blnError) $this->setMeta("class", "vf__error");
+			if (!$blnLabel) $this->setMeta("class", "vf__nolabel");
 
-			$strOutput .= "<div class=\"{$strClass}\">\n";
+			$strOutput .= "<div{$this->__getMetaString()}>\n";
 
 			if ($blnError) {
 				$strOutput .= "<p class=\"vf__error\">{$this->__validator->getError($intCount)}</p>";
@@ -79,8 +83,8 @@ class VF_Select extends VF_Element {
 			$strLabel = (!empty($this->__requiredstyle) && $this->__validator->getRequired()) ? sprintf($this->__requiredstyle, $this->__label) : $this->__label;
 			if (!empty($this->__label)) $strOutput .= "<label for=\"{$strId}\"{$this->__getLabelMetaString()}>{$strLabel}</label>\n";
 		} else {
-			$strClass = ($blnError) ? $strClass . " vf__error" : $strClass;
-			
+			if ($blnError) $this->setMeta("class", "vf__error");
+
 			$strOutput = "<div class=\"vf__multifielditem{$strClass}\">\n";
 
 			if ($blnError) {
@@ -90,7 +94,7 @@ class VF_Select extends VF_Element {
 			// $strOutput = "<div class=\"vf__multifielditem\">\n";
 		}
 
-		$strOutput .= "<select name=\"{$strName}\" id=\"{$strId}\" {$this->__getMetaString()}>\n";
+		$strOutput .= "<select name=\"{$strName}\" id=\"{$strId}\" {$this->__getFieldMetaString()}>\n";
 
 		//*** If no option elements are available, parse ranges
 		if ($this->__options->count() == 0) {

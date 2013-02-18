@@ -89,16 +89,18 @@ class VF_Text extends VF_Element {
 		if (!$blnSimpleLayout) {
 
 			//*** We asume that all dynamic fields greater than 0 are never required.
-			$strClass = ($this->__validator->getRequired() && $intCount == 0) ? "vf__required" : "vf__optional";
+			if ($this->__validator->getRequired() && $intCount == 0) {
+				$this->setMeta("class", "vf__required");
+			} else {
+				$this->setMeta("class", "vf__optional");
+			}
 
-			$strClass = ($blnError) ? $strClass . " vf__error" : $strClass;
-			// $strClass = ($this->hasTrigger()) ? $strClass . " vf__targetfield" : $strClass;
-			$strClass = (!$blnLabel) ? $strClass . " vf__nolabel" : $strClass;
-			$strClass = (empty($this->__hint)) ? $strClass : $strClass . " vf__hint";
+			//*** Set custom meta.
+			if ($blnError) $this->setMeta("class", "vf__error");
+			if (!$blnLabel) $this->setMeta("class", "vf__nolabel");
+			if (!empty($this->__hint)) $this->setMeta("class", "vf__hint");
 
-			$this->setMeta("class", $strClass);
-
-			$strOutput = "<div {$this->__getMetaString()}>\n";
+			$strOutput = "<div{$this->__getMetaString()}>\n";
 
 			if ($blnError) {
 				$strOutput .= "<p class=\"vf__error\">{$this->__validator->getError($intCount)}</p>";
@@ -109,10 +111,11 @@ class VF_Text extends VF_Element {
 				if (!empty($this->__label)) $strOutput .= "<label for=\"{$strId}\"{$this->__getLabelMetaString()}>{$strLabel}</label>\n";
 			}
 		} else {
-			$strClass = (empty($this->__hint)) ? "" : " vf__hint";
-			$strClass = ($blnError) ? $strClass . " vf__error" : $strClass;
+			if (!empty($this->__hint)) $this->setMeta("class", "vf__hint");
+			if ($blnError) $this->setMeta("class", "vf__error");
+			$this->setMeta("class", "vf__multifielditem");
 
-			$strOutput = "<div class=\"vf__multifielditem{$strClass}\">\n";
+			$strOutput = "<div{$this->__getMetaString()}\">\n";
 
 			if ($blnError) {
 				$strOutput .= "<p class=\"vf__error\">{$this->__validator->getError($intCount)}</p>";
@@ -121,10 +124,10 @@ class VF_Text extends VF_Element {
 
 		//*** Add max-length attribute to the meta array. This is being read by the getMetaString method.
 		if ($this->__validator->getMaxLength() > 0) {
-			$this->__meta["maxlength"] = $this->__validator->getMaxLength();
+			$this->setFieldMeta("maxlength", $this->__validator->getMaxLength());
 		}
 
-		$strOutput .= "<input type=\"text\" value=\"{$this->__getValue($submitted, $intCount)}\" name=\"{$strName}\" id=\"{$strId}\" {$this->__getFieldMetaString()} />\n";
+		$strOutput .= "<input type=\"text\" value=\"{$this->__getValue($submitted, $intCount)}\" name=\"{$strName}\" id=\"{$strId}\"{$this->__getFieldMetaString()} />\n";
 
 		if (!empty($this->__tip)) $strOutput .= "<small class=\"vf__tip\">{$this->__tip}</small>\n";
 

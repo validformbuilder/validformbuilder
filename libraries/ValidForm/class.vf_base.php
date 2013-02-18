@@ -9,8 +9,32 @@ class VF_Base extends ClassDynamic {
 	protected $__parent;
 	protected $__conditions = array();
 	protected $__meta = array();
-	protected $__reservedmeta = array("parent", "data", "dynamicCounter", "tip", "hint", "default", "width", "height", "length", "start", "end", "path", "labelStyle", "labelClass", "labelRange", "valueRange", "dynamic", "dynamicLabel", "matchWith");
-	protected $__fieldmeta = array("disabled", "class");
+	protected $__fieldmeta = array();
+	protected $__labelmeta = array();
+	protected $__magicmeta = array("label", "field");
+	protected $__reservedfieldmeta = array("multiple");
+	protected $__reservedlabelmeta = array();
+	protected $__reservedmeta = array(
+		"parent",
+		"data",
+		"dynamicCounter",
+		"tip",
+		"hint",
+		"default",
+		"width",
+		"height",
+		"length",
+		"start",
+		"end",
+		"path",
+		"labelStyle",
+		"labelClass",
+		"labelRange",
+		"valueRange",
+		"dynamic",
+		"dynamicLabel",
+		"matchWith"
+	);
 
 	/**
 	 * Add a new condition to the current field
@@ -145,15 +169,15 @@ class VF_Base extends ClassDynamic {
 
 						if ($blnResult) {
 							if ($objCondition->getValue()) {
-								$this->setMeta("disabled", "", true);
+								$this->setFieldMeta("disabled", "", true);
 							} else {
-								$this->setMeta("disabled", "disabled", true);
+								$this->setFieldMeta("disabled", "disabled", true);
 							}
 						} else {
 							if ($objCondition->getValue()) {
-								$this->setMeta("disabled", "disabled", true);
+								$this->setFieldMeta("disabled", "disabled", true);
 							} else {
-								$this->setMeta("disabled", "", true);
+								$this->setFieldMeta("disabled", "", true);
 							}
 						}
 					}
@@ -173,35 +197,15 @@ class VF_Base extends ClassDynamic {
 	 * @param boolean 	$blnOverwrite Overwrite previous property value.
 	 */
 	public function setMeta($property, $value, $blnOverwrite = false) {
-		if ($blnOverwrite) {
-			if (empty($value) || is_null($value)) {
-				unset($this->__meta[$property]);
-			} else {
-				$this->__meta[$property] = $value;
-			}
-		} else {
-			$varMeta = (isset($this->__meta[$property])) ? $this->__meta[$property] : "";
+		return $this->__setMeta($property, $value, $blnOverwrite);
+	}
 
-			//*** Define delimiter per meta property.
-			switch ($property) {
-				case "style":
-					$strDelimiter = ";";
-					break;
+	public function setFieldMeta($property, $value, $blnOverwrite = false) {
+		return $this->__setMeta("field" . $property, $value, $blnOverwrite);
+	}
 
-				default:
-					$strDelimiter = " ";
-			}
-
-			//*** Add the value to the property string.
-			$arrMeta = explode($strDelimiter, $varMeta);
-			$arrMeta[] = $value;
-
-			// Make sure no empty values are left in the array.
-			$arrMeta = array_filter($arrMeta);
-			$varMeta = implode($strDelimiter, $arrMeta);
-
-			$this->__meta[$property] = $varMeta;
-		}
+	public function setLabelMeta($property, $value, $blnOverwrite = false) {
+		return $this->__setMeta("label" . $property, $value, $blnOverwrite);
 	}
 
 	/**
@@ -209,8 +213,38 @@ class VF_Base extends ClassDynamic {
 	 * @param  string $property Property to get from internal meta array.
 	 * @return string           Property value or empty string of none is set.
 	 */
-	public function getMeta($property) {
-		return (isset($this->__meta[$property]) && !is_null($this->__meta[$property])) ? $this->__meta[$property] : "";
+	public function getMeta($property = null, $fallbackValue = "") {
+		if (is_null($property)) {
+			return $this->__meta;
+		} else {
+			return (isset($this->__meta[$property]) && !is_null($this->__meta[$property])) ? $this->__meta[$property] : $fallbackValue;
+		}
+	}
+
+	/**
+	 * Get field meta property.
+	 * @param  string $property Property to get from internal field meta array.
+	 * @return string           Property value or empty string of none is set.
+	 */
+	public function getFieldMeta($property = null, $fallbackValue = "") {
+		if (is_null($property)) {
+			return $this->__fieldmeta;
+		} else {
+			return (isset($this->__fieldmeta[$property]) && !is_null($this->__fieldmeta[$property])) ? $this->__fieldmeta[$property] : $fallbackValue;
+		}
+	}
+
+	/**
+	 * Get label meta property.
+	 * @param  string $property Property to get from internal label meta array.
+	 * @return string           Property value or empty string of none is set.
+	 */
+	public function getLabelMeta($property = null, $fallbackValue = "") {
+		if (is_null($property)) {
+			return $this->__labelmeta;
+		} else {
+			return (isset($this->__labelmeta[$property]) && !is_null($this->__labelmeta[$property])) ? $this->__labelmeta[$property] : $fallbackValue;
+		}
 	}
 
 	public function getName() {
@@ -238,18 +272,12 @@ class VF_Base extends ClassDynamic {
 		return strtolower(get_class($this)) . "_" . mt_rand();
 	}
 
-	protected function __getMetaString($blnIncludeFieldMeta = false) {
+	protected function __getMetaString() {
 		$strOutput = "";
 
 		foreach ($this->__meta as $key => $value) {
-			if ($blnIncludeFieldMeta) {
-				if (!in_array($key, $this->__reservedmeta)) {
-					$strOutput .= " {$key}=\"{$value}\"";
-				}
-			} else {
-				if (!in_array($key, array_merge($this->__reservedmeta, $this->__fieldmeta))) {
-					$strOutput .= " {$key}=\"{$value}\"";
-				}
+			if (!in_array($key, array_merge($this->__reservedmeta, $this->__fieldmeta))) {
+				$strOutput .= " {$key}=\"{$value}\"";
 			}
 		}
 
@@ -259,21 +287,111 @@ class VF_Base extends ClassDynamic {
 	protected function __getFieldMetaString() {
 		$strOutput = "";
 
-		foreach ($this->__meta as $key => $value) {
-			if (in_array($key, array_intersect($this->__meta, $this->__fieldmeta))) {
-				$strOutput .= " {$key}=\"{$value}\"";
+		if (is_array($this->__fieldmeta)) {
+			foreach ($this->__fieldmeta as $key => $value) {
+				if (!in_array($key, $this->__reservedmeta)) {
+					$strOutput .= " {$key}=\"{$value}\"";
+				}
 			}
 		}
 
 		return $strOutput;
 	}
 
-	private function __checkConditionProperty($strProp) {
-		$blnReturn = false;
+	protected function __getLabelMetaString() {
+		$strOutput = "";
 
-		if ($this->hasCondition($strProp) && $this->getCondition($strProp)->isMet()) {
-			$blnReturn = $this->getCondition($strProp)->getValue();
+		if (is_array($this->__labelmeta)) {
+			foreach ($this->__labelmeta as $key => $value) {
+				if (!in_array($key, $this->__reservedmeta)) {
+					$strOutput .= " {$key}=\"{$value}\"";
+				}
+			}
 		}
+
+		return $strOutput;
+	}
+
+	/**
+	 * Filter out special field or label specific meta tags from the main
+	 * meta array and add them to the designated meta arrays __fieldmeta or __labelmeta.
+	 * Example: $meta["labelstyle"] = "width: 20px"; will become $__fieldmeta["style"] = "width: 20px;";
+	 * Any meta key that starts with 'label' or 'field' will be assigned to it's
+	 * corresponding internal meta array.
+	 *
+	 * @return
+	 */
+	protected function __initializeMeta() {
+		foreach ($this->__meta as $key => $value) {
+			if (in_array($key, $this->__reservedfieldmeta)) {
+				$key = "field" . $key;
+			}
+
+			if (in_array($key, $this->__reservedlabelmeta)) {
+				$key = "label" . $key;
+			}
+
+			$strMagicKey = strtolower(substr($key, 0, 5));
+			if (in_array($strMagicKey, $this->__magicmeta)) {
+				$strMethod = "set" . ucfirst($strMagicKey) . "Meta";
+				$this->$strMethod(strtolower(substr($key, -(strlen($key) - 5))), $value);
+			}
+		}
+	}
+
+	protected function __setMeta($property, $value, $blnOverwrite = false) {
+		$internalMetaArray = &$this->__meta;
+
+		//*** Re-set internalMetaArray if property has magic key 'label' or 'field'
+		$strMagicKey = strtolower(substr($property, 0, 5));
+		if (in_array($strMagicKey, $this->__magicmeta)) {
+			switch ($strMagicKey) {
+				case "field":
+					$internalMetaArray = &$this->__fieldmeta;
+					$property = strtolower(substr($property, -(strlen($property) - 5)));
+					break;
+				case "label":
+					$internalMetaArray = &$this->__labelmeta;
+					$property = strtolower(substr($property, -(strlen($property) - 5)));
+					break;
+				default:
+			}
+		}
+
+		if ($blnOverwrite) {
+			if (empty($value) || is_null($value)) {
+				unset($internalMetaArray[$property]);
+			} else {
+				$internalMetaArray[$property] = $value;
+			}
+
+			return $value;
+		} else {
+			$varMeta = (isset($internalMetaArray[$property])) ? $internalMetaArray[$property] : "";
+
+			//*** Define delimiter per meta property.
+			switch ($property) {
+				case "style":
+					$strDelimiter = ";";
+					break;
+
+				default:
+					$strDelimiter = " ";
+			}
+
+			//*** Add the value to the property string.
+			$arrMeta = explode($strDelimiter, $varMeta);
+			$arrMeta[] = $value;
+
+			// Make sure no empty values are left in the array.
+			$arrMeta = array_filter($arrMeta);
+			$varMeta = implode($strDelimiter, $arrMeta);
+
+			$internalMetaArray[$property] = $varMeta;
+
+			return $varMeta;
+		}
+
 	}
 }
 ?>
