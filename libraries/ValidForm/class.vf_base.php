@@ -335,6 +335,8 @@ class VF_Base extends ClassDynamic {
 			if (in_array($strMagicKey, $this->__magicmeta)) {
 				$strMethod = "set" . ucfirst($strMagicKey) . "Meta";
 				$this->$strMethod(strtolower(substr($key, -(strlen($key) - 5))), $value);
+
+				unset($this->__meta[$key]);
 			}
 		}
 	}

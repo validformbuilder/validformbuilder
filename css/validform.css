@@ -244,11 +244,21 @@ select.vf__multiple,
 textarea.vf__text
 {
 	font: normal 12px Arial, Helvetica, sans-serif;
-	color: #666;
 	padding: 2px;
-	width: 147px;
+}
+
+input.vf__text,
+input.vf__text_tiny,
+input.vf__text_small,
+input.vf__text_large,
+select.vf__one,
+select.vf__multiple,
+textarea.vf__text
+{
 	background-color: #fff;
 	border: 1px solid #ccc;
+	width: 147px;
+	color: #666;
 }
 
 fieldset.vf__disabled input.vf__text,
@@ -278,8 +288,8 @@ textarea.vf__text {
 	height: 120px;
 }
 
-a.vf__button,
-input.vf__button {
+div.vf__navigation a.vf__button,
+div.vf__navigation input.vf__button {
 	float: right;
 	width: auto;
 	border: 1px solid #ccc;
