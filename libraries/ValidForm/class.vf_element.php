@@ -47,16 +47,17 @@ class VF_Element extends VF_Base {
 		$this->__label = $label;
 		$this->__type = $type;
 		$this->__meta = $meta;
-		$this->__parent = (isset($meta["parent"])) ? $meta["parent"] : null;
-		$this->__tip = (isset($meta["tip"])) ? $meta["tip"] : $this->__tip;
-		$this->__hint = (isset($meta["hint"])) ? $meta["hint"] : $this->__hint;
-		$this->__default = (isset($meta["default"])) ? $meta["default"] : $this->__default;
-		$this->__dynamic = (isset($meta["dynamic"])) ? $meta["dynamic"] : $this->__dynamic;
-		$this->__dynamicLabel = (isset($meta["dynamicLabel"])) ? $meta["dynamicLabel"] : $this->__dynamicLabel;
-		$this->__dynamiccounter = (isset($meta["dynamicCounter"])) ? true : $this->__dynamiccounter;
 
 		//*** Set label & field specific meta
 		$this->__initializeMeta();
+
+		$this->__parent = $this->getMeta("parent", null);
+		$this->__tip = $this->getMeta("tip", $this->__tip);
+		$this->__hint = $this->getMeta("hint", $this->__hint);
+		$this->__default = $this->getMeta("default", $this->__default);
+		$this->__dynamic = $this->getMeta("dynamic", $this->__dynamic);
+		$this->__dynamicLabel = $this->getMeta("dynamicLabel", $this->__dynamicLabel);
+		$this->__dynamiccounter = (!is_null($this->getMeta("dynamicCounter", null))) ? true : $this->__dynamiccounter;
 
 		// $this->__validator = new VF_FieldValidator($name, $type, $validationRules, $errorHandlers, $this->__hint);
 		$this->__validator = new VF_FieldValidator($this, $validationRules, $errorHandlers);
@@ -237,35 +238,35 @@ class VF_Element extends VF_Base {
 	 * @return	[boolean] 			True if set successful, false if not.
 	 */
 	public function setData($strKey = null, $varValue = null) {
-		$varReturn = false;
-		$this->__meta["data"] = (isset($this->__meta["data"])) ? $this->__meta["data"] : array();
+		$arrData = $this->getMeta("data", array());
 
-		if (isset($this->__meta["data"])) {
-			if (!is_null($strKey) && !is_null($varValue)) {
-				$this->__meta["data"][$strKey] = $varValue;
-			}
+		if (!is_null($strKey) && !is_null($varValue)) {
+			$arrData[$strKey] = $varValue;
 		}
 
-		return isset($this->__meta["data"][$strKey]);
+		// Set and overwrite previous value.
+		$this->setMeta("data", $arrData, true);
+
+		// Return boolean value
+		return !!$this->getData($key);
 	}
 
 	/**
 	 * Get a value from the internal data array.
 	 *
 	 * @param  [string] $key The key of the data attribute to return
-	 * @return [mixed]       If a key is provided, return it's value. If no key
-	 *                       provided, return the whole data array. If anything
-	 *                       is not set or incorrect, return false.
+	 * @return [mixed]
 	 */
 	public function getData($key = null) {
-		$varReturn = false;
+		$varReturn 	= false;
+		$arrData 	= $this->getMeta("data", null);
 
-		if (isset($this->__meta["data"])) {
+		if (!is_null($arrData)) {
 			if ($key == null) {
-				$varReturn = $this->__meta["data"];
+				$varReturn = $arrData;
 			} else {
-				if (isset($this->__meta["data"][$key])) {
-					$varReturn = $this->__meta["data"][$key];
+				if (isset($arrData[$key])) {
+					$varReturn = $arrData[$key];
 				}
 			}
 		}
