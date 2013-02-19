@@ -2,28 +2,29 @@
 /***************************
  * ValidForm Builder - build valid and secure web forms quickly
  *
- * Copyright (c) 2009-2012, Felix Langfeldt <flangfeldt@felix-it.com>.
+ * Copyright (c) 2009-2013 Neverwoods Internet Technology - http://neverwoods.com
+ *
+ * Felix Langfeldt <felix@neverwoods.com>
+ * Robin van Baalen <robin@neverwoods.com>
+ *
  * All rights reserved.
  *
  * This software is released under the GNU GPL v2 License <http://www.gnu.org/licenses/old-licenses/gpl-2.0.html>
  *
  * @package    ValidForm
- * @author     Felix Langfeldt <flangfeldt@felix-it.com>
- * @copyright  2009-2012 Felix Langfeldt <flangfeldt@felix-it.com>
+ * @author     Felix Langfeldt <felix@neverwoods.com>, Robin van Baalen <robin@neverwoods.com>
+ * @copyright  2009-2013 Neverwoods Internet Technology - http://neverwoods.com
  * @license    http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU GPL v2
- * @link       http://code.google.com/p/validformbuilder/
+ * @link       http://validformbuilder.org
  ***************************/
 
 require_once('class.vf_element.php');
 
 /**
- *
  * File Class
  *
  * @package ValidForm
  * @author Felix Langfeldt
- * @version Release: 0.2.3
- *
  */
 class VF_File extends VF_Element {
 
@@ -33,12 +34,18 @@ class VF_File extends VF_Element {
 		$blnError = ($submitted && !$this->__validator->validate() && $blnDisplayError) ? TRUE : FALSE;
 		if (!$blnSimpleLayout) {
 
-			$strClass = ($this->__validator->getRequired()) ? "vf__required" : "vf__optional";
-			$strClass = ($blnError) ? $strClass . " vf__error" : $strClass;
-			// $strClass = ($this->hasTrigger()) ? $strClass . " vf__targetfield" : $strClass;
-			$strClass = (!$blnLabel) ? $strClass . " vf__nolabel" : $strClass;
+			//*** We asume that all dynamic fields greater than 0 are never required.
+			if ($this->__validator->getRequired() && $intCount == 0) {
+				$this->setMeta("class", "vf__required");
+			} else {
+				$this->setMeta("class", "vf__optional");
+			}
 
-			$strOutput = "<div class=\"{$strClass}\">\n";
+			//*** Set custom meta.
+			if ($blnError) $this->setMeta("class", "vf__error");
+			if (!$blnLabel) $this->setMeta("class", "vf__nolabel");
+
+			$strOutput = "<div{$this->__getMetaString()}>\n";
 
 			if ($blnError) $strOutput .= "<p class=\"vf__error\">{$this->__validator->getError()}</p>";
 
@@ -47,9 +54,10 @@ class VF_File extends VF_Element {
 				if (!empty($this->__label)) $strOutput .= "<label for=\"{$this->__id}\"{$this->__getLabelMetaString()}>{$strLabel}</label>\n";
 			}
 		} else {
-			$strClass = ($blnError) ? $strClass . " vf__error" : $strClass;
-			
-			$strOutput = "<div class=\"vf__multifielditem{$strClass}\">\n";
+			if ($blnError) $this->setMeta("class", "vf__error");
+			$this->setMeta("class", "vf__multifielditem");
+
+			$strOutput = "<div{$this->__getMetaString()}\">\n";
 
 			if ($blnError) {
 				$strOutput .= "<p class=\"vf__error\">{$this->__validator->getError($intCount)}</p>";
@@ -60,7 +68,7 @@ class VF_File extends VF_Element {
 		$intMaxFileSize = $this->return_bytes(ini_get("upload_max_filesize"));
 		$strOutput .= "<input type=\"hidden\" name=\"MAX_FILE_SIZE\" value=\"{$intMaxFileSize}\" />";
 
-		$strOutput .= "<input type=\"file\" value=\"{$this->__getValue($submitted)}\" name=\"{$this->__name}[]\" id=\"{$this->__id}\" {$this->__getMetaString()} />\n";
+		$strOutput .= "<input type=\"file\" value=\"{$this->__getValue($submitted)}\" name=\"{$this->__name}[]\" id=\"{$this->__id}\"{$this->__getFieldMetaString()} />\n";
 
 		if (!empty($this->__tip)) $strOutput .= "<small class=\"vf__tip\">{$this->__tip}</small>\n";
 		$strOutput .= "</div>\n";
@@ -78,9 +86,11 @@ class VF_File extends VF_Element {
 
 		$strOutput = "objForm.addElement('{$this->__id}', '{$this->__name}', {$strCheck}, {$strRequired}, {$intMaxLength}, {$intMinLength}, '" . addslashes($this->__validator->getFieldHint()) . "', '" . addslashes($this->__validator->getTypeError()) . "', '" . addslashes($this->__validator->getRequiredError()) . "', '" . addslashes($this->__validator->getHintError()) . "', '" . addslashes($this->__validator->getMinLengthError()) . "', '" . addslashes($this->__validator->getMaxLengthError()) . "');\n";
 
-		// if ($this->hasTrigger()) {
-		// 	$strOutput .= $this->addTriggerJs();
-		// }
+		if ($this->hasConditions() && (count($this->getConditions() > 0))) {
+			foreach ($this->getConditions() as $objCondition) {
+				$strOutput .= "objForm.addCondition(" . json_encode($objCondition->jsonSerialize()) . ");\n";
+			}
+		}
 
 		return $strOutput;
 	}

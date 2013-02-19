@@ -177,7 +177,6 @@ function ValidFormCondition (objForm, objCondition) {
 
 	} catch (e) {
 		throw new Error("Failed to set default values in ValidFormCondition construct: " + e.message);
-
 	}
 
 	return this;
@@ -197,7 +196,7 @@ ValidFormCondition.prototype._init = function () {
 
 		self.isMet()
 			.progress(function (blnResult) {
-				console.log("ismet progress", blnResult);
+				console.log("ismet progress", self.subject);
 				self.set((blnResult) ? !!this.value : !this.value);
 			});
 
@@ -243,11 +242,18 @@ ValidFormCondition.prototype.set = function (blnValue) {
 			var $objSubject = (self.subject instanceof jQuery) ? self.subject : $("#" + self.subject.id);
 
 			if (blnValue) {
-				$objSubject.fadeIn("fast");
-				$objSubject.parent().fadeIn("fast");
+				$objSubject.show();
+
+				if (!$objSubject.is("div")) {
+					$objSubject.parent().show();
+				}
+
 			} else {
 				$objSubject.fadeOut("fast");
-				$objSubject.parent().fadeOut("fast");
+
+				if (!$objSubject.is("div")) {
+					$objSubject.parent().fadeOut("fast");
+				}
 			}
 
 		case "enabled":
@@ -269,15 +275,12 @@ ValidFormCondition.prototype.set = function (blnValue) {
 			if (self.subject instanceof ValidFormElement) {
 				var blnDefaultState = self.subject.getRequired(true);
 
-				console.log("Default required state: ", blnDefaultState, "set to", blnValue);
-
 				self.subject.setRequired(blnValue);
 
 				// if (blnIsRequired && blnValue) {
 				// 	self.subject.setRequired(blnValue);
 				// }
 			}
-
 
 			break;
 	}

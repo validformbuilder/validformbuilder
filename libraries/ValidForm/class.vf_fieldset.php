@@ -55,7 +55,7 @@ class VF_Fieldset extends VF_Base {
 	}
 
 	public function toHtml($submitted = FALSE, $blnSimpleLayout = FALSE, $blnLabel = true, $blnDisplayErrors = true) {
-		// Call this before __getMetaString();
+		// Call this right before __getMetaString();
 		$this->setConditionalMeta();
 
 		$strOutput = "<fieldset{$this->__getMetaString()} id=\"{$this->getName()}\">\n";
@@ -64,10 +64,6 @@ class VF_Fieldset extends VF_Base {
 		if (is_object($this->__note)) $strOutput .= $this->__note->toHtml();
 
 		foreach ($this->__fields as $field) {
-// 			if (!$this->isVisible()
-// 			    || !$this->isEnabled()) {
-// 				$field->setMeta("disabled", "disabled");
-// 			}
 			$strOutput .= $field->toHtml($submitted, $blnSimpleLayout, $blnLabel, $blnDisplayErrors);
 		}
 

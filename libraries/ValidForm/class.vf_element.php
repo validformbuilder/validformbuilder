@@ -2,19 +2,23 @@
 /***************************
  * ValidForm Builder - build valid and secure web forms quickly
  *
- * Copyright (c) 2009-2012, Felix Langfeldt <flangfeldt@felix-it.com>.
+ * Copyright (c) 2009-2013 Neverwoods Internet Technology - http://neverwoods.com
+ *
+ * Felix Langfeldt <felix@neverwoods.com>
+ * Robin van Baalen <robin@neverwoods.com>
+ *
  * All rights reserved.
  *
  * This software is released under the GNU GPL v2 License <http://www.gnu.org/licenses/old-licenses/gpl-2.0.html>
  *
  * @package    ValidForm
- * @author     Felix Langfeldt <flangfeldt@felix-it.com>
- * @copyright  2009-2012 Felix Langfeldt <flangfeldt@felix-it.com>
+ * @author     Felix Langfeldt <felix@neverwoods.com>, Robin van Baalen <robin@neverwoods.com>
+ * @copyright  2009-2013 Neverwoods Internet Technology - http://neverwoods.com
  * @license    http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU GPL v2
- * @link       http://code.google.com/p/validformbuilder/
+ * @link       http://validformbuilder.org
  ***************************/
 
-require_once('class.classdynamic.php');
+require_once('class.vf_base.php');
 
 /**
  *
@@ -22,8 +26,6 @@ require_once('class.classdynamic.php');
  *
  * @package ValidForm
  * @author Felix Langfeldt
- * @version 0.2.2
- *
  */
 class VF_Element extends VF_Base {
 	protected $__name;
@@ -94,7 +96,7 @@ class VF_Element extends VF_Base {
 				break;
 			case VFORM_RADIO_LIST:
 			case VFORM_CHECK_LIST:
-				$this->setFieldMeta("class", "vf__radiobutton");
+				$this->setFieldMeta("class", "vf__list");
 				break;
 			case VFORM_SELECT_LIST:
 				if (!isset($meta["multiple"])) {
@@ -225,53 +227,6 @@ class VF_Element extends VF_Base {
 		if (is_object($this->__validator)) {
 			$this->__validator->setFieldName($strName);
 		}
-	}
-
-	/**
-	 * Store data in the current object. This data will not be visibile in any output
-	 * and will only be used for internal purposes. For example, you can store some custom
-	 * data from your CMS or an other library in a field object, for later use.
-	 * Note: Using this method will overwrite any previously set data with the same key!
-	 *
-	 * @param [string] 	$strKey   	The key for this storage
-	 * @param [mixed] 	$varValue 	The value to store
-	 * @return	[boolean] 			True if set successful, false if not.
-	 */
-	public function setData($strKey = null, $varValue = null) {
-		$arrData = $this->getMeta("data", array());
-
-		if (!is_null($strKey) && !is_null($varValue)) {
-			$arrData[$strKey] = $varValue;
-		}
-
-		// Set and overwrite previous value.
-		$this->setMeta("data", $arrData, true);
-
-		// Return boolean value
-		return !!$this->getData($key);
-	}
-
-	/**
-	 * Get a value from the internal data array.
-	 *
-	 * @param  [string] $key The key of the data attribute to return
-	 * @return [mixed]
-	 */
-	public function getData($key = null) {
-		$varReturn 	= false;
-		$arrData 	= $this->getMeta("data", null);
-
-		if (!is_null($arrData)) {
-			if ($key == null) {
-				$varReturn = $arrData;
-			} else {
-				if (isset($arrData[$key])) {
-					$varReturn = $arrData[$key];
-				}
-			}
-		}
-
-		return $varReturn;
 	}
 
 	/**

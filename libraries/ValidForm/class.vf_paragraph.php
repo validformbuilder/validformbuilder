@@ -14,7 +14,7 @@
  * @link       http://code.google.com/p/validformbuilder/
  ***************************/
 
-require_once('class.classdynamic.php');
+require_once('class.vf_base.php');
 
 /**
  *
@@ -33,24 +33,28 @@ class VF_Paragraph extends VF_Base {
 		$this->__header = $header;
 		$this->__body = $body;
 		$this->__meta = $meta;
+
+		$this->__initializeMeta();
 	}
 
 	public function toHtml($submitted = FALSE, $blnSimpleLayout = FALSE, $blnLabel = true, $blnDisplayError = true) {
 		// Call this before __getMetaString();
 		$this->setConditionalMeta();
 
-		$strOutput = "<div {$this->__getMetaString()} id=\"{$this->getName()}\">\n";
+		$this->setMeta("id", $this->getName());
+		$strOutput = "<div{$this->__getMetaString()}>\n";
 
 		// Add header if not empty.
-		if (!empty($this->__header)) $strOutput .= "<h3>{$this->__header}</h3>\n";
+		if (!empty($this->__header)) $strOutput .= "<h3{$this->__getLabelMetaString()}>{$this->__header}</h3>\n";
 
 		if (!empty($this->__body)) {
 			if (preg_match("/<p.*?>/", $this->__body) > 0) {
 				$strOutput .= "{$this->__body}\n";
 			} else {
-				$strOutput .= "<p>{$this->__body}</p>\n";
+				$strOutput .= "<p{$this->__getFieldMetaString()}>{$this->__body}</p>\n";
 			}
 		}
+
 		$strOutput .= "</div>\n";
 
 		return $strOutput;

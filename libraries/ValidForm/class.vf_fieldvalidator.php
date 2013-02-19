@@ -122,6 +122,20 @@ class VF_FieldValidator extends ClassDynamic {
 		//*** Get the value to validate from either the global request variable or the cached __validvalues array.
 		$value = $this->getValue($intDynamicPosition);
 
+		//*** Get required an visible states from condition and overwrite values for validation purposes
+		$objCondition = $this->__field->getMetCondition("required");
+		if (is_object($objCondition) && $objCondition->isMet($intDynamicPosition)) {
+			$this->__required = $objCondition->getValue();
+		}
+
+		$objCondition = $this->__field->getMetCondition("visible");
+		if (is_object($objCondition) && $objCondition->isMet($intDynamicPosition)) {
+			if (!$objCondition->getValue()) {
+				// Is invisible
+				$this->__required = false;
+			}
+		}
+
 		//*** Check "required" option.
 		if (is_array($value)) {
 			$blnEmpty 		= TRUE;
@@ -147,16 +161,6 @@ class VF_FieldValidator extends ClassDynamic {
 				}
 			}
 		} else if (empty($value) && $value !== 0) {
-
-			$objCondition = $this->__field->getMetCondition("required");
-			if (is_object($objCondition) && $objCondition->isMet($intDynamicPosition)) {
-				$this->__required = $objCondition->getValue();
-			}
-
-			$objCondition = $this->__field->getMetCondition("visible");
-			if (is_object($objCondition) && $objCondition->isMet($intDynamicPosition)) {
-				$this->__required = $objCondition->getValue();
-			}
 
 			if ($this->__required && $intDynamicPosition == 0) {
 				//*** Only the first dynamic field has a required check. We asume by design that "real" dynamic fields are not required.

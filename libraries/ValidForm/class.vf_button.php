@@ -54,10 +54,6 @@ class VF_Button extends VF_Base {
 		return $strReturn;
 	}
 
-	public function toJS() {
-		return null;
-	}
-
 	public function isValid() {
 		return TRUE;
 	}

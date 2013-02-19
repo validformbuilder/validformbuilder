@@ -43,6 +43,7 @@ require_once('class.vf_fieldvalidator.php');
 require_once('class.vf_page.php');
 require_once('class.vf_condition.php');
 require_once('class.vf_comparison.php');
+require_once('class.vf_navigation.php');
 
 require_once('vf_constants.php');
 
@@ -198,8 +199,8 @@ class ValidForm extends ClassDynamic {
 		return $objField;
 	}
 
-	public function addParagraph($strBody, $strHeader = "") {
-		$objParagraph = new VF_Paragraph($strHeader, $strBody);
+	public function addParagraph($strBody, $strHeader = "", $meta = array()) {
+		$objParagraph = new VF_Paragraph($strHeader, $strBody, $meta);
 
 		//*** Fieldset already defined?
 		$objFieldset = $this->__elements->getLast("VF_Fieldset");

@@ -18,7 +18,7 @@
  * @link       http://validformbuilder.org
  ***************************/
 
-require_once('class.classdynamic.php');
+require_once('class.vf_base.php');
 
 /**
  *
@@ -45,10 +45,13 @@ class VF_Area extends VF_Base {
 		$this->__checked = $checked;
 		$this->__meta = $meta;
 
+		//*** Set label & field specific meta
+		$this->__initializeMeta();
+
 		$this->__fields = new VF_Collection();
 
-		$this->__dynamic = (array_key_exists("dynamic", $meta)) ? $meta["dynamic"] : NULL;
-		$this->__dynamicLabel = (array_key_exists("dynamicLabel", $meta)) ? $meta["dynamicLabel"] : NULL;
+		$this->__dynamic = $this->getMeta("dynamic", null);
+		$this->__dynamicLabel = $this->getMeta("dynamicLabel", null);
 	}
 
 	public function addField($name, $label, $type, $validationRules = array(), $errorHandlers = array(), $meta = array()) {
@@ -136,22 +139,23 @@ class VF_Area extends VF_Base {
 	}
 
 	protected function __toHtml($submitted = false, $blnSimpleLayout = false, $blnLabel = true, $blnDisplayErrors = true, $intCount = 0) {
+		// Call this before __getMetaString();
+		$this->setConditionalMeta();
+
 		$strName 	= ($intCount == 0) ? $this->getName() : $this->getName() . "_" . $intCount;
 
-		$strChecked = ($this->__active && $this->__checked && !$submitted) ? " checked=\"checked\"" : "";
-		$strChecked = ($this->__active && $submitted && $this->hasContent($intCount)) ? " checked=\"checked\"" : $strChecked;
+		if ($this->__active && $this->__checked && !$submitted) $this->setFieldMeta("checked", "checked", true);
+		if ($this->__active && $submitted && $this->hasContent($intCount)) $this->setFieldMeta("checked", "checked", true);
 
-		$strClass = (array_key_exists("class", $this->__meta)) ? " " . $this->__meta["class"] : "";
-		$strClass = ($this->__active && empty($strChecked) && empty($strChecked)) ? $strClass . " vf__disabled" : $strClass;
+		$this->setMeta("class", "vf__area");
+		if ($this->__active && empty($strChecked) && empty($strChecked)) $this->setMeta("class", "vf__disabled");
 
-		$strOutput = "<fieldset class=\"vf__area{$strClass}\" id=\"{$this->getName()}\">\n";
+		$strOutput = "<fieldset{$this->__getMetaString()} id=\"{$this->getId()}\">\n";
 
 		if ($this->__active) {
-
-			$strCounter = ($intCount == 0) ? "<input type='hidden' name='{$strName}_dynamic' value='{$intCount}' id='{$strName}_dynamic'/>" : "";
-			$label = "<label for=\"{$strName}\"><input type=\"checkbox\" name=\"{$strName}\" id=\"{$strName}\" {$strChecked} /> {$this->__label} {$strCounter}</label>";
+			$strCounter = ($intCount == 0 && $this->__dynamic) ? " <input type='hidden' name='{$strName}_dynamic' value='{$intCount}' id='{$strName}_dynamic'/>" : "";
+			$label = "<label for=\"{$strName}\"><input type=\"checkbox\" name=\"{$strName}\" id=\"{$strName}\"{$this->__getFieldMetaString()} /> {$this->__label}{$strCounter}</label>";
 		} else {
-
 			$label = $this->__label;
 		}
 
@@ -277,7 +281,7 @@ class VF_Area extends VF_Base {
 	}
 
 	public function getId() {
-		return null;
+		return $this->getName() . "_area";
 	}
 
 	public function getType() {
@@ -286,53 +290,6 @@ class VF_Area extends VF_Base {
 
 	public function hasFields() {
 		return ($this->__fields->count() > 0) ? TRUE : FALSE;
-	}
-
-	/**
-	 * Store data in the current object. This data will not be visibile in any output
-	 * and will only be used for internal purposes. For example, you can store some custom
-	 * data from your CMS or an other library in a field object, for later use.
-	 * Note: Using this method will overwrite any previously set data with the same key!
-	 *
-	 * @param [string] 	$strKey   	The key for this storage
-	 * @param [mixed] 	$varValue 	The value to store
-	 * @return	[boolean] 			True if set successful, false if not.
-	 */
-	public function setData($strKey = null, $varValue = null) {
-		$varReturn = false;
-		$this->__meta["data"] = (isset($this->__meta["data"])) ? $this->__meta["data"] : array();
-
-		if (isset($this->__meta["data"])) {
-			if (!is_null($strKey) && !is_null($varValue)) {
-				$this->__meta["data"][$strKey] = $varValue;
-			}
-		}
-
-		return isset($this->__meta["data"][$strKey]);
-	}
-
-	/**
-	 * Get a value from the internal data array.
-	 *
-	 * @param  [string] $key The key of the data attribute to return
-	 * @return [mixed]       If a key is provided, return it's value. If no key
-	 *                       provided, return the whole data array. If anything
-	 *                       is not set or incorrect, return false.
-	 */
-	public function getData($key = null) {
-		$varReturn = false;
-
-		if (isset($this->__meta["data"])) {
-			if ($key == null) {
-				$varReturn = $this->__meta["data"];
-			} else {
-				if (isset($this->__meta["data"][$key])) {
-					$varReturn = $this->__meta["data"][$key];
-				}
-			}
-		}
-
-		return $varReturn;
 	}
 
 	private function __validate($intCount = null) {

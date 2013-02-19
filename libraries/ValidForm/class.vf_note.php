@@ -1,42 +1,50 @@
 <?php
 /***************************
  * ValidForm Builder - build valid and secure web forms quickly
- * 
- * Copyright (c) 2009-2012, Felix Langfeldt <flangfeldt@felix-it.com>.
+ *
+ * Copyright (c) 2009-2013 Neverwoods Internet Technology - http://neverwoods.com
+ *
+ * Felix Langfeldt <felix@neverwoods.com>
+ * Robin van Baalen <robin@neverwoods.com>
+ *
  * All rights reserved.
- * 
+ *
  * This software is released under the GNU GPL v2 License <http://www.gnu.org/licenses/old-licenses/gpl-2.0.html>
- * 
+ *
  * @package    ValidForm
- * @author     Felix Langfeldt <flangfeldt@felix-it.com>
- * @copyright  2009-2012 Felix Langfeldt <flangfeldt@felix-it.com>
+ * @author     Felix Langfeldt <felix@neverwoods.com>, Robin van Baalen <robin@neverwoods.com>
+ * @copyright  2009-2013 Neverwoods Internet Technology - http://neverwoods.com
  * @license    http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU GPL v2
- * @link       http://code.google.com/p/validformbuilder/
+ * @link       http://validformbuilder.org
  ***************************/
-  
-require_once('class.classdynamic.php');
+
+require_once('class.vf_base.php');
 
 /**
- * 
  * Note Class
- * 
+ *
  * @package ValidForm
  * @author Felix Langfeldt
- * @version Release: 0.2.1
- *
  */
-class VF_Note extends ClassDynamic {
+class VF_Note extends VF_Base {
 	protected $__header;
 	protected $__body;
-	
-	public function __construct($header = NULL, $body = NULL) {
+
+	public function __construct($header = NULL, $body = NULL, $meta = array()) {
 		$this->__header = $header;
 		$this->__body = $body;
+
+		$this->__meta = $meta;
+		$this->__initializeMeta();
 	}
-	
+
 	public function toHtml() {
-		$strOutput = "<div class=\"vf__notes\">\n";
-		if (!empty($this->__header)) $strOutput .= "<h4>$this->__header</h4>\n";
+		$this->setMeta("class", "vf__notes");
+
+		$this->setConditionalMeta();
+		$strOutput = "<div{$this->__getMetaString()}>\n";
+
+		if (!empty($this->__header)) $strOutput .= "<h4{$this->__getLabelMetaString()}>$this->__header</h4>\n";
 		if (!empty($this->__body)) {
 			if (preg_match("/<p.*?>/", $this->__body) > 0) {
 				$strOutput .= "{$this->__body}\n";
@@ -45,10 +53,10 @@ class VF_Note extends ClassDynamic {
 			}
 		}
 		$strOutput .= "</div>\n";
-	
+
 		return $strOutput;
 	}
-	
+
 }
 
 ?>

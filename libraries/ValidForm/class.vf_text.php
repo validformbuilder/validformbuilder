@@ -42,39 +42,6 @@ class VF_Text extends VF_Element {
 		return $strOutput;
 	}
 
-	public function toJS($blnParentIsDynamic = FALSE) {
-		$strCheck = $this->__validator->getCheck();
-		$strCheck = (empty($strCheck)) ? "''" : str_replace("'", "\\'", $strCheck);
-		$strRequired = ($this->__validator->getRequired()) ? "true" : "false";
-		$intMaxLength = ($this->__validator->getMaxLength() > 0) ? $this->__validator->getMaxLength() : "null";
-		$intMinLength = ($this->__validator->getMinLength() > 0) ? $this->__validator->getMinLength() : "null";
-
-		$strOutput = parent::toJs();
-
-		if ($this->__dynamic || $blnParentIsDynamic) {
-			$intDynamicCount = $this->getDynamicCount($blnParentIsDynamic);
-			for($intCount = 0; $intCount <= $intDynamicCount; $intCount++) {
-				$strId 		= ($intCount == 0) ? $this->__id : $this->__id . "_" . $intCount;
-				$strName 	= ($intCount == 0) ? $this->__name : $this->__name . "_" . $intCount;
-
-				//*** We asume that all dynamic fields greater than 0 are never required.
-				if ($intDynamicCount > 0) $strRequired = "false";
-
-				$strOutput .= "objForm.addElement('{$strId}', '{$strName}', {$strCheck}, {$strRequired}, {$intMaxLength}, {$intMinLength}, '" . addslashes($this->__validator->getFieldHint()) . "', '" . addslashes($this->__validator->getTypeError()) . "', '" . addslashes($this->__validator->getRequiredError()) . "', '" . addslashes($this->__validator->getHintError()) . "', '" . addslashes($this->__validator->getMinLengthError()) . "', '" . addslashes($this->__validator->getMaxLengthError()) . "');\n";
-			}
-		} else {
-			$strOutput = "objForm.addElement('{$this->__id}', '{$this->__name}', {$strCheck}, {$strRequired}, {$intMaxLength}, {$intMinLength}, '" . addslashes($this->__validator->getFieldHint()) . "', '" . addslashes($this->__validator->getTypeError()) . "', '" . addslashes($this->__validator->getRequiredError()) . "', '" . addslashes($this->__validator->getHintError()) . "', '" . addslashes($this->__validator->getMinLengthError()) . "', '" . addslashes($this->__validator->getMaxLengthError()) . "');\n";
-		}
-
-		if ($this->hasConditions() && (count($this->getConditions() > 0))) {
-			foreach ($this->getConditions() as $objCondition) {
-				$strOutput .= "objForm.addCondition(" . json_encode($objCondition->jsonSerialize()) . ");\n";
-			}
-		}
-
-		return $strOutput;
-	}
-
 	public function __toHtml($submitted = FALSE, $blnSimpleLayout = FALSE, $blnLabel = true, $blnDisplayErrors = true, $intCount = 0) {
 		$strOutput 	= "";
 
@@ -82,8 +49,6 @@ class VF_Text extends VF_Element {
 		$strId 		= ($intCount == 0) ? $this->__id : $this->__id . "_" . $intCount;
 
 		$this->setConditionalMeta();
-
-		// print_r($this->__meta);
 
 		$blnError = ($submitted && !$this->__validator->validate($intCount) && $blnDisplayErrors) ? TRUE : FALSE;
 		if (!$blnSimpleLayout) {
@@ -139,6 +104,39 @@ class VF_Text extends VF_Element {
 			&& ($intCount == $this->getDynamicCount())
 		) {
 			$strOutput .= "<div class=\"vf__dynamic vf__cf\"><a href=\"#\" data-target-id=\"{$this->__id}\" data-target-name=\"{$this->__name}\">{$this->__dynamicLabel}</a></div>\n";
+		}
+
+		return $strOutput;
+	}
+
+	public function toJS($blnParentIsDynamic = FALSE) {
+		$strCheck = $this->__validator->getCheck();
+		$strCheck = (empty($strCheck)) ? "''" : str_replace("'", "\\'", $strCheck);
+		$strRequired = ($this->__validator->getRequired()) ? "true" : "false";
+		$intMaxLength = ($this->__validator->getMaxLength() > 0) ? $this->__validator->getMaxLength() : "null";
+		$intMinLength = ($this->__validator->getMinLength() > 0) ? $this->__validator->getMinLength() : "null";
+
+		$strOutput = parent::toJs();
+
+		if ($this->__dynamic || $blnParentIsDynamic) {
+			$intDynamicCount = $this->getDynamicCount($blnParentIsDynamic);
+			for($intCount = 0; $intCount <= $intDynamicCount; $intCount++) {
+				$strId 		= ($intCount == 0) ? $this->__id : $this->__id . "_" . $intCount;
+				$strName 	= ($intCount == 0) ? $this->__name : $this->__name . "_" . $intCount;
+
+				//*** We asume that all dynamic fields greater than 0 are never required.
+				if ($intDynamicCount > 0) $strRequired = "false";
+
+				$strOutput .= "objForm.addElement('{$strId}', '{$strName}', {$strCheck}, {$strRequired}, {$intMaxLength}, {$intMinLength}, '" . addslashes($this->__validator->getFieldHint()) . "', '" . addslashes($this->__validator->getTypeError()) . "', '" . addslashes($this->__validator->getRequiredError()) . "', '" . addslashes($this->__validator->getHintError()) . "', '" . addslashes($this->__validator->getMinLengthError()) . "', '" . addslashes($this->__validator->getMaxLengthError()) . "');\n";
+			}
+		} else {
+			$strOutput = "objForm.addElement('{$this->__id}', '{$this->__name}', {$strCheck}, {$strRequired}, {$intMaxLength}, {$intMinLength}, '" . addslashes($this->__validator->getFieldHint()) . "', '" . addslashes($this->__validator->getTypeError()) . "', '" . addslashes($this->__validator->getRequiredError()) . "', '" . addslashes($this->__validator->getHintError()) . "', '" . addslashes($this->__validator->getMinLengthError()) . "', '" . addslashes($this->__validator->getMaxLengthError()) . "');\n";
+		}
+
+		if ($this->hasConditions() && (count($this->getConditions() > 0))) {
+			foreach ($this->getConditions() as $objCondition) {
+				$strOutput .= "objForm.addCondition(" . json_encode($objCondition->jsonSerialize()) . ");\n";
+			}
 		}
 
 		return $strOutput;

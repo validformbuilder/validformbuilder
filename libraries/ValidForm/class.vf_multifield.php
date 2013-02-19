@@ -35,12 +35,14 @@ class VF_MultiField extends VF_Base {
 	public function __construct($label, $meta = array()) {
 		$this->__label = $label;
 		$this->__meta = $meta;
+
+		//*** Set label & field specific meta
 		$this->__initializeMeta();
 
 		$this->__fields = new VF_Collection();
 
-		$this->__dynamic = (array_key_exists("dynamic", $meta)) ? $meta["dynamic"] : NULL;
-		$this->__dynamicLabel = (array_key_exists("dynamicLabel", $meta)) ? $meta["dynamicLabel"] : NULL;
+		$this->__dynamic = $this->getMeta("dynamic", $this->__dynamic);
+		$this->__dynamicLabel = $this->getMeta("dynamicLabel", $this->__dynamicLabel);
 	}
 
 	public function addField($name, $type, $validationRules = array(), $errorHandlers = array(), $meta = array()) {
@@ -89,10 +91,11 @@ class VF_MultiField extends VF_Base {
 	}
 
 	public function __toHtml($submitted = FALSE, $blnSimpleLayout = FALSE, $blnLabel = true, $blnDisplayError = true, $intCount = 0) {
-		$blnRequired = FALSE;
 		$blnError = ($submitted && !$this->__validate($intCount));
-		$strId = "";
 
+		//*** Check if this multifield should have required styling.
+		$strId = "";
+		$blnRequired = FALSE;
 		foreach ($this->__fields as $field) {
 			if (empty($strId)) {
 				$strId = ($intCount == 0) ? $field->id : $field->id . "_" . $intCount;
@@ -107,13 +110,18 @@ class VF_MultiField extends VF_Base {
 		}
 
 		//*** We asume that all dynamic fields greater than 0 are never required.
-		$strClass = ($blnRequired && $intCount == 0) ? "vf__required" : "vf__optional";
+		if ($blnRequired && $intCount == 0) {
+			$this->setMeta("class", "vf__required");
+		} else {
+			$this->setMeta("class", "vf__optional");
+		}
 
-		$strClass 	= (array_key_exists("class", $this->__meta)) ? $strClass . " " . $this->__meta["class"] : $strClass;
-		$strClass 	= ($blnError) ? $strClass . " vf__error" : $strClass;
-		$strOutput 	= "<div class=\"vf__multifield vf__cf {$strClass}\" {$this->__getMetaString()}>\n";
+		//*** Set custom meta.
+		if ($blnError) $this->setMeta("class", "vf__error");
+		$this->setMeta("class", "vf__multifield vf__cf");
 
-		// if ($blnError) $strOutput .= $strError;
+		$this->setConditionalMeta();
+		$strOutput 	= "<div{$this->__getMetaString()}>\n";
 
 		$strLabel = (!empty($this->__requiredstyle) && $blnRequired) ? sprintf($this->__requiredstyle, $this->__label) : $this->__label;
 		if(!empty($this->__label)) $strOutput .= "<label for=\"{$strId}\"{$this->__getLabelMetaString()}>{$strLabel}</label>\n";
@@ -167,6 +175,12 @@ class VF_MultiField extends VF_Base {
 
 		foreach ($this->__fields as $field) {
 			$strReturn .= $field->toJS($this->__dynamic);
+		}
+
+		if ($this->hasConditions() && (count($this->getConditions() > 0))) {
+			foreach ($this->getConditions() as $objCondition) {
+				$strOutput .= "objForm.addCondition(" . json_encode($objCondition->jsonSerialize()) . ");\n";
+			}
 		}
 
 		return $strReturn;

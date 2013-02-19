@@ -1,4 +1,23 @@
 <?php
+/***************************
+ * ValidForm Builder - build valid and secure web forms quickly
+ *
+ * Copyright (c) 2009-2013 Neverwoods Internet Technology - http://neverwoods.com
+ *
+ * Felix Langfeldt <felix@neverwoods.com>
+ * Robin van Baalen <robin@neverwoods.com>
+ *
+ * All rights reserved.
+ *
+ * This software is released under the GNU GPL v2 License <http://www.gnu.org/licenses/old-licenses/gpl-2.0.html>
+ *
+ * @package    ValidForm
+ * @author     Felix Langfeldt <felix@neverwoods.com>, Robin van Baalen <robin@neverwoods.com>
+ * @copyright  2009-2013 Neverwoods Internet Technology - http://neverwoods.com
+ * @license    http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU GPL v2
+ * @link       http://validformbuilder.org
+ ***************************/
+
 /**
  * ValidForm Base class.
  * All ValidForm classes share this base logic.
@@ -266,6 +285,53 @@ class VF_Base extends ClassDynamic {
 		}
 
 		return $strOutput;
+	}
+
+	/**
+	 * Store data in the current object. This data will not be visibile in any output
+	 * and will only be used for internal purposes. For example, you can store some custom
+	 * data from your CMS or an other library in a field object, for later use.
+	 * Note: Using this method will overwrite any previously set data with the same key!
+	 *
+	 * @param [string] 	$strKey   	The key for this storage
+	 * @param [mixed] 	$varValue 	The value to store
+	 * @return	[boolean] 			True if set successful, false if not.
+	 */
+	public function setData($strKey = null, $varValue = null) {
+		$arrData = $this->getMeta("data", array());
+
+		if (!is_null($strKey) && !is_null($varValue)) {
+			$arrData[$strKey] = $varValue;
+		}
+
+		// Set and overwrite previous value.
+		$this->setMeta("data", $arrData, true);
+
+		// Return boolean value
+		return !!$this->getData($key);
+	}
+
+	/**
+	 * Get a value from the internal data array.
+	 *
+	 * @param  [string] $key The key of the data attribute to return
+	 * @return [mixed]
+	 */
+	public function getData($key = null) {
+		$varReturn 	= false;
+		$arrData 	= $this->getMeta("data", null);
+
+		if (!is_null($arrData)) {
+			if ($key == null) {
+				$varReturn = $arrData;
+			} else {
+				if (isset($arrData[$key])) {
+					$varReturn = $arrData[$key];
+				}
+			}
+		}
+
+		return $varReturn;
 	}
 
 	protected function __generateName() {

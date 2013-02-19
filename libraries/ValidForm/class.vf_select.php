@@ -2,16 +2,20 @@
 /***************************
  * ValidForm Builder - build valid and secure web forms quickly
  *
- * Copyright (c) 2009-2012, Felix Langfeldt <flangfeldt@felix-it.com>.
+ * Copyright (c) 2009-2013 Neverwoods Internet Technology - http://neverwoods.com
+ *
+ * Felix Langfeldt <felix@neverwoods.com>
+ * Robin van Baalen <robin@neverwoods.com>
+ *
  * All rights reserved.
  *
  * This software is released under the GNU GPL v2 License <http://www.gnu.org/licenses/old-licenses/gpl-2.0.html>
  *
  * @package    ValidForm
- * @author     Felix Langfeldt <flangfeldt@felix-it.com>
- * @copyright  2009-2012 Felix Langfeldt <flangfeldt@felix-it.com>
+ * @author     Felix Langfeldt <felix@neverwoods.com>, Robin van Baalen <robin@neverwoods.com>
+ * @copyright  2009-2013 Neverwoods Internet Technology - http://neverwoods.com
  * @license    http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU GPL v2
- * @link       http://code.google.com/p/validformbuilder/
+ * @link       http://validformbuilder.org
  ***************************/
 
 require_once('class.vf_element.php');
@@ -22,8 +26,6 @@ require_once('class.vf_element.php');
  *
  * @package ValidForm
  * @author Felix Langfeldt
- * @version Release: 0.2.3
- *
  */
 class VF_Select extends VF_Element {
 	protected $__options;
@@ -73,6 +75,9 @@ class VF_Select extends VF_Element {
 			//*** Set custom meta.
 			if ($blnError) $this->setMeta("class", "vf__error");
 			if (!$blnLabel) $this->setMeta("class", "vf__nolabel");
+
+			// Call this right before __getMetaString();
+			$this->setConditionalMeta();
 
 			$strOutput .= "<div{$this->__getMetaString()}>\n";
 
@@ -177,9 +182,11 @@ class VF_Select extends VF_Element {
 			$strOutput = "objForm.addElement('{$this->__id}', '{$this->__name}', {$strCheck}, {$strRequired}, {$intMaxLength}, {$intMinLength}, '" . addslashes($this->__validator->getFieldHint()) . "', '" . addslashes($this->__validator->getTypeError()) . "', '" . addslashes($this->__validator->getRequiredError()) . "', '" . addslashes($this->__validator->getHintError()) . "', '" . addslashes($this->__validator->getMinLengthError()) . "', '" . addslashes($this->__validator->getMaxLengthError()) . "');\n";
 		}
 
-		// if (is_object($this->__targetfield)) {
-		// 	$strOutput .= $this->__targetfield->toJs();
-		// }
+		if ($this->hasConditions() && (count($this->getConditions() > 0))) {
+			foreach ($this->getConditions() as $objCondition) {
+				$strOutput .= "objForm.addCondition(" . json_encode($objCondition->jsonSerialize()) . ");\n";
+			}
+		}
 
 		return $strOutput;
 	}
@@ -190,26 +197,6 @@ class VF_Select extends VF_Element {
 
 		return $objOption;
 	}
-
-	// public function addFieldObject($objTarget, $checked = false) {
-	// 	// Add checkbox
-	// 	$objTrigger = $this->addField($objTarget->getLabel(), $this->getName(true) . "_triggerfield", $checked);
-
-	// 	// Set the defaults on the target element
-	// 	$objTarget->setName($this->getName(true) . "_triggerfield");
-	// 	$objTarget->setId($this->getRandomId($objTarget->getName()));
-
-	// 	// Set the trigger field.
-	// 	$objTarget->setTrigger($objTrigger);
-
-	// 	// This group has a trigger element.
-	// 	$this->__targetfield = $objTarget;
-
-	// 	// Add to validator
-	// 	$this->__validator->setTargetField($objTarget);
-
-	// 	// $this->__options->addObject($objTarget);
-	// }
 
 	public function addGroup($label) {
 		$objGroup = new VF_SelectGroup($label);
