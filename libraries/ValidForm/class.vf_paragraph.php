@@ -37,6 +37,10 @@ class VF_Paragraph extends VF_Base {
 		$this->__initializeMeta();
 	}
 
+	public function __toHtml() {
+		return $this->toHtml($submitted = FALSE, $blnSimpleLayout = FALSE, $blnLabel = true, $blnDisplayError = true);
+	}
+
 	public function toHtml($submitted = FALSE, $blnSimpleLayout = FALSE, $blnLabel = true, $blnDisplayError = true) {
 		// Call this before __getMetaString();
 		$this->setConditionalMeta();

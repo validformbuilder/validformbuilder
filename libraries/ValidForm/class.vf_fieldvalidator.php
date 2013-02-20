@@ -18,7 +18,6 @@ require_once('class.classdynamic.php');
 require_once('class.vf_validator.php');
 
 /**
- *
  * FieldValidator Class
  *
  * @package ValidForm
@@ -123,16 +122,58 @@ class VF_FieldValidator extends ClassDynamic {
 		$value = $this->getValue($intDynamicPosition);
 
 		//*** Get required an visible states from condition and overwrite values for validation purposes
-		$objCondition = $this->__field->getMetCondition("required");
-		if (is_object($objCondition) && $objCondition->isMet($intDynamicPosition)) {
-			$this->__required = $objCondition->getValue();
+		$objCondition = $this->__field->getCondition("required");
+		if (is_object($objCondition)) {
+			if ($objCondition->isMet($intDynamicPosition)) {
+				if ($objCondition->getValue()) {
+					$this->__required = true;
+				} else {
+					$this->__required = false;
+				}
+			} else {
+				if ($objCondition->getValue()) {
+					$this->__required = false;	
+				} else {
+					$this->__required = true;
+				}
+			}
+		} 
+
+		$objCondition = $this->__field->getCondition("enabled");
+		if (is_object($objCondition)) {
+			if ($objCondition->isMet($intDynamicPosition)) {
+				if ($objCondition->getValue()) {
+					// Enabled true
+				} else {
+					// Enabled false, therefore required false.
+					$this->__required = false;
+				}
+			} else {
+				if ($objCondition->getValue()) {
+					// Enabled false, therefore required false.
+					$this->__required = false;
+				} else {
+					// Enabled true
+				}
+			}
 		}
 
-		$objCondition = $this->__field->getMetCondition("visible");
-		if (is_object($objCondition) && $objCondition->isMet($intDynamicPosition)) {
-			if (!$objCondition->getValue()) {
-				// Is invisible
-				$this->__required = false;
+		$objCondition = $this->__field->getCondition("visible");
+		if (is_object($objCondition)) {
+			if ($objCondition->isMet($intDynamicPosition)) {
+				if ($objCondition->getValue()) {
+					// Visible true
+				} else {
+					// Visible false, therefore required false.
+					$this->__required = false;
+				}
+			} else {
+				if ($objCondition->getValue()) {
+					// Visible false, therefore required false.
+					$this->__required = false;
+				} else {
+					// Visible true
+				}
 			}
 		}
 

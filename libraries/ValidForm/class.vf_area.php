@@ -69,17 +69,11 @@ class VF_Area extends VF_Base {
 		return $objField;
 	}
 
-	public function addParagraph($strBody, $strHeader = "") {
-		$objParagraph = new VF_Paragraph($strHeader, $strBody);
-
-		//*** Fieldset already defined?
-		$objFieldset = $this->__elements->getLast("VF_Fieldset");
-		if ($this->__elements->count() == 0 || !is_object($objFieldset)) {
-			$objFieldset = $this->addFieldset();
-		}
+	public function addParagraph($strBody, $strHeader = "", $meta = array()) {
+		$objParagraph = new VF_Paragraph($strHeader, $strBody, $meta);
 
 		//*** Add field to the fieldset.
-		$objFieldset->addField($objParagraph);
+		$this->__fields->addObject($objParagraph);
 
 		return $objParagraph;
 	}
@@ -120,14 +114,16 @@ class VF_Area extends VF_Base {
 		$blnReturn = false;
 
 		foreach ($this->__fields as $objField) {
-			if (get_class($objField) !== "VF_Hidden") {
+			if (get_class($objField) !== "VF_Hidden" || get_class($objField) !== "VF_Paragraph") {
 				if (get_class($objField) == "VF_MultiField") {
 					$blnReturn = $objField->hasContent($intCount);
 				} else {
-					$varValue = $objField->getValidator()->getValue($intCount);
+					if ($objField instanceof VF_Element) {
+						$varValue = $objField->getValidator()->getValue($intCount);
 
-					if (!empty($varValue)) {
-						$blnReturn = true;
+						if (!empty($varValue)) {
+							$blnReturn = true;
+						}
 					}
 				}
 
