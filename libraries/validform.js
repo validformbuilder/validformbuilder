@@ -196,8 +196,8 @@ ValidFormCondition.prototype._init = function () {
 
 		self.isMet()
 			.progress(function (blnResult) {
-				console.log("ismet progress", self.subject);
-				self.set((blnResult) ? !!this.value : !this.value);
+				console.log("Condition is met: ", blnResult);
+				self.set(blnResult);
 			});
 
 	} catch (e) {
@@ -233,53 +233,102 @@ ValidFormCondition.prototype._setSubject = function (strSubject) {
 	return varReturn;
 }
 
-ValidFormCondition.prototype.set = function (blnValue) {
-	var self = this;
+ValidFormCondition.prototype.set = function (blnResult) {
+	var self = this
+	,	$objSubject = (self.subject instanceof jQuery) ? self.subject : $("#" + self.subject.id);
+
+	//*** Utility functions
+	var Util = {
+		show: function ($objSubject) {
+			$objSubject.show();
+
+			if (!$objSubject.is("div")) {
+				$objSubject.parent().show();
+			}
+		},
+		hide: function ($objSubject) {
+			$objSubject.fadeOut("fast");
+
+			if (!$objSubject.is("div")) {
+				$objSubject.parent().fadeOut("fast");
+			}
+		},
+		enable: function () {
+			if (self.subject instanceof ValidFormElement) {
+				self.subject.setEnabled(true);
+			}
+		},
+		disable: function () {
+			if (self.subject instanceof ValidFormElement) {
+				// var blnDefaultState = self.subject.getEnabled(true); // @todo When do we reset the form back to it's default state?
+				self.subject.setEnabled(false);
+			}
+		},
+		required: function () {
+			if (self.subject instanceof ValidFormElement) {
+				self.subject.setRequired(true);
+			}
+		},
+		optional: function () {
+			if (self.subject instanceof ValidFormElement) {
+				self.subject.setRequired(false);
+			}
+		}
+	}
 
 	switch (self.property) {
 		case "visible":
-			// Applies on all kinds of elements.
-			var $objSubject = (self.subject instanceof jQuery) ? self.subject : $("#" + self.subject.id);
-
-			if (blnValue) {
-				$objSubject.show();
-
-				if (!$objSubject.is("div")) {
-					$objSubject.parent().show();
+			if (blnResult) {
+				// Condition is met
+				if (self.value) {
+					// Show
+					Util.show($objSubject);
+				} else {
+					// Hide
+					Util.hide($objSubject);
 				}
-
 			} else {
-				$objSubject.fadeOut("fast");
-
-				if (!$objSubject.is("div")) {
-					$objSubject.parent().fadeOut("fast");
+				if (self.value) {
+					// Hide
+					Util.hide($objSubject);
+				} else {
+					// Show
+					Util.show($objSubject);
 				}
 			}
 
 		case "enabled":
-			// Only applies on fields
-			if (self.subject instanceof ValidFormElement) {
-				var blnDefaultState = self.subject.getEnabled(true);
-
-				if (blnValue) {
-					self.subject.setEnabled(blnValue);
+			if (blnResult) {
+				// Condition is met
+				if (self.value) {
+					Util.enable();
 				} else {
-					self.subject.setEnabled(blnDefaultState);
+					Util.disable();
+				}
+			} else {
+				if (self.value) {
+					Util.disable();
+				} else {
+					Util.enable();
 				}
 			}
 
 			break;
 
 		case "required":
-			// Only applies on fields.
-			if (self.subject instanceof ValidFormElement) {
-				var blnDefaultState = self.subject.getRequired(true);
-
-				self.subject.setRequired(blnValue);
-
-				// if (blnIsRequired && blnValue) {
-				// 	self.subject.setRequired(blnValue);
-				// }
+			if (blnResult) {
+				// Condition is met
+				if (self.value) {
+					Util.required();
+				} else {
+					Util.optional();
+				}
+			} else {
+				if (self.value) {
+					Util.optional();
+				} else {
+					Util.required();
+				}
 			}
 
 			break;
@@ -502,13 +551,13 @@ ValidForm.prototype.traverseDisabledElements = function () {
 		jQuery("legend input", fieldset)
 			.removeAttr("disabled");
 
-		__this.attachAreaEvents(jQuery("legend input", fieldset));
 	});
+
+	__this.attachAreaEvents(jQuery("legend input"));
 }
 
 ValidForm.prototype.dynamicDuplication = function () {
 	var __this 	= this;
-
 
 	// Bind click event to duplicate button
 	jQuery(".vf__dynamic a").bind("click", function() {
@@ -679,7 +728,7 @@ ValidForm.prototype.attachAreaEvents = function(objActiveTrigger) {
 
 			$("#" + __this.id).trigger("VF_DisableActiveArea", [{ValidForm: __this, objArea: fieldset}]);
 		}
-	}).click();
+	});
 };
 
 ValidForm.prototype.inArray = function(arrToSearch, value) {
@@ -1239,9 +1288,15 @@ ValidFormFieldValidator.prototype.validate = function(value) {
 			if(typeof this.check != "function" && typeof this.check != "object") {
 				return true;
 			} else {
-				blnReturn = this.check.test(value);
-				if (blnReturn == false) this.showAlert(this.typeError);
-				return blnReturn;
+				if (this.required && value !== "") {
+					blnReturn = this.check.test(value);
+
+					if (blnReturn == false) this.showAlert(this.typeError);
+					
+					return blnReturn;
+				} else {
+					return true;
+				}
 			}
 		} catch(e) {
 			var objElements = jQuery("input[name='" + this.name + "']");

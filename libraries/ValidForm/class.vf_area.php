@@ -144,7 +144,7 @@ class VF_Area extends VF_Base {
 		if ($this->__active && $submitted && $this->hasContent($intCount)) $this->setFieldMeta("checked", "checked", true);
 
 		$this->setMeta("class", "vf__area");
-		if ($this->__active && empty($strChecked) && empty($strChecked)) $this->setMeta("class", "vf__disabled");
+		if ($this->__active && is_null($this->getFieldMeta("checked", null))) $this->setMeta("class", "vf__disabled");
 
 		$strOutput = "<fieldset{$this->__getMetaString()} id=\"{$this->getId()}\">\n";
 
