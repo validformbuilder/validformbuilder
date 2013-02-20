@@ -35,7 +35,7 @@ class VF_Hidden extends VF_Element {
 
 	public function toHtml($submitted = FALSE, $blnSimpleLayout = FALSE, $blnLabel = true, $blnDisplayError = true) {
 		$strOutput = "";
-		$this->setConditionalMeta();
+		$this->setConditionalMeta($submitted);
 
 		$strOutput .= "<input type=\"hidden\" value=\"{$this->__getValue($submitted)}\" name=\"{$this->__name}\" id=\"{$this->__id}\" {$this->__getFieldMetaString()} />\n";
 

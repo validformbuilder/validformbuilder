@@ -56,7 +56,7 @@ class VF_Fieldset extends VF_Base {
 
 	public function toHtml($submitted = FALSE, $blnSimpleLayout = FALSE, $blnLabel = true, $blnDisplayErrors = true) {
 		// Call this right before __getMetaString();
-		$this->setConditionalMeta();
+		$this->setConditionalMeta($submitted);
 
 		$strOutput = "<fieldset{$this->__getMetaString()} id=\"{$this->getName()}\">\n";
 		if (!empty($this->__header)) $strOutput .= "<legend><span>{$this->__header}</span></legend>\n";

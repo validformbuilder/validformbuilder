@@ -43,7 +43,7 @@ class VF_Paragraph extends VF_Base {
 
 	public function toHtml($submitted = FALSE, $blnSimpleLayout = FALSE, $blnLabel = true, $blnDisplayError = true) {
 		// Call this before __getMetaString();
-		$this->setConditionalMeta();
+		$this->setConditionalMeta($submitted);
 
 		$this->setMeta("id", $this->getName());
 		$strOutput = "<div{$this->__getMetaString()}>\n";

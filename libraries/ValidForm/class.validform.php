@@ -207,7 +207,7 @@ class ValidForm extends ClassDynamic {
 		if ($this->__elements->count() == 0 || !is_object($objFieldset)) {
 			$objFieldset = $this->addFieldset();
 		}
-
+       
 		//*** Add field to the fieldset.
 		$objFieldset->addField($objParagraph);
 

@@ -139,8 +139,9 @@ class VF_FieldValidator extends ClassDynamic {
 			}
 		} 
 
-		$objCondition = $this->__field->getCondition("enabled");
+		$objCondition = $this->__field->getMetCondition("enabled");
 		if (is_object($objCondition)) {
+			echo "enabled condition";
 			if ($objCondition->isMet($intDynamicPosition)) {
 				if ($objCondition->getValue()) {
 					// Enabled true
@@ -158,8 +159,9 @@ class VF_FieldValidator extends ClassDynamic {
 			}
 		}
 
-		$objCondition = $this->__field->getCondition("visible");
+		$objCondition = $this->__field->getMetCondition("visible");
 		if (is_object($objCondition)) {
+			echo "visible condition";
 			if ($objCondition->isMet($intDynamicPosition)) {
 				if ($objCondition->getValue()) {
 					// Visible true

@@ -136,7 +136,7 @@ class VF_Area extends VF_Base {
 
 	protected function __toHtml($submitted = false, $blnSimpleLayout = false, $blnLabel = true, $blnDisplayErrors = true, $intCount = 0) {
 		// Call this before __getMetaString();
-		$this->setConditionalMeta();
+		$this->setConditionalMeta($submitted);
 
 		$strName 	= ($intCount == 0) ? $this->getName() : $this->getName() . "_" . $intCount;
 

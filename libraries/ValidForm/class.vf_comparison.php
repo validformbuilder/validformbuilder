@@ -44,15 +44,17 @@ class VF_Comparison extends ClassDynamic {
 	 * @param	Number	Dynamic position of the subject to check
 	 * @return 	Boolean True if Comparison meets requirements, false if not.
 	 */
-	public function check($intDynamicPosition = 0) {
+	public function check($submitted = false, $intDynamicPosition = 0) {
 		$blnReturn = false;
 
 		if ($this->__subject instanceof VF_Element) {
 			// Any element based on VF_Element
-			$strValue = $this->__subject->__getValue($intDynamicPosition);
+			$strValue = $this->__subject->__getValue($submitted, $intDynamicPosition);
+			$strValue = (is_null($strValue)) ? $strValue = $this->__subject->getValue($intDynamicPosition) : $strValue;
+
 			if (!is_null($strValue)) {
 				$blnReturn = $this->__verify($strValue);
-			}
+			} 
 		} else {
 			throw new Exception("Invalid subject supplied in VF_Comparison. Class " . get_class($this->__subject) . " given. Expecting instance of VF_Element." , 1);
 		}

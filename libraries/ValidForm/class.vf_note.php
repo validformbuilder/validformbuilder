@@ -41,7 +41,7 @@ class VF_Note extends VF_Base {
 	public function toHtml() {
 		$this->setMeta("class", "vf__notes");
 
-		$this->setConditionalMeta();
+		$this->setConditionalMeta($submitted);
 		$strOutput = "<div{$this->__getMetaString()}>\n";
 
 		if (!empty($this->__header)) $strOutput .= "<h4{$this->__getLabelMetaString()}>$this->__header</h4>\n";

@@ -118,12 +118,12 @@ class VF_Base extends ClassDynamic {
 		return $objReturn;
 	}
 
-	public function getMetCondition($strProperty) {
+	public function getMetCondition($strProperty, $submitted = false) {
 		$objReturn = null;
 
 		$objConditions = $this->getConditions();
 		foreach ($objConditions as $objCondition) {
-			if ($objCondition->getProperty() === strtolower($strProperty) && $objCondition->isMet()) {
+			if ($objCondition->getProperty() === strtolower($strProperty) && $objCondition->isMet($submitted)) {
 				$objReturn = $objCondition;
 				break;
 			}
@@ -160,10 +160,10 @@ class VF_Base extends ClassDynamic {
 		return (count($this->__conditions) > 0);
 	}
 
-	public function setConditionalMeta() {
+	public function setConditionalMeta($submitted) {
 
 		foreach ($this->__conditions as $objCondition) {
-			$blnResult = $objCondition->isMet();
+			$blnResult = $objCondition->isMet($submitted);
 
 			switch ($objCondition->getProperty()) {
 				case "visible":

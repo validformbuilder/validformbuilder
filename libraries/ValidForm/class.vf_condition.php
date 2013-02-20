@@ -59,7 +59,7 @@ class VF_Condition extends ClassDynamic {
 		}
 	}
 
-	public function isMet($intDynamicPosition = 0) {
+	public function isMet($submitted = false, $intDynamicPosition = 0) {
 		$blnResult = false;
 				
 		switch ($this->__comparisontype) {
@@ -67,7 +67,7 @@ class VF_Condition extends ClassDynamic {
 			case VFORM_MATCH_ANY:
 				/* @var $objComparison VF_Comparison */
 				foreach ($this->__comparisons as $objComparison) {
-					if ($objComparison->check($intDynamicPosition)) {
+					if ($objComparison->check($submitted, $intDynamicPosition)) {
 						$blnResult = true; // One of the comparisons is true, that's good enough.
 						break;
 					}
@@ -78,7 +78,7 @@ class VF_Condition extends ClassDynamic {
 			case VFORM_MATCH_ALL:				
 				$blnFailed = false;
 				foreach ($this->__comparisons as $objComparison) {
-					if (!$objComparison->check()) {
+					if (!$objComparison->check($submitted, $intDynamicPosition)) {
 						$blnFailed = true;
 						break;
 					}

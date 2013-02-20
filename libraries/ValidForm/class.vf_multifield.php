@@ -120,7 +120,7 @@ class VF_MultiField extends VF_Base {
 		if ($blnError) $this->setMeta("class", "vf__error");
 		$this->setMeta("class", "vf__multifield vf__cf");
 
-		$this->setConditionalMeta();
+		$this->setConditionalMeta($submitted);
 		$strOutput 	= "<div{$this->__getMetaString()}>\n";
 
 		$strLabel = (!empty($this->__requiredstyle) && $blnRequired) ? sprintf($this->__requiredstyle, $this->__label) : $this->__label;
