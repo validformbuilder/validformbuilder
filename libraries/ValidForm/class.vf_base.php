@@ -118,12 +118,12 @@ class VF_Base extends ClassDynamic {
 		return $objReturn;
 	}
 
-	public function getMetCondition($strProperty, $submitted = false) {
+	public function getMetCondition($strProperty) {
 		$objReturn = null;
 
 		$objConditions = $this->getConditions();
 		foreach ($objConditions as $objCondition) {
-			if ($objCondition->getProperty() === strtolower($strProperty) && $objCondition->isMet($submitted)) {
+			if ($objCondition->getProperty() === strtolower($strProperty) && $objCondition->isMet()) {
 				$objReturn = $objCondition;
 				break;
 			}
@@ -160,10 +160,10 @@ class VF_Base extends ClassDynamic {
 		return (count($this->__conditions) > 0);
 	}
 
-	public function setConditionalMeta($submitted) {
+	public function setConditionalMeta() {
 
 		foreach ($this->__conditions as $objCondition) {
-			$blnResult = $objCondition->isMet($submitted);
+			$blnResult = $objCondition->isMet();
 
 			switch ($objCondition->getProperty()) {
 				case "visible":
@@ -181,6 +181,26 @@ class VF_Base extends ClassDynamic {
 							$this->setMeta("style", "display: block;");
 						}
 					}
+
+				case "required":
+					// This can only be applied on all subjects except for Paragraphs
+					if (get_class($objCondition->getSubject()) !== "VF_Paragraph") {
+
+						if ($blnResult) {
+							if ($objCondition->getValue()) {
+								$this->setMeta("class", "vf__required", true);
+							} else {
+								$this->setMeta("class", "vf__optional", true);
+							}
+						} else {
+							if ($objCondition->getValue()) {
+								$this->setMeta("class", "vf__optional", true);
+							} else {
+								$this->setMeta("class", "vf__required", true);
+							}
+						}
+					}
+					break;
 
 				case "enabled":
 					// This can only be applied on all subjects except for Paragraphs
@@ -200,10 +220,6 @@ class VF_Base extends ClassDynamic {
 							}
 						}
 					}
-					break;
-
-				case "required":
-
 					break;
 			}
 		}
@@ -459,7 +475,45 @@ class VF_Base extends ClassDynamic {
 
 			return $varMeta;
 		}
+	}
 
+	protected function __replaceMeta($property, $originalValue, $replacement = null) {
+		$internalMetaArray = &$this->__meta;
+
+		//*** Re-set internalMetaArray if property has magic key 'label' or 'field'
+		$strMagicKey = strtolower(substr($property, 0, 5));
+		if (in_array($strMagicKey, $this->__magicmeta)) {
+			switch ($strMagicKey) {
+				case "field":
+					$internalMetaArray = &$this->__fieldmeta;
+					$property = strtolower(substr($property, -(strlen($property) - 5)));
+					break;
+				case "label":
+					$internalMetaArray = &$this->__labelmeta;
+					$property = strtolower(substr($property, -(strlen($property) - 5)));
+					break;
+				default:
+			}
+		}
+
+		foreach ($internalMetaArray as $prop => $value) {
+			if ($property == $prop) {
+				$varMeta = (isset($internalMetaArray[$property])) ? $internalMetaArray[$property] : "";
+
+				//*** Define delimiter per meta property.
+				switch ($property) {
+					case "style":
+						$strDelimiter = ";";
+						break;
+
+					default:
+						$strDelimiter = " ";
+				}
+
+				//*** Add the value to the property string.
+				$arrMeta = explode($strDelimiter, $varMeta);
+			}
+		}
 	}
 }
 ?>

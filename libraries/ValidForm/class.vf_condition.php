@@ -15,7 +15,7 @@ class VF_Condition extends ClassDynamic {
 
 	public function __construct ($objField, $strProperty, $blnValue = null, $strComparisonType = VFORM_MATCH_ANY) {
 		$strProperty = strtolower($strProperty);
-		
+
 		if (!is_object($objField)) {
 			throw new InvalidArgumentException("No valid object passed to VF_Condition.", 1);
 		}
@@ -59,15 +59,15 @@ class VF_Condition extends ClassDynamic {
 		}
 	}
 
-	public function isMet($submitted = false, $intDynamicPosition = 0) {
+	public function isMet($intDynamicPosition = 0) {
 		$blnResult = false;
-				
+
 		switch ($this->__comparisontype) {
 			default:
 			case VFORM_MATCH_ANY:
 				/* @var $objComparison VF_Comparison */
 				foreach ($this->__comparisons as $objComparison) {
-					if ($objComparison->check($submitted, $intDynamicPosition)) {
+					if ($objComparison->check($intDynamicPosition)) {
 						$blnResult = true; // One of the comparisons is true, that's good enough.
 						break;
 					}
@@ -75,10 +75,10 @@ class VF_Condition extends ClassDynamic {
 
 				break;
 
-			case VFORM_MATCH_ALL:				
+			case VFORM_MATCH_ALL:
 				$blnFailed = false;
 				foreach ($this->__comparisons as $objComparison) {
-					if (!$objComparison->check($submitted, $intDynamicPosition)) {
+					if (!$objComparison->check($intDynamicPosition)) {
 						$blnFailed = true;
 						break;
 					}

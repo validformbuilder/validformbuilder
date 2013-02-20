@@ -48,7 +48,7 @@ class VF_Text extends VF_Element {
 		$strName 	= ($intCount == 0) ? $this->__name : $this->__name . "_" . $intCount;
 		$strId 		= ($intCount == 0) ? $this->__id : $this->__id . "_" . $intCount;
 
-		$this->setConditionalMeta($submitted);
+		$this->setConditionalMeta();
 
 		$blnError = ($submitted && !$this->__validator->validate($intCount) && $blnDisplayErrors) ? TRUE : FALSE;
 		if (!$blnSimpleLayout) {

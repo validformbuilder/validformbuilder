@@ -52,7 +52,7 @@ class VF_Navigation extends VF_Base {
 	}
 
 	public function toHtml($submitted = FALSE, $blnSimpleLayout = FALSE, $blnLabel = true, $blnDisplayError = true) {
-		$this->setConditionalMeta($submitted);
+		$this->setConditionalMeta();
 
 		$this->setMeta("class", "vf__navigation vf__cf");
 		$strReturn = "<div{$this->__getMetaString()}>\n";

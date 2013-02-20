@@ -77,7 +77,7 @@ class VF_Select extends VF_Element {
 			if (!$blnLabel) $this->setMeta("class", "vf__nolabel");
 
 			// Call this right before __getMetaString();
-			$this->setConditionalMeta($submitted);
+			$this->setConditionalMeta();
 
 			$strOutput .= "<div{$this->__getMetaString()}>\n";
 

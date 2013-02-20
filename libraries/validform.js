@@ -264,7 +264,7 @@ ValidFormCondition.prototype.set = function (blnResult) {
 				self.subject.setEnabled(false);
 			}
 		},
-		required: function () {
+		required: function (blnDefaultState) {
 			if (self.subject instanceof ValidFormElement) {
 				self.subject.setRequired(true);
 			}
@@ -298,35 +298,41 @@ ValidFormCondition.prototype.set = function (blnResult) {
 			}
 
 		case "enabled":
+			var blnValue = (self.property == "enabled") ? self.value : self.subject.getEnabled(true);
+			console.log("Default enabled value: ", blnValue);
+
 			if (blnResult) {
 				// Condition is met
-				if (self.value) {
+				if (blnValue) {
 					Util.enable();
 				} else {
 					Util.disable();
 				}
 			} else {
-				if (self.value) {
+				if (blnValue) {
 					Util.disable();
 				} else {
 					Util.enable();
 				}
 			}
 
-			break;
-
 		case "required":
+			var blnValue = (self.property == "required") ? self.value : self.subject.getRequired(true);
 			if (blnResult) {
 				// Condition is met
-				if (self.value) {
+				if (blnValue) {
+					console.log("Set required");
 					Util.required();
 				} else {
+					console.log("Set optional");
 					Util.optional();
 				}
 			} else {
-				if (self.value) {
+				if (blnValue) {
+					console.log("Set optional");
 					Util.optional();
 				} else {
+					console.log("Set required");
 					Util.required();
 				}
 			}
@@ -1040,9 +1046,11 @@ ValidFormElement.prototype.setRequired = function (blnValue) {
 	if (blnValue) {
 		// Required == true
 		// $("#" + this.id).removeClass("vf__optional").addClass("vf__required");
+		console.log($("#" + this.id));
 		$("#" + this.id).parent().removeClass("vf__optional").addClass("vf__required");
 	} else {
 		// Required == false
+		console.log($("#" + this.id));
 		// $("#" + this.id).addClass("vf__optional").removeClass("vf__required");
 		$("#" + this.id).parent().addClass("vf__optional").removeClass("vf__required");
 	}
@@ -1292,7 +1300,7 @@ ValidFormFieldValidator.prototype.validate = function(value) {
 					blnReturn = this.check.test(value);
 
 					if (blnReturn == false) this.showAlert(this.typeError);
-					
+
 					return blnReturn;
 				} else {
 					return true;

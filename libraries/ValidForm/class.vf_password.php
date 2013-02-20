@@ -46,7 +46,7 @@ class VF_Password extends VF_Element {
 			if (!$blnLabel) $this->setMeta("class", "vf__nolabel");
 			if (!empty($this->__hint)) $this->setMeta("class", "vf__hint");
 
-			$this->setConditionalMeta($submitted);
+			$this->setConditionalMeta();
 			$strOutput = "<div{$this->__getMetaString()}>\n";
 
 			if ($blnError) $strOutput .= "<p class=\"vf__error\">{$this->__validator->getError()}</p>";
