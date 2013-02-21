@@ -50,11 +50,11 @@ class VF_MultiField extends VF_Base {
 		if (array_key_exists("dynamic", $meta)) unset($meta["dynamic"]);
 		if (array_key_exists("dynamicLabel", $meta)) unset($meta["dynamicLabel"]);
 
-		//*** Set the parent for the new field.
-		$meta["parent"] = $this;
 
 		// Render the field and add it to the multifield field collection.
 		$objField = ValidForm::renderField($name, "", $type, $validationRules, $errorHandlers, $meta);
+		//*** Set the parent for the new field.
+		$objField->setMeta("parent", $this, true);
 
 		$this->__fields->addObject($objField);
 
@@ -70,6 +70,8 @@ class VF_MultiField extends VF_Base {
 
 	public function addText($strText, $meta = array()) {
 		$objString = new VF_String($strText, $meta);
+		$objString->setMeta("parent", $this, true);
+
 		$this->__fields->addObject($objString);
 
 		return $objString;

@@ -18,7 +18,7 @@
  * @link       http://validformbuilder.org
  ***************************/
 
-require_once('class.classdynamic.php');
+require_once('class.vf_base.php');
 
 /**
  * Page Class
@@ -26,7 +26,7 @@ require_once('class.classdynamic.php');
  * @package ValidForm
  * @author Robin van Baalen
  */
-class VF_Page extends ClassDynamic {
+class VF_Page extends VF_Base {
 	protected $__class;
 	protected $__style;
 	protected $__elements;
@@ -64,7 +64,9 @@ class VF_Page extends ClassDynamic {
 	}
 
 	public function addField($objField) {
+
 		if (get_class($objField) == "VF_Fieldset") {
+			$objField->setMeta("parent", $this, true);
 			$this->__elements->addObject($objField);
 		} else {
 			if ($this->__elements->count() == 0) {
@@ -73,6 +75,8 @@ class VF_Page extends ClassDynamic {
 			}
 
 			$objFieldset = $this->__elements->getLast();
+
+			$objField->setMeta("parent", $objFieldset, true);
 			$objFieldset->getFields()->addObject($objField);
 
 			if ($objField->isDynamic()

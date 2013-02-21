@@ -193,6 +193,8 @@ class VF_Select extends VF_Element {
 
 	public function addField($value, $label, $selected = FALSE) {
 		$objOption = new VF_SelectOption($value, $label, $selected);
+		$objOption->setMeta("parent", $this, true);
+
 		$this->__options->addObject($objOption);
 
 		return $objOption;
@@ -200,6 +202,8 @@ class VF_Select extends VF_Element {
 
 	public function addGroup($label) {
 		$objGroup = new VF_SelectGroup($label);
+		$objGroup->setMeta("parent", $this, true);
+
 		$this->__options->addObject($objGroup);
 
 		return $objGroup;

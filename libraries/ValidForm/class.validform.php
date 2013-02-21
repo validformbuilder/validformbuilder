@@ -192,6 +192,8 @@ class ValidForm extends ClassDynamic {
 				$objFieldset = $this->addFieldset();
 			}
 
+			$objField->setMeta("parent", $objFieldset, true);
+
 			//*** Add field to the fieldset.
 			$objFieldset->addField($objField);
 		}
@@ -207,7 +209,9 @@ class ValidForm extends ClassDynamic {
 		if ($this->__elements->count() == 0 || !is_object($objFieldset)) {
 			$objFieldset = $this->addFieldset();
 		}
-       
+
+		$objParagraph->setMeta("parent", $objFieldset, true);
+
 		//*** Add field to the fieldset.
 		$objFieldset->addField($objParagraph);
 
@@ -222,6 +226,8 @@ class ValidForm extends ClassDynamic {
 		if ($this->__elements->count() == 0 || !is_object($objFieldset)) {
 			$objFieldset = $this->addFieldset();
 		}
+
+		$objButton->setMeta("parent", $objFieldset, true);
 
 		//*** Add field to the fieldset.
 		$objFieldset->addField($objButton);
@@ -240,6 +246,8 @@ class ValidForm extends ClassDynamic {
 			$objFieldset = $this->addFieldset();
 		}
 
+		$objArea->setMeta("parent", $objFieldset, true);
+
 		//*** Add field to the fieldset.
 		$objFieldset->addField($objArea);
 
@@ -256,6 +264,8 @@ class ValidForm extends ClassDynamic {
 		if ($this->__elements->count() == 0 || !is_object($objFieldset)) {
 			$objFieldset = $this->addFieldset();
 		}
+
+		$objField->setMeta("parent", $objFieldset, true);
 
 		//*** Add field to the fieldset.
 		$objFieldset->addField($objField);
@@ -494,26 +504,28 @@ class ValidForm extends ClassDynamic {
 		$strReturn = "";
 		$strSet = "";
 
-		if ($objField->hasContent($intDynamicCount)) {
+		// if ($objField->hasContent($intDynamicCount)) {
 			foreach ($objField->getFields() as $objSubField) {
-				switch (get_class($objSubField)) {
-					case "VF_MultiField":
-						$strSet .= $this->multiFieldAsHtml($objSubField, $hideEmpty, $intDynamicCount);
+				if (get_class($objSubField) !== "VF_Paragraph") {
+					switch (get_class($objSubField)) {
+						case "VF_MultiField":
+							$strSet .= $this->multiFieldAsHtml($objSubField, $hideEmpty, $intDynamicCount);
 
-						break;
-					default:
-						$strSet .= $this->fieldAsHtml($objSubField, $hideEmpty, $intDynamicCount);
+							break;
+						default:
+							$strSet .= $this->fieldAsHtml($objSubField, $hideEmpty, $intDynamicCount);
 
-						// Support nested dynamic fields.
-						if ($objSubField->isDynamic()) {
-							$intDynamicCount = $objSubField->getDynamicCount();
-							for ($intCount = 1; $intCount <= $intDynamicCount; $intCount++) {
-								$strSet .= $this->fieldAsHtml($objSubField, $hideEmpty, $intCount);
+							// Support nested dynamic fields.
+							if ($objSubField->isDynamic()) {
+								$intDynamicCount = $objSubField->getDynamicCount();
+								for ($intCount = 1; $intCount <= $intDynamicCount; $intCount++) {
+									$strSet .= $this->fieldAsHtml($objSubField, $hideEmpty, $intCount);
+								}
 							}
-						}
+					}
 				}
 			}
-		}
+		// }
 
 		if (!empty($strSet)) {
 			$strLabel = $objField->getLabel();

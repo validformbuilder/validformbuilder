@@ -43,6 +43,8 @@ class VF_FieldValidator extends ClassDynamic {
 	protected $__filetypes;
 	protected $__validation;
 
+	protected $__defaultRequired = false;
+
 	// Error handling
 	protected $__minlengtherror = "The input is too short. The minimum is %s characters.";
 	protected $__maxlengtherror = "The input is too long. The maximum is %s characters.";
@@ -76,6 +78,10 @@ class VF_FieldValidator extends ClassDynamic {
 		$this->__type = $objField->getType();
 		$this->__fieldname = str_replace("[]", "", $objField->getName());
 		$this->__fieldhint = $objField->getHint();
+
+		// Store the default required state in a seperate property.
+		// This way, we're able to reset back to default settings at any given time.
+		$this->__defaultRequired = $this->__required;
 	}
 
 	public function getValidValue($intDynamicPosition = 0) {
@@ -107,6 +113,15 @@ class VF_FieldValidator extends ClassDynamic {
 		return $strReturn;
 	}
 
+	public function setRequired($blnValue) {
+		// Convert whatever is given into a real boolean by using !!
+		$this->__required = !!$blnValue;
+	}
+
+	public function getRequired($blnDefault = false) {
+		return (!!$blnDefault) ? $this->__defaultRequired : $this->__required;
+	}
+
 	/**
 	 * The most important function of ValidForm Builder library. This function
 	 * handles all the server-side field validation logic.
@@ -123,15 +138,17 @@ class VF_FieldValidator extends ClassDynamic {
 
 		//*** Get required an visible states from condition and overwrite values for validation purposes
 		$objCondition = $this->__field->getCondition("required");
+		$objCondition = (!is_object($objCondition) && !is_null($this->__field->getMeta("parent", null))) ? $this->__field->getMeta("parent")->getCondition("visible") : $objCondition;
 		if (is_object($objCondition)) {
 			if ($objCondition->isMet($intDynamicPosition)) {
 				$this->__required = ($objCondition->getValue()) ? true : false;
 			} else {
 				$this->__required = ($objCondition->getValue()) ? false : true;
 			}
-		} 
+		}
 
 		$objCondition = $this->__field->getCondition("enabled");
+		$objCondition = (!is_object($objCondition) && !is_null($this->__field->getMeta("parent", null))) ? $this->__field->getMeta("parent")->getCondition("visible") : $objCondition;
 		if (is_object($objCondition)) {
 			if ($objCondition->isMet($intDynamicPosition)) {
 				$this->__required = ($objCondition->getValue()) ? $this->__required : false;
@@ -141,6 +158,7 @@ class VF_FieldValidator extends ClassDynamic {
 		}
 
 		$objCondition = $this->__field->getCondition("visible");
+		$objCondition = (!is_object($objCondition) && !is_null($this->__field->getMeta("parent", null))) ? $this->__field->getMeta("parent")->getCondition("visible") : $objCondition;
 		if (is_object($objCondition)) {
 			if ($objCondition->isMet($intDynamicPosition)) {
 				$this->__required = ($objCondition->getValue()) ? $this->__required : false;

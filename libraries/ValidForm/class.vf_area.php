@@ -57,6 +57,8 @@ class VF_Area extends VF_Base {
 	public function addField($name, $label, $type, $validationRules = array(), $errorHandlers = array(), $meta = array()) {
 		$objField = ValidForm::renderField($name, $label, $type, $validationRules, $errorHandlers, $meta);
 
+		$objField->setMeta("parent", $this, true);
+
 		$this->__fields->addObject($objField);
 
 		if ($this->__dynamic || $objField->isDynamic()) {
@@ -71,6 +73,8 @@ class VF_Area extends VF_Base {
 
 	public function addParagraph($strBody, $strHeader = "", $meta = array()) {
 		$objParagraph = new VF_Paragraph($strHeader, $strBody, $meta);
+
+		$objParagraph->setMeta("parent", $this, true);
 
 		//*** Add field to the fieldset.
 		$this->__fields->addObject($objParagraph);
@@ -90,6 +94,7 @@ class VF_Area extends VF_Base {
 		$objField = new VF_MultiField($label, $meta);
 
 		$objField->setRequiredStyle($this->__requiredstyle);
+		$objField->setMeta("parent", $this, true);
 
 		$this->__fields->addObject($objField);
 
@@ -285,59 +290,25 @@ class VF_Area extends VF_Base {
 	}
 
 	public function hasFields() {
-		return ($this->__fields->count() > 0) ? TRUE : FALSE;
+		return ($this->__fields->count() > 0) ? true : false;
 	}
 
 	private function __validate($intCount = null) {
-		// $value = ValidForm::get($this->__name);
-		$blnReturn = TRUE;
+		$blnReturn = true;
 
-		if ($this->__active && !$this->hasContent($intCount)) {
-			//*** Not active;
-		} else {
-			foreach ($this->__fields as $field) {
-				if (get_class($field) !== "VF_Paragraph" && get_class($field) !== "VF_Area") {
-					//*** Get required an visible states from condition and overwrite values for validation purposes
-					$objCondition = $this->getCondition("required");
-					$objCondition = (!is_object($objCondition) && !is_null($this->getMeta("parent", null))) ? $this->getMeta("parent")->getCondition("required") : $objCondition;
-					if (is_object($objCondition)) {
-						echo "required condition";
-						if ($objCondition->isMet()) {
-							$field->getValidator()->setRequired(($objCondition->getValue()) ? true : false);
-						} else {
-							$field->getValidator()->setRequired(($objCondition->getValue()) ? false : true);
-						}
-					}
-
-					$objCondition = $this->getCondition("enabled");
-					$objCondition = (!is_object($objCondition) && !is_null($this->getMeta("parent", null))) ? $this->getMeta("parent")->getCondition("enabled") : $objCondition;
-					if (is_object($objCondition)) {
-						echo "enabled condition";
-						if ($objCondition->isMet()) {
-							$field->getValidator()->setRequired(($objCondition->getValue()) ? $field->getValidator()->getRequired() : false);
-						} else {
-							$field->getValidator()->setRequired(($objCondition->getValue()) ? false : $field->getValidator()->getRequired());
-						}
-					}
-
-					$objCondition = $this->getCondition("visible");
-					$objCondition = (!is_object($objCondition) && !is_null($this->getMeta("parent", null))) ? $this->getMeta("parent")->getCondition("visible") : $objCondition;
-					if (is_object($objCondition)) {
-						echo "visible condition";
-						if ($objCondition->isMet()) {
-							$field->getValidator()->setRequired(($objCondition->getValue()) ? $field->getValidator()->getRequired() : false);
-						} else {
-							$field->getValidator()->setRequired(($objCondition->getValue()) ? false : $field->getValidator()->getRequired());
-						}
-					}
-				}
-
-				if (!$field->isValid()) {
-					$blnReturn = FALSE;
-					break;
-				}
+		foreach ($this->__fields as $field) {
+			// Note: hasContent is only accurate if isValid() is called first ...
+			if (!$field->isValid()) {
+				$blnReturn = false;
+				break;
 			}
 		}
+
+		// ... therefore, check if the area is empty after validation of all the fields.
+		if ($this->__active && !$this->hasContent($intCount)) {
+			$blnReturn = true;
+		}
+
 
 		return $blnReturn;
 	}

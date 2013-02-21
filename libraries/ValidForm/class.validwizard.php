@@ -108,6 +108,8 @@ class ValidWizard extends ValidForm {
 			$objFieldset = $this->addFieldset();
 		}
 
+		$objField->setMeta("parent", $objFieldset, true);
+
 		//*** Add field to the fieldset.
 		$objFieldset->addField($objField);
 

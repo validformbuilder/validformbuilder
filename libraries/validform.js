@@ -11,371 +11,6 @@
  * @link       http://code.google.com/p/validformbuilder/
  ***************************/
 
-function ValidFormComparison (objForm, subject, comparison, value) {
-	this.subject 	= this._setSubject(objForm, subject);
-	this.comparison = comparison;
-	this.value 		= value || null;
-	this.isMet		= false;
-
-	this._deferred	= $.Deferred();
-
-	return this._init();
-}
-
-ValidFormComparison.prototype._init = function () {
-	try {
-		var self 		= this
-		,	$objSubject = (this.subject instanceof jQuery) ? this.subject : $("#" + this.subject.id);
-
-		//*** Set event listeners. Trigger 'change' event
-		if ($objSubject.is("input") || $objSubject.is("textarea")) {
-			if ($objSubject.attr("type") !== "checkbox" && $objSubject.attr("type") !== "radio") {
-
-				var delay;
-				$objSubject.on("keyup", function () {
-					var $self = $(this);
-
-					clearTimeout(delay);
-					delay = setTimeout(function () {
-						$self.trigger("change");
-					}, 300);
-				});
-			}
-		}
-
-		$objSubject
-			.on("change", function () {
-				self.isMet = self.check();
-			})
-			.trigger("change"); // make sure conditions are met onload
-
-	} catch (e) {
-		throw new Error("Failed to initialize ValidFormComparison: " + e.message, 1);
-	}
-
-	return this._deferred.promise();
-}
-
-ValidFormComparison.prototype._setSubject = function (objForm, strSubject) {
-	var varReturn;
-
-	if (typeof objForm !== "object" || !objForm instanceof ValidForm) {
-		throw new Error("ValidForm element not set in ValidFormCondition.");
-	}
-
-	try {
-		varReturn = objForm.getElement(strSubject);
-
-		if (varReturn === null) {
-			// Element not found in ValidForm internal collection,
-			// this is probably a fieldset, area or paragraph element.
-			varReturn = $("#" + strSubject);
-
-			if (varReturn.length <= 0) {
-				varReturn = null; // Reset subject
-				throw new Error("Could not find subject element with id or name '" + strSubject + "'.", 1);
-			}
-		}
-	} catch (e) {
-		throw new Error("Failed to set subject: " + e.message, 1);
-	}
-
-	return varReturn;
-}
-
-ValidFormComparison.prototype.check = function () {
-	var blnReturn 	= false
-	,	self		= this
-	,	strValue	= (self.subject instanceof jQuery) ? self.subject.val() : self.subject.getValue();
-
-	switch (self.comparison) {
-		case "equal":
-			if (strValue == self.value) {
-				// Comparison met.
-				blnReturn = true;
-			}
-			break;
-		case "notequal":
-			if (strValue != self.value) {
-				// Comparison met.
-				blnReturn = true;
-			}
-			break;
-		case "empty":
-			if (strValue === "") {
-				blnReturn = true;
-			}
-			break;
-		case "notempty":
-			if (strValue != "") {
-				blnReturn = true;
-			}
-			break;
-		case "lessthan":
-			var intCurrentValue = parseInt(strValue);
-			if (!isNaN(intCurrentValue) && (intCurrentValue < self.value)) {
-				blnReturn = true;
-			}
-			break;
-		case "greaterthan":
-			var intCurrentValue = parseInt(strValue);
-			if (!isNaN(intCurrentValue) && (intCurrentValue > self.value)) {
-				blnReturn = true;
-			}
-			break;
-		case "lessthanorequal":
-			var intCurrentValue = parseInt(strValue);
-			if (!isNaN(intCurrentValue) && (intCurrentValue <= self.value)) {
-				blnReturn = true;
-			}
-			break;
-		case "greaterthanorequal":
-			var intCurrentValue = parseInt(strValue);
-			if (!isNaN(intCurrentValue) && (intCurrentValue >= self.value)) {
-				blnReturn = true;
-			}
-			break;
-		case "contains":
-			if (strValue.indexOf(self.value) !== -1) {
-				blnReturn = true;
-			}
-			break;
-		case "startswith":
-			if (strValue.indexOf(self.value) === 0) {
-				blnReturn = true;
-			}
-			break;
-		case "endswith":
-			if (strValue.slice(-self.value.length) == self.value) {
-				blnReturn = true;
-			}
-			break;
-	}
-
-	self._deferred.notify(blnReturn);
-
-	return blnReturn;
-}
-
-function ValidFormCondition (objForm, objCondition) {
-	if (typeof objCondition !== "object" || objCondition == null) {
-		throw new Error("Invalid condition object supplied in ValidFormCondition construct.");
-
-	}
-
-	if (typeof objForm === "undefined" || !(objForm instanceof ValidForm)) {
-		throw new Error("Form object undefined or not an instance of ValidForm in ValidFormCondition construct.");
-
-	}
-
-	try {
-		this.validform 		= objForm;
-		this.subject 		= this._setSubject(objCondition.subject);
-		this.property 		= objCondition.property;
-		this.value 			= objCondition.value;
-		this.comparisonType = objCondition.comparisonType;
-		this.comparisons 	= [];
-		this.condition 		= objCondition;
-
-	} catch (e) {
-		throw new Error("Failed to set default values in ValidFormCondition construct: " + e.message);
-	}
-
-	return this;
-}
-
-ValidFormCondition.prototype._init = function () {
-	try {
-		var self = this
-		,	objComparisons = this.condition.comparisons;
-
-		if (typeof objComparisons === "object" && objComparisons.length > 0) {
-			for (var i = 0; i < objComparisons.length; i++) {
-				var Comparison = objComparisons[i];
-				this.addComparison(new ValidFormComparison(this.validform, Comparison.subject, Comparison.comparison, Comparison.value));
-			}
-		}
-
-		self.isMet()
-			.progress(function (blnResult) {
-				self.set(blnResult);
-			});
-
-	} catch (e) {
-		throw new Error("Failed to initialize Condition: " + e.message, 1);
-	}
-
-	return this;
-}
-
-ValidFormCondition.prototype._setSubject = function (strSubject) {
-	var varReturn;
-
-	if (typeof this.validform !== "object" || !this.validform instanceof ValidForm) {
-		throw new Error("ValidForm element not set in ValidFormCondition.");
-	}
-
-	try {
-		varReturn = this.validform.getElement(strSubject);
-
-		if (varReturn === null) {
-			// Element not found in ValidForm internal collection,
-			// this is probably a fieldset, area or paragraph element.
-			varReturn = $("#" + strSubject);
-
-			if (varReturn.length <= 0) {
-				throw new Error("Could not find subject element with id or name '" + strSubject + "'.", 1);
-			}
-		}
-	} catch (e) {
-		throw new Error("Failed to set subject: " + e.message, 1);
-	}
-
-	return varReturn;
-}
-
-ValidFormCondition.prototype.set = function (blnResult) {
-	var self = this
-	,	$objSubject = (self.subject instanceof jQuery) ? self.subject : $("#" + self.subject.id);
-
-	//*** Utility functions
-	var Util = {
-		"visible": function (blnValue) {
-			var $objSubject = (self.subject instanceof jQuery) ? self.subject : $("#" + self.subject.id);
-
-			if (blnValue) {
-				$objSubject.show();
-
-				if (!$objSubject.is("div") && !$objSubject.is("fieldset")) {
-					$objSubject.parent().show();
-				}
-
-				// Set enabled back to default state
-				Util.enabled(null, true);
-
-				// Set required back to default state
-				Util.required(null, true);
-
-			} else {
-				$objSubject.hide();
-
-				if (!$objSubject.is("div") && !$objSubject.is("fieldset")) {
-					$objSubject.parent().hide();
-				}
-
-				// Set enabled back to default state
-				Util.enabled(false);
-
-				// Set required back to default state
-				Util.required(false);
-			}
-		},
-		"enabled": function (blnValue, blnDefaultState) {
-			blnDefaultState = blnDefaultState || false;
-
-			if (self.subject instanceof ValidFormElement) {
-				blnValue = (blnDefaultState) ? self.subject.getEnabled(true) : blnValue;
-
-				self.subject.setEnabled(blnValue);
-			} else {
-				// Iterate over sub elements
-				$("input, textarea, select", self.subject).each(function () {
-					var objElement = self.validform.getElement($(this).attr("name"));
-
-					if (objElement !== null) {
-						blnValue = (blnDefaultState) ? objElement.getEnabled(true) : blnValue;
-						objElement.setEnabled(blnValue);
-					}
-				});
-			}
-		},
-		"required": function (blnValue, blnDefaultState) {
-			blnDefaultState = blnDefaultState || false;
-
-			if (self.subject instanceof ValidFormElement) {
-				blnValue = (blnDefaultState) ? self.subject.getRequired(true) : blnValue;
-
-				self.subject.setRequired(blnValue);
-			} else {
-				// Iterate over sub elements
-				$("input, textarea, select", self.subject).each(function () {
-					var objElement = self.validform.getElement($(this).attr("name"));
-
-					if (objElement !== null) {
-						blnValue = (blnDefaultState) ? objElement.getRequired(true) : blnValue;
-						objElement.setRequired(blnValue);
-					}
-				});
-			}
-		}
-	}
-
-	// Set the condition
-	Util[self.property](blnResult);
-
-	// switch (self.property) {
-	// 	case "visible":
-	// 		Util.visible(blnResult);
-	// 		break;
-
-	// 	case "enabled":
-	// 		Util.enabled(blnResult);
-	// 		break;
-
-	// 	case "required":
-	// 		Util.required(blnResult);
-
-	// 		break;
-	// }
-
-}
-
-ValidFormCondition.prototype.addComparison = function (objComparison) {
-	var self = this;
-
-	if (!objComparison instanceof ValidFormComparison) {
-		throw new Error("Invalid argument: objComparison is no ValidFormComparison type in ValidFormCondition.addCondition()", 1);
-	}
-
-	this.comparisons.push(objComparison);
-}
-
-ValidFormCondition.prototype.isMet = function () {
-	var self = this
-	,	def = $.Deferred();
-
-	try {
-		if (self.comparisons.length <= 0) {
-			self.addComparisons();
-		}
-	} catch (e) {
-		throw new Error("Failed to add comparisons in isMet(): " + e.message);
-	}
-
-	if (self.comparisonType === "all") {
-		$.when.apply($, self.comparisons).done(
-			function () {
-				console.log("All comparisons are met.");
-				def.notify(true);
-			},
-			function () {
-				console.log("Not All comparisons are met..");
-				def.notify(false);
-			});
-	} else {
-		// Any
-		console.log("Check any comparison");
-		for (var i = 0; i < self.comparisons.length; i++) {
-			self.comparisons[i].progress(function (blnResult) {
-				def.notify(blnResult);
-			});
-		}
-
-	}
-
-	return def.promise();
-}
-
 /**
  * ValidForm class
  * @param {String} strFormId            The form ID
@@ -932,6 +567,354 @@ ValidForm.prototype.validate = function(strSelector) {
 	return blnReturn;
 };
 
+function ValidFormComparison (objForm, subject, comparison, value) {
+	this.subject 	= this._setSubject(objForm, subject);
+	this.comparison = comparison;
+	this.value 		= value || null;
+	this.isMet		= false;
+
+	this._deferred	= $.Deferred();
+
+	return this._init();
+}
+
+ValidFormComparison.prototype._init = function () {
+	try {
+		var self 		= this
+		,	$objSubject = (this.subject instanceof jQuery) ? this.subject : $("#" + this.subject.id);
+
+		//*** Set event listeners. Trigger 'change' event
+		if ($objSubject.is("input") || $objSubject.is("textarea")) {
+			if ($objSubject.attr("type") !== "checkbox" && $objSubject.attr("type") !== "radio") {
+
+				var delay;
+				$objSubject.on("keyup", function () {
+					var $self = $(this);
+
+					clearTimeout(delay);
+					delay = setTimeout(function () {
+						$self.trigger("change");
+					}, 300);
+				});
+			}
+		}
+
+		$objSubject
+			.on("change", function () {
+				self.isMet = self.check();
+			})
+			.trigger("change"); // make sure conditions are met onload
+
+	} catch (e) {
+		throw new Error("Failed to initialize ValidFormComparison: " + e.message, 1);
+	}
+
+	return this._deferred.promise();
+}
+
+ValidFormComparison.prototype._setSubject = function (objForm, strSubject) {
+	var varReturn;
+
+	if (typeof objForm !== "object" || !objForm instanceof ValidForm) {
+		throw new Error("ValidForm element not set in ValidFormCondition.");
+	}
+
+	try {
+		varReturn = objForm.getElement(strSubject);
+
+		if (varReturn === null) {
+			// Element not found in ValidForm internal collection,
+			// this is probably a fieldset, area or paragraph element.
+			varReturn = $("#" + strSubject);
+
+			if (varReturn.length <= 0) {
+				varReturn = null; // Reset subject
+				throw new Error("Could not find subject element with id or name '" + strSubject + "'.", 1);
+			}
+		}
+	} catch (e) {
+		throw new Error("Failed to set subject: " + e.message, 1);
+	}
+
+	return varReturn;
+}
+
+ValidFormComparison.prototype.check = function () {
+	var blnReturn 	= false
+	,	self		= this
+	,	strValue	= (self.subject instanceof jQuery) ? self.subject.val() : self.subject.getValue();
+
+	switch (self.comparison) {
+		case "equal":
+			if (strValue == self.value) {
+				// Comparison met.
+				blnReturn = true;
+			}
+			break;
+		case "notequal":
+			if (strValue != self.value) {
+				// Comparison met.
+				blnReturn = true;
+			}
+			break;
+		case "empty":
+			if (strValue === "") {
+				blnReturn = true;
+			}
+			break;
+		case "notempty":
+			if (strValue != "") {
+				blnReturn = true;
+			}
+			break;
+		case "lessthan":
+			var intCurrentValue = parseInt(strValue);
+			if (!isNaN(intCurrentValue) && (intCurrentValue < self.value)) {
+				blnReturn = true;
+			}
+			break;
+		case "greaterthan":
+			var intCurrentValue = parseInt(strValue);
+			if (!isNaN(intCurrentValue) && (intCurrentValue > self.value)) {
+				blnReturn = true;
+			}
+			break;
+		case "lessthanorequal":
+			var intCurrentValue = parseInt(strValue);
+			if (!isNaN(intCurrentValue) && (intCurrentValue <= self.value)) {
+				blnReturn = true;
+			}
+			break;
+		case "greaterthanorequal":
+			var intCurrentValue = parseInt(strValue);
+			if (!isNaN(intCurrentValue) && (intCurrentValue >= self.value)) {
+				blnReturn = true;
+			}
+			break;
+		case "contains":
+			if (strValue.indexOf(self.value) !== -1) {
+				blnReturn = true;
+			}
+			break;
+		case "startswith":
+			if (strValue.indexOf(self.value) === 0) {
+				blnReturn = true;
+			}
+			break;
+		case "endswith":
+			if (strValue.slice(-self.value.length) == self.value) {
+				blnReturn = true;
+			}
+			break;
+	}
+
+	self._deferred.notify(blnReturn);
+
+	return blnReturn;
+}
+
+function ValidFormCondition (objForm, objCondition) {
+	if (typeof objCondition !== "object" || objCondition == null) {
+		throw new Error("Invalid condition object supplied in ValidFormCondition construct.");
+
+	}
+
+	if (typeof objForm === "undefined" || !(objForm instanceof ValidForm)) {
+		throw new Error("Form object undefined or not an instance of ValidForm in ValidFormCondition construct.");
+
+	}
+
+	try {
+		this.validform 		= objForm;
+		this.subject 		= this._setSubject(objCondition.subject);
+		this.property 		= objCondition.property;
+		this.value 			= objCondition.value;
+		this.comparisonType = objCondition.comparisonType;
+		this.comparisons 	= [];
+		this.condition 		= objCondition;
+
+	} catch (e) {
+		throw new Error("Failed to set default values in ValidFormCondition construct: " + e.message);
+	}
+
+	return this;
+}
+
+ValidFormCondition.prototype._init = function () {
+	try {
+		var self = this
+		,	objComparisons = this.condition.comparisons;
+
+		if (typeof objComparisons === "object" && objComparisons.length > 0) {
+			for (var i = 0; i < objComparisons.length; i++) {
+				var Comparison = objComparisons[i];
+				this.addComparison(new ValidFormComparison(this.validform, Comparison.subject, Comparison.comparison, Comparison.value));
+			}
+		}
+
+		self.isMet()
+			.progress(function (blnResult) {
+				self.set(blnResult);
+			});
+
+	} catch (e) {
+		throw new Error("Failed to initialize Condition: " + e.message, 1);
+	}
+
+	return this;
+}
+
+ValidFormCondition.prototype._setSubject = function (strSubject) {
+	var varReturn;
+
+	if (typeof this.validform !== "object" || !this.validform instanceof ValidForm) {
+		throw new Error("ValidForm element not set in ValidFormCondition.");
+	}
+
+	try {
+		varReturn = this.validform.getElement(strSubject);
+
+		if (varReturn === null) {
+			// Element not found in ValidForm internal collection,
+			// this is probably a fieldset, area or paragraph element.
+			varReturn = $("#" + strSubject);
+
+			if (varReturn.length <= 0) {
+				throw new Error("Could not find subject element with id or name '" + strSubject + "'.", 1);
+			}
+		}
+	} catch (e) {
+		throw new Error("Failed to set subject: " + e.message, 1);
+	}
+
+	return varReturn;
+}
+
+ValidFormCondition.prototype.set = function (blnResult) {
+	var self = this
+	,	$objSubject = (self.subject instanceof jQuery) ? self.subject : $("#" + self.subject.id);
+
+	//*** Utility functions
+	var Util = {
+		"visible": function (blnValue) {
+			var $objSubject = (self.subject instanceof jQuery) ? self.subject : $("#" + self.subject.id);
+
+			if (blnValue) {
+				$objSubject.show();
+
+				if (!$objSubject.is("div") && !$objSubject.is("fieldset")) {
+					$objSubject.parent().show();
+				}
+
+				// Set enabled back to default state
+				Util.enabled(null, true);
+
+				// Set required back to default state
+				Util.required(null, true);
+
+			} else {
+				$objSubject.hide();
+
+				if (!$objSubject.is("div") && !$objSubject.is("fieldset")) {
+					$objSubject.parent().hide();
+				}
+
+				// Set enabled back to default state
+				Util.enabled(false);
+
+				// Set required back to default state
+				Util.required(false);
+			}
+		},
+
+		"enabled": function (blnValue, blnDefaultState) {
+			blnDefaultState = blnDefaultState || false;
+
+			if (self.subject instanceof ValidFormElement) {
+				blnValue = (blnDefaultState) ? self.subject.getEnabled(true) : blnValue;
+
+				self.subject.setEnabled(blnValue);
+			} else {
+				// Iterate over sub elements
+				$("input, textarea, select", self.subject).each(function () {
+					var objElement = self.validform.getElement($(this).attr("name"));
+
+					if (objElement !== null) {
+						blnValue = (blnDefaultState) ? objElement.getEnabled(true) : blnValue;
+						objElement.setEnabled(blnValue);
+					}
+				});
+			}
+		},
+
+		"required": function (blnValue, blnDefaultState) {
+			blnDefaultState = blnDefaultState || false;
+
+			if (self.subject instanceof ValidFormElement) {
+				blnValue = (blnDefaultState) ? self.subject.getRequired(true) : blnValue;
+
+				self.subject.setRequired(blnValue);
+			} else {
+				// Iterate over sub elements
+				$("input, textarea, select", self.subject).each(function () {
+					var objElement = self.validform.getElement($(this).attr("name"));
+
+					if (objElement !== null) {
+						blnValue = (blnDefaultState) ? objElement.getRequired(true) : blnValue;
+						objElement.setRequired(blnValue);
+					}
+				});
+			}
+		}
+	}
+
+	// Set the condition
+	Util[self.property](blnResult);
+}
+
+ValidFormCondition.prototype.addComparison = function (objComparison) {
+	var self = this;
+
+	if (!objComparison instanceof ValidFormComparison) {
+		throw new Error("Invalid argument: objComparison is no ValidFormComparison type in ValidFormCondition.addCondition()", 1);
+	}
+
+	this.comparisons.push(objComparison);
+}
+
+ValidFormCondition.prototype.isMet = function () {
+	var self = this
+	,	def = $.Deferred();
+
+	try {
+		if (self.comparisons.length <= 0) {
+			self.addComparisons();
+		}
+	} catch (e) {
+		throw new Error("Failed to add comparisons in isMet(): " + e.message);
+	}
+
+	if (self.comparisonType === "all") {
+		$.when.apply($, self.comparisons).done(
+			function () {
+				def.notify(true);
+			},
+			function () {
+				def.notify(false);
+			});
+	} else {
+		// Any
+		for (var i = 0; i < self.comparisons.length; i++) {
+			self.comparisons[i].progress(function (blnResult) {
+				def.notify(blnResult);
+			});
+		}
+
+	}
+
+	return def.promise();
+}
+
 /**
  * ValidFormElement Class
  * Holds an element that can be validated
@@ -1033,13 +1016,9 @@ ValidFormElement.prototype.setRequired = function (blnValue) {
 
 	if (blnValue) {
 		// Required == true
-		// $("#" + this.id).removeClass("vf__optional").addClass("vf__required");
-		console.log($("#" + this.id));
 		$("#" + this.id).parent().removeClass("vf__optional").addClass("vf__required");
 	} else {
 		// Required == false
-		console.log($("#" + this.id));
-		// $("#" + this.id).addClass("vf__optional").removeClass("vf__required");
 		$("#" + this.id).parent().addClass("vf__optional").removeClass("vf__required");
 	}
 }

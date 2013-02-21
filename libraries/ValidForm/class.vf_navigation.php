@@ -38,6 +38,8 @@ class VF_Navigation extends VF_Base {
 
 	public function addButton($label, $options = array()) {
 		$objButton = new VF_Button($label, $options);
+		//*** Set the parent for the new field.
+		$objButton->setMeta("parent", $this, true);
 
 		$this->__fields->addObject($objButton);
 
@@ -46,6 +48,7 @@ class VF_Navigation extends VF_Base {
 
 	public function addHtml($html) {
 		$objString = new VF_String($html);
+		$objString->setMeta("parent", $this, true);
 		$this->__fields->addObject($objString);
 
 		return $objString;

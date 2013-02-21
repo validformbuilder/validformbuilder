@@ -147,6 +147,8 @@ class VF_Group extends VF_Element {
 		}
 
 		$objField = new VF_GroupField($this->getRandomId($this->__name), $name, $type, $label, $value, $checked, $meta);
+		$objField->setMeta("parent", $this, true);
+
 		$this->__fields->addObject($objField);
 
 		return $objField;
