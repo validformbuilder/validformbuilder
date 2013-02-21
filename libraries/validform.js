@@ -575,13 +575,15 @@ function ValidFormComparison (objForm, subject, comparison, value) {
 
 	this._deferred	= $.Deferred();
 
+	this.uid 		= "com_" + Math.floor(Math.random()*9999);
+
 	return this._init();
 }
 
 ValidFormComparison.prototype._init = function () {
 	try {
 		var self 		= this
-		,	$objSubject = (this.subject instanceof jQuery) ? this.subject : $("#" + this.subject.id);
+		,	$objSubject = (this.subject instanceof jQuery) ? this.subject : $("[name='" + this.subject.name + "']");
 
 		//*** Set event listeners. Trigger 'change' event
 		if ($objSubject.is("input") || $objSubject.is("textarea")) {
@@ -601,7 +603,7 @@ ValidFormComparison.prototype._init = function () {
 
 		$objSubject
 			.on("change", function () {
-				self.isMet = self.check();
+				self._deferred.notifyWith(self, [self.check()]);
 			})
 			.trigger("change"); // make sure conditions are met onload
 
@@ -609,7 +611,9 @@ ValidFormComparison.prototype._init = function () {
 		throw new Error("Failed to initialize ValidFormComparison: " + e.message, 1);
 	}
 
-	return this._deferred.promise();
+	this.promise 	= this._deferred.promise();
+
+	return this;
 }
 
 ValidFormComparison.prototype._setSubject = function (objForm, strSubject) {
@@ -642,7 +646,7 @@ ValidFormComparison.prototype._setSubject = function (objForm, strSubject) {
 ValidFormComparison.prototype.check = function () {
 	var blnReturn 	= false
 	,	self		= this
-	,	strValue	= (self.subject instanceof jQuery) ? self.subject.val() : self.subject.getValue();
+	,	strValue 	= (self.subject instanceof jQuery) ? self.subject.val() : self.subject.getValue();
 
 	switch (self.comparison) {
 		case "equal":
@@ -692,7 +696,7 @@ ValidFormComparison.prototype.check = function () {
 			}
 			break;
 		case "contains":
-			if (strValue.indexOf(self.value) !== -1) {
+			if (strValue.toString().toLowerCase().indexOf(self.value.toString().toLowerCase()) !== -1) {
 				blnReturn = true;
 			}
 			break;
@@ -708,8 +712,7 @@ ValidFormComparison.prototype.check = function () {
 			break;
 	}
 
-	self._deferred.notify(blnReturn);
-
+	self.isMet = blnReturn;
 	return blnReturn;
 }
 
@@ -864,12 +867,13 @@ ValidFormCondition.prototype.set = function (blnResult) {
 						objElement.setRequired(blnValue);
 					}
 				});
+
 			}
 		}
 	}
 
 	// Set the condition
-	Util[self.property](blnResult);
+	Util[self.property]((blnResult === self.value));
 }
 
 ValidFormCondition.prototype.addComparison = function (objComparison) {
@@ -886,30 +890,43 @@ ValidFormCondition.prototype.isMet = function () {
 	var self = this
 	,	def = $.Deferred();
 
-	try {
-		if (self.comparisons.length <= 0) {
-			self.addComparisons();
-		}
-	} catch (e) {
-		throw new Error("Failed to add comparisons in isMet(): " + e.message);
-	}
-
 	if (self.comparisonType === "all") {
-		$.when.apply($, self.comparisons).done(
-			function () {
-				def.notify(true);
-			},
-			function () {
-				def.notify(false);
-			});
-	} else {
-		// Any
+		// comparison all
+		var _matchAll = function () {
+			var success = 0;
+			for (var i = 0; i < self.comparisons.length; i++) {
+				if (self.comparisons[i].isMet) {
+					if (success < self.comparisons.length) {
+						success++;
+					} else {
+						if (success > 0) {
+							success--;
+						}
+					}
+				}
+			}
+
+			console.log(self.comparisons.length, success);
+			return success === self.comparisons.length;
+		}
+
 		for (var i = 0; i < self.comparisons.length; i++) {
-			self.comparisons[i].progress(function (blnResult) {
+			self.comparisons[i].promise.progress(function (blnResult) {
+				if (_matchAll()) {
+					def.notify(true);
+				} else {
+					def.notify(false);
+				}
+			});
+		}
+
+	} else {
+		// comparison any
+		for (var i = 0; i < self.comparisons.length; i++) {
+			self.comparisons[i].promise.progress(function (blnResult) {
 				def.notify(blnResult);
 			});
 		}
-
 	}
 
 	return def.promise();
@@ -1005,7 +1022,22 @@ ValidFormElement.prototype.validate = function() {
 }
 
 ValidFormElement.prototype.getValue = function () {
-	return jQuery("#" + this.id).val();
+	var $field 	= jQuery("[name='" + this.name + "']")
+	,	value;
+
+	switch ($field.attr("type")) {
+		case "radio":
+			// Single value
+			value = jQuery("[name='" + this.name + "']:checked").val();
+			break;
+		case "checkbox":
+			value = jQuery("[name='" + this.name + "']:checked").map(function () {return this.value;}).get().join(", ");
+			break;
+		default:
+			value = $field.val();
+	}
+
+	return value;
 }
 
 ValidFormElement.prototype.setRequired = function (blnValue) {
@@ -1014,12 +1046,18 @@ ValidFormElement.prototype.setRequired = function (blnValue) {
 	// The state has changed, remove it's alert.
 	this.validator.removeAlert();
 
+	var $parent = $("#" + this.id).parent();
+	if ($parent.hasClass("vf__multifielditem")) {
+		// Multifield item
+		$parent = $parent.parent();
+	}
+
 	if (blnValue) {
 		// Required == true
-		$("#" + this.id).parent().removeClass("vf__optional").addClass("vf__required");
+		$parent.removeClass("vf__optional").addClass("vf__required");
 	} else {
 		// Required == false
-		$("#" + this.id).parent().addClass("vf__optional").removeClass("vf__required");
+		$parent.addClass("vf__optional").removeClass("vf__required");
 	}
 }
 

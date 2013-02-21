@@ -80,7 +80,7 @@ class VF_Text extends VF_Element {
 			if ($blnError) $this->setMeta("class", "vf__error");
 			$this->setMeta("class", "vf__multifielditem");
 
-			$strOutput = "<div{$this->__getMetaString()}\">\n";
+			$strOutput = "<div{$this->__getMetaString()}>\n";
 
 			if ($blnError) {
 				$strOutput .= "<p class=\"vf__error\">{$this->__validator->getError($intCount)}</p>";

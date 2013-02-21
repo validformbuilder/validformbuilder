@@ -504,28 +504,26 @@ class ValidForm extends ClassDynamic {
 		$strReturn = "";
 		$strSet = "";
 
-		// if ($objField->hasContent($intDynamicCount)) {
-			foreach ($objField->getFields() as $objSubField) {
-				if (get_class($objSubField) !== "VF_Paragraph") {
-					switch (get_class($objSubField)) {
-						case "VF_MultiField":
-							$strSet .= $this->multiFieldAsHtml($objSubField, $hideEmpty, $intDynamicCount);
+		foreach ($objField->getFields() as $objSubField) {
+			if (get_class($objSubField) !== "VF_Paragraph") {
+				switch (get_class($objSubField)) {
+					case "VF_MultiField":
+						$strSet .= $this->multiFieldAsHtml($objSubField, $hideEmpty, $intDynamicCount);
 
-							break;
-						default:
-							$strSet .= $this->fieldAsHtml($objSubField, $hideEmpty, $intDynamicCount);
+						break;
+					default:
+						$strSet .= $this->fieldAsHtml($objSubField, $hideEmpty, $intDynamicCount);
 
-							// Support nested dynamic fields.
-							if ($objSubField->isDynamic()) {
-								$intDynamicCount = $objSubField->getDynamicCount();
-								for ($intCount = 1; $intCount <= $intDynamicCount; $intCount++) {
-									$strSet .= $this->fieldAsHtml($objSubField, $hideEmpty, $intCount);
-								}
+						// Support nested dynamic fields.
+						if ($objSubField->isDynamic()) {
+							$intDynamicCount = $objSubField->getDynamicCount();
+							for ($intCount = 1; $intCount <= $intDynamicCount; $intCount++) {
+								$strSet .= $this->fieldAsHtml($objSubField, $hideEmpty, $intCount);
 							}
-					}
+						}
 				}
 			}
-		// }
+		}
 
 		if (!empty($strSet)) {
 			$strLabel = $objField->getLabel();
@@ -538,6 +536,9 @@ class ValidForm extends ClassDynamic {
 			$strReturn .= $strSet;
 		} else {
 			if (!empty($this->__novaluesmessage) && $objField->isActive()) {
+				$strReturn = "<tr>";
+				$strReturn .= "<td colspan=\"3\" style=\"white-space:nowrap\" class=\"vf__area_header\"><h3>{$objField->getLabel()}</h3></td>\n";
+				$strReturn .= "</tr>";
 				return $strReturn . "<tr><td colspan=\"3\">{$this->__novaluesmessage}</td></tr>";
 			} else {
 				return "";

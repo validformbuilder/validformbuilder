@@ -135,18 +135,18 @@ class VF_Group extends VF_Element {
 	}
 
 	public function addField($label, $value, $checked = FALSE, $meta = array()) {
+		$name = $this->getName();
+
 		switch ($this->__type) {
 			case VFORM_RADIO_LIST:
 				$type = "radio";
-				$name = $this->getName();
 				break;
 			case VFORM_CHECK_LIST:
 				$type = "checkbox";
-				$name = $this->getName();
 				break;
 		}
 
-		$objField = new VF_GroupField($this->getRandomId($this->__name), $name, $type, $label, $value, $checked, $meta);
+		$objField = new VF_GroupField($this->getRandomId($name), $name, $type, $label, $value, $checked, $meta);
 		$objField->setMeta("parent", $this, true);
 
 		$this->__fields->addObject($objField);

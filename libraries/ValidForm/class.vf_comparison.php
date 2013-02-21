@@ -67,8 +67,14 @@ class VF_Comparison extends ClassDynamic {
 	}
 
 	public function jsonSerialize() {
+		if (get_class($this->__subject) == "VF_GroupField") {
+			$identifier = $this->__subject->getId();
+		} else {
+			$identifier = $this->__subject->getName();
+		}
+
 		$arrReturn = array(
-			"subject" => $this->__subject->getName(), // For now, this ony applies to fields and should apply to both fields, area's, fieldsets and paragraphs.
+			"subject" => $identifier, // For now, this ony applies to fields and should apply to both fields, area's, fieldsets and paragraphs.
 			"comparison" => $this->__comparison,
 			"value" => $this->__value
 		);

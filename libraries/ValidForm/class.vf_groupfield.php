@@ -35,6 +35,7 @@ class VF_GroupField extends VF_Element {
 	public function __construct($id, $name, $type, $label, $value, $checked = FALSE, $meta = array()) {
 		parent::__construct($name, $type, $label, array(), array(), $meta);
 
+		$this->__id = $id;
 		$this->__value = $value;
 		$this->__checked = $checked;
 	}
