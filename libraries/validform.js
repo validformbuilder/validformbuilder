@@ -43,9 +43,11 @@ ValidFormComparison.prototype._init = function () {
 			}
 		}
 
-		$objSubject.on("change", function () {
-			self.isMet = self.check();
-		});
+		$objSubject
+			.on("change", function () {
+				self.isMet = self.check();
+			})
+			.trigger("change"); // make sure conditions are met onload
 
 	} catch (e) {
 		throw new Error("Failed to initialize ValidFormComparison: " + e.message, 1);
@@ -196,7 +198,6 @@ ValidFormCondition.prototype._init = function () {
 
 		self.isMet()
 			.progress(function (blnResult) {
-				console.log("Condition is met: ", blnResult);
 				self.set(blnResult);
 			});
 
@@ -239,106 +240,93 @@ ValidFormCondition.prototype.set = function (blnResult) {
 
 	//*** Utility functions
 	var Util = {
-		show: function ($objSubject) {
-			$objSubject.show();
+		"visible": function (blnValue) {
+			var $objSubject = (self.subject instanceof jQuery) ? self.subject : $("#" + self.subject.id);
 
-			if (!$objSubject.is("div")) {
-				$objSubject.parent().show();
-			}
-		},
-		hide: function ($objSubject) {
-			$objSubject.fadeOut("fast");
+			if (blnValue) {
+				$objSubject.show();
 
-			if (!$objSubject.is("div")) {
-				$objSubject.parent().fadeOut("fast");
+				if (!$objSubject.is("div") && !$objSubject.is("fieldset")) {
+					$objSubject.parent().show();
+				}
+
+				// Set enabled back to default state
+				Util.enabled(null, true);
+
+				// Set required back to default state
+				Util.required(null, true);
+
+			} else {
+				$objSubject.hide();
+
+				if (!$objSubject.is("div") && !$objSubject.is("fieldset")) {
+					$objSubject.parent().hide();
+				}
+
+				// Set enabled back to default state
+				Util.enabled(false);
+
+				// Set required back to default state
+				Util.required(false);
 			}
 		},
-		enable: function () {
+		"enabled": function (blnValue, blnDefaultState) {
+			blnDefaultState = blnDefaultState || false;
+
 			if (self.subject instanceof ValidFormElement) {
-				self.subject.setEnabled(true);
+				blnValue = (blnDefaultState) ? self.subject.getEnabled(true) : blnValue;
+
+				self.subject.setEnabled(blnValue);
+			} else {
+				// Iterate over sub elements
+				$("input, textarea, select", self.subject).each(function () {
+					var objElement = self.validform.getElement($(this).attr("name"));
+
+					if (objElement !== null) {
+						blnValue = (blnDefaultState) ? objElement.getEnabled(true) : blnValue;
+						objElement.setEnabled(blnValue);
+					}
+				});
 			}
 		},
-		disable: function () {
+		"required": function (blnValue, blnDefaultState) {
+			blnDefaultState = blnDefaultState || false;
+
 			if (self.subject instanceof ValidFormElement) {
-				// var blnDefaultState = self.subject.getEnabled(true); // @todo When do we reset the form back to it's default state?
-				self.subject.setEnabled(false);
-			}
-		},
-		required: function (blnDefaultState) {
-			if (self.subject instanceof ValidFormElement) {
-				self.subject.setRequired(true);
-			}
-		},
-		optional: function () {
-			if (self.subject instanceof ValidFormElement) {
-				self.subject.setRequired(false);
+				blnValue = (blnDefaultState) ? self.subject.getRequired(true) : blnValue;
+
+				self.subject.setRequired(blnValue);
+			} else {
+				// Iterate over sub elements
+				$("input, textarea, select", self.subject).each(function () {
+					var objElement = self.validform.getElement($(this).attr("name"));
+
+					if (objElement !== null) {
+						blnValue = (blnDefaultState) ? objElement.getRequired(true) : blnValue;
+						objElement.setRequired(blnValue);
+					}
+				});
 			}
 		}
 	}
 
-	switch (self.property) {
-		case "visible":
-			if (blnResult) {
-				// Condition is met
-				if (self.value) {
-					// Show
-					Util.show($objSubject);
-				} else {
-					// Hide
-					Util.hide($objSubject);
-				}
-			} else {
-				if (self.value) {
-					// Hide
-					Util.hide($objSubject);
-				} else {
-					// Show
-					Util.show($objSubject);
-				}
-			}
+	// Set the condition
+	Util[self.property](blnResult);
 
-		case "enabled":
-			var blnValue = (self.property == "enabled") ? self.value : self.subject.getEnabled(true);
-			console.log("Default enabled value: ", blnValue);
+	// switch (self.property) {
+	// 	case "visible":
+	// 		Util.visible(blnResult);
+	// 		break;
 
-			if (blnResult) {
-				// Condition is met
-				if (blnValue) {
-					Util.enable();
-				} else {
-					Util.disable();
-				}
-			} else {
-				if (blnValue) {
-					Util.disable();
-				} else {
-					Util.enable();
-				}
-			}
+	// 	case "enabled":
+	// 		Util.enabled(blnResult);
+	// 		break;
 
-		case "required":
-			var blnValue = (self.property == "required") ? self.value : self.subject.getRequired(true);
-			if (blnResult) {
-				// Condition is met
-				if (blnValue) {
-					console.log("Set required");
-					Util.required();
-				} else {
-					console.log("Set optional");
-					Util.optional();
-				}
-			} else {
-				if (blnValue) {
-					console.log("Set optional");
-					Util.optional();
-				} else {
-					console.log("Set required");
-					Util.required();
-				}
-			}
+	// 	case "required":
+	// 		Util.required(blnResult);
 
-			break;
-	}
+	// 		break;
+	// }
 
 }
 

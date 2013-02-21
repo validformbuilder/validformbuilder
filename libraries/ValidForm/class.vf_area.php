@@ -295,8 +295,44 @@ class VF_Area extends VF_Base {
 		if ($this->__active && !$this->hasContent($intCount)) {
 			//*** Not active;
 		} else {
-			foreach ($this->fields as $field) {
-				if (!$field->isValid($intCount)) {
+			foreach ($this->__fields as $field) {
+				if (get_class($field) !== "VF_Paragraph" && get_class($field) !== "VF_Area") {
+					//*** Get required an visible states from condition and overwrite values for validation purposes
+					$objCondition = $this->getCondition("required");
+					$objCondition = (!is_object($objCondition) && !is_null($this->getMeta("parent", null))) ? $this->getMeta("parent")->getCondition("required") : $objCondition;
+					if (is_object($objCondition)) {
+						echo "required condition";
+						if ($objCondition->isMet()) {
+							$field->getValidator()->setRequired(($objCondition->getValue()) ? true : false);
+						} else {
+							$field->getValidator()->setRequired(($objCondition->getValue()) ? false : true);
+						}
+					}
+
+					$objCondition = $this->getCondition("enabled");
+					$objCondition = (!is_object($objCondition) && !is_null($this->getMeta("parent", null))) ? $this->getMeta("parent")->getCondition("enabled") : $objCondition;
+					if (is_object($objCondition)) {
+						echo "enabled condition";
+						if ($objCondition->isMet()) {
+							$field->getValidator()->setRequired(($objCondition->getValue()) ? $field->getValidator()->getRequired() : false);
+						} else {
+							$field->getValidator()->setRequired(($objCondition->getValue()) ? false : $field->getValidator()->getRequired());
+						}
+					}
+
+					$objCondition = $this->getCondition("visible");
+					$objCondition = (!is_object($objCondition) && !is_null($this->getMeta("parent", null))) ? $this->getMeta("parent")->getCondition("visible") : $objCondition;
+					if (is_object($objCondition)) {
+						echo "visible condition";
+						if ($objCondition->isMet()) {
+							$field->getValidator()->setRequired(($objCondition->getValue()) ? $field->getValidator()->getRequired() : false);
+						} else {
+							$field->getValidator()->setRequired(($objCondition->getValue()) ? false : $field->getValidator()->getRequired());
+						}
+					}
+				}
+
+				if (!$field->isValid()) {
 					$blnReturn = FALSE;
 					break;
 				}
