@@ -442,6 +442,9 @@ ValidForm.prototype.addElement = function() {
 		objAddedElement = this.elements[strElementName] = new ValidFormElement(this.id, strElementName, strElementId, strValidation, required, maxLength, minLength, hint, typeError, requiredError, hintError, minLengthError, maxLengthError);
 	}
 
+	// Store the element in a data property in the DOM element.
+	$("[name='" + strElementName + "']", "#" + this.id).data("vf__field", objAddedElement);
+
 	return objAddedElement;
 };
 
@@ -794,19 +797,22 @@ ValidFormCondition.prototype._setSubject = function (strSubject) {
 }
 
 ValidFormCondition.prototype.set = function (blnResult) {
-	var self = this
-	,	$objSubject = (self.subject instanceof jQuery) ? self.subject : $("#" + self.subject.id);
+	var self = this;
 
 	//*** Utility functions
 	var Util = {
 		"visible": function (blnValue) {
-			var $objSubject = (self.subject instanceof jQuery) ? self.subject : $("#" + self.subject.id);
+			var $objSubject = (self.subject instanceof jQuery) ? self.subject : $("[name='" + self.subject.name + "']");
 
 			if (blnValue) {
 				$objSubject.show();
 
 				if (!$objSubject.is("div") && !$objSubject.is("fieldset")) {
 					$objSubject.parent().show();
+				}
+
+				if ($objSubject.attr("type") == "checkbox" || $objSubject.attr("type") == "radio") {
+					$objSubject.parent().parent().parent().show();
 				}
 
 				// Set enabled back to default state
@@ -820,6 +826,10 @@ ValidFormCondition.prototype.set = function (blnResult) {
 
 				if (!$objSubject.is("div") && !$objSubject.is("fieldset")) {
 					$objSubject.parent().hide();
+				}
+
+				if ($objSubject.attr("type") == "checkbox" || $objSubject.attr("type") == "radio") {
+					$objSubject.parent().parent().parent().hide();
 				}
 
 				// Set enabled back to default state
@@ -906,7 +916,6 @@ ValidFormCondition.prototype.isMet = function () {
 				}
 			}
 
-			console.log(self.comparisons.length, success);
 			return success === self.comparisons.length;
 		}
 
@@ -1041,6 +1050,8 @@ ValidFormElement.prototype.getValue = function () {
 }
 
 ValidFormElement.prototype.setRequired = function (blnValue) {
+	var self = this;
+
 	this.validator.required = blnValue;
 
 	// The state has changed, remove it's alert.
@@ -1059,6 +1070,16 @@ ValidFormElement.prototype.setRequired = function (blnValue) {
 		// Required == false
 		$parent.addClass("vf__optional").removeClass("vf__required");
 	}
+
+	$parent.find("input, select").each(function () {
+		var field = $(this).data("vf__field");
+
+		if (typeof field !== "undefined") {
+			if (field.validator.required) {
+				$parent.removeClass("vf__optional").addClass("vf__required");
+			}
+		}
+	});
 }
 
 ValidFormElement.prototype.getRequired = function (blnDefaultState) {

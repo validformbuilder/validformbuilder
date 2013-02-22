@@ -504,23 +504,25 @@ class ValidForm extends ClassDynamic {
 		$strReturn = "";
 		$strSet = "";
 
-		foreach ($objField->getFields() as $objSubField) {
-			if (get_class($objSubField) !== "VF_Paragraph") {
-				switch (get_class($objSubField)) {
-					case "VF_MultiField":
-						$strSet .= $this->multiFieldAsHtml($objSubField, $hideEmpty, $intDynamicCount);
+		if ($objField->hasContent()) {
+			foreach ($objField->getFields() as $objSubField) {
+				if (get_class($objSubField) !== "VF_Paragraph") {
+					switch (get_class($objSubField)) {
+						case "VF_MultiField":
+							$strSet .= $this->multiFieldAsHtml($objSubField, $hideEmpty, $intDynamicCount);
 
-						break;
-					default:
-						$strSet .= $this->fieldAsHtml($objSubField, $hideEmpty, $intDynamicCount);
+							break;
+						default:
+							$strSet .= $this->fieldAsHtml($objSubField, $hideEmpty, $intDynamicCount);
 
-						// Support nested dynamic fields.
-						if ($objSubField->isDynamic()) {
-							$intDynamicCount = $objSubField->getDynamicCount();
-							for ($intCount = 1; $intCount <= $intDynamicCount; $intCount++) {
-								$strSet .= $this->fieldAsHtml($objSubField, $hideEmpty, $intCount);
+							// Support nested dynamic fields.
+							if ($objSubField->isDynamic()) {
+								$intDynamicCount = $objSubField->getDynamicCount();
+								for ($intCount = 1; $intCount <= $intDynamicCount; $intCount++) {
+									$strSet .= $this->fieldAsHtml($objSubField, $hideEmpty, $intCount);
+								}
 							}
-						}
+					}
 				}
 			}
 		}

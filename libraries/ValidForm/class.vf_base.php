@@ -188,15 +188,23 @@ class VF_Base extends ClassDynamic {
 
 						if ($blnResult) {
 							if ($objCondition->getValue()) {
-								$this->setMeta("class", "vf__required", true);
+								if (get_class($this) !== "VF_Fieldset") {
+									$this->setMeta("class", "vf__required", true);
+								}
 							} else {
-								$this->setMeta("class", "vf__optional", true);
+								if (get_class($this) !== "VF_Fieldset") {
+									$this->setMeta("class", "vf__optional", true);
+								}
 							}
 						} else {
 							if ($objCondition->getValue()) {
-								$this->setMeta("class", "vf__optional", true);
+								if (get_class($this) !== "VF_Fieldset") {
+									$this->setMeta("class", "vf__optional", true);
+								}
 							} else {
-								$this->setMeta("class", "vf__required", true);
+								if (get_class($this) !== "VF_Fieldset") {
+									$this->setMeta("class", "vf__required", true);
+								}
 							}
 						}
 					}

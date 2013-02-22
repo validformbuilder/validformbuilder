@@ -41,7 +41,7 @@ class VF_Group extends VF_Element {
 		if (!$blnSimpleLayout) {
 
 			//*** We asume that all dynamic fields greater than 0 are never required.
-			if ($this->__validator->getRequired() && $intCount == 0) {
+			if ($this->__validator->getRequired()) {
 				$this->setMeta("class", "vf__required");
 			} else {
 				$this->setMeta("class", "vf__optional");

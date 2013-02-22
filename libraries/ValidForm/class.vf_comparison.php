@@ -88,14 +88,16 @@ class VF_Comparison extends ClassDynamic {
 	 * @return Boolean           True if comparison succeeded, false if not.
 	 */
 	private function __verify($strValue) {
-		$blnReturn = false;
+		$blnReturn 			= false;
+		$strLowerValue 		= strtolower($strValue);
+		$strCompareAgainst 	= strtolower($this->__value);
 
 		switch ($this->__comparison) {
 			case VFORM_COMPARISON_EQUAL:
-				$blnReturn = ($strValue == $this->__value);
+				$blnReturn = ($strLowerValue == $strCompareAgainst);
 				break;
 			case VFORM_COMPARISON_NOT_EQUAL:
-				$blnReturn = ($strValue != $this->__value);
+				$blnReturn = ($strLowerValue != $strCompareAgainst);
 				break;
 			case VFORM_COMPARISON_LESS_THAN:
 				$blnReturn = ($strValue < $this->__value);
@@ -117,13 +119,13 @@ class VF_Comparison extends ClassDynamic {
 				break;
 			case VFORM_COMPARISON_STARTS_WITH:
 				// strpos is faster than substr and way faster than preg_match.
-				$blnReturn = (strpos($strValue, $this->__value) === 0);
+				$blnReturn = (strpos($strLowerValue, $strCompareAgainst) === 0);
 				break;
 			case VFORM_COMPARISON_ENDS_WITH:
-				$blnReturn = (substr($strValue, -strlen($this->__value)) === $this->__value);
+				$blnReturn = (substr($strLowerValue, -strlen($strCompareAgainst)) === $strCompareAgainst);
 				break;
 			case VFORM_COMPARISON_CONTAINS:
-				$blnReturn = (strpos($strValue, $this->__value) !== false);
+				$blnReturn = (strpos($strLowerValue, $strCompareAgainst) !== false);
 				break;
 		}
 
