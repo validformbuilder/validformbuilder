@@ -122,7 +122,7 @@ class VF_Element extends VF_Base {
 	}
 
 	public function toJS() {
-		return "alert('Field type not defined.');\n";
+		return "alert('Field type of field {$this->__name} not defined.');\n";
 	}
 
 	public function getRandomId($name) {
