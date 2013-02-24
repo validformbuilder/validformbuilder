@@ -65,6 +65,18 @@ ValidWizard.prototype.initialize = function () {
 	}
 }
 
+ValidWizard.prototype.showFirstError = function () {
+	var __this = this;
+
+	if (jQuery("#" + __this.id).has(".vf__error").length > 0) {
+		var $error 	= jQuery(".vf__error:first");
+		var $page 	= $error.parentsUntil(".vf__page").parent();
+
+		__this.currentPage.hide();
+		__this.showPage($page);
+	}
+}
+
 ValidWizard.prototype.showPage = function ($objPage) {
 	var self = this;
 

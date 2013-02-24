@@ -151,18 +151,6 @@ ValidForm.prototype.setLabel = function (key, value) {
 	}
 }
 
-ValidForm.prototype.showFirstError = function () {
-	var __this = this;
-
-	if (jQuery("#" + __this.id).has(".vf__error").length > 0) {
-		var $error 	= jQuery(".vf__error:first");
-		var $page 	= $error.parentsUntil(".vf__page").parent();
-
-		__this.currentPage.hide();
-		__this.showPage($page);
-	}
-}
-
 ValidForm.prototype.matchfields = function (strSecondFieldId, strFirstFieldId, strMatchError) {
 	var objElement = this.getElement(jQuery("#" + strSecondFieldId).attr("name"));
 	objElement.validator.matchWith = this.getElement(jQuery("#" + strFirstFieldId).attr("name"));
