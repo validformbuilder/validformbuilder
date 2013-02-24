@@ -16,7 +16,7 @@ function ValidWizard(strFormId, strMainAlert, blnAllowPreviousPage) {
 	ValidForm.apply(this, arguments);
 
 	this._name = "ValidWizard";
-	this.currentPage;
+	this.currentPage = jQuery("#" + this.id + " .vf__page:first");
 
 	this.confirmPage = null;
 	this.hasConfirmPage = false;
@@ -30,7 +30,6 @@ function ValidWizard(strFormId, strMainAlert, blnAllowPreviousPage) {
 ValidWizard.prototype.init = function (blnHasConfirmPage, intPageIndex) {
 	ValidForm.prototype.init.apply(this, arguments);
 
-	this.currentPage = jQuery("#" + this.id + " .vf__page:first");
 
 	if (typeof intPageIndex !== "undefined") {
 		var $objPage = jQuery("#" + this.id + " .vf__page:eq(" + (parseInt(intPageIndex) - 1) + ")");
@@ -46,6 +45,8 @@ ValidWizard.prototype.init = function (blnHasConfirmPage, intPageIndex) {
  */
 ValidWizard.prototype.initialize = function () {
 	ValidForm.prototype.initialize.apply(this, arguments);
+
+	console.log("SHOW PAGE: ", this.currentPage);
 
 	this.showPage(this.currentPage);
 
