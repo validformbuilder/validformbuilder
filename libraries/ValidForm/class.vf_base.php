@@ -332,7 +332,7 @@ class VF_Base extends ClassDynamic {
 		$this->setMeta("data", $arrData, true);
 
 		// Return boolean value
-		return !!$this->getData($key);
+		return !!$this->getData($strKey);
 	}
 
 	/**
@@ -341,16 +341,16 @@ class VF_Base extends ClassDynamic {
 	 * @param  [string] $key The key of the data attribute to return
 	 * @return [mixed]
 	 */
-	public function getData($key = null) {
+	public function getData($strKey = null) {
 		$varReturn 	= false;
 		$arrData 	= $this->getMeta("data", null);
 
 		if (!is_null($arrData)) {
-			if ($key == null) {
+			if ($strKey == null) {
 				$varReturn = $arrData;
 			} else {
-				if (isset($arrData[$key])) {
-					$varReturn = $arrData[$key];
+				if (isset($arrData[$strKey])) {
+					$varReturn = $arrData[$strKey];
 				}
 			}
 		}

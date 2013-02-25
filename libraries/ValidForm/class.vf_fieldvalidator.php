@@ -199,7 +199,6 @@ class VF_FieldValidator extends ClassDynamic {
 				}
 			}
 		} else if (empty($value) && $value !== 0) {
-
 			if ($this->__required && $intDynamicPosition == 0) {
 				//*** Only the first dynamic field has a required check. We asume by design that "real" dynamic fields are not required.
 				unset($this->__validvalues[$intDynamicPosition]);

@@ -93,22 +93,30 @@ class VF_MultiField extends VF_Base {
 	}
 
 	public function __toHtml($submitted = FALSE, $blnSimpleLayout = FALSE, $blnLabel = true, $blnDisplayError = true, $intCount = 0) {
-		$blnError = ($submitted && !$this->__validate($intCount));
+		$blnError = false;
+		$strError = "";
 
-		//*** Check if this multifield should have required styling.
 		$strId = "";
 		$blnRequired = FALSE;
+
 		foreach ($this->__fields as $field) {
 			if (empty($strId)) {
-				$strId = ($intCount == 0) ? $field->id : $field->id . "_" . $intCount;
+				$strId = ($intCount == 0) ? $field->getId() : $field->getId() . "_" . $intCount;
 			}
 
 			$objValidator = $field->getValidator();
 			if (is_object($objValidator)) {
+				//*** Check if this multifield should have required styling.
 				if ($objValidator->getRequired()) {
 					$blnRequired = TRUE;
 				}
+
+				if ($submitted && !$objValidator->validate($intCount) && $blnDisplayError) {
+					$blnError = TRUE;
+					$strError .= "<p class=\"vf__error\">{$field->getValidator()->getError($intCount)}</p>";
+				}
 			}
+
 		}
 
 		//*** We asume that all dynamic fields greater than 0 are never required.
@@ -125,10 +133,11 @@ class VF_MultiField extends VF_Base {
 		$this->setConditionalMeta();
 		$strOutput 	= "<div{$this->__getMetaString()}>\n";
 
+		if ($blnError) $strOutput .= "<p class='vf__error'>{$strError}</p>";
+
 		$strLabel = (!empty($this->__requiredstyle) && $blnRequired) ? sprintf($this->__requiredstyle, $this->__label) : $this->__label;
 		if(!empty($this->__label)) $strOutput .= "<label for=\"{$strId}\"{$this->__getLabelMetaString()}>{$strLabel}</label>\n";
 
-		$arrFields = array();
 		foreach ($this->__fields as $field) {
 			// Skip the hidden dynamic counter fields.
 			if (($intCount > 0) && (get_class($field) == "VF_Hidden") && $field->isDynamicCounter()) {
@@ -136,8 +145,6 @@ class VF_MultiField extends VF_Base {
 			}
 
 			$strOutput .= $field->__toHtml($submitted, true, $blnLabel, $blnDisplayError, $intCount);
-
-			$arrFields[$field->getId()] = $field->getName();
 		}
 
 		if (!empty($this->__tip)) $strOutput .= "<small class=\"vf__tip\">{$this->__tip}</small>\n";

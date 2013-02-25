@@ -637,6 +637,7 @@ ValidFormComparison.prototype.check = function () {
 	,	self		= this
 	,	strValue 	= (self.subject instanceof jQuery) ? self.subject.val() : self.subject.getValue();
 
+
 	switch (self.comparison) {
 		case "equal":
 			if (strValue == self.value) {
@@ -662,24 +663,32 @@ ValidFormComparison.prototype.check = function () {
 			break;
 		case "lessthan":
 			var intCurrentValue = parseInt(strValue);
+			intCurrentValue = (isNaN(intCurrentValue)) ? 0 : intCurrentValue;
+
 			if (!isNaN(intCurrentValue) && (intCurrentValue < self.value)) {
 				blnReturn = true;
 			}
 			break;
 		case "greaterthan":
 			var intCurrentValue = parseInt(strValue);
+			intCurrentValue = (isNaN(intCurrentValue)) ? 0 : intCurrentValue;
+
 			if (!isNaN(intCurrentValue) && (intCurrentValue > self.value)) {
 				blnReturn = true;
 			}
 			break;
 		case "lessthanorequal":
 			var intCurrentValue = parseInt(strValue);
+			intCurrentValue = (isNaN(intCurrentValue)) ? 0 : intCurrentValue;
+
 			if (!isNaN(intCurrentValue) && (intCurrentValue <= self.value)) {
 				blnReturn = true;
 			}
 			break;
 		case "greaterthanorequal":
 			var intCurrentValue = parseInt(strValue);
+			intCurrentValue = (isNaN(intCurrentValue)) ? 0 : intCurrentValue;
+
 			if (!isNaN(intCurrentValue) && (intCurrentValue >= self.value)) {
 				blnReturn = true;
 			}
@@ -869,7 +878,7 @@ ValidFormCondition.prototype.set = function (blnResult) {
 	}
 
 	// Set the condition
-	Util[self.property]((blnResult === self.value));
+	Util[self.property]((blnResult == !!self.value));
 }
 
 ValidFormCondition.prototype.addComparison = function (objComparison) {
@@ -1384,11 +1393,9 @@ ValidFormFieldValidator.prototype.showAlert = function(strAlert) {
 
 	var objMultifieldItem = objElement.parent("div");
 	if (objMultifieldItem.hasClass("vf__multifielditem")) {
-		objMultifieldItem
-			.addClass("vf__error")
-			.prepend("<p class=\"vf__error\">" + strAlert + "</p>");
+		objMultifieldItem.addClass("vf__error");
 
-		objMultifieldItem.parent("div").addClass("vf__error");
+		objMultifieldItem.parent().addClass("vf__error").prepend("<p class=\"vf__error\">" + strAlert + "</p>");;
 	} else {
 		objElement.parent("div").addClass("vf__error").prepend("<p class=\"vf__error\">" + strAlert + "</p>");
 	}
