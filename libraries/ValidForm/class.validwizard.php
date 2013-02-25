@@ -156,6 +156,9 @@ class ValidWizard extends ValidForm {
 	public function removeConfirmPage() {
 		$this->__hasconfirmpage = false;
 	}
+	public function hasConfirmPage() {
+		return !!$this->__hasconfirmpage;
+	}
 
 	public function addField($name, $label, $type, $validationRules = array(), $errorHandlers = array(), $meta = array(), $blnJustRender = FALSE) {
 		$objField = parent::renderField($name, $label, $type, $validationRules, $errorHandlers, $meta);
