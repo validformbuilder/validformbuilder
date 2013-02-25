@@ -90,7 +90,7 @@ class VF_Select extends VF_Element {
 		} else {
 			if ($blnError) $this->setMeta("class", "vf__error");
 
-			$strOutput = "<div class=\"vf__multifielditem{$strClass}\">\n";
+			$strOutput = "<div class=\"vf__multifielditem\">\n";
 
 			if ($blnError) {
 				$strOutput .= "<p class=\"vf__error\">{$this->__validator->getError($intCount)}</p>";
