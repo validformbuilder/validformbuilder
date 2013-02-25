@@ -226,8 +226,8 @@ class ValidWizard extends ValidForm {
 	protected function __toJs($strCustomJs = "", $blnFromSession = false) {
 		// Add extra arguments to javascript initialization method.
 		$arrInitArguments = array();
-		if($this->__currentpage > 1) array_push($arrInitArguments, $this->__currentpage);
-		array_push($arrInitArguments, ($this->__hasconfirmpage) ? "true" : "false");
+		if($this->__currentpage > 1) $arrInitArguments["initialPage"] = $this->__currentpage;
+		$arrInitArguments["confirmPage"] = $this->__hasconfirmpage;
 
 		$strJs = "";
 		$strJs .= "objForm.setLabel('next', '" . $this->__nextlabel . "');\n\t";

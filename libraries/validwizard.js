@@ -7,7 +7,7 @@
  */
 ValidWizard.prototype = new ValidForm();
 
-function ValidWizard(strFormId, strMainAlert, blnAllowPreviousPage) {
+function ValidWizard(strFormId, strMainAlert, options) {
 	if (typeof ValidForm === "undefined") {
 		return console.error("ValidForm not included. Cannot initialize ValidWizard without ValidForm.");
 	}
@@ -15,24 +15,32 @@ function ValidWizard(strFormId, strMainAlert, blnAllowPreviousPage) {
 	// Inherit ProposalBase's methods in this class.
 	ValidForm.apply(this, arguments);
 
-	this._name = "ValidWizard";
-	this.currentPage = jQuery("#" + this.id + " .vf__page:first");
-
-	this.confirmPage = null;
+	this._name 			= "ValidWizard";
+	this.currentPage 	= jQuery("#" + this.id + " .vf__page:first");
 	this.hasConfirmPage = false;
+	this.initialPage	= 0;
+
+	if (typeof options !== "undefined") {
+		if (typeof options.confirmPage !== "undefined" && !!options.confirmPage) {
+			this.hasConfirmPage = true;
+		}
+
+		if (typeof options.initialPage !== "undefined" && parseInt(options.initialPage) > 0) {
+			this.initialPage = parseInt(options.initialPage);
+		}
+	}
 }
 
 /**
  * Internal initialization method
- * @param  {[type]} intPageIndex [description]
- * @return {[type]}              [description]
  */
-ValidWizard.prototype.init = function (blnHasConfirmPage, intPageIndex) {
-	ValidForm.prototype.init.apply(this, arguments);
+ValidWizard.prototype._init = function () {
+	var self = this;
 
+	ValidForm.prototype._init.apply(this, arguments);
 
-	if (typeof intPageIndex !== "undefined") {
-		var $objPage = jQuery("#" + this.id + " .vf__page:eq(" + (parseInt(intPageIndex) - 1) + ")");
+	if (typeof self.initialPage > 0) {
+		var $objPage = jQuery("#" + this.id + " .vf__page:eq(" + (parseInt(self.initialPage) - 1) + ")");
 
 		this.currentPage.hide();
 		this.currentPage = $objPage;
@@ -45,8 +53,6 @@ ValidWizard.prototype.init = function (blnHasConfirmPage, intPageIndex) {
  */
 ValidWizard.prototype.initialize = function () {
 	ValidForm.prototype.initialize.apply(this, arguments);
-
-	console.log("SHOW PAGE: ", this.currentPage);
 
 	this.showPage(this.currentPage);
 
@@ -111,7 +117,7 @@ ValidWizard.prototype.showPage = function ($objPage) {
 			jQuery("#" + self.id).find(".vf__navigation").hide();
 		}
 	} else {
-		throw new Error("Invalid object passed to ValidForm.showPage().");
+		throw new Error("Invalid object passed to ValidWizard.showPage().");
 	}
 
 	return $objPage;
@@ -202,6 +208,7 @@ ValidWizard.prototype.nextPage = function () {
 
 		if (this.validate("#" + this.currentPage.attr("id"))) {
 			if (this.nextIsLast()) {
+				console.log("TRIGGER OVERVIEW");
 				jQuery("#" + this.id).trigger("VF_ShowOverview", [{ValidForm: this}]);
 			}
 
@@ -222,6 +229,8 @@ ValidWizard.prototype.nextPage = function () {
 ValidWizard.prototype.nextIsLast = function () {
 	var $next = this.currentPage.next(".vf__page");
 	var index = (jQuery("#" + this.id + " .vf__page").index($next) + 1);
+
+	console.log("Next is last: ", (this.pages.length == index));
 
 	return (this.pages.length == index);
 }

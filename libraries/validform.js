@@ -15,9 +15,8 @@
  * ValidForm class
  * @param {String} strFormId            The form ID
  * @param {String} strMainAlert         The main form alert
- * @param {Boolean} blnAllowPreviousPage If true, users can click 'previous' in wizards. If false, this is disabled.
  */
-function ValidForm(strFormId, strMainAlert, blnAllowPreviousPage) {
+function ValidForm(strFormId, strMainAlert) {
 	this.id 					= strFormId;
 	this.elements 				= {};
 	this.pages 					= [];
@@ -44,7 +43,6 @@ function ValidForm(strFormId, strMainAlert, blnAllowPreviousPage) {
 									"afterValidate"
 								];
 	this.labels 				= {};
-	this.allowPreviousPage 		= (typeof blnAllowPreviousPage !== "undefined") ? !!blnAllowPreviousPage : true;
 	this.__continueExecution 	= true;
 
 	// Initialize ValidForm class
