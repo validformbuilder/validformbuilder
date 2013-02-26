@@ -103,7 +103,7 @@ class VF_Condition extends ClassDynamic {
 	 * @return array An array representation of this object and it's comparisons.
 	 */
 	public function jsonSerialize() {
-		if (get_class($this->__subject) == "VF_GroupField") {
+		if (get_class($this->__subject) == "VF_GroupField" || get_class($this->__subject) == "VF_Area") {
 			$identifier = $this->__subject->getId();
 		} else {
 			$identifier = $this->__subject->getName();
