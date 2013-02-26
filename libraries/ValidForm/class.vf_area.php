@@ -122,17 +122,19 @@ class VF_Area extends VF_Base {
 			if (get_class($objField) !== "VF_Hidden" || get_class($objField) !== "VF_Paragraph") {
 				if (get_class($objField) == "VF_MultiField") {
 					$blnReturn = $objField->hasContent($intCount);
+					if ($blnReturn) {
+						break;
+					}
 				} else {
 					if ($objField instanceof VF_Element) {
 						$varValue = $objField->getValidator()->getValue($intCount);
 
 						if (!empty($varValue)) {
 							$blnReturn = true;
+							break;
 						}
 					}
 				}
-
-				break;
 			}
 		}
 
@@ -258,10 +260,14 @@ class VF_Area extends VF_Base {
 		if ($this->__dynamic) {
 			$objSubFields = $this->getFields();
 			$objSubField = ($objSubFields->count() > 0) ? $objSubFields->getFirst() : NULL;
+			if (get_class($objSubField) == "VF_Paragraph") $objSubField = $objSubFields->next();
 
-			if (is_object($objSubField)) {
+			if (is_object($objSubField) && get_class($objSubField) !== "VF_Paragraph") {
 				if ($objSubField->hasFields()) {
-					$objSubField = $objSubField->getFields()->getFirst();
+					$objSubFields = $objSubField->getFields();
+					$objSubField = $objSubFields->getFirst();
+
+					if (get_class($objSubField) == "VF_Paragraph") $objSubField = $objSubFields->next();
 				}
 
 				$intReturn = $objSubField->getDynamicCounter()->getValidator()->getValue(); // old, faulty way to get dynamic count

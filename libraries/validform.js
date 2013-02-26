@@ -237,13 +237,15 @@ ValidForm.prototype.dynamicDuplication = function () {
 
 				//*** Add fields to the form.
 				var objOriginal = __this.getElement(fieldname);
-				var objCopy = jQuery.extend(new ValidFormElement(), objOriginal);
-				objCopy.id = ids[index] + "_" + counter.val();
-				objCopy.name = fieldname + "_" + counter.val();
-				objCopy.validator = jQuery.extend(new ValidFormFieldValidator(), objOriginal.validator);
-				objCopy.validator.id = objCopy.id;
-				objCopy.validator.required = false;
-				__this.addElement(objCopy);
+				if (objOriginal !== null) { // objOriginal is null if there is a paragraph in the area.
+					var objCopy = jQuery.extend(new ValidFormElement(), objOriginal);
+					objCopy.id = ids[index] + "_" + counter.val();
+					objCopy.name = fieldname + "_" + counter.val();
+					objCopy.validator = jQuery.extend(new ValidFormFieldValidator(), objOriginal.validator);
+					objCopy.validator.id = objCopy.id;
+					objCopy.validator.required = false;
+					__this.addElement(objCopy);
+				}
 			});
 
 			//*** Remove 'required' styling.
@@ -810,6 +812,12 @@ ValidFormCondition.prototype.set = function (blnResult) {
 					$objSubject.parent().parent().parent().show();
 				}
 
+				console.log("Show", $objSubject.next());
+				if ($objSubject.next().hasClass("vf__dynamic")) {
+					console.log("Show");
+					$objSubject.next().show();
+				}
+
 				// Set enabled back to default state
 				Util.enabled(null, true);
 
@@ -825,6 +833,11 @@ ValidFormCondition.prototype.set = function (blnResult) {
 
 				if ($objSubject.attr("type") == "checkbox" || $objSubject.attr("type") == "radio") {
 					$objSubject.parent().parent().parent().hide();
+				}
+
+				if ($objSubject.next().hasClass("vf__dynamic")) {
+					console.log("Hide");
+					$objSubject.next().hide();
 				}
 
 				// Set enabled back to default state

@@ -461,6 +461,7 @@ class ValidForm extends ClassDynamic {
 				if ($objField->isDynamic()) {
 					$intDynamicCount = $objField->getDynamicCount();
 
+					echo $intDynamicCount;
 					if ($intDynamicCount > 0) {
 						for ($intCount = 1; $intCount <= $intDynamicCount; $intCount++) {
 							switch (get_class($objField)) {
@@ -504,7 +505,7 @@ class ValidForm extends ClassDynamic {
 		$strReturn = "";
 		$strSet = "";
 
-		if ($objField->hasContent()) {
+		if ($objField->hasContent($intDynamicCount)) {
 			foreach ($objField->getFields() as $objSubField) {
 				if (get_class($objSubField) !== "VF_Paragraph") {
 					switch (get_class($objSubField)) {
