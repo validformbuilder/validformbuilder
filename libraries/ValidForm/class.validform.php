@@ -461,7 +461,6 @@ class ValidForm extends ClassDynamic {
 				if ($objField->isDynamic()) {
 					$intDynamicCount = $objField->getDynamicCount();
 
-					echo $intDynamicCount;
 					if ($intDynamicCount > 0) {
 						for ($intCount = 1; $intCount <= $intDynamicCount; $intCount++) {
 							switch (get_class($objField)) {
