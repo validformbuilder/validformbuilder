@@ -47,7 +47,7 @@ function ValidForm(strFormId, strMainAlert) {
 
 	// Initialize ValidForm class
 	this._init();
-}
+};
 
 /**
  * Initialize ValidForm Builder client side after all elements are added to the collection.
@@ -90,11 +90,11 @@ ValidForm.prototype.initialize = function () {
 			self.conditions[i]._init();
 		}
 	}
-}
+};
 
 ValidForm.prototype.addCondition = function (objCondition) {
 	this.conditions.push(new ValidFormCondition(this, objCondition));
-}
+};
 
 /**
  * Parse field errors from javascript object as such:
@@ -139,7 +139,7 @@ ValidForm.prototype.showAlerts = function (objFields) {
 			console.error("Show alerts failed: ", e.message, e); // Log error
 		} catch (e) {} // Or die trying
 	}
-}
+};
 
 ValidForm.prototype.setLabel = function (key, value) {
 	if (typeof value !== "undefined") {
@@ -147,13 +147,13 @@ ValidForm.prototype.setLabel = function (key, value) {
 	} else {
 		throw new Error("Cannot set empty label in ValidForm.setLabel('" + key + "', '" + value + "')");
 	}
-}
+};
 
 ValidForm.prototype.matchfields = function (strSecondFieldId, strFirstFieldId, strMatchError) {
 	var objElement = this.getElement(jQuery("#" + strSecondFieldId).attr("name"));
 	objElement.validator.matchWith = this.getElement(jQuery("#" + strFirstFieldId).attr("name"));
 	objElement.validator.matchError = strMatchError;
-}
+};
 
 ValidForm.prototype.traverseDisabledElements = function () {
 	var __this = this;
@@ -169,7 +169,7 @@ ValidForm.prototype.traverseDisabledElements = function () {
 	});
 
 	__this.attachAreaEvents(jQuery("legend input"));
-}
+};
 
 ValidForm.prototype.dynamicDuplication = function () {
 	var __this 	= this;
@@ -188,6 +188,7 @@ ValidForm.prototype.dynamicDuplication = function () {
 			//*** Update dynamic field counter.
 			var $original 	= $anchor.parent().prev();
 			var copy 		= $original.clone();
+			var counter; // Counter placeholder
 
 			//*** Clear values.
 			var names = jQuery(this).data("target-name").split("|");
@@ -197,7 +198,7 @@ ValidForm.prototype.dynamicDuplication = function () {
 
 			jQuery.each(names, function(index, fieldname){
 				//*** Fix every field in an area or multifield.
-				var counter = $("#" + fieldname + "_dynamic");
+				counter = $("#" + fieldname + "_dynamic");
 
 				// Set value to number '0' if value is NaN
 				if (isNaN(parseInt(counter.val()))) {
@@ -244,8 +245,10 @@ ValidForm.prototype.dynamicDuplication = function () {
 					objCopy.validator = jQuery.extend(new ValidFormFieldValidator(), objOriginal.validator);
 					objCopy.validator.id = objCopy.id;
 					objCopy.validator.required = false;
+
 					__this.addElement(objCopy);
 				}
+
 			});
 
 			//*** Remove 'required' styling.
@@ -256,7 +259,11 @@ ValidForm.prototype.dynamicDuplication = function () {
 			copy
 				.removeClass("vf__required")
 				.removeClass("vf__error")
-				.addClass("vf__optional");
+				.addClass("vf__optional")
+				.addClass("vf__clone");
+
+			// For now, we remove the ID attribute from clones
+			copy.removeAttr("id");
 
 			copy.find("p.vf__error").remove();
 			copy.find(".vf__error").removeClass("vf__error");
@@ -569,7 +576,7 @@ function ValidFormComparison (objForm, subject, comparison, value) {
 	this.uid 		= "com_" + Math.floor(Math.random()*9999);
 
 	return this._init();
-}
+};
 
 ValidFormComparison.prototype._init = function () {
 	try {
@@ -605,7 +612,7 @@ ValidFormComparison.prototype._init = function () {
 	this.promise 	= this._deferred.promise();
 
 	return this;
-}
+};
 
 ValidFormComparison.prototype._setSubject = function (objForm, strSubject) {
 	var varReturn;
@@ -632,7 +639,7 @@ ValidFormComparison.prototype._setSubject = function (objForm, strSubject) {
 	}
 
 	return varReturn;
-}
+};
 
 ValidFormComparison.prototype.check = function () {
 	var blnReturn 	= false
@@ -714,7 +721,7 @@ ValidFormComparison.prototype.check = function () {
 
 	self.isMet = blnReturn;
 	return blnReturn;
-}
+};
 
 function ValidFormCondition (objForm, objCondition) {
 	if (typeof objCondition !== "object" || objCondition == null) {
@@ -741,7 +748,7 @@ function ValidFormCondition (objForm, objCondition) {
 	}
 
 	return this;
-}
+};
 
 ValidFormCondition.prototype._init = function () {
 	try {
@@ -765,7 +772,7 @@ ValidFormCondition.prototype._init = function () {
 	}
 
 	return this;
-}
+};
 
 ValidFormCondition.prototype._setSubject = function (strSubject) {
 	var varReturn;
@@ -791,10 +798,14 @@ ValidFormCondition.prototype._setSubject = function (strSubject) {
 	}
 
 	return varReturn;
-}
+};
 
 ValidFormCondition.prototype.set = function (blnResult) {
 	var self = this;
+
+	var getDynamicCount = function ($objSubject) {
+		$("input[name$='" +  + "']", $objSubject);
+	}
 
 	//*** Utility functions
 	var Util = {
@@ -812,11 +823,11 @@ ValidFormCondition.prototype.set = function (blnResult) {
 					$objSubject.parent().parent().parent().show();
 				}
 
-				console.log("Show", $objSubject.next());
 				if ($objSubject.next().hasClass("vf__dynamic")) {
-					console.log("Show");
 					$objSubject.next().show();
 				}
+
+				$objSubject.nextAll(".vf__clone, .vf__dynamic").show();
 
 				// Set enabled back to default state
 				Util.enabled(null, true);
@@ -836,9 +847,10 @@ ValidFormCondition.prototype.set = function (blnResult) {
 				}
 
 				if ($objSubject.next().hasClass("vf__dynamic")) {
-					console.log("Hide");
 					$objSubject.next().hide();
 				}
+
+				$objSubject.nextAll(".vf__clone, .vf__dynamic").hide();
 
 				// Set enabled back to default state
 				Util.enabled(false);
@@ -846,6 +858,8 @@ ValidFormCondition.prototype.set = function (blnResult) {
 				// Set required back to default state
 				Util.required(false);
 			}
+
+			$("#" + self.validform.id).trigger("VF_ConditionSet", [{"condition": "visible", "value": blnValue, "subject": self.subject}]);
 		},
 
 		"enabled": function (blnValue, blnDefaultState) {
@@ -866,6 +880,8 @@ ValidFormCondition.prototype.set = function (blnResult) {
 					}
 				});
 			}
+
+			$("#" + self.validform.id).trigger("VF_ConditionSet", [{"condition": "enabled", "value": blnValue, "subject": self.subject}]);
 		},
 
 		"required": function (blnValue, blnDefaultState) {
@@ -887,12 +903,14 @@ ValidFormCondition.prototype.set = function (blnResult) {
 				});
 
 			}
+
+			$("#" + self.validform.id).trigger("VF_ConditionSet", [{"condition": "required", "value": blnValue, "subject": self.subject}]);
 		}
 	}
 
 	// Set the condition
 	Util[self.property]((blnResult == !!self.value));
-}
+};
 
 ValidFormCondition.prototype.addComparison = function (objComparison) {
 	var self = this;
@@ -902,7 +920,7 @@ ValidFormCondition.prototype.addComparison = function (objComparison) {
 	}
 
 	this.comparisons.push(objComparison);
-}
+};
 
 ValidFormCondition.prototype.isMet = function () {
 	var self = this
@@ -947,7 +965,7 @@ ValidFormCondition.prototype.isMet = function () {
 	}
 
 	return def.promise();
-}
+};
 
 /**
  * ValidFormElement Class
@@ -1028,7 +1046,7 @@ function ValidFormElement(strFormId, strElementName, strElementId, strValidation
 		"required": this.validator.required,
 		"enabled": !this.disabled
 	}
-}
+};
 
 /**
  * Validate this form element
@@ -1036,7 +1054,7 @@ function ValidFormElement(strFormId, strElementName, strElementId, strValidation
  */
 ValidFormElement.prototype.validate = function() {
 	return this.validator.validate();
-}
+};
 
 ValidFormElement.prototype.getValue = function () {
 	var $field 	= jQuery("[name='" + this.name + "']")
@@ -1055,7 +1073,7 @@ ValidFormElement.prototype.getValue = function () {
 	}
 
 	return value;
-}
+};
 
 ValidFormElement.prototype.setRequired = function (blnValue) {
 	var self = this;
@@ -1088,11 +1106,11 @@ ValidFormElement.prototype.setRequired = function (blnValue) {
 			}
 		}
 	});
-}
+};
 
 ValidFormElement.prototype.getRequired = function (blnDefaultState) {
 	return (!!blnDefaultState) ? this._defaultstate.required : this.validator.required;
-}
+};
 
 ValidFormElement.prototype.setEnabled = function (blnValue) {
 	this.disabled = !blnValue;
@@ -1114,10 +1132,26 @@ ValidFormElement.prototype.setEnabled = function (blnValue) {
 
 		$("#" + this.id).parent().removeClass("vf__optional").addClass("vf__required");
 	}
-}
+};
 
 ValidFormElement.prototype.getEnabled = function (blnDefaultState) {
 	return (!!blnDefaultState) ? this._defaultstate.enabled : !this.disabled;
+};
+
+ValidFormElement.prototype.getDynamicCount = function () {
+	var self 		= this
+	,	varReturn 	= 0
+	,	$counter 	= $("input[name='" + self.name + "_dynamic']", $("#" + self.formId)); // jQuery performs better when scoped correctly
+
+	if ($counter.length > 0) {
+		varReturn = parseInt($counter.val());
+
+		if (isNaN(varReturn)) {
+			varReturn = 0;
+		}
+	}
+
+	return varReturn;
 }
 
 /**
@@ -1150,7 +1184,7 @@ function ValidFormValidator(strFormId) {
 	 * @type {String}
 	 */
 	this.mainAlert			= "";
-}
+};
 
 /**
  * Remove main form error message
@@ -1184,11 +1218,11 @@ ValidFormValidator.prototype.showPage = function (strAlert) {
 
 	//*** Jump to the first error.
 	jQuery.scrollTo(jQuery("div.vf__error:first"), 500);
-}
+};
 
 ValidFormValidator.prototype.removePage = function() {
 	jQuery("#" + this.id + " .vf__page:visible div.vf__page_error").remove();
-}
+};
 
 /**
  * ValidFormValidator Class
@@ -1261,7 +1295,7 @@ function ValidFormFieldValidator(strElementId, strElementName) {
 	 * @type {String}
 	 */
 	this.maxLengthError		= "";
-}
+};
 
 /**
  * Element validator

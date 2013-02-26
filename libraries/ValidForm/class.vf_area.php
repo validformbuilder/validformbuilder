@@ -304,7 +304,7 @@ class VF_Area extends VF_Base {
 
 		foreach ($this->__fields as $field) {
 			// Note: hasContent is only accurate if isValid() is called first ...
-			if (!$field->isValid()) {
+			if (!$field->isValid($intCount)) {
 				$blnReturn = false;
 				break;
 			}

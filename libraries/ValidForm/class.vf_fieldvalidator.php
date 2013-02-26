@@ -138,17 +138,17 @@ class VF_FieldValidator extends ClassDynamic {
 
 		//*** Get required an visible states from condition and overwrite values for validation purposes
 		$objCondition = $this->__field->getCondition("required");
-		$objCondition = (!is_object($objCondition) && !is_null($this->__field->getMeta("parent", null))) ? $this->__field->getMeta("parent")->getCondition("visible") : $objCondition;
+		$objCondition = (!is_object($objCondition) && !is_null($this->__field->getMeta("parent", null))) ? $this->__field->getMeta("parent")->getCondition("required") : $objCondition;
 		if (is_object($objCondition)) {
 			if ($objCondition->isMet($intDynamicPosition)) {
-				$this->__required = ($objCondition->getValue()) ? true : false;
+				$this->__required = ($objCondition->getValue()) ? true : $this->__required;
 			} else {
-				$this->__required = ($objCondition->getValue()) ? false : true;
+				$this->__required = ($objCondition->getValue()) ? $this->__required : true;
 			}
 		}
 
 		$objCondition = $this->__field->getCondition("enabled");
-		$objCondition = (!is_object($objCondition) && !is_null($this->__field->getMeta("parent", null))) ? $this->__field->getMeta("parent")->getCondition("visible") : $objCondition;
+		$objCondition = (!is_object($objCondition) && !is_null($this->__field->getMeta("parent", null))) ? $this->__field->getMeta("parent")->getCondition("enabled") : $objCondition;
 		if (is_object($objCondition)) {
 			if ($objCondition->isMet($intDynamicPosition)) {
 				$this->__required = ($objCondition->getValue()) ? $this->__required : false;
