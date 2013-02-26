@@ -152,8 +152,11 @@ class VF_Area extends VF_Base {
 
 		$this->setMeta("class", "vf__area");
 		if ($this->__active && is_null($this->getFieldMeta("checked", null))) $this->setMeta("class", "vf__disabled");
+		if ($intCount > 0) $this->setMeta("class", "vf__clone");
 
-		$strOutput = "<fieldset{$this->__getMetaString()} id=\"{$this->getId()}\">\n";
+		$strId = ($intCount == 0) ? " id=\"{$this->getId()}\"" : "";
+
+		$strOutput = "<fieldset{$this->__getMetaString()}{$strId}>\n";
 
 		if ($this->__active) {
 			$strCounter = ($intCount == 0 && $this->__dynamic) ? " <input type='hidden' name='{$strName}_dynamic' value='{$intCount}' id='{$strName}_dynamic'/>" : "";
