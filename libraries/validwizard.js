@@ -208,7 +208,6 @@ ValidWizard.prototype.nextPage = function () {
 
 		if (this.validate("#" + this.currentPage.attr("id"))) {
 			if (this.nextIsLast()) {
-				console.log("TRIGGER OVERVIEW");
 				jQuery("#" + this.id).trigger("VF_ShowOverview", [{ValidForm: this}]);
 			}
 
@@ -229,8 +228,6 @@ ValidWizard.prototype.nextPage = function () {
 ValidWizard.prototype.nextIsLast = function () {
 	var $next = this.currentPage.next(".vf__page");
 	var index = (jQuery("#" + this.id + " .vf__page").index($next) + 1);
-
-	console.log("Next is last: ", (this.pages.length == index));
 
 	return (this.pages.length == index);
 }
