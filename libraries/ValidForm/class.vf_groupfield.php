@@ -66,6 +66,15 @@ class VF_GroupField extends VF_Element {
 		return $strOutput;
 	}
 
+	public function __getValue($submitted = false, $intCount = 0) {
+		$varReturn = parent::__getValue($submitted, $intCount);
+		if (is_null($varReturn)) {
+			$varReturn = $this->__value;
+		}
+
+		return $varReturn;
+	}
+
 }
 
 ?>

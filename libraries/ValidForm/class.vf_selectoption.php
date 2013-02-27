@@ -52,6 +52,16 @@ class VF_SelectOption extends VF_Element {
 		return $this->__value;
 	}
 
+	public function __getValue($submitted = false, $intCount = 0) {
+		$varReturn = parent::__getValue($submitted, $intCount);
+
+		if (is_null($varReturn)) {
+			$varReturn = $this->__value;
+		}
+
+		return $varReturn;
+	}
+
 }
 
 ?>
