@@ -2,16 +2,20 @@
 /***************************
  * ValidForm Builder - build valid and secure web forms quickly
  *
- * Copyright (c) 2009-2012, Felix Langfeldt <flangfeldt@felix-it.com>.
+ * Copyright (c) 2009-2013 Neverwoods Internet Technology - http://neverwoods.com
+ *
+ * Felix Langfeldt <felix@neverwoods.com>
+ * Robin van Baalen <robin@neverwoods.com>
+ *
  * All rights reserved.
  *
  * This software is released under the GNU GPL v2 License <http://www.gnu.org/licenses/old-licenses/gpl-2.0.html>
  *
  * @package    ValidForm
- * @author     Felix Langfeldt <flangfeldt@felix-it.com>
- * @copyright  2009-2012 Felix Langfeldt <flangfeldt@felix-it.com>
+ * @author     Felix Langfeldt <felix@neverwoods.com>, Robin van Baalen <robin@neverwoods.com>
+ * @copyright  2009-2013 Neverwoods Internet Technology - http://neverwoods.com
  * @license    http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU GPL v2
- * @link       http://code.google.com/p/validformbuilder/
+ * @link       http://validformbuilder.org
  ***************************/
 
 require_once('class.vf_element.php');
@@ -22,8 +26,6 @@ require_once('class.vf_element.php');
  *
  * @package ValidForm
  * @author Felix Langfeldt
- * @version Release: 0.2.3
- *
  */
 class VF_Select extends VF_Element {
 	protected $__options;
@@ -32,6 +34,11 @@ class VF_Select extends VF_Element {
 		$this->__options = new VF_Collection();
 
 		parent::__construct($name, $type, $label, $validationRules, $errorHandlers, $meta);
+
+		//*** Parse ranges if meta ranges are set. Thisway, the VF_Select element is filled before calling toHtml and therefore ready for custom manipulation
+		if ($this->__options->count() == 0) {
+			$this->__parseRanges();
+		}
 	}
 
 	public function toHtml($submitted = FALSE, $blnSimpleLayout = FALSE, $blnLabel = true, $blnDisplayErrors = true) {
@@ -54,18 +61,25 @@ class VF_Select extends VF_Element {
 
 		$strName 	= ($intCount == 0) ? $this->__name : $this->__name . "_" . $intCount;
 		$strId 		= ($intCount == 0) ? $this->__id : $this->__id . "_" . $intCount;
+		$blnError 	= ($submitted && !$this->__validator->validate($intCount) && $blnDisplayErrors) ? TRUE : FALSE;
 
 		if (!$blnSimpleLayout) {
-			$blnError = ($submitted && !$this->__validator->validate($intCount) && $blnDisplayErrors) ? TRUE : FALSE;
 
 			//*** We asume that all dynamic fields greater than 0 are never required.
-			$strClass = ($this->__validator->getRequired() && $intCount == 0) ? "vf__required" : "vf__optional";
+			if ($this->__validator->getRequired() && $intCount == 0) {
+				$this->setMeta("class", "vf__required");
+			} else {
+				$this->setMeta("class", "vf__optional");
+			}
 
-			$strClass = ($blnError) ? $strClass . " vf__error" : $strClass;
-			// $strClass = ($this->hasTrigger()) ? $strClass . " vf__targetfield" : $strClass;
-			$strClass = (!$blnLabel) ? $strClass . " vf__nolabel" : $strClass;
+			//*** Set custom meta.
+			if ($blnError) $this->setMeta("class", "vf__error");
+			if (!$blnLabel) $this->setMeta("class", "vf__nolabel");
 
-			$strOutput .= "<div class=\"{$strClass}\">\n";
+			// Call this right before __getMetaString();
+			$this->setConditionalMeta();
+
+			$strOutput .= "<div{$this->__getMetaString()}>\n";
 
 			if ($blnError) {
 				$strOutput .= "<p class=\"vf__error\">{$this->__validator->getError($intCount)}</p>";
@@ -74,39 +88,22 @@ class VF_Select extends VF_Element {
 			$strLabel = (!empty($this->__requiredstyle) && $this->__validator->getRequired()) ? sprintf($this->__requiredstyle, $this->__label) : $this->__label;
 			if (!empty($this->__label)) $strOutput .= "<label for=\"{$strId}\"{$this->__getLabelMetaString()}>{$strLabel}</label>\n";
 		} else {
+			if ($blnError) $this->setMeta("class", "vf__error");
+
 			$strOutput = "<div class=\"vf__multifielditem\">\n";
+
+			if ($blnError) {
+				$strOutput .= "<p class=\"vf__error\">{$this->__validator->getError($intCount)}</p>";
+			}
+
+			// $strOutput = "<div class=\"vf__multifielditem\">\n";
 		}
 
-		// if (is_object($this->__targetfield)) {
-		// 	$strOutput .= "<div class=\"vf__targetfieldwrap\">";
-		// }
+		$strOutput .= "<select name=\"{$strName}\" id=\"{$strId}\" {$this->__getFieldMetaString()}>\n";
 
-		$strOutput .= "<select name=\"{$strName}\" id=\"{$strId}\" {$this->__getMetaString()}>\n";
-
+		//*** If no option elements are available, parse ranges
 		if ($this->__options->count() == 0) {
-			if (isset($this->__meta["labelRange"]) && is_array($this->__meta["labelRange"])) {
-				if (isset($this->__meta["valueRange"]) && is_array($this->__meta["valueRange"]) && count($this->__meta["labelRange"]) == count($this->__meta["valueRange"])) {
-					$intIndex = 0;
-					foreach ($this->__meta["labelRange"] as $strLabel) {
-						$this->addField($strLabel, $this->__meta["valueRange"][$intIndex]);
-						$intIndex++;
-					}
-				} else {
-					foreach ($this->__meta["labelRange"] as $strLabel) {
-						$this->addField($strLabel, $strLabel);
-					}
-				}
-			} else if (isset($this->__meta["start"]) && is_numeric($this->__meta["start"]) && isset($this->__meta["end"]) && is_numeric($this->__meta["end"])) {
-				if ($this->__meta["start"] < $this->__meta["end"]) {
-					for ($intIndex = $this->__meta["start"]; $intIndex <= $this->__meta["end"]; $intIndex++) {
-						$this->addField($intIndex, $intIndex);
-					}
-				} else {
-					for ($intIndex = $this->__meta["start"]; $intIndex >= $this->__meta["end"]; $intIndex--) {
-						$this->addField($intIndex, $intIndex);
-					}
-				}
-			}
+			$this->__parseRanges();
 		}
 
 		foreach ($this->__options as $option) {
@@ -117,11 +114,6 @@ class VF_Select extends VF_Element {
 
 		if (!empty($this->__tip)) $strOutput .= "<small class=\"vf__tip\">{$this->__tip}</small>\n";
 
-		// if (is_object($this->__targetfield)) {
-		// 	$strOutput .= $this->__targetfield->toHtml($submitted, $blnSimpleLayout, false, $blnDisplayErrors, $intCount);
-		// 	$strOutput .= "</div>\n"; // End of the targetfieldwrap
-		// }
-
 		$strOutput .= "</div>\n";
 
 		if (!$blnSimpleLayout && $intCount == $this->getDynamicCount()) {
@@ -129,6 +121,32 @@ class VF_Select extends VF_Element {
 		}
 
 		return $strOutput;
+	}
+
+	protected function __parseRanges() {
+		if (isset($this->__meta["labelRange"]) && is_array($this->__meta["labelRange"])) {
+			if (isset($this->__meta["valueRange"]) && is_array($this->__meta["valueRange"]) && count($this->__meta["labelRange"]) == count($this->__meta["valueRange"])) {
+				$intIndex = 0;
+				foreach ($this->__meta["labelRange"] as $strLabel) {
+					$this->addField($strLabel, $this->__meta["valueRange"][$intIndex]);
+					$intIndex++;
+				}
+			} else {
+				foreach ($this->__meta["labelRange"] as $strLabel) {
+					$this->addField($strLabel, $strLabel);
+				}
+			}
+		} else if (isset($this->__meta["start"]) && is_numeric($this->__meta["start"]) && isset($this->__meta["end"]) && is_numeric($this->__meta["end"])) {
+			if ($this->__meta["start"] < $this->__meta["end"]) {
+				for ($intIndex = $this->__meta["start"]; $intIndex <= $this->__meta["end"]; $intIndex++) {
+					$this->addField($intIndex, $intIndex);
+				}
+			} else {
+				for ($intIndex = $this->__meta["start"]; $intIndex >= $this->__meta["end"]; $intIndex--) {
+					$this->addField($intIndex, $intIndex);
+				}
+			}
+		}
 	}
 
 	protected function __addDynamicHtml() {
@@ -164,42 +182,28 @@ class VF_Select extends VF_Element {
 			$strOutput = "objForm.addElement('{$this->__id}', '{$this->__name}', {$strCheck}, {$strRequired}, {$intMaxLength}, {$intMinLength}, '" . addslashes($this->__validator->getFieldHint()) . "', '" . addslashes($this->__validator->getTypeError()) . "', '" . addslashes($this->__validator->getRequiredError()) . "', '" . addslashes($this->__validator->getHintError()) . "', '" . addslashes($this->__validator->getMinLengthError()) . "', '" . addslashes($this->__validator->getMaxLengthError()) . "');\n";
 		}
 
-		// if (is_object($this->__targetfield)) {
-		// 	$strOutput .= $this->__targetfield->toJs();
-		// }
+		if ($this->hasConditions() && (count($this->getConditions() > 0))) {
+			foreach ($this->getConditions() as $objCondition) {
+				$strOutput .= "objForm.addCondition(" . json_encode($objCondition->jsonSerialize()) . ");\n";
+			}
+		}
 
 		return $strOutput;
 	}
 
 	public function addField($value, $label, $selected = FALSE) {
 		$objOption = new VF_SelectOption($value, $label, $selected);
+		$objOption->setMeta("parent", $this, true);
+
 		$this->__options->addObject($objOption);
 
 		return $objOption;
 	}
 
-	// public function addFieldObject($objTarget, $checked = false) {
-	// 	// Add checkbox
-	// 	$objTrigger = $this->addField($objTarget->getLabel(), $this->getName(true) . "_triggerfield", $checked);
-
-	// 	// Set the defaults on the target element
-	// 	$objTarget->setName($this->getName(true) . "_triggerfield");
-	// 	$objTarget->setId($this->getRandomId($objTarget->getName()));
-
-	// 	// Set the trigger field.
-	// 	$objTarget->setTrigger($objTrigger);
-
-	// 	// This group has a trigger element.
-	// 	$this->__targetfield = $objTarget;
-
-	// 	// Add to validator
-	// 	$this->__validator->setTargetField($objTarget);
-
-	// 	// $this->__options->addObject($objTarget);
-	// }
-
 	public function addGroup($label) {
 		$objGroup = new VF_SelectGroup($label);
+		$objGroup->setMeta("parent", $this, true);
+
 		$this->__options->addObject($objGroup);
 
 		return $objGroup;

@@ -2,20 +2,23 @@
 /***************************
  * ValidForm Builder - build valid and secure web forms quickly
  *
- * Copyright (c) 2009-2012, Felix Langfeldt <flangfeldt@felix-it.com>.
+ * Copyright (c) 2009-2013 Neverwoods Internet Technology - http://neverwoods.com
+ *
+ * Felix Langfeldt <felix@neverwoods.com>
+ * Robin van Baalen <robin@neverwoods.com>
+ *
  * All rights reserved.
  *
  * This software is released under the GNU GPL v2 License <http://www.gnu.org/licenses/old-licenses/gpl-2.0.html>
  *
  * @package    ValidForm
- * @author     Felix Langfeldt <flangfeldt@felix-it.com>
- * @author     Robin van Baalen <rvanbaalen@felix-it.com>
- * @copyright  2009-2012 Felix Langfeldt <flangfeldt@felix-it.com>
+ * @author     Felix Langfeldt <felix@neverwoods.com>, Robin van Baalen <robin@neverwoods.com>
+ * @copyright  2009-2013 Neverwoods Internet Technology - http://neverwoods.com
  * @license    http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU GPL v2
- * @link       http://code.google.com/p/validformbuilder/
+ * @link       http://validformbuilder.org
  ***************************/
 
-require_once('class.classdynamic.php');
+require_once('class.vf_base.php');
 
 /**
  *
@@ -26,12 +29,10 @@ require_once('class.classdynamic.php');
  * @version Release: 0.2.2
  *
  */
-class VF_Area extends ClassDynamic {
+class VF_Area extends VF_Base {
 	protected $__label;
 	protected $__active;
-	protected $__name;
 	protected $__checked;
-	protected $__meta;
 	protected $__dynamic;
 	protected $__dynamicLabel;
 	protected $__requiredstyle;
@@ -44,14 +45,19 @@ class VF_Area extends ClassDynamic {
 		$this->__checked = $checked;
 		$this->__meta = $meta;
 
+		//*** Set label & field specific meta
+		$this->__initializeMeta();
+
 		$this->__fields = new VF_Collection();
 
-		$this->__dynamic = (array_key_exists("dynamic", $meta)) ? $meta["dynamic"] : NULL;
-		$this->__dynamicLabel = (array_key_exists("dynamicLabel", $meta)) ? $meta["dynamicLabel"] : NULL;
+		$this->__dynamic = $this->getMeta("dynamic", null);
+		$this->__dynamicLabel = $this->getMeta("dynamicLabel", null);
 	}
 
 	public function addField($name, $label, $type, $validationRules = array(), $errorHandlers = array(), $meta = array()) {
 		$objField = ValidForm::renderField($name, $label, $type, $validationRules, $errorHandlers, $meta);
+
+		$objField->setMeta("parent", $this, true);
 
 		$this->__fields->addObject($objField);
 
@@ -65,17 +71,13 @@ class VF_Area extends ClassDynamic {
 		return $objField;
 	}
 
-	public function addParagraph($strBody, $strHeader = "") {
-		$objParagraph = new VF_Paragraph($strHeader, $strBody);
+	public function addParagraph($strBody, $strHeader = "", $meta = array()) {
+		$objParagraph = new VF_Paragraph($strHeader, $strBody, $meta);
 
-		//*** Fieldset already defined?
-		$objFieldset = $this->__elements->getLast("VF_Fieldset");
-		if ($this->__elements->count() == 0 || !is_object($objFieldset)) {
-			$objFieldset = $this->addFieldset();
-		}
+		$objParagraph->setMeta("parent", $this, true);
 
 		//*** Add field to the fieldset.
-		$objFieldset->addField($objParagraph);
+		$this->__fields->addObject($objParagraph);
 
 		return $objParagraph;
 	}
@@ -92,6 +94,7 @@ class VF_Area extends ClassDynamic {
 		$objField = new VF_MultiField($label, $meta);
 
 		$objField->setRequiredStyle($this->__requiredstyle);
+		$objField->setMeta("parent", $this, true);
 
 		$this->__fields->addObject($objField);
 
@@ -116,41 +119,49 @@ class VF_Area extends ClassDynamic {
 		$blnReturn = false;
 
 		foreach ($this->__fields as $objField) {
-			if (get_class($objField) !== "VF_Hidden") {
+			if (get_class($objField) !== "VF_Hidden" || get_class($objField) !== "VF_Paragraph") {
 				if (get_class($objField) == "VF_MultiField") {
 					$blnReturn = $objField->hasContent($intCount);
+					if ($blnReturn) {
+						break;
+					}
 				} else {
-					$varValue = $objField->getValidator()->getValue($intCount);
+					if ($objField instanceof VF_Element) {
+						$varValue = $objField->getValidator()->getValue($intCount);
 
-					if (!empty($varValue)) {
-						$blnReturn = true;
+						if (!empty($varValue)) {
+							$blnReturn = true;
+							break;
+						}
 					}
 				}
-
-				break;
 			}
 		}
 
 		return $blnReturn;
 	}
 
-	protected function __toHtml($submitted = false, $blnSimpleLayout = FALSE, $blnLabel = true, $blnDisplayErrors = true, $intCount = 0) {
-		$strName 	= ($intCount == 0) ? $this->__name : $this->__name . "_" . $intCount;
+	protected function __toHtml($submitted = false, $blnSimpleLayout = false, $blnLabel = true, $blnDisplayErrors = true, $intCount = 0) {
+		// Call this before __getMetaString();
+		$this->setConditionalMeta($submitted);
 
-		$strChecked = ($this->__active && $this->__checked && !$submitted) ? " checked=\"checked\"" : "";
-		$strChecked = ($this->__active && $submitted && $this->hasContent($intCount)) ? " checked=\"checked\"" : $strChecked;
+		$strName 	= ($intCount == 0) ? $this->getName() : $this->getName() . "_" . $intCount;
 
-		$strClass = (array_key_exists("class", $this->__meta)) ? " " . $this->__meta["class"] : "";
-		$strClass = ($this->__active && empty($strChecked) && empty($strChecked)) ? $strClass . " vf__disabled" : $strClass;
+		if ($this->__active && $this->__checked && !$submitted) $this->setFieldMeta("checked", "checked", true);
+		if ($this->__active && $submitted && $this->hasContent($intCount)) $this->setFieldMeta("checked", "checked", true);
 
-		$strOutput = "<fieldset class=\"vf__area{$strClass}\">\n";
+		$this->setMeta("class", "vf__area");
+		if ($this->__active && is_null($this->getFieldMeta("checked", null))) $this->setMeta("class", "vf__disabled");
+		if ($intCount > 0) $this->setMeta("class", "vf__clone");
+
+		$strId = ($intCount == 0) ? " id=\"{$this->getId()}\"" : "";
+
+		$strOutput = "<fieldset{$this->__getMetaString()}{$strId}>\n";
 
 		if ($this->__active) {
-
-			$strCounter = ($intCount == 0) ? "<input type='hidden' name='{$strName}_dynamic' value='{$intCount}' id='{$strName}_dynamic'/>" : "";
-			$label = "<label for=\"{$strName}\"><input type=\"checkbox\" name=\"{$strName}\" id=\"{$strName}\" {$strChecked} /> {$this->__label} {$strCounter}</label>";
+			$strCounter = ($intCount == 0 && $this->__dynamic) ? " <input type='hidden' name='{$strName}_dynamic' value='{$intCount}' id='{$strName}_dynamic'/>" : "";
+			$label = "<label for=\"{$strName}\"><input type=\"checkbox\" name=\"{$strName}\" id=\"{$strName}\"{$this->__getFieldMetaString()} /> {$this->__label}{$strCounter}</label>";
 		} else {
-
 			$label = $this->__label;
 		}
 
@@ -218,6 +229,9 @@ class VF_Area extends ClassDynamic {
 			$strReturn .= $field->toJS($this->__dynamic);
 		}
 
+		// Parent::toJs generates conditional js if there is any.
+		$strReturn .= parent::toJs();
+
 		return $strReturn;
 	}
 
@@ -249,10 +263,14 @@ class VF_Area extends ClassDynamic {
 		if ($this->__dynamic) {
 			$objSubFields = $this->getFields();
 			$objSubField = ($objSubFields->count() > 0) ? $objSubFields->getFirst() : NULL;
+			if (get_class($objSubField) == "VF_Paragraph") $objSubField = $objSubFields->next();
 
-			if (is_object($objSubField)) {
+			if (is_object($objSubField) && get_class($objSubField) !== "VF_Paragraph") {
 				if ($objSubField->hasFields()) {
-					$objSubField = $objSubField->getFields()->getFirst();
+					$objSubFields = $objSubField->getFields();
+					$objSubField = $objSubFields->getFirst();
+
+					if (get_class($objSubField) == "VF_Paragraph") $objSubField = $objSubFields->next();
 				}
 
 				$intReturn = $objSubField->getDynamicCounter()->getValidator()->getValue(); // old, faulty way to get dynamic count
@@ -273,7 +291,7 @@ class VF_Area extends ClassDynamic {
 	}
 
 	public function getId() {
-		return null;
+		return $this->getName() . "_area";
 	}
 
 	public function getType() {
@@ -281,70 +299,25 @@ class VF_Area extends ClassDynamic {
 	}
 
 	public function hasFields() {
-		return ($this->__fields->count() > 0) ? TRUE : FALSE;
-	}
-
-	/**
-	 * Store data in the current object. This data will not be visibile in any output
-	 * and will only be used for internal purposes. For example, you can store some custom
-	 * data from your CMS or an other library in a field object, for later use.
-	 * Note: Using this method will overwrite any previously set data with the same key!
-	 *
-	 * @param [string] 	$strKey   	The key for this storage
-	 * @param [mixed] 	$varValue 	The value to store
-	 * @return	[boolean] 			True if set successful, false if not.
-	 */
-	public function setData($strKey = null, $varValue = null) {
-		$varReturn = false;
-		$this->__meta["data"] = (isset($this->__meta["data"])) ? $this->__meta["data"] : array();
-
-		if (isset($this->__meta["data"])) {
-			if (!is_null($strKey) && !is_null($varValue)) {
-				$this->__meta["data"][$strKey] = $varValue;
-			}
-		}
-
-		return isset($this->__meta["data"][$strKey]);
-	}
-
-	/**
-	 * Get a value from the internal data array.
-	 *
-	 * @param  [string] $key The key of the data attribute to return
-	 * @return [mixed]       If a key is provided, return it's value. If no key
-	 *                       provided, return the whole data array. If anything
-	 *                       is not set or incorrect, return false.
-	 */
-	public function getData($key = null) {
-		$varReturn = false;
-
-		if (isset($this->__meta["data"])) {
-			if ($key == null) {
-				$varReturn = $this->__meta["data"];
-			} else {
-				if (isset($this->__meta["data"][$key])) {
-					$varReturn = $this->__meta["data"][$key];
-				}
-			}
-		}
-
-		return $varReturn;
+		return ($this->__fields->count() > 0) ? true : false;
 	}
 
 	private function __validate($intCount = null) {
-		// $value = ValidForm::get($this->__name);
-		$blnReturn = TRUE;
+		$blnReturn = true;
 
-		if ($this->__active && !$this->hasContent($intCount)) {
-			//*** Not active;
-		} else {
-			foreach ($this->fields as $field) {
-				if (!$field->isValid($intCount)) {
-					$blnReturn = FALSE;
-					break;
-				}
+		foreach ($this->__fields as $field) {
+			// Note: hasContent is only accurate if isValid() is called first ...
+			if (!$field->isValid($intCount)) {
+				$blnReturn = false;
+				break;
 			}
 		}
+
+		// ... therefore, check if the area is empty after validation of all the fields.
+		if ($this->__active && !$this->hasContent($intCount)) {
+			$blnReturn = true;
+		}
+
 
 		return $blnReturn;
 	}

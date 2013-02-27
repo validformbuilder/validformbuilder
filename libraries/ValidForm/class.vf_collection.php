@@ -18,9 +18,7 @@
  * Collection Class
  *
  * @package ValidForm
- * @author Felix Langfeldt
- * @version 0.2.3
- *
+ * @author Robin van Baalen\
  */
 class VF_Collection implements Iterator {
 	protected $collection = array();

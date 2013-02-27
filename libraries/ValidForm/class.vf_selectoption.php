@@ -52,14 +52,14 @@ class VF_SelectOption extends VF_Element {
 		return $this->__value;
 	}
 
-	protected function __getMetaString() {
-		$strOutput = "";
+	public function __getValue($submitted = false, $intCount = 0) {
+		$varReturn = parent::__getValue($submitted, $intCount);
 
-		foreach ($this->__meta as $key => $value) {
-			$strOutput .= " {$key}=\"{$value}\"";
+		if (is_null($varReturn)) {
+			$varReturn = $this->__value;
 		}
 
-		return $strOutput;
+		return $varReturn;
 	}
 
 }

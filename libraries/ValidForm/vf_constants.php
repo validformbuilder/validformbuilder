@@ -41,13 +41,19 @@ define('VFORM_HTML', 20);
 define('VFORM_URL', 21);
 define('VFORM_HIDDEN', 22);
 
-define("VFORM_COMPARISON_EQUAL", 1);
-define("VFORM_COMPARISON_NOT_EQUAL", 2);
-define("VFORM_COMPARISON_IDENTICAL", 3);
-define("VFORM_COMPARISON_NOT_IDENTICAL", 4);
-define("VFORM_COMPARISON_LESS_THAN", 5);
-define("VFORM_COMPARISON_GREATER_THAN", 6);
-define("VFORM_COMPARISON_LESS_THAN_OR_EQUAL", 7);
-define("VFORM_COMPARISON_GREATER_THAN_OR_EQUAL", 8);
+define("VFORM_COMPARISON_EQUAL", "equal");
+define("VFORM_COMPARISON_NOT_EQUAL", "notequal");
+define("VFORM_COMPARISON_EMPTY", "empty");
+define("VFORM_COMPARISON_NOT_EMPTY", "notempty");
+define("VFORM_COMPARISON_LESS_THAN", "lessthan");
+define("VFORM_COMPARISON_GREATER_THAN", "greaterthan");
+define("VFORM_COMPARISON_LESS_THAN_OR_EQUAL", "lessthanorequal");
+define("VFORM_COMPARISON_GREATER_THAN_OR_EQUAL", "greaterthanorequal");
+define("VFORM_COMPARISON_CONTAINS", "contains");
+define("VFORM_COMPARISON_STARTS_WITH", "startswith");
+define("VFORM_COMPARISON_ENDS_WITH", "endswith");
+
+define("VFORM_MATCH_ALL", "all");
+define("VFORM_MATCH_ANY", "any");
 
 ?>

@@ -2,30 +2,31 @@
 /***************************
  * ValidForm Builder - build valid and secure web forms quickly
  *
- * Copyright (c) 2009-2012, Felix Langfeldt <flangfeldt@felix-it.com>.
+ * Copyright (c) 2009-2013 Neverwoods Internet Technology - http://neverwoods.com
+ *
+ * Felix Langfeldt <felix@neverwoods.com>
+ * Robin van Baalen <robin@neverwoods.com>
+ *
  * All rights reserved.
  *
  * This software is released under the GNU GPL v2 License <http://www.gnu.org/licenses/old-licenses/gpl-2.0.html>
  *
  * @package    ValidForm
- * @author     Felix Langfeldt <flangfeldt@felix-it.com>
- * @copyright  2009-2012 Felix Langfeldt <flangfeldt@felix-it.com>
+ * @author     Felix Langfeldt <felix@neverwoods.com>, Robin van Baalen <robin@neverwoods.com>
+ * @copyright  2009-2013 Neverwoods Internet Technology - http://neverwoods.com
  * @license    http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU GPL v2
- * @link       http://code.google.com/p/validformbuilder/
+ * @link       http://validformbuilder.org
  ***************************/
 
-require_once('class.classdynamic.php');
+require_once('class.vf_base.php');
 
 /**
- *
  * Page Class
  *
  * @package ValidForm
- * @author Felix Langfeldt
- * @version Release: 0.2.2
- *
+ * @author Robin van Baalen
  */
-class VF_Page extends ClassDynamic {
+class VF_Page extends VF_Base {
 	protected $__class;
 	protected $__style;
 	protected $__elements;
@@ -63,7 +64,9 @@ class VF_Page extends ClassDynamic {
 	}
 
 	public function addField($objField) {
+
 		if (get_class($objField) == "VF_Fieldset") {
+			$objField->setMeta("parent", $this, true);
 			$this->__elements->addObject($objField);
 		} else {
 			if ($this->__elements->count() == 0) {
@@ -72,6 +75,8 @@ class VF_Page extends ClassDynamic {
 			}
 
 			$objFieldset = $this->__elements->getLast();
+
+			$objField->setMeta("parent", $objFieldset, true);
 			$objFieldset->getFields()->addObject($objField);
 
 			if ($objField->isDynamic()

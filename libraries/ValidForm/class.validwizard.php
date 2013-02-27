@@ -2,16 +2,20 @@
 /***************************
  * ValidForm Builder - build valid and secure web forms quickly
  *
- * Copyright (c) 2009-2012, Felix Langfeldt <flangfeldt@felix-it.com>.
+ * Copyright (c) 2009-2013 Neverwoods Internet Technology - http://neverwoods.com
+ *
+ * Felix Langfeldt <felix@neverwoods.com>
+ * Robin van Baalen <robin@neverwoods.com>
+ *
  * All rights reserved.
  *
  * This software is released under the GNU GPL v2 License <http://www.gnu.org/licenses/old-licenses/gpl-2.0.html>
  *
  * @package    ValidForm
- * @author     Felix Langfeldt <flangfeldt@felix-it.com>
- * @copyright  2009-2012 Felix Langfeldt <flangfeldt@felix-it.com>
+ * @author     Felix Langfeldt <felix@neverwoods.com>, Robin van Baalen <robin@neverwoods.com>
+ * @copyright  2009-2013 Neverwoods Internet Technology - http://neverwoods.com
  * @license    http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU GPL v2
- * @link       http://code.google.com/p/validformbuilder/
+ * @link       http://validformbuilder.org
  ***************************/
 
 require_once("class.validform.php");
@@ -21,7 +25,7 @@ require_once("class.validform.php");
  *
  * @package ValidForm
  * @author 	Robin van Baalen <rvanbaalen@felix-it.com>
- * @version Release: 1.0
+ * @version 1.0
  *
  */
 class ValidWizard extends ValidForm {
@@ -29,6 +33,8 @@ class ValidWizard extends ValidForm {
 	protected 	$__currentpage = 1;
 	protected 	$__previouslabel;
 	protected 	$__nextlabel;
+	protected 	$__hasconfirmpage = false;
+
 	private 	$__uniqueid;
 
 	/**
@@ -47,11 +53,11 @@ class ValidWizard extends ValidForm {
 		$this->__previouslabel = (isset($meta["previousLabel"])) ? $meta["previousLabel"] : "&larr; Previous";
 	}
 
-	public function toHtml($blnClientSide = true, $blnForceSubmitted = false, $strJs = "", $blnFromSession = false) {
+	public function toHtml($blnClientSide = true, $blnForceSubmitted = false, $strJs = "") {
 		$strReturn = null;
 
 		if (is_null($strReturn)) {
-			$strReturn = parent::toHtml($blnClientSide, $blnForceSubmitted, $this->__wizardJs($strJs, $blnFromSession));
+			$strReturn = parent::toHtml($blnClientSide, $blnForceSubmitted);
 		}
 
 		return $strReturn;
@@ -102,6 +108,8 @@ class ValidWizard extends ValidForm {
 			$objFieldset = $this->addFieldset();
 		}
 
+		$objField->setMeta("parent", $objFieldset, true);
+
 		//*** Add field to the fieldset.
 		$objFieldset->addField($objField);
 
@@ -139,6 +147,19 @@ class ValidWizard extends ValidForm {
 		return $objPage;
 	}
 
+	/**
+	 * Wrapper method for setting the $__hasconfirmpage property
+	 */
+	public function addConfirmPage() {
+		$this->__hasconfirmpage = true;
+	}
+	public function removeConfirmPage() {
+		$this->__hasconfirmpage = false;
+	}
+	public function hasConfirmPage() {
+		return !!$this->__hasconfirmpage;
+	}
+
 	public function addField($name, $label, $type, $validationRules = array(), $errorHandlers = array(), $meta = array(), $blnJustRender = FALSE) {
 		$objField = parent::renderField($name, $label, $type, $validationRules, $errorHandlers, $meta);
 
@@ -174,6 +195,9 @@ class ValidWizard extends ValidForm {
 		$strTable 		= "\t<table border=\"0\" cellspacing=\"0\" cellpadding=\"0\" class=\"validform\">\n";
 		$strTableOutput	= "";
 
+		// Set 'summaryLabel' meta as page header if available. Fallback to default header if no summaryLabel is set.
+		$objPage->setHeader($objPage->getMeta("summaryLabel", $objPage->getHeader()));
+
 		foreach ($this->__elements as $objPage) {
 			if (get_class($objPage) === "VF_Page") {
 				$strTableOutput .= "<tr><td colspan=\"3\" class=\"vf__page-header\">{$objPage->getHeader()}</td></tr>";
@@ -205,17 +229,21 @@ class ValidWizard extends ValidForm {
 		return $objReturn;
 	}
 
-	private function __wizardJs($strCustomJs = "", $blnFromSession = false) {
-		$strReturn = "";
+	protected function __toJs($strCustomJs = "", $blnFromSession = false) {
+		// Add extra arguments to javascript initialization method.
+		$arrInitArguments = array();
+		if($this->__currentpage > 1) $arrInitArguments["initialPage"] = $this->__currentpage;
+		$arrInitArguments["confirmPage"] = $this->__hasconfirmpage;
 
-		// Optionally set a custom first visibile page.
-		$intPage = ($this->__currentpage > 1) ? $this->__currentpage : "";
+		$strJs = "";
+		$strJs .= "objForm.setLabel('next', '" . $this->__nextlabel . "');\n\t";
+		$strJs .= "objForm.setLabel('previous', '" . $this->__previouslabel . "');\n\t";
 
-		$strReturn .= "objForm.setLabel('next', '" . $this->__nextlabel . "');\n\t";
-		$strReturn .= "objForm.setLabel('previous', '" . $this->__previouslabel . "');\n\t";
-		$strReturn .= "objForm.initWizard({$intPage});\n\n" . $strCustomJs;
+		if (strlen($strCustomJs) > 0) {
+			$strJs .= $strCustomJs;
+		}
 
-		return $strReturn;
+		return parent::__toJs($strJs, $arrInitArguments);
 	}
 
 	private function __addHiddenFields() {
