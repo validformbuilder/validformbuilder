@@ -39,6 +39,7 @@ define('VFORM_CUSTOM', 18);
 define('VFORM_CUSTOM_TEXT', 19);
 define('VFORM_HTML', 20);
 define('VFORM_URL', 21);
+define('VFORM_HIDDEN', 22);
 
 define("VFORM_COMPARISON_EQUAL", "equal");
 define("VFORM_COMPARISON_NOT_EQUAL", "notequal");

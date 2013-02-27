@@ -172,6 +172,9 @@ class ValidForm extends VF_ClassDynamic {
 			case VFORM_SELECT_LIST:
 				$objField = new VF_Select($name, $type, $label, $validationRules, $errorHandlers, $meta);
 				break;
+			case VFORM_HIDDEN:
+				$objField = new VF_Hidden($name, $type, $meta);
+				break;
 			default:
 				$objField = new VF_Element($name, $type, $label, $validationRules, $errorHandlers, $meta);
 				break;
@@ -181,7 +184,7 @@ class ValidForm extends VF_ClassDynamic {
 	}
 
 	public function addField($name, $label, $type, $validationRules = array(), $errorHandlers = array(), $meta = array(), $blnJustRender = FALSE) {
-		$objField = ValidForm::renderField($name, $label, $type, $validationRules, $errorHandlers, $meta);
+		$objField = self::renderField($name, $label, $type, $validationRules, $errorHandlers, $meta);
 
 		$objField->setRequiredStyle($this->__requiredstyle);
 
