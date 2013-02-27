@@ -195,6 +195,9 @@ class ValidWizard extends ValidForm {
 		$strTable 		= "\t<table border=\"0\" cellspacing=\"0\" cellpadding=\"0\" class=\"validform\">\n";
 		$strTableOutput	= "";
 
+		// Set 'shortLabel' meta as page header if available. Fallback to default header if no shortLabel is set.
+		$objPage->setHeader($objPage->getMeta("shortLabel", $objPage->getHeader()));
+
 		foreach ($this->__elements as $objPage) {
 			if (get_class($objPage) === "VF_Page") {
 				$strTableOutput .= "<tr><td colspan=\"3\" class=\"vf__page-header\">{$objPage->getHeader()}</td></tr>";
