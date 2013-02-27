@@ -670,34 +670,34 @@ ValidFormComparison.prototype.check = function () {
 			}
 			break;
 		case "lessthan":
-			var intCurrentValue = parseInt(strValue);
-			intCurrentValue = (isNaN(intCurrentValue)) ? 0 : intCurrentValue;
+			var intCurrentValue = parseInt(strValue)
+			,	varCurrentValue = (isNaN(intCurrentValue)) ? strValue : intCurrentValue;
 
-			if (!isNaN(intCurrentValue) && (intCurrentValue < self.value)) {
+			if (varCurrentValue < self.value) {
 				blnReturn = true;
 			}
 			break;
 		case "greaterthan":
-			var intCurrentValue = parseInt(strValue);
-			intCurrentValue = (isNaN(intCurrentValue)) ? 0 : intCurrentValue;
+			var intCurrentValue = parseInt(strValue)
+			,	varCurrentValue = (isNaN(intCurrentValue)) ? strValue : intCurrentValue;
 
-			if (!isNaN(intCurrentValue) && (intCurrentValue > self.value)) {
+			if (varCurrentValue > self.value) {
 				blnReturn = true;
 			}
 			break;
 		case "lessthanorequal":
-			var intCurrentValue = parseInt(strValue);
-			intCurrentValue = (isNaN(intCurrentValue)) ? 0 : intCurrentValue;
+			var intCurrentValue = parseInt(strValue)
+			,	varCurrentValue = (isNaN(intCurrentValue)) ? strValue : intCurrentValue;
 
-			if (!isNaN(intCurrentValue) && (intCurrentValue <= self.value)) {
+			if (varCurrentValue <= self.value) {
 				blnReturn = true;
 			}
 			break;
 		case "greaterthanorequal":
-			var intCurrentValue = parseInt(strValue);
-			intCurrentValue = (isNaN(intCurrentValue)) ? 0 : intCurrentValue;
+			var intCurrentValue = parseInt(strValue)
+			,	varCurrentValue = (isNaN(intCurrentValue)) ? strValue : intCurrentValue;
 
-			if (!isNaN(intCurrentValue) && (intCurrentValue >= self.value)) {
+			if (varCurrentValue >= self.value) {
 				blnReturn = true;
 			}
 			break;

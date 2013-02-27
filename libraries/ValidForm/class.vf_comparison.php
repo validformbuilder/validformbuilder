@@ -32,12 +32,6 @@ class VF_Comparison extends ClassDynamic {
 		"comparison",
 		"value"
 	);
-	private static $__numericComparisons = array(
-		VFORM_COMPARISON_LESS_THAN,
-		VFORM_COMPARISON_GREATER_THAN,
-		VFORM_COMPARISON_LESS_THAN_OR_EQUAL,
-		VFORM_COMPARISON_GREATER_THAN_OR_EQUAL
-	);
 
 	public function __construct($objSubject, $varComparison, $varValue = null) {
 		if (($varComparison !== VFORM_COMPARISON_EMPTY && $varComparison !== VFORM_COMPARISON_NOT_EMPTY) && is_null($varValue)) {
@@ -47,13 +41,7 @@ class VF_Comparison extends ClassDynamic {
 
 		// If the subject is a required field, we cannot set the VFORM_COMPARISON_EMPTY check
 		if ($objSubject->getValidator()->getRequired() && $varComparison === VFORM_COMPARISON_EMPTY) {
-			throw new Exception("Cannot add 'empty' comparison to required field '{$this->__subject->getName()}'.", 1);
-		}
-
-		// Check subject's fieldtype if doing a numeric comparison
-		if (in_array($varComparison, self::$__numericComparisons)
-		    	&& !($objSubject->getType() === VFORM_NUMERIC || $objSubject->getType() === VFORM_INTEGER)) {
-			throw new Exception("Numeric comparisons can only be applied on VFORM_INTEGER or VFORM_NUMERIC subjects. Trying to apply on field {$objSubject->getName()} with type {$objSubject->getType()}.", 1);
+			throw new Exception("Cannot add 'empty' comparison to required field '{$objSubject->getName()}'.", 1);
 		}
 
 		// It's all good, populate the local properties.
