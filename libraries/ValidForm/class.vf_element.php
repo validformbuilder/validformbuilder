@@ -246,9 +246,9 @@ class VF_Element extends VF_Base {
 				$varReturn = $this->__validator->getValue($intDynamicPosition);
 			}
 		} else {
-			if (!empty($this->__default)) {
+			if (!empty($this->__default) || $this->__default === 0) {
 				$varReturn = $this->__default;
-			} else if (!empty($this->__hint)) {
+			} else if (!empty($this->__hint) || $this->__hint === 0) {
 				$varReturn = $this->__hint;
 			}
 		}
