@@ -504,6 +504,9 @@ class ValidForm extends ClassDynamic {
 		$strReturn = "";
 		$strSet = "";
 
+		// Set short label if shortLabel meta is set. Use current label as fallback value.
+		$objField->setLabel($objField->getMeta("shortLabel", $objField->getLabel()));
+
 		if ($objField->hasContent($intDynamicCount)) {
 			foreach ($objField->getFields() as $objSubField) {
 				if (get_class($objSubField) !== "VF_Paragraph") {
@@ -553,6 +556,9 @@ class ValidForm extends ClassDynamic {
 	private function multiFieldAsHtml($objField, $hideEmpty = FALSE, $intDynamicCount = 0) {
 		$strReturn = "";
 
+		// Set short label if shortLabel meta is set. Use current label as fallback value.
+		$objField->setLabel($objField->getMeta("shortLabel", $objField->getLabel()));
+
 		if ($objField->hasContent($intDynamicCount)) {
 			if ($objField->hasFields()) {
 				$strValue = "";
@@ -586,6 +592,9 @@ class ValidForm extends ClassDynamic {
 
 	private function fieldAsHtml($objField, $hideEmpty = FALSE, $intDynamicCount = 0) {
 		$strReturn = "";
+
+		// Set short label if shortLabel meta is set. Use current label as fallback value.
+		$objField->setLabel($objField->getMeta("shortLabel", $objField->getLabel()));
 
 		$strFieldName = $objField->getName();
 		$strLabel = $objField->getLabel();
