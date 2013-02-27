@@ -1,8 +1,26 @@
 <?php
+/***************************
+ * ValidForm Builder - build valid and secure web forms quickly
+*
+* Copyright (c) 2009-2013 Neverwoods Internet Technology
+* All rights reserved.
+*
+* This software is released under the GNU GPL v2 License <http://www.gnu.org/licenses/old-licenses/gpl-2.0.html>
+*
+* @package    ValidForm
+* @author     Felix Langfeldt <felix@neverwoods.com>, Robin van Baalen <robin@neverwoods.com>
+* @copyright  2009-2013 Neverwoods Internet Technology
+* @license    http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU GPL v2
+* @link       http://code.google.com/p/validformbuilder/
+***************************/
+
+require_once('class.classdynamic.php');
+
 /**
  * VF_Condition class
  * A condition object is a set of one or more comparisons.
  *
+ * @package ValidForm
  * @author Robin van Baalen <robin@neverwoods.com>
  */
 class VF_Condition extends ClassDynamic {

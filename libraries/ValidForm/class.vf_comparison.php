@@ -1,4 +1,28 @@
 <?php
+/***************************
+ * ValidForm Builder - build valid and secure web forms quickly
+*
+* Copyright (c) 2009-2013 Neverwoods Internet Technology - http://neverwoods.com
+* All rights reserved.
+*
+* This software is released under the GNU GPL v2 License <http://www.gnu.org/licenses/old-licenses/gpl-2.0.html>
+*
+* @package    ValidForm
+* @author     Felix Langfeldt <felix@neverwoods.com>, Robin van Baalen <robin@neverwoods.com>
+* @copyright  2009-2013 Neverwoods Internet Technology - http://neverwoods.com
+* @license    http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU GPL v2
+* @link       http://validformbuilder.org
+***************************/
+
+require_once('class.classdynamic.php');
+
+/**
+ * VF_Comparison class
+ * A comparison object is part of a condition and represents a single value comparison.
+ *
+ * @package ValidForm
+ * @author Robin van Baalen <robin@neverwoods.com>
+ */
 class VF_Comparison extends ClassDynamic {
 	protected $__subject;
 	protected $__comparison;
@@ -28,9 +52,8 @@ class VF_Comparison extends ClassDynamic {
 
 		// Check subject's fieldtype if doing a numeric comparison
 		if (in_array($varComparison, self::$__numericComparisons)
-		    && !($objSubject->getType() === VFORM_NUMERIC || $objSubject->getType() === VFORM_INTEGER)
-		) {
-			throw new Exception("Numeric comparisons can only be applied on VFORM_INTEGER or VFORM_NUMERIC subjects. Trying to apply on field {$this->__subject->getName()} with type {$this->__subject->getType()}.", 1);
+		    	&& !($objSubject->getType() === VFORM_NUMERIC || $objSubject->getType() === VFORM_INTEGER)) {
+			throw new Exception("Numeric comparisons can only be applied on VFORM_INTEGER or VFORM_NUMERIC subjects. Trying to apply on field {$objSubject->getName()} with type {$objSubject->getType()}.", 1);
 		}
 
 		// It's all good, populate the local properties.
@@ -127,19 +150,6 @@ class VF_Comparison extends ClassDynamic {
 			case VFORM_COMPARISON_CONTAINS:
 				$blnReturn = (strpos($strLowerValue, $strCompareAgainst) !== false);
 				break;
-		}
-
-		return $blnReturn;
-	}
-
-	private function isValidData () {
-		$blnReturn = false;
-
-		foreach ($arrData as $strKey => $strValue) {
-			if (!array_key_exists(strtolower($strKey), self::requiredKeys())) {
-				$blnReturn = false;
-				break;
-			}
 		}
 
 		return $blnReturn;
