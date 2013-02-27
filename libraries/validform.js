@@ -646,7 +646,6 @@ ValidFormComparison.prototype.check = function () {
 	,	self		= this
 	,	strValue 	= (self.subject instanceof jQuery) ? self.subject.val() : self.subject.getValue();
 
-
 	switch (self.comparison) {
 		case "equal":
 			if (strValue == self.value) {
@@ -926,26 +925,36 @@ ValidFormCondition.prototype.isMet = function () {
 	var self = this
 	,	def = $.Deferred();
 
-	if (self.comparisonType === "all") {
-		// comparison all
-		var _matchAll = function () {
-			var success = 0;
-			for (var i = 0; i < self.comparisons.length; i++) {
-				if (self.comparisons[i].isMet) {
-					if (success < self.comparisons.length) {
-						success++;
-					} else {
-						if (success > 0) {
-							success--;
-						}
+	// Count met comparisons
+	var _checkComparisons = function () {
+		var success = 0;
+		for (var i = 0; i < self.comparisons.length; i++) {
+			if (self.comparisons[i].isMet) {
+				if (success < self.comparisons.length) {
+					success++;
+				} else {
+					if (success > 0) {
+						success--;
 					}
 				}
 			}
-
-			return success === self.comparisons.length;
 		}
 
-		for (var i = 0; i < self.comparisons.length; i++) {
+		return success;
+	}
+
+	// comparison match all
+	var _matchAll = function () {
+		return _checkComparisons() === self.comparisons.length;
+	}
+
+	// comparison match any
+	var _matchAny = function () {
+		return _checkComparisons() > 0;
+	}
+
+	for (var i = 0; i < self.comparisons.length; i++) {
+		if (self.comparisonType === "all") {
 			self.comparisons[i].promise.progress(function (blnResult) {
 				if (_matchAll()) {
 					def.notify(true);
@@ -953,13 +962,13 @@ ValidFormCondition.prototype.isMet = function () {
 					def.notify(false);
 				}
 			});
-		}
-
-	} else {
-		// comparison any
-		for (var i = 0; i < self.comparisons.length; i++) {
+		} else {
 			self.comparisons[i].promise.progress(function (blnResult) {
-				def.notify(blnResult);
+				if (_matchAny()) {
+					def.notify(true);
+				} else {
+					def.notify(false);
+				}
 			});
 		}
 	}
