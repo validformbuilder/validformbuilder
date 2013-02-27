@@ -14,7 +14,7 @@
  * @link       http://code.google.com/p/validformbuilder/
  ***************************/
 
-require_once('class.classdynamic.php');
+require_once('class.vf_classdynamic.php');
 require_once('class.vf_validator.php');
 
 /**
@@ -25,7 +25,7 @@ require_once('class.vf_validator.php');
  * @version Release: 1.0
  *
  */
-class VF_FieldValidator extends ClassDynamic {
+class VF_FieldValidator extends VF_ClassDynamic {
 	// Base properties
 	protected $__field;
 	protected $__type;

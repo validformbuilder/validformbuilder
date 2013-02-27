@@ -20,7 +20,7 @@
 
 /**
  *
- * ClassDynamic Class
+ * VF_ClassDynamic Class
  *
  * @package ValidForm
  * @author Felix Langfeldt, Robin van Baalen
@@ -28,10 +28,11 @@
  *
  * CHANGELOG
  *
+ * 	- Renamed ClassDynamic to VF_ClassDynamic
  * 	- Removed all 'echo'-s and replaced them with throw new BadMethodCallException
  *
  */
-class ClassDynamic {
+class VF_ClassDynamic {
 
 	public function __get($property) {
 		$property = strtolower("__" . $property);

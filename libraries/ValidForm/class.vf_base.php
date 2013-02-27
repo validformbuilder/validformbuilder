@@ -22,7 +22,7 @@
  * ValidForm Base class.
  * All ValidForm classes share this base logic.
  */
-class VF_Base extends ClassDynamic {
+class VF_Base extends VF_ClassDynamic {
 	protected $__id;
 	protected $__name;
 	protected $__parent;

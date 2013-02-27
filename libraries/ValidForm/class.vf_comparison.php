@@ -14,7 +14,7 @@
 * @link       http://validformbuilder.org
 ***************************/
 
-require_once('class.classdynamic.php');
+require_once('class.vf_classdynamic.php');
 
 /**
  * VF_Comparison class
@@ -23,7 +23,7 @@ require_once('class.classdynamic.php');
  * @package ValidForm
  * @author Robin van Baalen <robin@neverwoods.com>
  */
-class VF_Comparison extends ClassDynamic {
+class VF_Comparison extends VF_ClassDynamic {
 	protected $__subject;
 	protected $__comparison;
 	protected $__value;

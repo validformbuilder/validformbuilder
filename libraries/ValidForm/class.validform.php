@@ -18,7 +18,7 @@
  * @link       http://validformbuilder.org
  ***************************/
 
-require_once('class.classdynamic.php');
+require_once('class.vf_classdynamic.php');
 require_once('class.vf_base.php');
 require_once('class.vf_collection.php');
 require_once('class.vf_button.php');
@@ -56,12 +56,12 @@ require_once('vf_constants.php');
  * @version Release: 0.2.7
  *
  */
-class ValidForm extends ClassDynamic {
+class ValidForm extends VF_ClassDynamic {
 	protected $__description;
 	protected $__meta;
 	protected $__action;
 	protected $__submitlabel;
-	protected $__jsevents = array(); // Keep it lowercase to enable magic methods from ClassDynamic
+	protected $__jsevents = array(); // Keep it lowercase to enable magic methods from VF_ClassDynamic
 	protected $__elements;
 	protected $__name;
 	protected $__mainalert;

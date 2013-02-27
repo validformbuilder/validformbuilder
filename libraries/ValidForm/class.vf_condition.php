@@ -14,7 +14,7 @@
 * @link       http://code.google.com/p/validformbuilder/
 ***************************/
 
-require_once('class.classdynamic.php');
+require_once('class.vf_classdynamic.php');
 
 /**
  * VF_Condition class
@@ -23,7 +23,7 @@ require_once('class.classdynamic.php');
  * @package ValidForm
  * @author Robin van Baalen <robin@neverwoods.com>
  */
-class VF_Condition extends ClassDynamic {
+class VF_Condition extends VF_ClassDynamic {
 	protected 	$__subject;
 	protected	$__property;
 	protected 	$__value;
