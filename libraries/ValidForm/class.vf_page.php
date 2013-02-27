@@ -87,7 +87,7 @@ class VF_Page extends ClassDynamic {
 	}
 
 	public function toJS() {
-		$strReturn = "objForm.addPage('" . $this->getId() . "', true);\n";
+		$strReturn = "objForm.addPage('" . $this->getId() . "');\n";
 
 		foreach ($this->__elements as $field) {
 			$strReturn .= $field->toJS();
