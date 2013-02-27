@@ -504,8 +504,8 @@ class ValidForm extends ClassDynamic {
 		$strReturn = "";
 		$strSet = "";
 
-		// Set short label if shortLabel meta is set. Use current label as fallback value.
-		$objField->setLabel($objField->getMeta("shortLabel", $objField->getLabel()));
+		// Set short label if summaryLabel meta is set. Use current label as fallback value.
+		$objField->setLabel($objField->getMeta("summaryLabel", $objField->getLabel()));
 
 		if ($objField->hasContent($intDynamicCount)) {
 			foreach ($objField->getFields() as $objSubField) {
@@ -556,8 +556,8 @@ class ValidForm extends ClassDynamic {
 	private function multiFieldAsHtml($objField, $hideEmpty = FALSE, $intDynamicCount = 0) {
 		$strReturn = "";
 
-		// Set short label if shortLabel meta is set. Use current label as fallback value.
-		$objField->setLabel($objField->getMeta("shortLabel", $objField->getLabel()));
+		// Set short label if summaryLabel meta is set. Use current label as fallback value.
+		$objField->setLabel($objField->getMeta("summaryLabel", $objField->getLabel()));
 
 		if ($objField->hasContent($intDynamicCount)) {
 			if ($objField->hasFields()) {
@@ -593,8 +593,8 @@ class ValidForm extends ClassDynamic {
 	private function fieldAsHtml($objField, $hideEmpty = FALSE, $intDynamicCount = 0) {
 		$strReturn = "";
 
-		// Set short label if shortLabel meta is set. Use current label as fallback value.
-		$objField->setLabel($objField->getMeta("shortLabel", $objField->getLabel()));
+		// Set short label if summaryLabel meta is set. Use current label as fallback value.
+		$objField->setLabel($objField->getMeta("summaryLabel", $objField->getLabel()));
 
 		$strFieldName = $objField->getName();
 		$strLabel = $objField->getLabel();
