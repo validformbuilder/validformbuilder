@@ -64,7 +64,7 @@ class VF_Textarea extends VF_Element {
 		return $strOutput;
 	}
 
-	public function toJS() {
+	public function toJS($blnParentIsDynamic = FALSE) {
 		$strOutput = "";
 		$strCheck = $this->__validator->getCheck();
 		$strCheck = (empty($strCheck)) ? "''" : str_replace("'", "\\'", $strCheck);
@@ -72,8 +72,27 @@ class VF_Textarea extends VF_Element {
 		$intMaxLength = ($this->__validator->getMaxLength() > 0) ? $this->__validator->getMaxLength() : "null";
 		$intMinLength = ($this->__validator->getMinLength() > 0) ? $this->__validator->getMinLength() : "null";
 
-		$strOutput = "objForm.addElement('{$this->__id}', '{$this->__name}', {$strCheck}, {$strRequired}, {$intMaxLength}, {$intMinLength}, '" . addslashes($this->__validator->getFieldHint()) . "', '" . addslashes($this->__validator->getTypeError()) . "', '" . addslashes($this->__validator->getRequiredError()) . "', '" . addslashes($this->__validator->getHintError()) . "', '" . addslashes($this->__validator->getMinLengthError()) . "', '" . addslashes($this->__validator->getMaxLengthError()) . "');\n";
-
+		if ($this->__dynamic || $blnParentIsDynamic) {
+			$intDynamicCount = $this->getDynamicCount($blnParentIsDynamic);
+			for($intCount = 0; $intCount <= $intDynamicCount; $intCount++) {
+				$strId 		= ($intCount == 0) ? $this->__id : $this->__id . "_" . $intCount;
+				$strName 	= ($intCount == 0) ? $this->__name : $this->__name . "_" . $intCount;
+		
+				//*** We asume that all dynamic fields greater than 0 are never required.
+				if ($intDynamicCount > 0) $strRequired = "false";
+		
+				$strOutput .= "objForm.addElement('{$strId}', '{$strName}', {$strCheck}, {$strRequired}, {$intMaxLength}, {$intMinLength}, '" . addslashes($this->__validator->getFieldHint()) . "', '" . addslashes($this->__validator->getTypeError()) . "', '" . addslashes($this->__validator->getRequiredError()) . "', '" . addslashes($this->__validator->getHintError()) . "', '" . addslashes($this->__validator->getMinLengthError()) . "', '" . addslashes($this->__validator->getMaxLengthError()) . "');\n";
+			}
+		} else {
+			$strOutput = "objForm.addElement('{$this->__id}', '{$this->__name}', {$strCheck}, {$strRequired}, {$intMaxLength}, {$intMinLength}, '" . addslashes($this->__validator->getFieldHint()) . "', '" . addslashes($this->__validator->getTypeError()) . "', '" . addslashes($this->__validator->getRequiredError()) . "', '" . addslashes($this->__validator->getHintError()) . "', '" . addslashes($this->__validator->getMinLengthError()) . "', '" . addslashes($this->__validator->getMaxLengthError()) . "');\n";
+		}
+		
+		if ($this->hasConditions() && (count($this->getConditions() > 0))) {
+			foreach ($this->getConditions() as $objCondition) {
+				$strOutput .= "objForm.addCondition(" . json_encode($objCondition->jsonSerialize()) . ");\n";
+			}
+		}
+		
 		// if ($this->hasTrigger()) {
 		// 	$strOutput .= $this->addTriggerJs();
 		// }

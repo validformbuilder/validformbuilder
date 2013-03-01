@@ -195,11 +195,11 @@ class ValidWizard extends ValidForm {
 		$strTable 		= "\t<table border=\"0\" cellspacing=\"0\" cellpadding=\"0\" class=\"validform\">\n";
 		$strTableOutput	= "";
 
-		// Set 'summaryLabel' meta as page header if available. Fallback to default header if no summaryLabel is set.
-		$objPage->setHeader($objPage->getMeta("summaryLabel", $objPage->getHeader()));
-
 		foreach ($this->__elements as $objPage) {
 			if (get_class($objPage) === "VF_Page") {
+				// Set 'summaryLabel' meta as page header if available. Fallback to default header if no summaryLabel is set.
+				$objPage->setHeader($objPage->getMeta("summaryLabel", $objPage->getHeader()));
+				
 				$strTableOutput .= "<tr><td colspan=\"3\" class=\"vf__page-header\">{$objPage->getHeader()}</td></tr>";
 				foreach ($objPage->getFields() as $objFieldset) {
 					$strSet = "";
