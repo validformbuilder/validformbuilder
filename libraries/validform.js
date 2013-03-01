@@ -1439,6 +1439,10 @@ ValidFormFieldValidator.prototype.removeAlert = function() {
 	}
 
 	objElement.parent("div").removeClass("vf__error").find("p.vf__error").remove();
+	
+	if (objElement.parent("div").hasClass("vf__multifielditem")) {
+		objElement.parent("div").parent("div").removeClass("vf__error").find("p.vf__error").remove();
+	}
 };
 
 ValidFormFieldValidator.prototype.showAlert = function(strAlert) {
@@ -1451,7 +1455,7 @@ ValidFormFieldValidator.prototype.showAlert = function(strAlert) {
 	if (objMultifieldItem.hasClass("vf__multifielditem")) {
 		objMultifieldItem.addClass("vf__error");
 
-		objMultifieldItem.parent().addClass("vf__error").prepend("<p class=\"vf__error\">" + strAlert + "</p>");;
+		objMultifieldItem.parent().addClass("vf__error").prepend("<p class=\"vf__error\">" + strAlert + "</p>");
 	} else {
 		objElement.parent("div").addClass("vf__error").prepend("<p class=\"vf__error\">" + strAlert + "</p>");
 	}

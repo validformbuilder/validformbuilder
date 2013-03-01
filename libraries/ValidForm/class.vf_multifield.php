@@ -50,9 +50,9 @@ class VF_MultiField extends VF_Base {
 		if (array_key_exists("dynamic", $meta)) unset($meta["dynamic"]);
 		if (array_key_exists("dynamicLabel", $meta)) unset($meta["dynamicLabel"]);
 
-
 		// Render the field and add it to the multifield field collection.
 		$objField = ValidForm::renderField($name, "", $type, $validationRules, $errorHandlers, $meta);
+		
 		//*** Set the parent for the new field.
 		$objField->setMeta("parent", $this, true);
 
@@ -131,7 +131,7 @@ class VF_MultiField extends VF_Base {
 		$this->setMeta("class", "vf__multifield vf__cf");
 
 		$this->setConditionalMeta();
-		$strOutput 	= "<div{$this->__getMetaString()}>\n";
+		$strOutput = "<div{$this->__getMetaString()}>\n";
 
 		if ($blnError) $strOutput .= "<p class='vf__error'>{$strError}</p>";
 
@@ -188,7 +188,7 @@ class VF_MultiField extends VF_Base {
 
 		if ($this->hasConditions() && (count($this->getConditions() > 0))) {
 			foreach ($this->getConditions() as $objCondition) {
-				$strOutput .= "objForm.addCondition(" . json_encode($objCondition->jsonSerialize()) . ");\n";
+				$strReturn .= "objForm.addCondition(" . json_encode($objCondition->jsonSerialize()) . ");\n";
 			}
 		}
 
@@ -236,10 +236,6 @@ class VF_MultiField extends VF_Base {
 		return TRUE;
 	}
 
-	public function getName() {
-		return null;
-	}
-
 	public function getId() {
 		return null;
 	}
@@ -264,9 +260,9 @@ class VF_MultiField extends VF_Base {
 
 				if (!empty($varValue)) {
 					$blnReturn = true;
-				}
 
-				break;
+					break;
+				}
 			}
 		}
 

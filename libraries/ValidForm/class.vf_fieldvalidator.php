@@ -102,12 +102,10 @@ class VF_FieldValidator extends VF_ClassDynamic {
 	public function getValue($intDynamicPosition = 0) {
 		if (isset($this->__overrideerrors[$intDynamicPosition]) && empty($this->__overrideerrors[$intDynamicPosition])) {
 			$strReturn = NULL;
-
 		} else {
 			$strFieldName = ($intDynamicPosition > 0) ? $this->__fieldname . "_" . $intDynamicPosition : $this->__fieldname;
 			$varValidValue = (isset($this->__validvalues[$intDynamicPosition])) ? $this->__validvalues[$intDynamicPosition] : null;
 			$strReturn = (isset($_REQUEST[$strFieldName])) ? $_REQUEST[$strFieldName] : $varValidValue;
-
 		}
 
 		return $strReturn;
@@ -141,9 +139,9 @@ class VF_FieldValidator extends VF_ClassDynamic {
 		$objCondition = (!is_object($objCondition) && !is_null($this->__field->getMeta("parent", null))) ? $this->__field->getMeta("parent")->getCondition("required") : $objCondition;
 		if (is_object($objCondition)) {
 			if ($objCondition->isMet($intDynamicPosition)) {
-				$this->__required = ($objCondition->getValue()) ? true : $this->__required;
+				$this->__required = $objCondition->getValue();
 			} else {
-				$this->__required = ($objCondition->getValue()) ? $this->__required : true;
+				$this->__required = !$objCondition->getValue();
 			}
 		}
 
