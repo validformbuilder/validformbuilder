@@ -48,11 +48,9 @@ class VF_Text extends VF_Element {
 		$strName 	= ($intCount == 0) ? $this->__name : $this->__name . "_" . $intCount;
 		$strId 		= ($intCount == 0) ? $this->__id : $this->__id . "_" . $intCount;
 
-		$this->setConditionalMeta();
-
 		$blnError = ($submitted && !$this->__validator->validate($intCount) && $blnDisplayErrors) ? TRUE : FALSE;
+		
 		if (!$blnSimpleLayout) {
-
 			//*** We asume that all dynamic fields greater than 0 are never required.
 			if ($this->__validator->getRequired() && $intCount == 0) {
 				$this->setMeta("class", "vf__required");
@@ -65,6 +63,9 @@ class VF_Text extends VF_Element {
 			if (!$blnLabel) $this->setMeta("class", "vf__nolabel");
 			if (!empty($this->__hint)) $this->setMeta("class", "vf__hint");
 
+			// Call this right before __getMetaString();
+			$this->setConditionalMeta();
+			
 			$strOutput = "<div{$this->__getMetaString()}>\n";
 
 			if ($blnError) {
@@ -80,6 +81,9 @@ class VF_Text extends VF_Element {
 			if ($blnError) $this->setMeta("class", "vf__error");
 			$this->setMeta("class", "vf__multifielditem");
 
+			// Call this right before __getMetaString();
+			$this->setConditionalMeta();
+			
 			$strOutput = "<div{$this->__getMetaString()}>\n";
 
 			if ($blnError) {
@@ -116,8 +120,6 @@ class VF_Text extends VF_Element {
 		$strRequired = ($this->__validator->getRequired()) ? "true" : "false";
 		$intMaxLength = ($this->__validator->getMaxLength() > 0) ? $this->__validator->getMaxLength() : "null";
 		$intMinLength = ($this->__validator->getMinLength() > 0) ? $this->__validator->getMinLength() : "null";
-
-		// $strOutput = parent::toJs();
 
 		if ($this->__dynamic || $blnParentIsDynamic) {
 			$intDynamicCount = $this->getDynamicCount($blnParentIsDynamic);

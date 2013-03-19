@@ -26,6 +26,7 @@ require_once('class.vf_element.php');
  *
  */
 class VF_Textarea extends VF_Element {
+	
 	public function __construct($name, $type, $label = "", $validationRules = array(), $errorHandlers = array(), $meta = array()) {
 		$meta["class"] = (!isset($meta["class"])) ? "vf__text" : $meta["class"] . " vf__text";
 		if (!isset($meta["rows"])) $meta["rows"] = "5";
@@ -35,31 +36,82 @@ class VF_Textarea extends VF_Element {
 	}
 
 	public function toHtml($submitted = FALSE, $blnSimpleLayout = FALSE, $blnLabel = true, $blnDisplayErrors = true) {
-		$blnError = ($submitted && !$this->__validator->validate() && $blnDisplayErrors) ? TRUE : FALSE;
+		$strOutput = "";
 
-		$strClass = ($this->__validator->getRequired()) ? "vf__required" : "vf__optional";
-		$strClass = ($blnError) ? $strClass . " vf__error" : $strClass;
-		// $strClass = ($this->hasTrigger()) ? $strClass . " vf__targetfield" : $strClass;
-		$strClass = (!$blnLabel) ? $strClass . " vf__nolabel" : $strClass;
-		$strClass = (empty($this->__hint)) ? $strClass : $strClass . " vf__hint";
+		if ($this->__dynamic) {
+			$intDynamicCount = $this->getDynamicCount();
+			for($intCount = 0; $intCount <= $intDynamicCount; $intCount++) {
+				$strOutput .= $this->__toHtml($submitted, $blnSimpleLayout, $blnLabel, $blnDisplayErrors, $intCount);
+			}
+		} else {
+			$strOutput = $this->__toHtml($submitted, $blnSimpleLayout, $blnLabel, $blnDisplayErrors);
+		}
 
-		$strOutput = "<div class=\"{$strClass}\">\n";
+		return $strOutput;
+	}
 
-		if ($blnError) $strOutput .= "<p class=\"vf__error\">{$this->__validator->getError()}</p>";
+	public function __toHtml($submitted = FALSE, $blnSimpleLayout = FALSE, $blnLabel = true, $blnDisplayErrors = true, $intCount = 0) {
+		$strOutput 	= "";
 
-		if ($blnLabel) {
-			$strLabel = (!empty($this->__requiredstyle) && $this->__validator->getRequired()) ? sprintf($this->__requiredstyle, $this->__label) : $this->__label;
-			if (!empty($this->__label)) $strOutput .= "<label for=\"{$this->__id}\"{$this->__getLabelMetaString()}>{$strLabel}</label>\n";
+		$strName 	= ($intCount == 0) ? $this->__name : $this->__name . "_" . $intCount;
+		$strId 		= ($intCount == 0) ? $this->__id : $this->__id . "_" . $intCount;
+
+		$this->setConditionalMeta();
+
+		$blnError = ($submitted && !$this->__validator->validate($intCount) && $blnDisplayErrors) ? TRUE : FALSE;
+		if (!$blnSimpleLayout) {
+			//*** We asume that all dynamic fields greater than 0 are never required.
+			if ($this->__validator->getRequired() && $intCount == 0) {
+				$this->setMeta("class", "vf__required");
+			} else {
+				$this->setMeta("class", "vf__optional");
+			}
+
+			//*** Set custom meta.
+			if ($blnError) $this->setMeta("class", "vf__error");
+			if (!$blnLabel) $this->setMeta("class", "vf__nolabel");
+			if (!empty($this->__hint)) $this->setMeta("class", "vf__hint");
+			
+			$strOutput = "<div{$this->__getMetaString()}>\n";
+
+			if ($blnError) {
+				$strOutput .= "<p class=\"vf__error\">{$this->__validator->getError($intCount)}</p>";
+			}
+
+			if ($blnLabel) {
+				$strLabel = (!empty($this->__requiredstyle) && $this->__validator->getRequired()) ? sprintf($this->__requiredstyle, $this->__label) : $this->__label;
+				if (!empty($this->__label)) $strOutput .= "<label for=\"{$strId}\"{$this->__getLabelMetaString()}>{$strLabel}</label>\n";
+			}
+		} else {
+			if (!empty($this->__hint)) $this->setMeta("class", "vf__hint");
+			if ($blnError) $this->setMeta("class", "vf__error");
+			$this->setMeta("class", "vf__multifielditem");
+
+			$strOutput = "<div{$this->__getMetaString()}>\n";
+
+			if ($blnError) {
+				$strOutput .= "<p class=\"vf__error\">{$this->__validator->getError($intCount)}</p>";
+			}
 		}
 
 		//*** Add max-length attribute to the meta array. This is being read by the getMetaString method.
 		if ($this->__validator->getMaxLength() > 0) {
-			$this->__meta["maxlength"] = $this->__validator->getMaxLength();
+			$this->setFieldMeta("maxlength", $this->__validator->getMaxLength());
 		}
-
-		$strOutput .= "<textarea name=\"{$this->__name}\" id=\"{$this->__id}\" {$this->__getMetaString()}>{$this->__getValue($submitted)}</textarea>\n";
+		
+		$strOutput .= "<textarea name=\"{$strName}\" id=\"{$strId}\" {$this->__getFieldMetaString()}>{$this->__getValue($submitted, $intCount)}</textarea>\n";
+		
 		if (!empty($this->__tip)) $strOutput .= "<small class=\"vf__tip\">{$this->__tip}</small>\n";
+		
 		$strOutput .= "</div>\n";
+
+		if (!$blnSimpleLayout
+			&& $this->__dynamic
+			&& !empty($this->__dynamicLabel)
+			&& ($intCount == $this->getDynamicCount())
+		) {
+			$strOutput .= "<div class=\"vf__dynamic vf__cf\"><a href=\"#\" data-target-id=\"{$this->__id}\" data-target-name=\"{$this->__name}\">{$this->__dynamicLabel}</a></div>\n";
+		}
 
 		return $strOutput;
 	}
@@ -92,17 +144,9 @@ class VF_Textarea extends VF_Element {
 				$strOutput .= "objForm.addCondition(" . json_encode($objCondition->jsonSerialize()) . ");\n";
 			}
 		}
-		
-		// if ($this->hasTrigger()) {
-		// 	$strOutput .= $this->addTriggerJs();
-		// }
 
 		return $strOutput;
 	}
-
-	// public function setError($strError) {
-	// 	$this->__triggerfield->setError($strError);
-	// }
 
 }
 
