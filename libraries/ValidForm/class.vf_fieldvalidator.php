@@ -175,11 +175,10 @@ class VF_FieldValidator extends VF_ClassDynamic {
 		//*** Check "required" option.
 		if (is_array($value)) {
 			$blnEmpty 		= TRUE;
-			// $strTargetError = "";
 			$intCount 		= 0;
 
 			foreach ($value as $valueItem) {
-				if (!empty($valueItem)) {
+				if (!empty($valueItem) || (int)$valueItem === 0) {
 					$blnEmpty = FALSE;
 					break;
 				}
@@ -196,7 +195,7 @@ class VF_FieldValidator extends VF_ClassDynamic {
 					return TRUE;
 				}
 			}
-		} else if (empty($value) && $value !== 0) {
+		} else if (empty($value) && (int)$value !== 0) {
 			if ($this->__required && $intDynamicPosition == 0) {
 				//*** Only the first dynamic field has a required check. We asume by design that "real" dynamic fields are not required.
 				unset($this->__validvalues[$intDynamicPosition]);
@@ -206,6 +205,11 @@ class VF_FieldValidator extends VF_ClassDynamic {
 
 				if (empty($this->__matchwith)) return TRUE;
 			}
+		}
+		
+		//*** Check if value is_null and not required. No other checks needed.
+		if (!$this->__required && is_null($value)) {
+			return TRUE;
 		}
 
 		//*** Check if value is hint value.

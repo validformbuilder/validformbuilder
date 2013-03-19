@@ -45,6 +45,7 @@ class VF_Validator {
 		VFORM_SELECT_LIST 	=> '',
 		VFORM_PARAGRAPH 	=> '',
 		VFORM_CURRENCY 		=> '',
+		VFORM_HIDDEN 		=> '',
 		VFORM_DATE 			=> '/^(\d{2}\/\d{2}\/\d{4})$/i'
 	);
 	
