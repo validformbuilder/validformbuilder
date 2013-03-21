@@ -312,13 +312,19 @@ class ValidForm extends VF_ClassDynamic {
 		}
 
 		if (!$blnNavigation) {
-			$strOutput .= "<div class=\"vf__navigation vf__cf\">\n<input type=\"hidden\" name=\"vf__dispatch\" value=\"{$this->__name}\" />\n";
-			$strOutput .= "<input type=\"submit\" value=\"{$this->__submitlabel}\" class=\"vf__button\" />\n</div>\n";
+			$strOutput .= "<div class=\"vf__navigation vf__cf\">\n";
+			$strOutput .= "<input type=\"submit\" value=\"{$this->__submitlabel}\" class=\"vf__button\" />\n";
+			$strOutput .= "</div>\n";
 		}
 
+		$strOutput .= "<input type=\"hidden\" name=\"vf__dispatch\" value=\"{$this->__name}\" />\n";
 		$strOutput .= "</form>";
 
 		return $strOutput;
+	}
+	
+	public function toJs($strCustomJs = "") {
+		return $this->__toJS($strCustomJs, array(), true);
 	}
 
 	/**
@@ -635,7 +641,7 @@ class ValidForm extends VF_ClassDynamic {
 		return $strReturn;
 	}
 
-	protected function __toJS($strCustomJs = "", $arrInitArguments = array()) {
+	protected function __toJS($strCustomJs = "", $arrInitArguments = array(), $blnRawJs = false) {
 		$strReturn = "";
 		$strJs = "";
 
@@ -652,8 +658,11 @@ class ValidForm extends VF_ClassDynamic {
 		// Indent javascript
 		$strJs = str_replace("\n", "\n\t", $strJs);
 
-		$strReturn .= "<script type=\"text/javascript\">\n";
-		$strReturn .= "// <![CDATA[\n";
+		if (!$blnRawJs) {
+			$strReturn .= "<script type=\"text/javascript\">\n";
+			$strReturn .= "// <![CDATA[\n";
+		}
+		
 		$strReturn .= "function {$this->__name}_init() {\n";
 
 		$strCalledClass = get_called_class();
@@ -673,8 +682,11 @@ class ValidForm extends VF_ClassDynamic {
 		$strReturn .= "} catch (e) {\n";
 		$strReturn .= "\talert('Exception caught while initiating ValidForm:\\n\\n' + e.message);\n";
 		$strReturn .= "}\n";
-		$strReturn .= "// ]]>\n";
-		$strReturn .= "</script>\n";
+		
+		if (!$blnRawJs) {
+			$strReturn .= "// ]]>\n";
+			$strReturn .= "</script>\n";
+		}
 
 		return $strReturn;
 	}
