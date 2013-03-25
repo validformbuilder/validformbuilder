@@ -52,7 +52,7 @@ class VF_MultiField extends VF_Base {
 
 		// Render the field and add it to the multifield field collection.
 		$objField = ValidForm::renderField($name, "", $type, $validationRules, $errorHandlers, $meta);
-		
+
 		//*** Set the parent for the new field.
 		$objField->setMeta("parent", $this, true);
 
@@ -93,6 +93,11 @@ class VF_MultiField extends VF_Base {
 	}
 
 	public function __toHtml($submitted = FALSE, $blnSimpleLayout = FALSE, $blnLabel = true, $blnDisplayError = true, $intCount = 0) {
+		// Do nothing if multifield has no child fields.
+		if ($this->__fields->count() == 0) {
+			return "";
+		}
+
 		$blnError = false;
 		$strError = "";
 
