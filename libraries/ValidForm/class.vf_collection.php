@@ -301,6 +301,18 @@ class VF_Collection implements Iterator {
 
         return true;
     }
+
+    public function removeRecursive($objElement) {
+        foreach ($this->collection as $intKey => $objValue) {
+            if ($objValue->hasFields()) {
+                $objValue->getFields()->removeRecursive($objElement);
+            } else {
+                if ($objValue->getName() == $objElement->getName()) {
+                    unset($this->collection[$intKey]);
+                }
+            }
+        }
+    }
 }
 
 ?>

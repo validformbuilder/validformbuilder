@@ -567,15 +567,19 @@ ValidForm.prototype.validate = function(strSelector) {
 
 function ValidFormComparison (objForm, subject, comparison, value) {
 	this.subject 	= this._setSubject(objForm, subject);
-	this.comparison = comparison;
-	this.value 		= value || null;
-	this.isMet		= false;
+	if (this.subject !== null) {
+		this.comparison = comparison;
+		this.value 		= value || null;
+		this.isMet		= false;
 
-	this._deferred	= $.Deferred();
+		this._deferred	= $.Deferred();
 
-	this.uid 		= "com_" + Math.floor(Math.random()*9999);
+		this.uid 		= "com_" + Math.floor(Math.random()*9999);
 
-	return this._init();
+		return this._init();
+	} else {
+		return false;
+	}
 };
 
 ValidFormComparison.prototype._init = function () {
@@ -631,7 +635,7 @@ ValidFormComparison.prototype._setSubject = function (objForm, strSubject) {
 
 			if (varReturn.length <= 0) {
 				varReturn = null; // Reset subject
-				throw new Error("Could not find subject element with id or name '" + strSubject + "'.", 1);
+				//throw new Error("Could not find subject element with id or name '" + strSubject + "'.", 1);
 			}
 		}
 	} catch (e) {
@@ -757,7 +761,9 @@ ValidFormCondition.prototype._init = function () {
 		if (typeof objComparisons === "object" && objComparisons.length > 0) {
 			for (var i = 0; i < objComparisons.length; i++) {
 				var Comparison = objComparisons[i];
-				this.addComparison(new ValidFormComparison(this.validform, Comparison.subject, Comparison.comparison, Comparison.value));
+				if (this.validform.getElement(Comparison.subject) !== null) {
+					this.addComparison(new ValidFormComparison(this.validform, Comparison.subject, Comparison.comparison, Comparison.value));
+				}
 			}
 		}
 
@@ -1439,7 +1445,7 @@ ValidFormFieldValidator.prototype.removeAlert = function() {
 	}
 
 	objElement.parent("div").removeClass("vf__error").find("p.vf__error").remove();
-	
+
 	if (objElement.parent("div").hasClass("vf__multifielditem")) {
 		objElement.parent("div").parent("div").removeClass("vf__error").find("p.vf__error").remove();
 	}

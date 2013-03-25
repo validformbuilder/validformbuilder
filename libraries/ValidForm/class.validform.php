@@ -322,9 +322,9 @@ class ValidForm extends VF_ClassDynamic {
 
 		return $strOutput;
 	}
-	
-	public function toJs($strCustomJs = "") {
-		return $this->__toJS($strCustomJs, array(), true);
+
+	public function toJs($strCustomJs = "", $blnRawJs = true) {
+		return $this->__toJS($strCustomJs, array(), $blnRawJs);
 	}
 
 	/**
@@ -662,7 +662,7 @@ class ValidForm extends VF_ClassDynamic {
 			$strReturn .= "<script type=\"text/javascript\">\n";
 			$strReturn .= "// <![CDATA[\n";
 		}
-		
+
 		$strReturn .= "function {$this->__name}_init() {\n";
 
 		$strCalledClass = get_called_class();
@@ -682,7 +682,7 @@ class ValidForm extends VF_ClassDynamic {
 		$strReturn .= "} catch (e) {\n";
 		$strReturn .= "\talert('Exception caught while initiating ValidForm:\\n\\n' + e.message);\n";
 		$strReturn .= "}\n";
-		
+
 		if (!$blnRawJs) {
 			$strReturn .= "// ]]>\n";
 			$strReturn .= "</script>\n";
