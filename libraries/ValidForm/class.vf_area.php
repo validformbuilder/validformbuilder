@@ -214,7 +214,7 @@ class VF_Area extends VF_Base {
 				}
 			}
 
-			$strReturn .= "<div class=\"vf__dynamic vf__cf\">";
+			$strReturn .= "<div class=\"vf__dynamic vf__cf\"{$this->getDynamicButtonMeta()}>";
 			$strReturn .= "<a href=\"#\" data-target-id=\"" . implode("|", array_keys($arrFields)) . "\" data-target-name=\"" . implode("|", array_values($arrFields)) . "\">{$this->__dynamicLabel}</a>";
 			$strReturn .= "</div>";
 		}

@@ -160,6 +160,29 @@ class VF_Base extends VF_ClassDynamic {
 		return (count($this->__conditions) > 0);
 	}
 
+	/**
+	 * This method determines wheter or not to show the 'add extra field' dynamic button
+	 * based on it's parent's condition state.
+	 */
+	public function getDynamicButtonMeta() {
+		$objCondition 	= $this->getCondition("visible");
+		$blnResult 		= $objCondition->isMet();
+		$strReturn		= "";
+
+		// This can be applied on all sorts of subjects.
+		if ($blnResult) {
+			if (!$objCondition->getValue()) {
+				$strReturn = " style=\"display:none;\"";
+			}
+		} else {
+			if ($objCondition->getValue()) {
+				$strReturn = " style=\"display:none;\"";
+			}
+		}
+
+		return $strReturn;
+	}
+
 	public function setConditionalMeta() {
 
 		foreach ($this->__conditions as $objCondition) {
