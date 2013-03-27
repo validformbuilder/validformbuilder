@@ -295,7 +295,7 @@ class ValidForm extends VF_ClassDynamic {
 			}
 		}
 
-		$strOutput .= "<form id=\"{$this->__name}\" method=\"post\" enctype=\"multipart/form-data\" action=\"{$this->__action}\" class=\"{$strClass}\">\n";
+		$strOutput .= "<form id=\"{$this->__name}\" method=\"post\" enctype=\"multipart/form-data\" action=\"{$this->__action}\" class=\"{$strClass}\"{$this->__metaToData()}>\n";
 
 		//*** Main error.
 		if ($this->isSubmitted() && !empty($this->__mainalert)) $strOutput .= "<div class=\"vf__main_error\"><p>{$this->__mainalert}</p></div>\n";
@@ -323,8 +323,8 @@ class ValidForm extends VF_ClassDynamic {
 		return $strOutput;
 	}
 
-	public function toJs($strCustomJs = "", $blnRawJs = true) {
-		return $this->__toJS($strCustomJs, array(), $blnRawJs);
+	public function toJs($strCustomJs = "") {
+		return $this->__toJS($strCustomJs, array(), true);
 	}
 
 	/**
@@ -718,6 +718,18 @@ class ValidForm extends VF_ClassDynamic {
 		}
 
 		return $blnReturn;
+	}
+
+	private function __metaToData() {
+		$strReturn = "";
+
+		if (isset($this->__meta["data"]) && is_array($this->__meta["data"])) {
+			foreach ($this->meta["data"] as $strKey => $strValue) {
+				$strReturn .= "data-" . strtolower($strKey) . "=\"" . $strValue . "\" ";
+			}
+		}
+
+		return $strReturn;
 	}
 
 }
