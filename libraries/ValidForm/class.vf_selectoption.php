@@ -22,14 +22,13 @@ require_once('class.vf_element.php');
  *
  * @package ValidForm
  * @author Felix Langfeldt
- * @version Release: 0.2.2
+ * @version Release: 0.2.3
  *
  */
 class VF_SelectOption extends VF_Element {
 	protected $__label;
 	protected $__value;
 	protected $__selected;
-	protected $__meta;
 
 	public function __construct($label, $value, $selected = FALSE, $meta = array()) {
 		if (is_null($meta)) $meta = array();

@@ -22,13 +22,12 @@ require_once('class.vf_base.php');
  *
  * @package ValidForm
  * @author Felix Langfeldt
- * @version Release: 0.2.2
+ * @version Release: 0.2.3
  *
  */
 class VF_String extends VF_Base {
 	protected $__id;
 	protected $__body;
-	protected $__meta;
 
 	public function __construct($bodyString, $meta = array()) {
 		$this->__body = $bodyString;

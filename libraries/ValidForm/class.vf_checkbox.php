@@ -26,7 +26,7 @@ require_once('class.vf_element.php');
  *
  * @package ValidForm
  * @author Felix Langfeldt
- * @version Release: 0.2.2
+ * @version Release: 0.2.3
  *
  */
 class VF_Checkbox extends VF_Element {
@@ -46,7 +46,7 @@ class VF_Checkbox extends VF_Element {
 
 		if ($blnError) $strOutput .= "<p class=\"vf__error\">{$this->__validator->getError()}</p>";
 
-		if ($this->__getValue($submitted)) $this->setMeta("checked", "checked");
+		if ($this->__getValue($submitted)) $this->setFieldMeta("checked", "checked");
 
 		$strLabel = (!empty($this->__requiredstyle) && $this->__validator->getRequired()) ? sprintf($this->__requiredstyle, $this->__label) : $this->__label;
 		if (!empty($this->__label)) $strOutput .= "<label for=\"{$this->__id}\"{$this->__getLabelMetaString()}>{$strLabel}</label>\n";
