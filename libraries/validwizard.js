@@ -156,32 +156,34 @@ ValidWizard.prototype.addPage = function (strPageId) {
 
 ValidWizard.prototype.addPreviousButton = function (strPageId, blnIsConfirmPage) {
 	var __this		= this;
-
-	//*** Call custom event if set.
-	jQuery("#" + this.id).trigger("VF_BeforeAddPreviousButton", [__this, {ValidForm: __this, pageId: strPageId}]);
-	if (typeof __this.events.beforeAddPreviousButton == "function") {
-		__this.events.beforeAddPreviousButton(strPageId);
-	}
-
 	var $page 		= jQuery("#" + strPageId);
 
-	var $pagenav 	= $page.find(".vf__pagenavigation");
-	var $nav 		= ($pagenav.length > 0 && !blnIsConfirmPage) ? $pagenav : $("#" + this.id).find(".vf__navigation");
+	if ($page.index(".vf__page") > 0) {
+		var $pagenav 	= $page.find(".vf__pagenavigation");
+		var $nav 		= ($pagenav.length > 0 && !blnIsConfirmPage) ? $pagenav : $("#" + this.id).find(".vf__navigation");
 
-	$nav.append(jQuery("<a href='#' id='previous_" + strPageId + "' class='vf__button vf__previous'></a>"));
+		//*** Call custom event if set.
+		jQuery("#" + this.id).trigger("VF_BeforeAddPreviousButton", [__this, {ValidForm: __this, pageId: strPageId}]);
+		if (typeof __this.events.beforeAddPreviousButton == "function") {
+			__this.events.beforeAddPreviousButton(strPageId);
+		}
 
-	jQuery("#previous_" + strPageId).on("click", function () {
-		__this.previousPage();
-		return false;
-	});
+		$nav.append(jQuery("<a href='#' id='previous_" + strPageId + "' class='vf__button vf__previous'></a>"));
 
-	//*** Call custom event if set.
-	jQuery("#" + this.id).trigger("VF_AfterAddPreviousButton", [{ValidForm: __this, pageId: strPageId}]);
-	if (typeof __this.events.afterAddPreviousButton == "function") {
-		__this.events.afterAddPreviousButton(strPageId);
-	} else {
-		this.cachedEvents.push({"afterAddPreviousButton": strPageId});
+		jQuery("#previous_" + strPageId).on("click", function () {
+			__this.previousPage();
+			return false;
+		});
+
+		//*** Call custom event if set.
+		jQuery("#" + this.id).trigger("VF_AfterAddPreviousButton", [{ValidForm: __this, pageId: strPageId}]);
+		if (typeof __this.events.afterAddPreviousButton == "function") {
+			__this.events.afterAddPreviousButton(strPageId);
+		} else {
+			this.cachedEvents.push({"afterAddPreviousButton": strPageId});
+		}
 	}
+
 }
 
 ValidWizard.prototype.getPages = function () {
