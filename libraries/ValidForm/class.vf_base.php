@@ -52,7 +52,8 @@ class VF_Base extends VF_ClassDynamic {
 		"valueRange",
 		"dynamic",
 		"dynamicLabel",
-		"matchWith"
+		"matchWith",
+		"uniqueId"
 	);
 
 	/**
