@@ -111,6 +111,9 @@ ValidForm.prototype.addCondition = function (objCondition) {
  */
 ValidForm.prototype.showAlerts = function (objFields) {
 	var __this = this;
+	
+	//*** Remove open alerts first.
+	__this.removeAlerts();
 
 	try {
 		if ($(objFields).length > 0) {
@@ -123,10 +126,7 @@ ValidForm.prototype.showAlerts = function (objFields) {
 
 						if (objField !== null) {
 							// Field found in current form
-							var objValidator = objField.validator;
-
-							objValidator.removeAlert();
-							objValidator.showAlert(objFieldError[fieldName]);
+							objField.validator.showAlert(objFieldError[fieldName]);
 						}
 					}
 				}
@@ -138,6 +138,15 @@ ValidForm.prototype.showAlerts = function (objFields) {
 		try {
 			console.error("Show alerts failed: ", e.message, e); // Log error
 		} catch (e) {} // Or die trying
+	}
+};
+
+ValidForm.prototype.removeAlerts = function() {
+	for (var strElement in this.elements) {
+		var objElement = this.elements[strElement];
+		if (objElement !== null) {
+			objElement.validator.removeAlert();
+		}
 	}
 };
 
@@ -1135,6 +1144,7 @@ ValidFormElement.prototype.setEnabled = function (blnValue) {
 		$("#" + this.id)
 			// .addClass("vf__optional")
 			// .removeClass("vf__required")
+			.removeClass("vf__disabled")
 			.removeAttr("disabled");
 
 		$("#" + this.id).parent().addClass("vf__optional").removeClass("vf__required");
@@ -1143,6 +1153,7 @@ ValidFormElement.prototype.setEnabled = function (blnValue) {
 		$("#" + this.id)
 			// .removeClass("vf__optional")
 			// .addClass("vf__required")
+			.addClass("vf__disabled")
 			.attr("disabled", "disabled");
 
 		$("#" + this.id).parent().removeClass("vf__optional").addClass("vf__required");
