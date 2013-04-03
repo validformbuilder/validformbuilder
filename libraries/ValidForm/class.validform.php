@@ -68,6 +68,7 @@ class ValidForm extends VF_ClassDynamic {
 	protected $__requiredstyle;
 	protected $__novaluesmessage;
 	protected $__invalidfields = array();
+	private   $__uniqueid;
 
 	/**
 	 *
@@ -82,6 +83,7 @@ class ValidForm extends VF_ClassDynamic {
 		$this->__description = $description;
 		$this->__submitlabel = "Submit";
 		$this->__meta = $meta;
+		$this->__uniqueid = (isset($meta["uniqueId"])) ? $meta["uniqueId"] : $this->generateId();
 
 		$this->__elements = new VF_Collection();
 
@@ -631,6 +633,29 @@ class ValidForm extends VF_ClassDynamic {
 		}
 
 		return $strReturn;
+	}
+
+	public function generateId($intLength = 8) {
+		$strChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+		$strReturn = '';
+
+		srand((double)microtime()*1000000);
+
+		for ($i = 1; $i <= $intLength; $i++) {
+			$intNum = rand() % (strlen($strChars) - 1);
+			$strTmp = substr($strChars, $intNum, 1);
+			$strReturn .= $strTmp;
+		}
+
+		return $strReturn;
+	}
+
+	public function getUniqueId() {
+		return $this->__uniqueid;
+	}
+
+	protected function __setUniqueId($strId = "") {
+		$this->__uniqueid = (empty($strId)) ? $this->generateId() : $strId;
 	}
 
 	public static function get($param, $replaceEmpty = "") {
