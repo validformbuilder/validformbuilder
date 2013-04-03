@@ -68,7 +68,7 @@ class VF_Validator {
 			if (empty($checkType)) {
 				$blnReturn = TRUE; // No custom validation set.
 			} else {
-				$blnReturn = preg_match($checkType, $value); // Use custom validation
+				$blnReturn = @preg_match($checkType, $value); // Use custom validation
 			}
 		}
 
