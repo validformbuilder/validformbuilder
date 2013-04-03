@@ -32,6 +32,10 @@ class VF_Fieldset extends VF_Base {
 
 	public function __construct($header = NULL, $noteHeader = NULL, $noteBody = NULL, $meta = array()) {
 		$this->__header = $header;
+		$this->__meta = $meta;
+
+		//*** Set label & field specific meta
+		$this->__initializeMeta();
 
 		$this->__fields = new VF_Collection();
 
