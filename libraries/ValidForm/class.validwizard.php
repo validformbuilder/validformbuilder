@@ -35,8 +35,6 @@ class ValidWizard extends ValidForm {
 	protected 	$__nextlabel;
 	protected 	$__hasconfirmpage = false;
 
-	private 	$__uniqueid;
-
 	/**
 	 *
 	 * Create an instance of the ValidForm Builder
@@ -48,7 +46,6 @@ class ValidWizard extends ValidForm {
 	public function __construct($name = NULL, $description = NULL, $action = NULL, $meta = array()) {
 		parent::__construct($name, $description, $action, $meta);
 
-		$this->__uniqueid = (isset($meta["uniqueId"])) ? $meta["uniqueId"] : $this->generateId();
 		$this->__nextlabel = (isset($meta["nextLabel"])) ? $meta["nextLabel"] : "Next &rarr;";
 		$this->__previouslabel = (isset($meta["previousLabel"])) ? $meta["previousLabel"] : "&larr; Previous";
 	}
@@ -402,29 +399,6 @@ class ValidWizard extends ValidForm {
 		} else {
 			return parent::isValid();
 		}
-	}
-
-	public function generateId($intLength = 8) {
-		$strChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-		$strReturn = '';
-
-		srand((double)microtime()*1000000);
-
-		for ($i = 1; $i <= $intLength; $i++) {
-			$intNum = rand() % (strlen($strChars) - 1);
-			$strTmp = substr($strChars, $intNum, 1);
-			$strReturn .= $strTmp;
-		}
-
-		return $strReturn;
-	}
-
-	public function getUniqueId() {
-		return $this->__uniqueid;
-	}
-
-	private function __setUniqueId($strId = "") {
-		$this->__uniqueid = (empty($strId)) ? $this->generateId() : $strId;
 	}
 }
 
