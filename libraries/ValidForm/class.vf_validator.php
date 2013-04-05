@@ -22,7 +22,7 @@ require_once('class.phpcaptcha.php');
  * 
  * @package ValidForm
  * @author Felix Langfeldt
- * @version Release: 0.3.2
+ * @version Release: 0.3.3
  *
  */
 class VF_Validator {
@@ -46,7 +46,7 @@ class VF_Validator {
 		VFORM_PARAGRAPH 	=> '',
 		VFORM_CURRENCY 		=> '',
 		VFORM_HIDDEN 		=> '',
-		VFORM_DATE 			=> '/^(\d{2}\/\d{2}\/\d{4})$/i'
+		VFORM_DATE 			=> '/^(\d{2}[-|\/|\\\\|\.]\d{2}[-|\/|\\\\|\.]\d{4})$/i'
 	);
 	
 	public static function validate($checkType, $value) {
