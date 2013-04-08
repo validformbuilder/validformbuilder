@@ -111,7 +111,7 @@ ValidForm.prototype.addCondition = function (objCondition) {
  */
 ValidForm.prototype.showAlerts = function (objFields) {
 	var __this = this;
-	
+
 	//*** Remove open alerts first.
 	__this.removeAlerts();
 
@@ -1455,7 +1455,7 @@ ValidFormFieldValidator.prototype.removeAlert = function() {
 		objElement = jQuery("input[name='" + this.name + "']:first").closest(".vf__list");
 	}
 
-	objElement.closest(".vf__optional, .vf__required").removeClass("vf__error").find("p.vf__error").remove();
+	objElement.closest(".vf__error").removeClass("vf__error").find("p.vf__error").remove();
 
 	if (objElement.closest("div").hasClass("vf__multifielditem")) {
 		objElement.closest(".vf__multifield").removeClass("vf__error").find("p.vf__error").remove();
