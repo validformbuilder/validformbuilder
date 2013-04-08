@@ -180,7 +180,9 @@ form.validform fieldset.vf__disabled legend label {
 	color: #333;
 }
 
-form.validform fieldset fieldset input {
+form.validform fieldset fieldset input[type="radio"],
+form.validform fieldset fieldset input[type="checkbox"] 
+{
 	margin-right: 2px;
 }
 
