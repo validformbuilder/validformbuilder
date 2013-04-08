@@ -29,7 +29,6 @@ require_once('class.vf_element.php');
 class VF_GroupField extends VF_Element {
 	protected $__label;
 	protected $__value;
-	protected $__type;
 	protected $__checked;
 
 	public function __construct($id, $name, $type, $label, $value, $checked = FALSE, $meta = array()) {
@@ -59,8 +58,20 @@ class VF_GroupField extends VF_Element {
 			if ($value == $this->__value) $this->setFieldMeta("checked", "checked");
 		}
 
+		//*** Convert the Element type to HTML type.
+		/* TODO: Refactor to typeToHtmlType method and implement in all element classes. */
+		$type = "";
+		switch ($this->__type) {
+			case VFORM_RADIO_LIST:
+				$type = "radio";
+				break;
+			case VFORM_CHECK_LIST:
+				$type = "checkbox";
+				break;
+		}
+		
 		$strOutput = "<label for=\"{$this->__id}\"{$this->__getLabelMetaString()}>\n";
-		$strOutput .= "<input type=\"{$this->__type}\" value=\"{$this->__value}\" name=\"{$this->__name}\" id=\"{$this->__id}\"{$this->__getFieldMetaString()}/> {$this->__label}\n";
+		$strOutput .= "<input type=\"{$type}\" value=\"{$this->__value}\" name=\"{$this->__name}\" id=\"{$this->__id}\"{$this->__getFieldMetaString()}/> {$this->__label}\n";
 		$strOutput .= "</label>\n";
 
 		return $strOutput;
