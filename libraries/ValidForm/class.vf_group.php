@@ -171,6 +171,9 @@ class VF_Group extends VF_Element {
 		$objField->setMeta("parent", $this, true);
 
 		$this->__fields->addObject($objField);
+		
+		//*** Set the default value if "checked" is set.
+		if ($checked) $this->__default = $value;
 
 		return $objField;
 	}

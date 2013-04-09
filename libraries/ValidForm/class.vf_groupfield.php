@@ -45,11 +45,11 @@ class VF_GroupField extends VF_Element {
 		if (is_array($value)) {
 			foreach ($value as $valueItem) {
 				if ($valueItem == $this->__value) {
-					$this->setMeta("checked", "checked");
+					$this->setFieldMeta("checked", "checked");
 					// $strChecked = " checked=\"checked\"";
 					break;
 				} else {
-					$this->setMeta("checked", null, true); // Remove 'checked'
+					$this->setFieldMeta("checked", null, true); // Remove 'checked'
 					// $strChecked = "";
 				}
 			}
