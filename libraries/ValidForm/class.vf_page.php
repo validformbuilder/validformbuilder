@@ -117,6 +117,23 @@ class VF_Page extends VF_Base {
 		return $this->__elements;
 	}
 
+	/**
+	 * Get the short header if available. If no short header is set (meta 'summaryLabel' on the VF_Page object),
+	 * the full-length regular header is returned.
+	 *
+	 * @return string                 Page (short)header as a string
+	 */
+	public function getShortHeader() {
+		$strReturn 		= $this->getHeader();
+		$strShortLabel 	= $this->getMeta("summaryLabel", null);
+
+		if ($blnShortLabel && strlen($strShortLabel) > 0) {
+			$strReturn = $strShortLabel;
+		}
+
+		return $strShortLabel;
+	}
+
 	public function getRandomId($name) {
 		$strReturn = $name;
 

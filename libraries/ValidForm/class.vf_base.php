@@ -323,6 +323,23 @@ class VF_Base extends VF_ClassDynamic {
 		return $strName;
 	}
 
+	/**
+	 * Get the short label (meta 'summaryLabel') if available. Use the 'long' (regular)
+	 * label as a fallback return value.
+	 *
+	 * @return String The short or regular element label
+	 */
+	public function getShortLabel() {
+		$strReturn 		= $this->getLabel();
+		$strShortLabel 	= $this->getMeta("summaryLabel", null);
+
+		if (!is_null($strShortLabel) && strlen($strShortLabel) > 0) {
+			$strReturn = $strShortLabel;
+		}
+
+		return $strReturn;
+	}
+
 	public function toJS() {
 		$strOutput = "";
 

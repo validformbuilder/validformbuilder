@@ -515,9 +515,6 @@ class ValidForm extends VF_ClassDynamic {
 		$strReturn = "";
 		$strSet = "";
 
-		// Set short label if summaryLabel meta is set. Use current label as fallback value.
-		$objField->setLabel($objField->getMeta("summaryLabel", $objField->getLabel()));
-
 		if ($objField->hasContent($intDynamicCount)) {
 			foreach ($objField->getFields() as $objSubField) {
 				if (get_class($objSubField) !== "VF_Paragraph") {
@@ -541,23 +538,28 @@ class ValidForm extends VF_ClassDynamic {
 			}
 		}
 
+		$strLabel = $objField->getShortLabel();
 		if (!empty($strSet)) {
-			$strLabel = $objField->getLabel();
+
 			if (!empty($strLabel)) {
 				$strReturn = "<tr>";
-				$strReturn .= "<td colspan=\"3\" style=\"white-space:nowrap\" class=\"vf__area_header\"><h3>{$objField->getLabel()}</h3></td>\n";
+				$strReturn .= "<td colspan=\"3\" style=\"white-space:nowrap\" class=\"vf__area_header\"><h3>{$strLabel}</h3></td>\n";
 				$strReturn .= "</tr>";
 			}
 
 			$strReturn .= $strSet;
+
 		} else {
 			if (!empty($this->__novaluesmessage) && $objField->isActive()) {
 				$strReturn = "<tr>";
-				$strReturn .= "<td colspan=\"3\" style=\"white-space:nowrap\" class=\"vf__area_header\"><h3>{$objField->getLabel()}</h3></td>\n";
+				$strReturn .= "<td colspan=\"3\" style=\"white-space:nowrap\" class=\"vf__area_header\"><h3>{$strLabel}</h3></td>\n";
 				$strReturn .= "</tr>";
+
 				return $strReturn . "<tr><td colspan=\"3\">{$this->__novaluesmessage}</td></tr>";
+
 			} else {
 				return "";
+
 			}
 		}
 
@@ -566,9 +568,6 @@ class ValidForm extends VF_ClassDynamic {
 
 	private function multiFieldAsHtml($objField, $hideEmpty = FALSE, $intDynamicCount = 0) {
 		$strReturn = "";
-
-		// Set short label if summaryLabel meta is set. Use current label as fallback value.
-		$objField->setLabel($objField->getMeta("summaryLabel", $objField->getLabel()));
 
 		if ($objField->hasContent($intDynamicCount)) {
 			if ($objField->hasFields()) {
@@ -589,10 +588,11 @@ class ValidForm extends VF_ClassDynamic {
 				}
 
 				$strValue = trim($strValue);
+				$strLabel = $objField->getShortLabel(); // Passing 'true' gets the short label if available.
 
 				if ((!empty($strValue) && $hideEmpty) || (!$hideEmpty && !empty($strValue))) {
 					$strReturn .= "<tr class=\"vf__field_value\">";
-					$strReturn .= "<td valign=\"top\" style=\"white-space:nowrap; padding-right: 20px\" class=\"vf__field\">{$objField->getLabel()}</td><td valign=\"top\" class=\"vf__value\"><strong>" . nl2br($strValue) . "</strong></td>\n";
+					$strReturn .= "<td valign=\"top\" style=\"white-space:nowrap; padding-right: 20px\" class=\"vf__field\">{$strLabel}</td><td valign=\"top\" class=\"vf__value\"><strong>" . nl2br($strValue) . "</strong></td>\n";
 					$strReturn .= "</tr>";
 				}
 			}
@@ -604,11 +604,8 @@ class ValidForm extends VF_ClassDynamic {
 	private function fieldAsHtml($objField, $hideEmpty = FALSE, $intDynamicCount = 0) {
 		$strReturn = "";
 
-		// Set short label if summaryLabel meta is set. Use current label as fallback value.
-		$objField->setLabel($objField->getMeta("summaryLabel", $objField->getLabel()));
-
 		$strFieldName = $objField->getName();
-		$strLabel = $objField->getLabel();
+		$strLabel = $objField->getShortLabel(); // Passing 'true' gets the short label if available.
 		$varValue = ($intDynamicCount > 0) ? $objField->getValue($intDynamicCount) : $objField->getValue();
 		$strValue = (is_array($varValue)) ? implode(", ", $varValue) : $varValue;
 
@@ -626,7 +623,7 @@ class ValidForm extends VF_ClassDynamic {
 					//*** Skip the field.
 				} else {
 					$strReturn .= "<tr class=\"vf__field_value\">";
-					$strReturn .= "<td valign=\"top\" style=\"padding-right: 20px\" class=\"vf__field\">{$objField->getLabel()}</td><td valign=\"top\" class=\"vf__value\"><strong>" . nl2br($strValue) . "</strong></td>\n";
+					$strReturn .= "<td valign=\"top\" style=\"padding-right: 20px\" class=\"vf__field\">{$strLabel}</td><td valign=\"top\" class=\"vf__value\"><strong>" . nl2br($strValue) . "</strong></td>\n";
 					$strReturn .= "</tr>";
 				}
 			}
