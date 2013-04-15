@@ -127,11 +127,11 @@ class VF_Page extends VF_Base {
 		$strReturn 		= $this->getHeader();
 		$strShortLabel 	= $this->getMeta("summaryLabel", null);
 
-		if ($blnShortLabel && strlen($strShortLabel) > 0) {
+		if (strlen($strShortLabel) > 0) {
 			$strReturn = $strShortLabel;
 		}
 
-		return $strShortLabel;
+		return $strReturn;
 	}
 
 	public function getRandomId($name) {
