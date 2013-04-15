@@ -50,7 +50,13 @@ class VF_Checkbox extends VF_Element {
 
 		if ($blnError) $strOutput .= "<p class=\"vf__error\">{$this->__validator->getError()}</p>";
 
-		if ($this->__getValue($submitted)) $this->setFieldMeta("checked", "checked");
+		if ($this->__getValue($submitted)) {
+			//*** Add the "checked" attribute to the input field.
+			$this->setFieldMeta("checked", "checked");
+		} else {
+			//*** Remove the "checked" attribute from the input field. Just to be sure it wasn't set before.
+			$this->setFieldMeta("checked", null, TRUE);
+		}
 
 		$strLabel = (!empty($this->__requiredstyle) && $this->__validator->getRequired()) ? sprintf($this->__requiredstyle, $this->__label) : $this->__label;
 		if (!empty($this->__label)) $strOutput .= "<label for=\"{$this->__id}\"{$this->__getLabelMetaString()}>{$strLabel}</label>\n";
@@ -83,7 +89,11 @@ class VF_Checkbox extends VF_Element {
 
 	public function getValue($intDynamicPosition = 0) {
 		$varValue = parent::getValue($intDynamicPosition);
-		return (!empty($varValue)) ? TRUE : FALSE;
+		return (strlen($varValue) > 0 && $varValue !== 0) ? TRUE : FALSE;
+	}
+	
+	public function getDefault() {
+		return (strlen($this->__default) > 0 && $varValue) ? "on" : null;
 	}
 
 }

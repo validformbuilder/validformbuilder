@@ -228,6 +228,10 @@ class VF_Element extends VF_Base {
 			$this->__validator->setFieldName($strName);
 		}
 	}
+	
+	public function setDefault($varValue) {
+		$this->__default = $varValue;
+	}
 
 	/**
 	 * Get the value of the field. If the value is *valid* then it will return that value, otherwise the invalid value is returned.
@@ -246,9 +250,9 @@ class VF_Element extends VF_Base {
 				$varReturn = $this->__validator->getValue($intDynamicPosition);
 			}
 		} else {
-			if (!empty($this->__default) || $this->__default === 0) {
+			if (strlen($this->__default) > 0) {
 				$varReturn = $this->__default;
-			} else if (!empty($this->__hint) || $this->__hint === 0) {
+			} else if (strlen($this->__hint) > 0) {
 				$varReturn = $this->__hint;
 			}
 		}
