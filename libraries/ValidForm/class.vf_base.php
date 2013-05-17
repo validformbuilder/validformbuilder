@@ -31,6 +31,7 @@ class VF_Base extends VF_ClassDynamic {
 	protected $__fieldmeta = array();
 	protected $__labelmeta = array();
 	protected $__magicmeta = array("label", "field");
+	protected $__magicreservedmeta = array("labelRange");
 	protected $__reservedfieldmeta = array("multiple");
 	protected $__reservedlabelmeta = array();
 	protected $__reservedmeta = array(
@@ -166,19 +167,22 @@ class VF_Base extends VF_ClassDynamic {
 	 * based on it's parent's condition state.
 	 */
 	public function getDynamicButtonMeta() {
-		$objCondition 	= $this->getCondition("visible");
-		$blnResult 		= $objCondition->isMet();
-		$strReturn		= "";
+    	$strReturn		= "";
 
-		// This can be applied on all sorts of subjects.
-		if ($blnResult) {
-			if (!$objCondition->getValue()) {
-				$strReturn = " style=\"display:none;\"";
-			}
-		} else {
-			if ($objCondition->getValue()) {
-				$strReturn = " style=\"display:none;\"";
-			}
+		$objCondition 	= $this->getCondition("visible");
+		if (is_object($objCondition)) {
+    		$blnResult 		= $objCondition->isMet();
+
+    		// This can be applied on all sorts of subjects.
+    		if ($blnResult) {
+    			if (!$objCondition->getValue()) {
+    				$strReturn = " style=\"display:none;\"";
+    			}
+    		} else {
+    			if ($objCondition->getValue()) {
+    				$strReturn = " style=\"display:none;\"";
+    			}
+    		}
 		}
 
 		return $strReturn;
@@ -463,7 +467,8 @@ class VF_Base extends VF_ClassDynamic {
 			}
 
 			$strMagicKey = strtolower(substr($key, 0, 5));
-			if (in_array($strMagicKey, $this->__magicmeta)) {
+			if (in_array($strMagicKey, $this->__magicmeta) 
+					&& !in_array($key, $this->__magicreservedmeta)) {
 				$strMethod = "set" . ucfirst($strMagicKey) . "Meta";
 				$this->$strMethod(strtolower(substr($key, -(strlen($key) - 5))), $value);
 
