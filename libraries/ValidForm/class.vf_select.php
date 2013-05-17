@@ -112,6 +112,10 @@ class VF_Select extends VF_Element {
 
 		$strOutput .= "</select>\n";
 
+		if ($this->getMeta("tip") !== "") {
+		    $this->__tip = $this->getMeta("tip");
+		}
+
 		if (!empty($this->__tip)) $strOutput .= "<small class=\"vf__tip\">{$this->__tip}</small>\n";
 
 		$strOutput .= "</div>\n";
