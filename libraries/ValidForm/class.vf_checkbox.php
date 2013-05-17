@@ -92,8 +92,8 @@ class VF_Checkbox extends VF_Element {
 		return (strlen($varValue) > 0 && $varValue !== 0) ? TRUE : FALSE;
 	}
 	
-	public function getDefault() {
-		return (strlen($this->__default) > 0 && $varValue) ? "on" : null;
+	public function getDefault($intDynamicPosition = 0) {
+		return (strlen($this->__default) > 0 && $this->getValue($intDynamicPosition)) ? "on" : null;
 	}
 
 }
