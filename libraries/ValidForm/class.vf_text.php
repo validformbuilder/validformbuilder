@@ -49,7 +49,7 @@ class VF_Text extends VF_Element {
 		$strId 		= ($intCount == 0) ? $this->__id : $this->__id . "_" . $intCount;
 
 		$blnError = ($submitted && !$this->__validator->validate($intCount) && $blnDisplayErrors) ? TRUE : FALSE;
-		
+
 		if (!$blnSimpleLayout) {
 			//*** We asume that all dynamic fields greater than 0 are never required.
 			if ($this->__validator->getRequired() && $intCount == 0) {
@@ -65,7 +65,7 @@ class VF_Text extends VF_Element {
 
 			// Call this right before __getMetaString();
 			$this->setConditionalMeta();
-			
+
 			$strOutput = "<div{$this->__getMetaString()}>\n";
 
 			if ($blnError) {
@@ -83,7 +83,7 @@ class VF_Text extends VF_Element {
 
 			// Call this right before __getMetaString();
 			$this->setConditionalMeta();
-			
+
 			$strOutput = "<div{$this->__getMetaString()}>\n";
 
 			if ($blnError) {
@@ -131,9 +131,20 @@ class VF_Text extends VF_Element {
 				if ($intDynamicCount > 0) $strRequired = "false";
 
 				$strOutput .= "objForm.addElement('{$strId}', '{$strName}', {$strCheck}, {$strRequired}, {$intMaxLength}, {$intMinLength}, '" . addslashes($this->__validator->getFieldHint()) . "', '" . addslashes($this->__validator->getTypeError()) . "', '" . addslashes($this->__validator->getRequiredError()) . "', '" . addslashes($this->__validator->getHintError()) . "', '" . addslashes($this->__validator->getMinLengthError()) . "', '" . addslashes($this->__validator->getMaxLengthError()) . "');\n";
+
+				$objMatchWith = $this->getValidator()->getMatchWith();
+				if (is_object($objMatchWith)) {
+				    $strMatchId = ($intCount == 0) ? $objMatchWith->getId() : $objMatchWith->getId() . "_" . $intCount;
+				    $strOutput .= "objForm.matchfields('{$strId}', '{$strMatchId}', '" . $this->__validator->getMatchWithError() . "');\n";
+				}
 			}
 		} else {
 			$strOutput = "objForm.addElement('{$this->__id}', '{$this->__name}', {$strCheck}, {$strRequired}, {$intMaxLength}, {$intMinLength}, '" . addslashes($this->__validator->getFieldHint()) . "', '" . addslashes($this->__validator->getTypeError()) . "', '" . addslashes($this->__validator->getRequiredError()) . "', '" . addslashes($this->__validator->getHintError()) . "', '" . addslashes($this->__validator->getMinLengthError()) . "', '" . addslashes($this->__validator->getMaxLengthError()) . "');\n";
+
+			$objMatchWith = $this->getValidator()->getMatchWith();
+			if (is_object($objMatchWith)) {
+			    $strOutput .= "objForm.matchfields('" . $this->__id . "', '" . $objMatchWith->getId() . "', '" . $this->__validator->getMatchWithError() . "');\n";
+			}
 		}
 
 		if ($this->hasConditions() && (count($this->getConditions() > 0))) {
