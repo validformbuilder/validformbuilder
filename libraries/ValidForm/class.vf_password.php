@@ -49,6 +49,8 @@ class VF_Password extends VF_Element {
 		$strName 	= ($intCount == 0) ? $this->__name : $this->__name . "_" . $intCount;
 		$strId 		= ($intCount == 0) ? $this->__id : $this->__id . "_" . $intCount;
 
+		$varValue = $this->__getValue($submitted, $intCount);
+
 		$blnError = ($submitted && !$this->__validator->validate($intCount) && $blnDisplayErrors) ? TRUE : FALSE;
 
 		if (!$blnSimpleLayout) {
@@ -62,11 +64,14 @@ class VF_Password extends VF_Element {
 			//*** Set custom meta.
 			if ($blnError) $this->setMeta("class", "vf__error");
 			if (!$blnLabel) $this->setMeta("class", "vf__nolabel");
-			if (!empty($this->__hint)) $this->setMeta("class", "vf__hint");
+
+			if (!empty($this->__hint) && ($varValue == $this->__hint)) {
+			    $this->setMeta("class", "vf__hint");
+			}
 
 			// Call this right before __getMetaString();
 			$this->setConditionalMeta();
-			
+
 			$strOutput = "<div{$this->__getMetaString()}>\n";
 
 			if ($blnError) {
@@ -78,7 +83,10 @@ class VF_Password extends VF_Element {
 				if (!empty($this->__label)) $strOutput .= "<label for=\"{$strId}\"{$this->__getLabelMetaString()}>{$strLabel}</label>\n";
 			}
 		} else {
-			if (!empty($this->__hint)) $this->setMeta("class", "vf__hint");
+			if (!empty($this->__hint) && ($varValue == $this->__hint)) {
+			    $this->setMeta("class", "vf__hint");
+			}
+
 			if ($blnError) $this->setMeta("class", "vf__error");
 			$this->setMeta("class", "vf__multifielditem");
 
@@ -97,10 +105,10 @@ class VF_Password extends VF_Element {
 			$this->setFieldMeta("maxlength", $this->__validator->getMaxLength());
 		}
 
-		$strOutput .= "<input type=\"password\" value=\"{$this->__getValue($submitted, $intCount)}\" name=\"{$strName}\" id=\"{$strId}\"{$this->__getFieldMetaString()} />\n";
+		$strOutput .= "<input type=\"password\" value=\"{$varValue}\" name=\"{$strName}\" id=\"{$strId}\"{$this->__getFieldMetaString()} />\n";
 
 		if (!empty($this->__tip)) $strOutput .= "<small class=\"vf__tip\">{$this->__tip}</small>\n";
-		
+
 		$strOutput .= "</div>\n";
 
 		if (!$blnSimpleLayout
@@ -131,7 +139,7 @@ class VF_Password extends VF_Element {
 				if ($intDynamicCount > 0) $strRequired = "false";
 
 				$strOutput .= "objForm.addElement('{$strId}', '{$strName}', {$strCheck}, {$strRequired}, {$intMaxLength}, {$intMinLength}, '" . addslashes($this->__validator->getFieldHint()) . "', '" . addslashes($this->__validator->getTypeError()) . "', '" . addslashes($this->__validator->getRequiredError()) . "', '" . addslashes($this->__validator->getHintError()) . "', '" . addslashes($this->__validator->getMinLengthError()) . "', '" . addslashes($this->__validator->getMaxLengthError()) . "');\n";
-				
+
 				$objMatchWith = $this->getValidator()->getMatchWith();
 				if (is_object($objMatchWith)) {
 					$strMatchId = ($intCount == 0) ? $objMatchWith->getId() : $objMatchWith->getId() . "_" . $intCount;
@@ -140,12 +148,12 @@ class VF_Password extends VF_Element {
 			}
 		} else {
 			$strOutput = "objForm.addElement('{$this->__id}', '{$this->__name}', {$strCheck}, {$strRequired}, {$intMaxLength}, {$intMinLength}, '" . addslashes($this->__validator->getFieldHint()) . "', '" . addslashes($this->__validator->getTypeError()) . "', '" . addslashes($this->__validator->getRequiredError()) . "', '" . addslashes($this->__validator->getHintError()) . "', '" . addslashes($this->__validator->getMinLengthError()) . "', '" . addslashes($this->__validator->getMaxLengthError()) . "');\n";
-			
+
 			$objMatchWith = $this->getValidator()->getMatchWith();
 			if (is_object($objMatchWith)) {
 				$strOutput .= "objForm.matchfields('" . $this->__id . "', '" . $objMatchWith->getId() . "', '" . $this->__validator->getMatchWithError() . "');\n";
 			}
-		}		
+		}
 
 		if ($this->hasConditions() && (count($this->getConditions() > 0))) {
 			foreach ($this->getConditions() as $objCondition) {
