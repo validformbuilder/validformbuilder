@@ -139,9 +139,20 @@ class VF_Text extends VF_Element {
 				if ($intDynamicCount > 0) $strRequired = "false";
 
 				$strOutput .= "objForm.addElement('{$strId}', '{$strName}', {$strCheck}, {$strRequired}, {$intMaxLength}, {$intMinLength}, '" . addslashes($this->__validator->getFieldHint()) . "', '" . addslashes($this->__validator->getTypeError()) . "', '" . addslashes($this->__validator->getRequiredError()) . "', '" . addslashes($this->__validator->getHintError()) . "', '" . addslashes($this->__validator->getMinLengthError()) . "', '" . addslashes($this->__validator->getMaxLengthError()) . "');\n";
+
+			    $objMatchWith = $this->getValidator()->getMatchWith();
+				if (is_object($objMatchWith)) {
+					$strMatchId = ($intCount == 0) ? $objMatchWith->getId() : $objMatchWith->getId() . "_" . $intCount;
+					$strOutput .= "objForm.matchfields('{$strId}', '{$strMatchId}', '" . $this->__validator->getMatchWithError() . "');\n";
+				}
 			}
 		} else {
 			$strOutput = "objForm.addElement('{$this->__id}', '{$this->__name}', {$strCheck}, {$strRequired}, {$intMaxLength}, {$intMinLength}, '" . addslashes($this->__validator->getFieldHint()) . "', '" . addslashes($this->__validator->getTypeError()) . "', '" . addslashes($this->__validator->getRequiredError()) . "', '" . addslashes($this->__validator->getHintError()) . "', '" . addslashes($this->__validator->getMinLengthError()) . "', '" . addslashes($this->__validator->getMaxLengthError()) . "');\n";
+
+			$objMatchWith = $this->getValidator()->getMatchWith();
+			if (is_object($objMatchWith)) {
+			    $strOutput .= "objForm.matchfields('" . $this->__id . "', '" . $objMatchWith->getId() . "', '" . $this->__validator->getMatchWithError() . "');\n";
+			}
 		}
 
 		if ($this->hasConditions() && (count($this->getConditions() > 0))) {
