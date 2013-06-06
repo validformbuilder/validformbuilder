@@ -228,7 +228,7 @@ class VF_Element extends VF_Base {
 			$this->__validator->setFieldName($strName);
 		}
 	}
-	
+
 	public function setDefault($varValue) {
 		$this->__default = $varValue;
 	}
@@ -250,11 +250,17 @@ class VF_Element extends VF_Base {
 				$varReturn = $this->__validator->getValue($intDynamicPosition);
 			}
 		} else {
-			if (strlen($this->__default) > 0) {
-				$varReturn = $this->__default;
-			} else if (strlen($this->__hint) > 0) {
-				$varReturn = $this->__hint;
-			}
+		    if (is_array($this->__default)) {
+    			if (isset($this->__default[$intDynamicPosition]) && strlen($this->__default[$intDynamicPosition]) > 0) {
+    				$varReturn = $this->__default[$intDynamicPosition];
+    			}
+		    } else {
+    			if (strlen($this->__default) > 0) {
+    				$varReturn = $this->__default;
+    			} else if (strlen($this->__hint) > 0) {
+    				$varReturn = $this->__hint;
+    			}
+		    }
 		}
 
 		if(!$varReturn && ((get_class($this) == "VF_Hidden") && $this->isDynamicCounter())) {
