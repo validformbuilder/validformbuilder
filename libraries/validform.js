@@ -254,6 +254,7 @@ ValidForm.prototype.dynamicDuplication = function () {
 					objCopy.validator = jQuery.extend(new ValidFormFieldValidator(), objOriginal.validator);
 					objCopy.validator.id = objCopy.id;
 					objCopy.validator.required = false;
+					objCopy._defaultstate.required = false;
 
 					__this.addElement(objCopy);
 				}
@@ -301,6 +302,11 @@ ValidForm.prototype.dynamicDuplication = function () {
 					__this.attachAreaEvents(copiedTrigger);
 				}
 			}
+			
+			//*** Fix conditions that might be attached to the original elements.
+			if (typeof counter == "object") {
+				__this.attachDynamicConditions(names, counter.val());
+			}
 
 			//*** Call custom event if set.
 			jQuery("#" + __this.id).trigger("VF_AfterDynamicChange", [{ValidForm: __this, objAnchor: $anchor, objCopy: copy}]);
@@ -311,6 +317,58 @@ ValidForm.prototype.dynamicDuplication = function () {
 
 		return false;
 	});
+};
+
+ValidForm.prototype.attachDynamicConditions = function(arrElementNames, dynamicCount) {
+	var self = this;
+	
+	for (var i = 0; i <= self.conditions.length; i++) {
+		if (typeof self.conditions[i] !== "undefined") {
+			var blnInDynamic = false;
+			var newCondSubject = self.conditions[i].subject.name;
+
+			if ($.inArray(self.conditions[i].subject.name, arrElementNames) > -1) {
+				blnInDynamic = true;
+				newCondSubject = self.conditions[i].subject.name + "_" + dynamicCount;
+			} else {
+				var comparisons = self.conditions[i].comparisons;
+				for (var j = 0; j < comparisons.length; j++) {					
+					if ($.inArray(comparisons[j].subject.name, arrElementNames) > -1) {
+						blnInDynamic = true;
+						break;
+					}
+				}
+			}
+			
+			if (blnInDynamic) {
+				var arrComparisons = [];
+				
+				var comparisons = self.conditions[i].comparisons;
+				for (var j = 0; j < comparisons.length; j++) {
+					var newCompSubject = comparisons[j].subject.name;
+					
+					if ($.inArray(comparisons[j].subject.name, arrElementNames) > -1) {
+						newCompSubject = comparisons[j].subject.name + "_" + dynamicCount;
+					}
+					
+					arrComparisons.push({
+						"subject": newCompSubject,
+						"comparison": comparisons[j].comparison,
+						"value": comparisons[j].value
+					});
+				}
+				
+				var newCondition = new ValidFormCondition(self, {
+					"subject": newCondSubject,
+					"property": self.conditions[i].property,
+					"value": self.conditions[i].value,
+					"comparisonType": self.conditions[i].comparisonType,
+					"comparisons": arrComparisons
+				});
+				newCondition._init();
+			}
+		}
+	}
 };
 
 ValidForm.prototype.attachAreaEvents = function(objActiveTrigger) {
@@ -817,10 +875,6 @@ ValidFormCondition.prototype._setSubject = function (strSubject) {
 ValidFormCondition.prototype.set = function (blnResult) {
 	var self = this;
 
-	var getDynamicCount = function ($objSubject) {
-		$("input[name$='" +  + "']", $objSubject);
-	}
-
 	//*** Utility functions
 	var Util = {
 		"visible": function (blnValue) {
@@ -927,8 +981,6 @@ ValidFormCondition.prototype.set = function (blnResult) {
 };
 
 ValidFormCondition.prototype.addComparison = function (objComparison) {
-	var self = this;
-
 	if (!objComparison instanceof ValidFormComparison) {
 		throw new Error("Invalid argument: objComparison is no ValidFormComparison type in ValidFormCondition.addCondition()", 1);
 	}
