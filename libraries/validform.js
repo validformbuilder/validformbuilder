@@ -240,10 +240,24 @@ ValidForm.prototype.dynamicDuplication = function () {
 					} else {
 						//*** Normal fields (input, textarea) are easy.						
 						jQuery(this)
-							.attr("value", objOriginal.validator.hint)
+							.attr("value", objOriginal.validator.hint) // = hint or empty
 							.attr("name", fieldname + "_" + counter.val())
 							.attr("id", ids[index] + "_" + counter.val())
 							.prev("label").attr("for", ids[index] + "_" + counter.val());
+						
+						jQuery(this)
+							.bind("focus", function() {
+								if (jQuery(this).val() == objOriginal.validator.hint) {
+									jQuery(this).val("");
+									jQuery(this).parent().removeClass("vf__hint");
+								}
+							})
+							.bind("blur", function() {
+								if (jQuery(this).val() == "" && objOriginal.validator.required) {
+									jQuery(this).val(objOriginal.validator.hint);
+									jQuery(this).parent().addClass("vf__hint");
+								}
+							});
 					}
 				});
 
