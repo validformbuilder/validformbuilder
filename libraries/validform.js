@@ -207,6 +207,8 @@ ValidForm.prototype.dynamicDuplication = function () {
 
 			jQuery.each(names, function(index, fieldname){
 				//*** Fix every field in an area or multifield.
+				var objOriginal = __this.getElement(fieldname);
+				
 				counter = $("#" + fieldname + "_dynamic");
 
 				// Set value to number '0' if value is NaN
@@ -236,17 +238,16 @@ ValidForm.prototype.dynamicDuplication = function () {
 							.attr("id", fieldId + "_" + counter.val())
 							.parent("label").attr("for", fieldId + "_" + counter.val());
 					} else {
-						//*** Normal fields (input, textarea) are easy.
+						//*** Normal fields (input, textarea) are easy.						
 						jQuery(this)
-							.attr("value", "")
+							.attr("value", objOriginal.validator.hint)
 							.attr("name", fieldname + "_" + counter.val())
 							.attr("id", ids[index] + "_" + counter.val())
 							.prev("label").attr("for", ids[index] + "_" + counter.val());
 					}
 				});
 
-				//*** Add fields to the form.
-				var objOriginal = __this.getElement(fieldname);
+				//*** Add fields to the form collection.
 				if (objOriginal !== null) { // objOriginal is null if there is a paragraph in the area.
 					var objCopy = jQuery.extend(new ValidFormElement(), objOriginal);
 					objCopy.id = ids[index] + "_" + counter.val();
@@ -254,7 +255,6 @@ ValidForm.prototype.dynamicDuplication = function () {
 					objCopy.validator = jQuery.extend(new ValidFormFieldValidator(), objOriginal.validator);
 					objCopy.validator.id = objCopy.id;
 					objCopy.validator.required = false;
-					objCopy._defaultstate.required = false;
 
 					__this.addElement(objCopy);
 				}
@@ -302,11 +302,6 @@ ValidForm.prototype.dynamicDuplication = function () {
 					__this.attachAreaEvents(copiedTrigger);
 				}
 			}
-			
-			//*** Fix conditions that might be attached to the original elements.
-			if (typeof counter == "object") {
-				__this.attachDynamicConditions(names, counter.val());
-			}
 
 			//*** Call custom event if set.
 			jQuery("#" + __this.id).trigger("VF_AfterDynamicChange", [{ValidForm: __this, objAnchor: $anchor, objCopy: copy}]);
@@ -317,58 +312,6 @@ ValidForm.prototype.dynamicDuplication = function () {
 
 		return false;
 	});
-};
-
-ValidForm.prototype.attachDynamicConditions = function(arrElementNames, dynamicCount) {
-	var self = this;
-	
-	for (var i = 0; i <= self.conditions.length; i++) {
-		if (typeof self.conditions[i] !== "undefined") {
-			var blnInDynamic = false;
-			var newCondSubject = self.conditions[i].subject.name;
-
-			if ($.inArray(self.conditions[i].subject.name, arrElementNames) > -1) {
-				blnInDynamic = true;
-				newCondSubject = self.conditions[i].subject.name + "_" + dynamicCount;
-			} else {
-				var comparisons = self.conditions[i].comparisons;
-				for (var j = 0; j < comparisons.length; j++) {					
-					if ($.inArray(comparisons[j].subject.name, arrElementNames) > -1) {
-						blnInDynamic = true;
-						break;
-					}
-				}
-			}
-			
-			if (blnInDynamic) {
-				var arrComparisons = [];
-				
-				var comparisons = self.conditions[i].comparisons;
-				for (var j = 0; j < comparisons.length; j++) {
-					var newCompSubject = comparisons[j].subject.name;
-					
-					if ($.inArray(comparisons[j].subject.name, arrElementNames) > -1) {
-						newCompSubject = comparisons[j].subject.name + "_" + dynamicCount;
-					}
-					
-					arrComparisons.push({
-						"subject": newCompSubject,
-						"comparison": comparisons[j].comparison,
-						"value": comparisons[j].value
-					});
-				}
-				
-				var newCondition = new ValidFormCondition(self, {
-					"subject": newCondSubject,
-					"property": self.conditions[i].property,
-					"value": self.conditions[i].value,
-					"comparisonType": self.conditions[i].comparisonType,
-					"comparisons": arrComparisons
-				});
-				newCondition._init();
-			}
-		}
-	}
 };
 
 ValidForm.prototype.attachAreaEvents = function(objActiveTrigger) {
@@ -875,6 +818,10 @@ ValidFormCondition.prototype._setSubject = function (strSubject) {
 ValidFormCondition.prototype.set = function (blnResult) {
 	var self = this;
 
+	var getDynamicCount = function ($objSubject) {
+		$("input[name$='" +  + "']", $objSubject);
+	}
+
 	//*** Utility functions
 	var Util = {
 		"visible": function (blnValue) {
@@ -981,6 +928,8 @@ ValidFormCondition.prototype.set = function (blnResult) {
 };
 
 ValidFormCondition.prototype.addComparison = function (objComparison) {
+	var self = this;
+
 	if (!objComparison instanceof ValidFormComparison) {
 		throw new Error("Invalid argument: objComparison is no ValidFormComparison type in ValidFormCondition.addCondition()", 1);
 	}
@@ -1508,6 +1457,7 @@ ValidFormFieldValidator.prototype.removeAlert = function() {
 	}
 
 	objElement.closest(".vf__error").removeClass("vf__error").find("p.vf__error").remove();
+	// objElement.closest(".vf__optional, .vf__required").removeClass("vf__error").find("p.vf__error").remove();
 
 	if (objElement.closest("div").hasClass("vf__multifielditem")) {
 		objElement.closest(".vf__multifield").removeClass("vf__error").find("p.vf__error").remove();
@@ -1524,7 +1474,13 @@ ValidFormFieldValidator.prototype.showAlert = function(strAlert) {
 	if (objMultifieldItem.hasClass("vf__multifielditem")) {
 		objMultifieldItem.addClass("vf__error");
 
-		objMultifieldItem.closest(".vf__multifield").addClass("vf__error").prepend("<p class=\"vf__error\">" + strAlert + "</p>");
+		var objAlertWrap = objMultifieldItem.closest(".vf__multifield");
+		
+		objAlertWrap.addClass("vf__error");
+		if (objAlertWrap.find("p.vf__error").length <= 0) {
+			// Only add an error message if we haven't done so before.
+			objAlertWrap.prepend("<p class=\"vf__error\">" + strAlert + "</p>");
+		}
 	} else {
 		objElement.closest(".vf__optional, .vf__required").addClass("vf__error").prepend("<p class=\"vf__error\">" + strAlert + "</p>");
 	}
