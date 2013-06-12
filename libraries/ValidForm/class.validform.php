@@ -129,7 +129,16 @@ class ValidForm extends VF_ClassDynamic {
 		$objField = new VF_Hidden($name, $type, $meta);
 
 		if(!$blnJustRender) {
-			$this->__elements->addObject($objField);
+		    //*** Fieldset already defined?
+		    $objFieldset = $this->__elements->getLast("VF_Fieldset");
+		    if ($this->__elements->count() == 0 || !is_object($objFieldset)) {
+		        $objFieldset = $this->addFieldset();
+		    }
+
+		    $objField->setMeta("parent", $objFieldset, true);
+
+		    //*** Add field to the fieldset.
+		    $objFieldset->addField($objField);
 		}
 
 		return $objField;
@@ -402,6 +411,15 @@ class ValidForm extends VF_ClassDynamic {
 				$objReturn = $objField;
 				break;
 			}
+		}
+
+		if (is_null($objReturn)) {
+    		foreach ($objFields as $objField) {
+    			if ($objField->getName() == $id) {
+    				$objReturn = $objField;
+    				break;
+    			}
+    		}
 		}
 
 		return $objReturn;
