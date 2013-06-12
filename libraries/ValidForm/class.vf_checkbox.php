@@ -45,7 +45,7 @@ class VF_Checkbox extends VF_Element {
 
 		// Call this right before __getMetaString();
 		$this->setConditionalMeta();
-		
+
 		$strOutput = "<div{$this->__getMetaString()}>\n";
 
 		if ($blnError) $strOutput .= "<p class=\"vf__error\">{$this->__validator->getError()}</p>";
@@ -69,7 +69,7 @@ class VF_Checkbox extends VF_Element {
 
 	public function toJS() {
 		$strOutput = "";
-		
+
 		$strCheck = $this->__validator->getCheck();
 		$strCheck = (empty($strCheck)) ? "''" : str_replace("'", "\\'", $strCheck);
 		$strRequired = ($this->__validator->getRequired()) ? "true" : "false";;
@@ -78,12 +78,9 @@ class VF_Checkbox extends VF_Element {
 
 		$strOutput .= "objForm.addElement('{$this->__id}', '{$this->__name}', {$strCheck}, {$strRequired}, {$intMaxLength}, {$intMinLength}, '" . addslashes($this->__validator->getFieldHint()) . "', '" . addslashes($this->__validator->getTypeError()) . "', '" . addslashes($this->__validator->getRequiredError()) . "', '" . addslashes($this->__validator->getHintError()) . "', '" . addslashes($this->__validator->getMinLengthError()) . "', '" . addslashes($this->__validator->getMaxLengthError()) . "');\n";
 
-		if ($this->hasConditions() && (count($this->getConditions() > 0))) {
-			foreach ($this->getConditions() as $objCondition) {
-				$strOutput .= "objForm.addCondition(" . json_encode($objCondition->jsonSerialize()) . ");\n";
-			}
-		}
-		
+		//*** Condition logic.
+		$strOutput .= $this->conditionsToJs();
+
 		return $strOutput;
 	}
 
@@ -91,7 +88,7 @@ class VF_Checkbox extends VF_Element {
 		$varValue = parent::getValue($intDynamicPosition);
 		return (strlen($varValue) > 0 && $varValue !== 0) ? TRUE : FALSE;
 	}
-	
+
 	public function getDefault($intDynamicPosition = 0) {
 		return (strlen($this->__default) > 0 && $this->getValue($intDynamicPosition)) ? "on" : null;
 	}

@@ -140,25 +140,20 @@ class VF_Text extends VF_Element {
 
 				$strOutput .= "objForm.addElement('{$strId}', '{$strName}', {$strCheck}, {$strRequired}, {$intMaxLength}, {$intMinLength}, '" . addslashes($this->__validator->getFieldHint()) . "', '" . addslashes($this->__validator->getTypeError()) . "', '" . addslashes($this->__validator->getRequiredError()) . "', '" . addslashes($this->__validator->getHintError()) . "', '" . addslashes($this->__validator->getMinLengthError()) . "', '" . addslashes($this->__validator->getMaxLengthError()) . "');\n";
 
-			    $objMatchWith = $this->getValidator()->getMatchWith();
-				if (is_object($objMatchWith)) {
-					$strMatchId = ($intCount == 0) ? $objMatchWith->getId() : $objMatchWith->getId() . "_" . $intCount;
-					$strOutput .= "objForm.matchfields('{$strId}', '{$strMatchId}', '" . $this->__validator->getMatchWithError() . "');\n";
-				}
+				//*** MatchWith logic per dynamic field.
+				$strOutput .= $this->matchWithToJs($intCount);
+
+				//*** Render the condition logic per dynamic field.
+				$strOutput .= $this->conditionsToJs($intCount);
 			}
 		} else {
 			$strOutput = "objForm.addElement('{$this->__id}', '{$this->__name}', {$strCheck}, {$strRequired}, {$intMaxLength}, {$intMinLength}, '" . addslashes($this->__validator->getFieldHint()) . "', '" . addslashes($this->__validator->getTypeError()) . "', '" . addslashes($this->__validator->getRequiredError()) . "', '" . addslashes($this->__validator->getHintError()) . "', '" . addslashes($this->__validator->getMinLengthError()) . "', '" . addslashes($this->__validator->getMaxLengthError()) . "');\n";
 
-			$objMatchWith = $this->getValidator()->getMatchWith();
-			if (is_object($objMatchWith)) {
-			    $strOutput .= "objForm.matchfields('" . $this->__id . "', '" . $objMatchWith->getId() . "', '" . $this->__validator->getMatchWithError() . "');\n";
-			}
-		}
+			//*** MatchWith logic.
+			$strOutput .= $this->matchWithToJs();
 
-		if ($this->hasConditions() && (count($this->getConditions() > 0))) {
-			foreach ($this->getConditions() as $objCondition) {
-				$strOutput .= "objForm.addCondition(" . json_encode($objCondition->jsonSerialize()) . ");\n";
-			}
+			//*** Condition logic.
+			$strOutput .= $this->conditionsToJs();
 		}
 
 		return $strOutput;

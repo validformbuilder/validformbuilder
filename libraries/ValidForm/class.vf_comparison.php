@@ -64,7 +64,12 @@ class VF_Comparison extends VF_ClassDynamic {
 			$strValue = (is_null($strValue)) ? $strValue = $this->__subject->getValue($intDynamicPosition) : $strValue;
 
 			if (!is_null($strValue)) {
-				$blnReturn = $this->__verify($strValue);
+			    //*** Get the postioned value if a dynamic field is part of a comparison.
+			    if (is_array($strValue) && isset($strValue[$intDynamicPosition])) {
+			        $strValue = $strValue[$intDynamicPosition];
+			    }
+
+			    $blnReturn = $this->__verify($strValue);
 			}
 		} else {
 			throw new Exception("Invalid subject supplied in VF_Comparison. Class " . get_class($this->__subject) . " given. Expecting instance of VF_Element." , 1);
@@ -77,11 +82,12 @@ class VF_Comparison extends VF_ClassDynamic {
 		return self::$__requiredKeys;
 	}
 
-	public function jsonSerialize() {
+	public function jsonSerialize($intDynamicPosition = null) {
 		if (get_class($this->__subject) == "VF_GroupField") {
 			$identifier = $this->__subject->getId();
 		} else {
 			$identifier = $this->__subject->getName();
+			if ($intDynamicPosition > 0) $identifier = $identifier . "_" . $intDynamicPosition;
 		}
 
 		$arrReturn = array(

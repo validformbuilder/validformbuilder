@@ -102,9 +102,9 @@ class VF_Group extends VF_Element {
 		}
 
 		$strOutput .= "</fieldset>\n";
-		
+
 		if (!empty($this->__tip)) $strOutput .= "<small class=\"vf__tip\">{$this->__tip}</small>\n";
-		
+
 		$strOutput .= "</div>\n";
 
 		return $strOutput;
@@ -123,21 +123,20 @@ class VF_Group extends VF_Element {
 			for($intCount = 0; $intCount <= $intDynamicCount; $intCount++) {
 				$strId 		= ($intCount == 0) ? $this->getId() : $this->getId() . "_" . $intCount;
 				$strName 	= ($intCount == 0) ? $this->getName() : $this->getName() . "_" . $intCount;
-		
+
 				//*** We asume that all dynamic fields greater than 0 are never required.
 				if ($intDynamicCount > 0) $strRequired = "false";
-		
+
 				$strOutput .= "objForm.addElement('{$strId}', '{$strName}', {$strCheck}, {$strRequired}, {$intMaxLength}, {$intMinLength}, '" . addslashes($this->__validator->getFieldHint()) . "', '" . addslashes($this->__validator->getTypeError()) . "', '" . addslashes($this->__validator->getRequiredError()) . "', '" . addslashes($this->__validator->getHintError()) . "', '" . addslashes($this->__validator->getMinLengthError()) . "', '" . addslashes($this->__validator->getMaxLengthError()) . "');\n";
+
+				//*** Render the condition logic per dynamic field.
+				$strOutput .= $this->conditionsToJs($intCount);
 			}
 		} else {
 			$strOutput = "objForm.addElement('{$this->getId()}', '{$this->getName()}', {$strCheck}, {$strRequired}, {$intMaxLength}, {$intMinLength}, '" . addslashes($this->__validator->getFieldHint()) . "', '" . addslashes($this->__validator->getTypeError()) . "', '" . addslashes($this->__validator->getRequiredError()) . "', '" . addslashes($this->__validator->getHintError()) . "', '" . addslashes($this->__validator->getMinLengthError()) . "', '" . addslashes($this->__validator->getMaxLengthError()) . "');\n";
-		}
-		
-		//*** Add conditions if there are any.
-		if ($this->hasConditions() && (count($this->getConditions() > 0))) {
-			foreach ($this->getConditions() as $objCondition) {
-				$strOutput .= "objForm.addCondition(" . json_encode($objCondition->jsonSerialize()) . ");\n";
-			}
+
+			//*** Condition logic.
+			$strOutput .= $this->conditionsToJs();
 		}
 
 		return $strOutput;
@@ -171,7 +170,7 @@ class VF_Group extends VF_Element {
 		$objField->setMeta("parent", $this, true);
 
 		$this->__fields->addObject($objField);
-		
+
 		//*** Set the default value if "checked" is set.
 		if ($checked) $this->__default = $value;
 

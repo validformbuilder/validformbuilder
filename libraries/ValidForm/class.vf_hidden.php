@@ -45,11 +45,8 @@ class VF_Hidden extends VF_Element {
 	public function toJS() {
 		$strOutput = "";
 
-		if ($this->hasConditions() && (count($this->getConditions() > 0))) {
-			foreach ($this->getConditions() as $objCondition) {
-				$strOutput .= "objForm.addCondition(" . json_encode($objCondition->jsonSerialize()) . ");\n";
-			}
-		}
+		//*** Condition logic.
+		$strOutput .= $this->conditionsToJs();
 
 		return $strOutput;
 	}

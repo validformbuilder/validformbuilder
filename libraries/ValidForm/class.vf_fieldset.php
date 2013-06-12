@@ -86,8 +86,8 @@ class VF_Fieldset extends VF_Base {
 			$strReturn .= $field->toJS();
 		}
 
-		// Parent::toJs generates conditional js if there is any.
-		$strReturn .= parent::toJs();
+		//*** Render Conditions logic.
+		$strReturn .= $this->conditionsToJs();
 
 		return $strReturn;
 	}

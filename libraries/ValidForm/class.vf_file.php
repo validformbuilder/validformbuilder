@@ -50,7 +50,7 @@ class VF_File extends VF_Element {
 		$strId 		= ($intCount == 0) ? $this->__id : $this->__id . "_" . $intCount;
 
 		$blnError = ($submitted && !$this->__validator->validate($intCount) && $blnDisplayErrors) ? TRUE : FALSE;
-		
+
 		if (!$blnSimpleLayout) {
 			//*** We asume that all dynamic fields greater than 0 are never required.
 			if ($this->__validator->getRequired() && $intCount == 0) {
@@ -65,7 +65,7 @@ class VF_File extends VF_Element {
 
 			// Call this right before __getMetaString();
 			$this->setConditionalMeta();
-			
+
 			$strOutput = "<div{$this->__getMetaString()}>\n";
 
 			if ($blnError) {
@@ -93,11 +93,11 @@ class VF_File extends VF_Element {
 		//*** Fixing an unusual uploading bug.
 		$intMaxFileSize = $this->return_bytes(ini_get("upload_max_filesize"));
 		$strOutput .= "<input type=\"hidden\" name=\"MAX_FILE_SIZE\" value=\"{$intMaxFileSize}\" />";
-		
+
 		$strOutput .= "<input type=\"file\" value=\"{$this->__getValue($submitted, $intCount)}\" name=\"{$strName}[]\" id=\"{$strId}\"{$this->__getFieldMetaString()} />\n";
 
 		if (!empty($this->__tip)) $strOutput .= "<small class=\"vf__tip\">{$this->__tip}</small>\n";
-		
+
 		$strOutput .= "</div>\n";
 
 		return $strOutput;
@@ -116,20 +116,20 @@ class VF_File extends VF_Element {
 			for($intCount = 0; $intCount <= $intDynamicCount; $intCount++) {
 				$strId 		= ($intCount == 0) ? $this->__id : $this->__id . "_" . $intCount;
 				$strName 	= ($intCount == 0) ? $this->__name : $this->__name . "_" . $intCount;
-		
+
 				//*** We asume that all dynamic fields greater than 0 are never required.
 				if ($intDynamicCount > 0) $strRequired = "false";
-		
+
 				$strOutput .= "objForm.addElement('{$strId}', '{$strName}', {$strCheck}, {$strRequired}, {$intMaxLength}, {$intMinLength}, '" . addslashes($this->__validator->getFieldHint()) . "', '" . addslashes($this->__validator->getTypeError()) . "', '" . addslashes($this->__validator->getRequiredError()) . "', '" . addslashes($this->__validator->getHintError()) . "', '" . addslashes($this->__validator->getMinLengthError()) . "', '" . addslashes($this->__validator->getMaxLengthError()) . "');\n";
+
+				//*** Condition logicper dynamic field.
+				$strOutput .= $this->conditionsToJs($intCount);
 			}
 		} else {
 			$strOutput = "objForm.addElement('{$this->__id}', '{$this->__name}', {$strCheck}, {$strRequired}, {$intMaxLength}, {$intMinLength}, '" . addslashes($this->__validator->getFieldHint()) . "', '" . addslashes($this->__validator->getTypeError()) . "', '" . addslashes($this->__validator->getRequiredError()) . "', '" . addslashes($this->__validator->getHintError()) . "', '" . addslashes($this->__validator->getMinLengthError()) . "', '" . addslashes($this->__validator->getMaxLengthError()) . "');\n";
-		}
-		
-		if ($this->hasConditions() && (count($this->getConditions() > 0))) {
-			foreach ($this->getConditions() as $objCondition) {
-				$strOutput .= "objForm.addCondition(" . json_encode($objCondition->jsonSerialize()) . ");\n";
-			}
+
+			//*** Condition logic.
+			$strOutput .= $this->conditionsToJs();
 		}
 
 		return $strOutput;

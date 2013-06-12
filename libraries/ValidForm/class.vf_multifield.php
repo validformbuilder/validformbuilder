@@ -59,7 +59,10 @@ class VF_MultiField extends VF_Base {
 		$this->__fields->addObject($objField);
 
 		if ($this->__dynamic) {
-			$objHiddenField = new VF_Hidden($objField->getId() . "_dynamic", VFORM_INTEGER, array("default" => "0", "dynamicCounter" => true));
+		    //*** The dynamic count can be influenced by a meta value.
+		    $intDynamicCount = (isset($meta["dynamicCount"])) ? $meta["dynamicCount"] : 0;
+
+			$objHiddenField = new VF_Hidden($objField->getId() . "_dynamic", VFORM_INTEGER, array("default" => $intDynamicCount, "dynamicCounter" => true));
 			$this->__fields->addObject($objHiddenField);
 
 			$objField->setDynamicCounter($objHiddenField);
@@ -191,11 +194,8 @@ class VF_MultiField extends VF_Base {
 			$strReturn .= $field->toJS($this->__dynamic);
 		}
 
-		if ($this->hasConditions() && (count($this->getConditions() > 0))) {
-			foreach ($this->getConditions() as $objCondition) {
-				$strReturn .= "objForm.addCondition(" . json_encode($objCondition->jsonSerialize()) . ");\n";
-			}
-		}
+		//*** Condition logic.
+		$strOutput .= $this->conditionsToJs();
 
 		return $strReturn;
 	}

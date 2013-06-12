@@ -64,7 +64,6 @@ class VF_Select extends VF_Element {
 		$blnError 	= ($submitted && !$this->__validator->validate($intCount) && $blnDisplayErrors) ? TRUE : FALSE;
 
 		if (!$blnSimpleLayout) {
-
 			//*** We asume that all dynamic fields greater than 0 are never required.
 			if ($this->__validator->getRequired() && $intCount == 0) {
 				$this->setMeta("class", "vf__required");
@@ -95,8 +94,6 @@ class VF_Select extends VF_Element {
 			if ($blnError) {
 				$strOutput .= "<p class=\"vf__error\">{$this->__validator->getError($intCount)}</p>";
 			}
-
-			// $strOutput = "<div class=\"vf__multifielditem\">\n";
 		}
 
 		$strOutput .= "<select name=\"{$strName}\" id=\"{$strId}\" {$this->__getFieldMetaString()}>\n";
@@ -181,15 +178,15 @@ class VF_Select extends VF_Element {
 				if ($intDynamicCount > 0) $strRequired = "false";
 
 				$strOutput .= "objForm.addElement('{$strId}', '{$strName}', {$strCheck}, {$strRequired}, {$intMaxLength}, {$intMinLength}, '" . addslashes($this->__validator->getFieldHint()) . "', '" . addslashes($this->__validator->getTypeError()) . "', '" . addslashes($this->__validator->getRequiredError()) . "', '" . addslashes($this->__validator->getHintError()) . "', '" . addslashes($this->__validator->getMinLengthError()) . "', '" . addslashes($this->__validator->getMaxLengthError()) . "');\n";
+
+				//*** Render the condition logic per dynamic field.
+				$strOutput .= $this->conditionsToJs($intCount);
 			}
 		} else {
 			$strOutput = "objForm.addElement('{$this->__id}', '{$this->__name}', {$strCheck}, {$strRequired}, {$intMaxLength}, {$intMinLength}, '" . addslashes($this->__validator->getFieldHint()) . "', '" . addslashes($this->__validator->getTypeError()) . "', '" . addslashes($this->__validator->getRequiredError()) . "', '" . addslashes($this->__validator->getHintError()) . "', '" . addslashes($this->__validator->getMinLengthError()) . "', '" . addslashes($this->__validator->getMaxLengthError()) . "');\n";
-		}
 
-		if ($this->hasConditions() && (count($this->getConditions() > 0))) {
-			foreach ($this->getConditions() as $objCondition) {
-				$strOutput .= "objForm.addCondition(" . json_encode($objCondition->jsonSerialize()) . ");\n";
-			}
+			//*** Condition logic.
+			$strOutput .= $this->conditionsToJs();
 		}
 
 		return $strOutput;

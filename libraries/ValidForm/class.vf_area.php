@@ -62,7 +62,10 @@ class VF_Area extends VF_Base {
 		$this->__fields->addObject($objField);
 
 		if ($this->__dynamic || $objField->isDynamic()) {
-			$objHiddenField = new VF_Hidden($objField->getId() . "_dynamic", VFORM_INTEGER, array("default" => "0", "dynamicCounter" => true));
+		    //*** The dynamic count can be influenced by a meta value.
+		    $intDynamicCount = (isset($meta["dynamicCount"])) ? $meta["dynamicCount"] : 0;
+
+			$objHiddenField = new VF_Hidden($objField->getId() . "_dynamic", VFORM_INTEGER, array("default" => $intDynamicCount, "dynamicCounter" => true));
 			$this->__fields->addObject($objHiddenField);
 
 			$objField->setDynamicCounter($objHiddenField);
@@ -229,8 +232,7 @@ class VF_Area extends VF_Base {
 			$strReturn .= $field->toJS($this->__dynamic);
 		}
 
-		// Parent::toJs generates conditional js if there is any.
-		$strReturn .= parent::toJs();
+		$strReturn .= $this->conditionsToJs();
 
 		return $strReturn;
 	}

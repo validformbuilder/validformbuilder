@@ -120,11 +120,12 @@ class VF_Condition extends VF_ClassDynamic {
 	 *
 	 * @return array An array representation of this object and it's comparisons.
 	 */
-	public function jsonSerialize() {
+	public function jsonSerialize($intDynamicPosition = null) {
 		if (get_class($this->__subject) == "VF_GroupField" || get_class($this->__subject) == "VF_Area") {
 			$identifier = $this->__subject->getId();
 		} else {
 			$identifier = $this->__subject->getName();
+			if ($intDynamicPosition > 0) $identifier = $identifier . "_" . $intDynamicPosition;
 		}
 
 		$arrReturn = array(
@@ -136,7 +137,7 @@ class VF_Condition extends VF_ClassDynamic {
 		);
 
 		foreach ($this->__comparisons as $objComparison) {
-			array_push($arrReturn["comparisons"], $objComparison->jsonSerialize());
+			array_push($arrReturn["comparisons"], $objComparison->jsonSerialize($intDynamicPosition));
 		}
 
 		return $arrReturn;

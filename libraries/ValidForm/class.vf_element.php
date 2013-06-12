@@ -263,7 +263,7 @@ class VF_Element extends VF_Base {
 		    }
 		}
 
-		if(!$varReturn && ((get_class($this) == "VF_Hidden") && $this->isDynamicCounter())) {
+		if (!$varReturn && ((get_class($this) == "VF_Hidden") && $this->isDynamicCounter())) {
 			$varReturn = (int)0;
 		}
 

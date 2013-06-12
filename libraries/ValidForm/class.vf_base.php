@@ -344,16 +344,33 @@ class VF_Base extends VF_ClassDynamic {
 		return $strReturn;
 	}
 
-	public function toJS() {
-		$strOutput = "";
+	public function toJS($intDynamicPosition = 0) {
+		return "";
+	}
 
-		if ($this->hasConditions() && (count($this->getConditions() > 0))) {
-			foreach ($this->getConditions() as $objCondition) {
-				$strOutput .= "objForm.addCondition(" . json_encode($objCondition->jsonSerialize()) . ");\n";
-			}
-		}
+	protected function conditionsToJs($intDynamicPosition = 0) {
+        $strReturn = "";
 
-		return $strOutput;
+	    if ($this->hasConditions() && (count($this->getConditions() > 0))) {
+	        foreach ($this->getConditions() as $objCondition) {
+	        	$strReturn .= "objForm.addCondition(" . json_encode($objCondition->jsonSerialize($intDynamicPosition)) . ");\n";
+	        }
+	    }
+
+	    return $strReturn;
+	}
+
+	protected function matchWithToJs($intDynamicPosition = 0) {
+        $strReturn = "";
+
+	    $objMatchWith = $this->getValidator()->getMatchWith();
+	    if (is_object($objMatchWith)) {
+			$strId 		= ($intDynamicPosition == 0) ? $this->__id : $this->__id . "_" . $intDynamicPosition;
+	        $strMatchId = ($intDynamicPosition == 0) ? $objMatchWith->getId() : $objMatchWith->getId() . "_" . $intDynamicPosition;
+	        $strReturn  = "objForm.matchfields('{$strId}', '{$strMatchId}', '" . $this->__validator->getMatchWithError() . "');\n";
+	    }
+
+	    return $strReturn;
 	}
 
 	/**
@@ -467,7 +484,7 @@ class VF_Base extends VF_ClassDynamic {
 			}
 
 			$strMagicKey = strtolower(substr($key, 0, 5));
-			if (in_array($strMagicKey, $this->__magicmeta) 
+			if (in_array($strMagicKey, $this->__magicmeta)
 					&& !in_array($key, $this->__magicreservedmeta)) {
 				$strMethod = "set" . ucfirst($strMagicKey) . "Meta";
 				$this->$strMethod(strtolower(substr($key, -(strlen($key) - 5))), $value);
