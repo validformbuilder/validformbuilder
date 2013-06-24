@@ -1405,7 +1405,8 @@ ValidFormFieldValidator.prototype.validate = function(value) {
 			if(typeof this.check != "function" && typeof this.check != "object") {
 				return true;
 			} else {
-				if (this.required && value !== "") {
+				// If the user entered a value, use the regular expression to validate that value.
+				if (value.length > 0) {
 					blnReturn = this.check.test(value);
 
 					if (blnReturn == false) this.showAlert(this.typeError);
