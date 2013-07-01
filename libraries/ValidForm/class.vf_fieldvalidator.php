@@ -96,19 +96,49 @@ class VF_FieldValidator extends VF_ClassDynamic {
 
 	/**
 	 * Get the value to validate from either the global request variable or the cached __validvalues array.
-	 * @param  integer $intDynamicPosition [Using the intDynamicPosition parameter, you can get the specific value of a dynamic field.]
-	 * @return mixed                      [The posted value of the requested field.]
+	 *
+	 * @param  integer $intDynamicPosition 	Using the intDynamicPosition parameter, you can get the specific value
+	 * 										of a dynamic field.
+	 * @return string|array|null           	If set, returns the submitted field value. If no sumitted value is set,
+	 * 										return value is the cached valid value. If no cached value is set, return
+	 * 										value is the default value. If no default value is set, return value
+	 * 										is null. When field type is VFORM_FILE and a file is submitted, the return
+	 * 										value is the $_FILES[fieldname] array.
 	 */
 	public function getValue($intDynamicPosition = 0) {
+		$varReturn = null;
+
 		if (isset($this->__overrideerrors[$intDynamicPosition]) && empty($this->__overrideerrors[$intDynamicPosition])) {
-			$strReturn = NULL;
+			$varReturn = null;
 		} else {
 			$strFieldName = ($intDynamicPosition > 0) ? $this->__fieldname . "_" . $intDynamicPosition : $this->__fieldname;
-			$varValidValue = (isset($this->__validvalues[$intDynamicPosition])) ? $this->__validvalues[$intDynamicPosition] : $this->__field->getDefault();
-			$strReturn = (isset($_REQUEST[$strFieldName])) ? $_REQUEST[$strFieldName] : $varValidValue;
+
+			if ($this->__type !== VFORM_FILE) {
+				// Default value
+				$varValidValue = $this->__field->getDefault();
+
+				// Get cached value if set
+				if (isset($this->__validvalues[$intDynamicPosition])) {
+					$varValidValue = $this->__validvalues[$intDynamicPosition];
+				}
+
+				// Overwrite cached value with value from REQUEST array if available
+				if (isset($_REQUEST[$strFieldName])) {
+					$varReturn = $_REQUEST[$strFieldName];
+				} else {
+					$varReturn = $varValidValue;
+				}
+
+			}
+			//*** Not ready for implementation yet.
+// 			else {
+// 				if (isset($_FILES[$strFieldName]) && isset($_FILES[$strFieldName])) {
+// 					$varReturn = $_FILES[$strFieldName];
+// 				}
+// 			}
 		}
 
-		return $strReturn;
+		return $varReturn;
 	}
 
 	public function setRequired($blnValue) {
@@ -206,7 +236,7 @@ class VF_FieldValidator extends VF_ClassDynamic {
 				if (empty($this->__matchwith)) return TRUE;
 			}
 		}
-		
+
 		//*** Check if value is_null and not required. No other checks needed.
 		if (!$this->__required && is_null($value)) {
 			return TRUE;
