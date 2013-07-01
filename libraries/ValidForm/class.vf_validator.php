@@ -1,25 +1,25 @@
 <?php
 /***************************
  * ValidForm Builder - build valid and secure web forms quickly
- * 
+ *
  * Copyright (c) 2009-2012, Felix Langfeldt <flangfeldt@felix-it.com>.
  * All rights reserved.
- * 
+ *
  * This software is released under the GNU GPL v2 License <http://www.gnu.org/licenses/old-licenses/gpl-2.0.html>
- * 
+ *
  * @package    ValidForm
  * @author     Felix Langfeldt <flangfeldt@felix-it.com>
  * @copyright  2009-2012 Felix Langfeldt <flangfeldt@felix-it.com>
  * @license    http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU GPL v2
  * @link       http://code.google.com/p/validformbuilder/
  ***************************/
- 
+
 require_once('class.phpcaptcha.php');
 
 /**
- * 
+ *
  * Validator Class
- * 
+ *
  * @package ValidForm
  * @author Felix Langfeldt
  * @version Release: 0.3.3
@@ -48,9 +48,9 @@ class VF_Validator {
 		VFORM_HIDDEN 		=> '',
 		VFORM_DATE 			=> '/^(\d{2}[-|\/|\\\\|\.]\d{2}[-|\/|\\\\|\.]\d{4})$/i'
 	);
-	
+
 	public static function validate($checkType, $value) {
-		$blnReturn = FALSE;		
+		$blnReturn = FALSE;
 
 		if (array_key_exists($checkType, self::$checks)) {
 			if (empty(self::$checks[$checkType])) {
@@ -61,7 +61,21 @@ class VF_Validator {
 						$blnReturn = PhpCaptcha::Validate(ValidForm::get($value));
 						break;
 					default:
-						$blnReturn = preg_match(self::$checks[$checkType], $value);
+						if (is_array($value)) {
+							$arrValues = $value;
+							$blnSub = true;
+							foreach ($arrValues as $value) {
+								$blnSub = preg_match(self::$checks[$checkType], $value);
+								if (!$blnSub) {
+									//*** At least 1 value is not valid, skip the rest and return false;
+									exit;
+								}
+							}
+
+							$blnReturn = $blnSub;
+						} else {
+							$blnReturn = preg_match(self::$checks[$checkType], $value);
+						}
 				}
 			}
 		} else {
@@ -74,14 +88,14 @@ class VF_Validator {
 
 		return $blnReturn;
 	}
-	
+
 	public static function getCheck($checkType) {
 		$strReturn = "";
-		
+
 		if (array_key_exists($checkType, self::$checks)) {
 			$strReturn = self::$checks[$checkType];
 		}
-		
+
 		return $strReturn;
 	}
 }
