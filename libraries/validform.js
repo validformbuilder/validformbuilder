@@ -1241,7 +1241,10 @@ ValidFormValidator.prototype.showMain = function() {
 	}
 
 	//*** Jump to the first error.
-	jQuery.scrollTo(jQuery("div.vf__error:first"), 500);
+	var $objError = jQuery("div.vf__error:first"); 
+	if ($objError.length > 0) {
+		jQuery.scrollTo($objError, 500);
+	}
 };
 
 ValidFormValidator.prototype.showPage = function (strAlert) {
@@ -1258,7 +1261,10 @@ ValidFormValidator.prototype.showPage = function (strAlert) {
 	}
 
 	//*** Jump to the first error.
-	jQuery.scrollTo(jQuery("div.vf__error:first"), 500);
+	var $objError = jQuery("div.vf__error:first"); 
+	if ($objError.length > 0) {
+		jQuery.scrollTo($objError, 500);
+	}
 };
 
 ValidFormValidator.prototype.removePage = function() {
@@ -1405,8 +1411,7 @@ ValidFormFieldValidator.prototype.validate = function(value) {
 			if(typeof this.check != "function" && typeof this.check != "object") {
 				return true;
 			} else {
-				// If the user entered a value, use the regular expression to validate that value.
-				if (value.length > 0) {
+				if (this.required && value !== "") {
 					blnReturn = this.check.test(value);
 
 					if (blnReturn == false) this.showAlert(this.typeError);
