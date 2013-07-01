@@ -509,7 +509,7 @@ class ValidForm extends VF_ClassDynamic {
 						}
 					}
 				}
-				}
+			}
 		}
 
 		$strHeader = $objFieldset->getHeader();
