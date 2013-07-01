@@ -1502,7 +1502,7 @@ ValidFormFieldValidator.prototype.showAlert = function(strAlert) {
 			objAlertWrap.prepend("<p class=\"vf__error\">" + strAlert + "</p>");
 		}
 	} else {
-		objElement.closest(".vf__optional, .vf__required").addClass("vf__error").prepend("<p class=\"vf__error\">" + strAlert + "</p>");
+		objElement.closest("div.vf__optional, div.vf__required").addClass("vf__error").prepend("<p class=\"vf__error\">" + strAlert + "</p>");
 	}
 };
 
