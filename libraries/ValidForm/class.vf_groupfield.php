@@ -39,23 +39,39 @@ class VF_GroupField extends VF_Element {
 		$this->__checked = $checked;
 	}
 
-	public function toHtml($value = NULL, $submitted = FALSE) {
+	public function toHtml($value = NULL, $submitted = FALSE, $intCount = 0) {
 		$strChecked = "";
+
+		if ($this->__type == VFORM_CHECK_LIST) {
+			$strName = ($intCount == 0) ? $this->__name : str_replace("[]", "", $this->__name) . "_" . $intCount . "[]";
+		} else {
+			$strName = ($intCount == 0) ? $this->__name : $this->__name . "_" . $intCount;
+		}
+		$strId = ($intCount == 0) ? $this->__id : $this->__id . "_" . $intCount;
 
 		if (is_array($value)) {
 			foreach ($value as $valueItem) {
 				if ($valueItem == $this->__value) {
 					$this->setFieldMeta("checked", "checked");
-					// $strChecked = " checked=\"checked\"";
 					break;
 				} else {
 					$this->setFieldMeta("checked", null, true); // Remove 'checked'
-					// $strChecked = "";
 				}
 			}
 		} else {
-			if ($this->__checked && is_null($value) && !$submitted) $this->setFieldMeta("checked", "checked");
-			if ($value == $this->__value) $this->setFieldMeta("checked", "checked");
+			$blnCheckedSet = false;
+			if ($this->__checked && is_null($value) && !$submitted) {
+				$this->setFieldMeta("checked", "checked");
+				$blnCheckedSet = true;
+			} else {
+				$this->setFieldMeta("checked", null, true); // Remove 'checked'
+			}
+
+			if ($value == $this->__value || $blnCheckedSet) {
+				$this->setFieldMeta("checked", "checked");
+			} else {
+				$this->setFieldMeta("checked", null, true); // Remove 'checked'
+			}
 		}
 
 		//*** Convert the Element type to HTML type.
@@ -69,9 +85,9 @@ class VF_GroupField extends VF_Element {
 				$type = "checkbox";
 				break;
 		}
-		
-		$strOutput = "<label for=\"{$this->__id}\"{$this->__getLabelMetaString()}>\n";
-		$strOutput .= "<input type=\"{$type}\" value=\"{$this->__value}\" name=\"{$this->__name}\" id=\"{$this->__id}\"{$this->__getFieldMetaString()}/> {$this->__label}\n";
+
+		$strOutput = "<label for=\"{$strId}\"{$this->__getLabelMetaString()}>\n";
+		$strOutput .= "<input type=\"{$type}\" value=\"{$this->__value}\" name=\"{$strName}\" id=\"{$strId}\"{$this->__getFieldMetaString()}/> {$this->__label}\n";
 		$strOutput .= "</label>\n";
 
 		return $strOutput;

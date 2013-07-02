@@ -95,7 +95,7 @@ class VF_Group extends VF_Element {
 		foreach ($this->__fields as $objField) {
 			switch (get_class($objField)) {
 				case "VF_GroupField":
-					$strOutput .= $objField->toHtml($this->__getValue($submitted), $submitted);
+					$strOutput .= $objField->toHtml($this->__getValue($submitted, $intCount), $submitted, $intCount);
 
 					break;
 			}

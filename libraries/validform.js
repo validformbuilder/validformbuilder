@@ -206,10 +206,14 @@ ValidForm.prototype.dynamicDuplication = function () {
 			copy.find("input[name$='_dynamic']").remove();
 
 			jQuery.each(names, function(index, fieldname){
+				//*** Logic for checkbox lists. Test for brackets and create a sanitized name to use for selection.
+				var hasBrackets = (fieldname.indexOf("[]") > -1) ? true : false;
+				var sanitizedFieldName = fieldname.replace("[]", "");
+				
 				//*** Fix every field in an area or multifield.
 				var objOriginal = __this.getElement(fieldname);
-				
-				counter = $("#" + fieldname + "_dynamic");
+
+				counter = $("#" + sanitizedFieldName + "_dynamic");
 
 				// Set value to number '0' if value is NaN
 				if (isNaN(parseInt(counter.val()))) {
@@ -217,7 +221,16 @@ ValidForm.prototype.dynamicDuplication = function () {
 				}
 
 				counter.val(parseInt(counter.val()) + 1);
-				var search 	= (parseInt(counter.val()) == 1) ? fieldname : fieldname + "_" + (parseInt(counter.val()) - 1);
+				var search;
+				if (parseInt(counter.val()) == 1) {
+					search = fieldname;
+				} else {
+					if (hasBrackets) {
+						search = sanitizedFieldName + "_" + (parseInt(counter.val()) - 1) + "[]";
+					} else {
+						search = fieldname + "_" + (parseInt(counter.val()) - 1);
+					}
+				}
 
 				copy.find("[name='" + search + "']").each(function(){
 					if (jQuery(this).attr("type") == "radio" ||
@@ -231,10 +244,12 @@ ValidForm.prototype.dynamicDuplication = function () {
 							arrFieldId.pop();
 							fieldId = arrFieldId.join("_");
 						}
+						
+						var nameCount = (jQuery(this).attr("type") == "checkbox") ? counter.val() + "[]" : counter.val();
 
 						jQuery(this)
 							.removeAttr("checked")
-							.attr("name", fieldname + "_" + counter.val())
+							.attr("name", sanitizedFieldName + "_" + nameCount)
 							.attr("id", fieldId + "_" + counter.val())
 							.parent("label").attr("for", fieldId + "_" + counter.val());
 					} else {
