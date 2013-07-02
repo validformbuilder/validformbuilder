@@ -294,7 +294,7 @@ ValidForm.prototype.dynamicDuplication = function () {
 			copy
 				.find(".vf__required")
 				.removeClass("vf__required")
-				.addClass("vf__optional")
+				.addClass("vf__optional");
 			copy
 				.removeClass("vf__required")
 				.removeClass("vf__error")
@@ -405,8 +405,10 @@ ValidForm.prototype.inArray = function(arrToSearch, value) {
 
 ValidForm.prototype.addElement = function() {
 	var objAddedElement = null;
+	var strElementName = "";
 
 	if (arguments.length > 0 && typeof(arguments[0]) == "object") {
+		strElementName = arguments[0].name;
 		objAddedElement = this.elements[arguments[0].name] = arguments[0];
 	} else {
 		var typeError		= "";
@@ -426,7 +428,7 @@ ValidForm.prototype.addElement = function() {
 		}
 
 		if (arguments.length > 1) {
-			var strElementName = arguments[1];
+			strElementName = arguments[1];
 		} else {
 			return false;
 		}
@@ -630,7 +632,7 @@ ValidFormComparison.prototype._init = function () {
 		if ($objSubject.is("input") || $objSubject.is("textarea")) {
 			if ($objSubject.attr("type") !== "checkbox" && $objSubject.attr("type") !== "radio") {
 
-				var delay;
+				var delay = null;
 				$objSubject.on("keyup", function () {
 					var $self = $(this);
 
@@ -847,10 +849,6 @@ ValidFormCondition.prototype._setSubject = function (strSubject) {
 ValidFormCondition.prototype.set = function (blnResult) {
 	var self = this;
 
-	var getDynamicCount = function ($objSubject) {
-		$("input[name$='" +  + "']", $objSubject);
-	}
-
 	//*** Utility functions
 	var Util = {
 		"visible": function (blnValue) {
@@ -950,15 +948,13 @@ ValidFormCondition.prototype.set = function (blnResult) {
 
 			$("#" + self.validform.id).trigger("VF_ConditionSet", [{"condition": "required", "value": blnValue, "subject": self.subject}]);
 		}
-	}
+	};
 
 	// Set the condition
 	Util[self.property]((blnResult == !!self.value));
 };
 
 ValidFormCondition.prototype.addComparison = function (objComparison) {
-	var self = this;
-
 	if (!objComparison instanceof ValidFormComparison) {
 		throw new Error("Invalid argument: objComparison is no ValidFormComparison type in ValidFormCondition.addCondition()", 1);
 	}
@@ -986,17 +982,17 @@ ValidFormCondition.prototype.isMet = function () {
 		}
 
 		return success;
-	}
+	};
 
 	// comparison match all
 	var _matchAll = function () {
 		return _checkComparisons() === self.comparisons.length;
-	}
+	};
 
 	// comparison match any
 	var _matchAny = function () {
 		return _checkComparisons() > 0;
-	}
+	};
 
 	for (var i = 0; i < self.comparisons.length; i++) {
 		if (self.comparisonType === "all") {
@@ -1099,7 +1095,7 @@ function ValidFormElement(strFormId, strElementName, strElementId, strValidation
 	this._defaultstate = {
 		"required": this.validator.required,
 		"enabled": !this.disabled
-	}
+	};
 };
 
 /**
@@ -1130,8 +1126,6 @@ ValidFormElement.prototype.getValue = function () {
 };
 
 ValidFormElement.prototype.setRequired = function (blnValue) {
-	var self = this;
-
 	this.validator.required = blnValue;
 
 	// The state has changed, remove it's alert.
@@ -1208,7 +1202,7 @@ ValidFormElement.prototype.getDynamicCount = function () {
 	}
 
 	return varReturn;
-}
+};
 
 /**
  * Reset the form element
