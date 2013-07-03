@@ -268,7 +268,7 @@ ValidForm.prototype.dynamicDuplication = function () {
 								}
 							})
 							.bind("blur", function() {
-								if (jQuery(this).val() == "" && objOriginal.validator.required) {
+								if (jQuery(this).val() == "") {
 									jQuery(this).val(objOriginal.validator.hint);
 									jQuery(this).parent().addClass("vf__hint");
 								}
@@ -1120,7 +1120,7 @@ function ValidFormElement(strFormId, strElementName, strElementId, strValidation
 					}
 				})
 				.bind("blur", function(){
-					if (jQuery(this).val() == "" && __this.validator.required) {
+					if (jQuery(this).val() == "") {
 						jQuery(this).val(__this.validator.hint);
 						jQuery(this).parent().addClass("vf__hint");
 					}
@@ -1457,7 +1457,7 @@ ValidFormFieldValidator.prototype.validate = function(value) {
 			}
 
 			//*** Value is the same as hint value.
-			if (this.hint && value == this.hint) {
+			if (this.hint && value == this.hint && this.required) {
 				this.showAlert(this.hintError);
 				return false;
 			}

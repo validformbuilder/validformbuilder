@@ -247,8 +247,15 @@ class VF_FieldValidator extends VF_ClassDynamic {
 			$strHint = $this->__field->getHint();
 			if (!empty($strHint) && !is_array($value)) {
 				if ($strHint == $value) {
-					unset($this->__validvalues[$intDynamicPosition]);
-					$this->__errors[$intDynamicPosition] = $this->__hinterror;
+					if ($this->__required) {
+						//*** If required then it's an error.
+						unset($this->__validvalues[$intDynamicPosition]);
+						$this->__errors[$intDynamicPosition] = $this->__hinterror;
+					} else {
+						//*** If optional then empty value and return true.
+						unset($this->__validvalues[$intDynamicPosition]);
+						return TRUE;
+					}
 				}
 			}
 		}

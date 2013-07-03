@@ -145,8 +145,8 @@ class VF_Area extends VF_Base {
 	}
 
 	protected function __toHtml($submitted = false, $blnSimpleLayout = false, $blnLabel = true, $blnDisplayErrors = true, $intCount = 0) {
-		// Call this before __getMetaString();
-		$this->setConditionalMeta($submitted);
+		//*** Conditional meta should be set before all other meta. Otherwise the set meta is being reset.
+		$this->setConditionalMeta();
 
 		$strName 	= ($intCount == 0) ? $this->getName() : $this->getName() . "_" . $intCount;
 
@@ -158,7 +158,6 @@ class VF_Area extends VF_Base {
 		if ($intCount > 0) $this->setMeta("class", "vf__clone");
 
 		$strId = ($intCount == 0) ? " id=\"{$this->getId()}\"" : "";
-
 		$strOutput = "<fieldset{$this->__getMetaString()}{$strId}>\n";
 
 		if ($this->__active) {
@@ -293,7 +292,7 @@ class VF_Area extends VF_Base {
 	}
 
 	public function getId() {
-		return $this->getName() . "_area";
+		return $this->getName();
 	}
 
 	public function getType() {
