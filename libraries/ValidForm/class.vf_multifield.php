@@ -96,6 +96,9 @@ class VF_MultiField extends VF_Base {
 	}
 
 	public function __toHtml($submitted = FALSE, $blnSimpleLayout = FALSE, $blnLabel = true, $blnDisplayError = true, $intCount = 0) {
+		//*** Conditional meta should be set before all other meta. Otherwise the set meta is being reset.
+		$this->setConditionalMeta();
+
 		// Do nothing if multifield has no child fields.
 		if ($this->__fields->count() == 0) {
 			return "";
@@ -138,8 +141,8 @@ class VF_MultiField extends VF_Base {
 		if ($blnError) $this->setMeta("class", "vf__error");
 		$this->setMeta("class", "vf__multifield vf__cf");
 
-		$this->setConditionalMeta();
-		$strOutput = "<div{$this->__getMetaString()}>\n";
+		$strId = ($intCount == 0) ? " id=\"{$this->getId()}\"" : "";
+		$strOutput = "<div{$this->__getMetaString()}{$strId}>\n";
 
 		if ($blnError) $strOutput .= "<p class='vf__error'>{$strError}</p>";
 
@@ -195,7 +198,7 @@ class VF_MultiField extends VF_Base {
 		}
 
 		//*** Condition logic.
-		$strOutput .= $this->conditionsToJs();
+		$strReturn .= $this->conditionsToJs();
 
 		return $strReturn;
 	}
@@ -242,7 +245,7 @@ class VF_MultiField extends VF_Base {
 	}
 
 	public function getId() {
-		return null;
+		return $this->getName();
 	}
 
 	public function getType() {
