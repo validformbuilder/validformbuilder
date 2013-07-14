@@ -177,7 +177,7 @@ ValidForm.prototype.traverseDisabledElements = function () {
 
 	});
 
-	__this.attachAreaEvents(jQuery("legend input"));
+	__this.attachAreaEvents(jQuery("#" + __this.id + " legend input"));
 };
 
 ValidForm.prototype.dynamicDuplication = function () {
