@@ -376,9 +376,17 @@ class ValidForm extends VF_ClassDynamic {
 				foreach ($objFieldset->getFields() as $objField) {
 					if (is_object($objField)) {
 						if ($objField->hasFields()) {
+							if (get_class($objField) == "VF_Area" && $objField->isActive()) {
+								$objFields->addObject($objField);
+							}
+
 							foreach ($objField->getFields() as $objSubField) {
 								if (is_object($objSubField)) {
 									if ($objSubField->hasFields()) {
+										if (get_class($objSubField) == "VF_Area" && $objSubField->isActive()) {
+											$objFields->addObject($objSubField);
+										}
+
 										foreach ($objSubField->getFields() as $objSubSubField) {
 											if (is_object($objSubSubField)) {
 												$objFields->addObject($objSubSubField);
