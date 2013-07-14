@@ -174,7 +174,6 @@ ValidForm.prototype.traverseDisabledElements = function () {
 		jQuery(".vf__dynamic a", fieldset).addClass("vf__disabled");
 		jQuery("legend input", fieldset)
 			.removeAttr("disabled");
-
 	});
 
 	__this.attachAreaEvents(jQuery("#" + __this.id + " legend input"));
@@ -403,51 +402,55 @@ ValidForm.prototype.attachDynamicConditions = function(arrElementNames, dynamicC
 ValidForm.prototype.attachAreaEvents = function(objActiveTrigger) {
 	var __this = this;
 
-	objActiveTrigger.unbind("click").bind("click", function(){
-		var fieldset = jQuery(objActiveTrigger).parentsUntil(".vf__area").parent(".vf__area");
+	objActiveTrigger.each(function(){
+		var self = this;
+		
+		jQuery(self).unbind("click").bind("click", function(){
+			var fieldset = jQuery(self).parentsUntil(".vf__area").parent(".vf__area");
 
-		if (this.checked) {
-			// Enable active area
-			jQuery("input, select, textarea", fieldset).removeAttr("disabled");
-			jQuery(".vf__dynamic a", fieldset).removeClass("vf__disabled");
-			jQuery(fieldset).removeClass("vf__disabled");
+			if (this.checked) {
+				// Enable active area
+				jQuery("input, select, textarea", fieldset).removeAttr("disabled");
+				jQuery(".vf__dynamic a", fieldset).removeClass("vf__disabled");
+				jQuery(fieldset).removeClass("vf__disabled");
 
-			var $dynamicTrigger = jQuery(fieldset).data("vf__dynamicTrigger");
-			if (typeof $dynamicTrigger === "object") {
-				$dynamicTrigger.show();
-			}
+				var $dynamicTrigger = jQuery(fieldset).data("vf__dynamicTrigger");
+				if (typeof $dynamicTrigger === "object") {
+					$dynamicTrigger.show();
+				}
 
-			$("#" + __this.id).trigger("VF_EnableActiveArea", [{ValidForm: __this, objArea: fieldset}]);
-		} else {
-			// Disable active area & remove error's
+				$("#" + __this.id).trigger("VF_EnableActiveArea", [{ValidForm: __this, objArea: fieldset}]);
+			} else {
+				// Disable active area & remove error's
 
-			var inputNames = [];
-			jQuery("div > input, select, textarea", fieldset)
-				.attr("disabled", "disabled")
-				.each(function () {
-					inputNames.push($(this).attr("name"));
+				var inputNames = [];
+				jQuery("div > input, select, textarea", fieldset)
+					.attr("disabled", "disabled")
+					.each(function () {
+						inputNames.push($(this).attr("name"));
+					});
+
+				jQuery(".vf__dynamic a", fieldset).addClass("vf__disabled");
+				jQuery("legend input", fieldset).removeAttr("disabled");
+				jQuery(fieldset).addClass("vf__disabled");
+
+				// Get the dynamic trigger, if available
+				var $dynamicTrigger = $("[data-target-id='" + inputNames.join("|") + "']");
+				if ($dynamicTrigger.length > 0) {
+					$dynamicTrigger.hide();
+
+					// And store it in a data attribute of the current fieldset for later reference.
+					jQuery(fieldset).data("vf__dynamicTrigger", $dynamicTrigger);
+				}
+
+				//*** Remove errors.
+				jQuery("div.vf__error", fieldset).each(function(){
+					jQuery(this).removeClass("vf__error").find("p.vf__error").remove();
 				});
 
-			jQuery(".vf__dynamic a", fieldset).addClass("vf__disabled");
-			jQuery("legend input", fieldset).removeAttr("disabled");
-			jQuery(fieldset).addClass("vf__disabled");
-
-			// Get the dynamic trigger, if available
-			var $dynamicTrigger = $("[data-target-id='" + inputNames.join("|") + "']");
-			if ($dynamicTrigger.length > 0) {
-				$dynamicTrigger.hide();
-
-				// And store it in a data attribute of the current fieldset for later reference.
-				jQuery(fieldset).data("vf__dynamicTrigger", $dynamicTrigger);
+				$("#" + __this.id).trigger("VF_DisableActiveArea", [{ValidForm: __this, objArea: fieldset}]);
 			}
-
-			//*** Remove errors.
-			jQuery("div.vf__error", fieldset).each(function(){
-				jQuery(this).removeClass("vf__error").find("p.vf__error").remove();
-			});
-
-			$("#" + __this.id).trigger("VF_DisableActiveArea", [{ValidForm: __this, objArea: fieldset}]);
-		}
+		});
 	});
 };
 
