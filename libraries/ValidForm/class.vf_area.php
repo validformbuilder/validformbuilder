@@ -286,8 +286,9 @@ class VF_Area extends VF_Base {
 		return $this->__fields;
 	}
 
-	public function getValue() {
-		$value = ValidForm::get($this->__name);
+	public function getValue($intCount = null) {
+		$strName = ($intCount > 0) ? $this->__name . "_" . $intCount : $this->__name;
+		$value = ValidForm::get($strName);
 		return (($this->__active && !empty($value)) || !$this->__active) ? TRUE : FALSE;
 	}
 

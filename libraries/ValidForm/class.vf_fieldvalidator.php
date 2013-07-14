@@ -199,7 +199,7 @@ class VF_FieldValidator extends VF_ClassDynamic {
 		// If so, check if it's an active area that is selected
 		$objParent = $this->__field->getMeta("parent", null);
 		if (!is_null($objParent) && get_class($objParent) === "VF_Area") {
-			if ($objParent->isActive() && $objParent->hasContent($intDynamicPosition)) $this->setFieldMeta("checked", "checked", true);
+			if ($objParent->isActive() && !$objParent->getValue($intDynamicPosition)) $this->__required = false;
 		}
 
 		//*** Check "required" option.
