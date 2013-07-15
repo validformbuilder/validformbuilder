@@ -431,7 +431,6 @@ ValidForm.prototype.attachAreaEvents = function(objActiveTrigger) {
 					});
 
 				jQuery(".vf__dynamic a", fieldset).addClass("vf__disabled");
-				jQuery("legend input", fieldset).removeAttr("disabled");
 				jQuery(fieldset).addClass("vf__disabled");
 
 				// Get the dynamic trigger, if available
