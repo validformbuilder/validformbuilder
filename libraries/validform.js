@@ -172,6 +172,8 @@ ValidForm.prototype.traverseDisabledElements = function () {
 
 		jQuery("input, select, textarea", fieldset).attr("disabled", "disabled");
 		jQuery(".vf__dynamic a", fieldset).addClass("vf__disabled");
+		jQuery("legend input", fieldset)
+			.removeAttr("disabled");
 	});
 
 	__this.attachAreaEvents(jQuery("#" + __this.id + " legend input"));
@@ -429,6 +431,7 @@ ValidForm.prototype.attachAreaEvents = function(objActiveTrigger) {
 					});
 
 				jQuery(".vf__dynamic a", fieldset).addClass("vf__disabled");
+				jQuery("legend input", fieldset).removeAttr("disabled");
 				jQuery(fieldset).addClass("vf__disabled");
 
 				// Get the dynamic trigger, if available
