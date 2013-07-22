@@ -93,10 +93,6 @@ form.validform div.vf__hint textarea {
 	color: #999;
 }
 
-form.validform div.vf__multifield {
-	overflow: auto;
-}
-
 form.validform label {
 	display: block;
 	float: left;

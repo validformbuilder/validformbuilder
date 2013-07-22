@@ -84,10 +84,6 @@ class VF_Group extends VF_Element {
 			$this->setConditionalMeta();
 
 			$strOutput = "<div{$this->__getMetaString()}\">\n";
-
-			if ($blnError) {
-				$strOutput .= "<p class=\"vf__error\">{$this->__validator->getError($intCount)}</p>";
-			}
 		}
 
 		$strOutput .= "<fieldset{$this->__getFieldMetaString()}>\n";

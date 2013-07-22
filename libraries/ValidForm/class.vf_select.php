@@ -88,12 +88,12 @@ class VF_Select extends VF_Element {
 			if (!empty($this->__label)) $strOutput .= "<label for=\"{$strId}\"{$this->__getLabelMetaString()}>{$strLabel}</label>\n";
 		} else {
 			if ($blnError) $this->setMeta("class", "vf__error");
+			$this->setMeta("class", "vf__multifielditem");
 
-			$strOutput = "<div class=\"vf__multifielditem\">\n";
+			// Call this right before __getMetaString();
+			$this->setConditionalMeta();
 
-			if ($blnError) {
-				$strOutput .= "<p class=\"vf__error\">{$this->__validator->getError($intCount)}</p>";
-			}
+			$strOutput = "<div{$this->__getMetaString()}>\n";
 		}
 
 		$strOutput .= "<select name=\"{$strName}\" id=\"{$strId}\" {$this->__getFieldMetaString()}>\n";
@@ -192,8 +192,8 @@ class VF_Select extends VF_Element {
 		return $strOutput;
 	}
 
-	public function addField($value, $label, $selected = FALSE) {
-		$objOption = new VF_SelectOption($value, $label, $selected);
+	public function addField($value, $label, $selected = FALSE, $meta = array()) {
+		$objOption = new VF_SelectOption($value, $label, $selected, $meta);
 		$objOption->setMeta("parent", $this, true);
 
 		$this->__options->addObject($objOption);

@@ -105,16 +105,12 @@ class VF_MultiField extends VF_Base {
 		}
 
 		$blnError = false;
-		$strError = "";
+		$arrError = array();
 
 		$strId = "";
 		$blnRequired = FALSE;
 
 		foreach ($this->__fields as $field) {
-			if (empty($strId)) {
-				$strId = ($intCount == 0) ? $field->getId() : $field->getId() . "_" . $intCount;
-			}
-
 			$objValidator = $field->getValidator();
 			if (is_object($objValidator)) {
 				//*** Check if this multifield should have required styling.
@@ -124,7 +120,11 @@ class VF_MultiField extends VF_Base {
 
 				if ($submitted && !$objValidator->validate($intCount) && $blnDisplayError) {
 					$blnError = TRUE;
-					$strError .= "<p class=\"vf__error\">{$field->getValidator()->getError($intCount)}</p>";
+
+					$strError = $field->getValidator()->getError($intCount);
+					if (!in_array($strError, $arrError)) {
+						$arrError[] = $strError;
+					}
 				}
 			}
 
@@ -144,7 +144,7 @@ class VF_MultiField extends VF_Base {
 		$strId = ($intCount == 0) ? " id=\"{$this->getId()}\"" : "";
 		$strOutput = "<div{$this->__getMetaString()}{$strId}>\n";
 
-		if ($blnError) $strOutput .= "<p class='vf__error'>{$strError}</p>";
+		if ($blnError) $strOutput .= "<p class=\"vf__error\">" . implode("</p><p class=\"vf__error\">", $arrError) . "</p>";
 
 		$strLabel = (!empty($this->__requiredstyle) && $blnRequired) ? sprintf($this->__requiredstyle, $this->__label) : $this->__label;
 		if(!empty($this->__label)) $strOutput .= "<label for=\"{$strId}\"{$this->__getLabelMetaString()}>{$strLabel}</label>\n";

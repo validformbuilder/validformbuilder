@@ -96,10 +96,6 @@ class VF_Textarea extends VF_Element {
 			$this->setMeta("class", "vf__multifielditem");
 
 			$strOutput = "<div{$this->__getMetaString()}>\n";
-
-			if ($blnError) {
-				$strOutput .= "<p class=\"vf__error\">{$this->__validator->getError($intCount)}</p>";
-			}
 		}
 
 		//*** Add max-length attribute to the meta array. This is being read by the getMetaString method.

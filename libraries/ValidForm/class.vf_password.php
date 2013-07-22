@@ -94,10 +94,6 @@ class VF_Password extends VF_Element {
 			$this->setConditionalMeta();
 
 			$strOutput = "<div{$this->__getMetaString()}\">\n";
-
-			if ($blnError) {
-				$strOutput .= "<p class=\"vf__error\">{$this->__validator->getError($intCount)}</p>";
-			}
 		}
 
 		//*** Add maxlength attribute to the meta array. This is being read by the getMetaString method.
