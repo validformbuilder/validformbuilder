@@ -44,12 +44,6 @@ form.vf__cf
     *zoom: 1;
 }
 
-form.validform {
-	margin: 0;
-	padding: 0;
-	overflow: auto;
-}
-
 form.validform fieldset {
 	border: 0;
 }
