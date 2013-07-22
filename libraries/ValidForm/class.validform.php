@@ -314,13 +314,7 @@ class ValidForm extends VF_ClassDynamic {
 		if (!empty($this->__description)) $strOutput .= "<div class=\"vf__description\"><p>{$this->__description}</p></div>\n";
 
 		$blnNavigation = false;
-		foreach ($this->__elements as $element) {
-			$strOutput .= $element->toHtml($this->isSubmitted($blnForceSubmitted), false, true, !$blnForceSubmitted);
-
-			if (get_class($element) == "VF_Navigation") {
-				$blnNavigation = true;
-			}
-		}
+		$strOutput .= $this->fieldsToHtml($blnForceSubmitted, $blnNavigation);
 
 		if (!$blnNavigation) {
 			$strOutput .= "<div class=\"vf__navigation vf__cf\">\n";
@@ -332,6 +326,20 @@ class ValidForm extends VF_ClassDynamic {
 		$strOutput .= "</form>";
 
 		return $strOutput;
+	}
+
+	public function fieldsToHtml($blnForceSubmitted = false, &$blnNavigation = false) {
+		$strReturn = "";
+
+		foreach ($this->__elements as $element) {
+			$strReturn .= $element->toHtml($this->isSubmitted($blnForceSubmitted), false, true, !$blnForceSubmitted);
+
+			if (get_class($element) == "VF_Navigation") {
+				$blnNavigation = true;
+			}
+		}
+
+		return $strReturn;
 	}
 
 	public function toJs($strCustomJs = "") {
