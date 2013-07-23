@@ -217,21 +217,25 @@ class VF_Base extends VF_ClassDynamic {
 						if ($blnResult) {
 							if ($objCondition->getValue()) {
 								if (get_class($this) !== "VF_Fieldset") {
-									$this->setMeta("class", "vf__required", true);
+								    // TODO Disabled because it messes up multifields.
+									//$this->setMeta("class", "vf__required", true);
 								}
 							} else {
 								if (get_class($this) !== "VF_Fieldset") {
-									$this->setMeta("class", "vf__optional", true);
+								    // TODO Disabled because it messes up multifields.
+									//$this->setMeta("class", "vf__optional", true);
 								}
 							}
 						} else {
 							if ($objCondition->getValue()) {
 								if (get_class($this) !== "VF_Fieldset") {
-									$this->setMeta("class", "vf__optional", true);
+								    // TODO Disabled because it messes up multifields.
+									//$this->setMeta("class", "vf__optional", true);
 								}
 							} else {
 								if (get_class($this) !== "VF_Fieldset") {
-									$this->setMeta("class", "vf__required", true);
+								    // TODO Disabled because it messes up multifields.
+									//$this->setMeta("class", "vf__required", true);
 								}
 							}
 						}
@@ -523,6 +527,11 @@ class VF_Base extends VF_ClassDynamic {
 			return $value;
 		} else {
 			$varMeta = (isset($internalMetaArray[$property])) ? $internalMetaArray[$property] : "";
+
+			//*** If the id is being set and there is already a value we don't set the new value.
+			if ($property == "id" && $varMeta != "") {
+				return $varMeta;
+			}
 
 			//*** Define delimiter per meta property.
 			switch ($property) {
