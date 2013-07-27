@@ -42,7 +42,10 @@ class VF_String extends VF_Base {
 		$strOutput = "";
 
 		if (!$blnSimpleLayout) {
-			$strOutput = $this->__body;
+		    // Call this right before __getMetaString();
+		    $this->setConditionalMeta();
+
+			$strOutput = str_replace("[[metaString]]", $this->__getMetaString(), $this->__body);
 		} else {
 			$strClass = (array_key_exists("class", $this->__meta)) ? $this->__meta["class"] : "";
 			$strOutput = "<div class=\"vf__multifielditem {$strClass}\"><span>{$this->__body}</span></div>\n";
@@ -51,8 +54,19 @@ class VF_String extends VF_Base {
 		return $strOutput;
 	}
 
-	public function toJS() {
-		return;
+	public function toJS($blnParentIsDynamic = FALSE) {
+		$strOutput = "";
+
+		if ($this->getMeta("id")) {
+		    $strId = $this->getMeta("id");
+
+    		$strOutput = "objForm.addElement('{$strId}', '{$strId}');\n";
+
+    		//*** Condition logic.
+    		$strOutput .= $this->conditionsToJs();
+		}
+
+		return $strOutput;
 	}
 
 	public function isValid() {

@@ -123,6 +123,8 @@ class VF_Condition extends VF_ClassDynamic {
 	public function jsonSerialize($intDynamicPosition = null) {
 		if (get_class($this->__subject) == "VF_GroupField" || get_class($this->__subject) == "VF_Area") {
 			$identifier = $this->__subject->getId();
+		} elseif (get_class($this->__subject) == "VF_String") {
+		    $identifier = $this->__subject->getMeta("id");
 		} else {
 			$identifier = $this->__subject->getName();
 			if ($intDynamicPosition > 0) $identifier = $identifier . "_" . $intDynamicPosition;
