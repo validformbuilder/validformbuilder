@@ -35,6 +35,8 @@ class VF_Paragraph extends VF_Base {
 		$this->__meta = $meta;
 
 		$this->__initializeMeta();
+
+		$this->setMeta("id", $this->getName());
 	}
 
 	public function __toHtml() {
@@ -45,7 +47,6 @@ class VF_Paragraph extends VF_Base {
 		// Call this before __getMetaString();
 		$this->setConditionalMeta();
 
-		$this->setMeta("id", $this->getName());
 		$strOutput = "<div{$this->__getMetaString()}>\n";
 
 		// Add header if not empty.
@@ -60,6 +61,21 @@ class VF_Paragraph extends VF_Base {
 		}
 
 		$strOutput .= "</div>\n";
+
+		return $strOutput;
+	}
+
+	public function toJS($blnParentIsDynamic = FALSE) {
+		$strOutput = "";
+
+		if ($this->getMeta("id")) {
+		    $strId = $this->getMeta("id");
+
+    		$strOutput = "objForm.addElement('{$strId}', '{$strId}');\n";
+
+    		//*** Condition logic.
+    		$strOutput .= $this->conditionsToJs();
+		}
 
 		return $strOutput;
 	}
