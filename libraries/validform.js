@@ -176,7 +176,9 @@ ValidForm.prototype.traverseDisabledElements = function () {
 			.removeAttr("disabled");
 	});
 
-	__this.attachAreaEvents(jQuery("#" + __this.id + " legend input"));
+	jQuery("#" + this.id + " .vf__area > legend input[type='radio'], #" + this.id + " .vf__area > legend input[type='checkbox']").each(function(){
+		__this.attachAreaEvents(jQuery(this));
+	});
 };
 
 ValidForm.prototype.dynamicDuplication = function () {
@@ -402,27 +404,58 @@ ValidForm.prototype.attachDynamicConditions = function(arrElementNames, dynamicC
 ValidForm.prototype.attachAreaEvents = function(objActiveTrigger) {
 	var __this = this;
 
-	objActiveTrigger.each(function(){
-		var self = this;
+	objActiveTrigger.unbind("change").bind("change", function(){
+		self = this;
 		
-		jQuery(self).unbind("click").bind("click", function(){
-			var fieldset = jQuery(self).parentsUntil(".vf__area").parent(".vf__area");
+		var fieldsets = jQuery("input[name='" + jQuery(this).attr("name") + "']").closest(".vf__area");
+		var currentFieldset = jQuery(objActiveTrigger).closest(".vf__area");
+		fieldsets.each(function(){
+			fieldset = jQuery(this);
+			
+			if (fieldset[0] == currentFieldset[0]) {
+				if (self.checked) {
+					// Enable active area
+					jQuery("input, select, textarea", currentFieldset).removeAttr("disabled");
+					jQuery(".vf__dynamic a", currentFieldset).removeClass("vf__disabled");
+					jQuery(currentFieldset).removeClass("vf__disabled");
 
-			if (this.checked) {
-				// Enable active area
-				jQuery("input, select, textarea", fieldset).removeAttr("disabled");
-				jQuery(".vf__dynamic a", fieldset).removeClass("vf__disabled");
-				jQuery(fieldset).removeClass("vf__disabled");
+					var $dynamicTrigger = jQuery(currentFieldset).data("vf__dynamicTrigger");
+					if (typeof $dynamicTrigger === "object") {
+						$dynamicTrigger.show();
+					}
 
-				var $dynamicTrigger = jQuery(fieldset).data("vf__dynamicTrigger");
-				if (typeof $dynamicTrigger === "object") {
-					$dynamicTrigger.show();
+					$("#" + __this.id).trigger("VF_EnableActiveArea", [{ValidForm: __this, objArea: currentFieldset}]);
+				} else {
+					// Disable active area & remove error's
+					var inputNames = [];
+					jQuery("div > input, select, textarea", currentFieldset)
+						.attr("disabled", "disabled")
+						.each(function () {
+							inputNames.push($(this).attr("name"));
+						});
+
+					jQuery(".vf__dynamic a", currentFieldset).addClass("vf__disabled");
+					jQuery("legend input", currentFieldset).removeAttr("disabled");
+					jQuery(currentFieldset).addClass("vf__disabled");
+
+					// Get the dynamic trigger, if available
+					var $dynamicTrigger = $("[data-target-id='" + inputNames.join("|") + "']");
+					if ($dynamicTrigger.length > 0) {
+						$dynamicTrigger.hide();
+
+						// And store it in a data attribute of the current fieldset for later reference.
+						jQuery(currentFieldset).data("vf__dynamicTrigger", $dynamicTrigger);
+					}
+
+					//*** Remove errors.
+					jQuery("div.vf__error", currentFieldset).each(function(){
+						jQuery(this).removeClass("vf__error").find("p.vf__error").remove();
+					});
+
+					$("#" + __this.id).trigger("VF_DisableActiveArea", [{ValidForm: __this, objArea: currentFieldset}]);
 				}
-
-				$("#" + __this.id).trigger("VF_EnableActiveArea", [{ValidForm: __this, objArea: fieldset}]);
 			} else {
 				// Disable active area & remove error's
-
 				var inputNames = [];
 				jQuery("div > input, select, textarea", fieldset)
 					.attr("disabled", "disabled")
@@ -820,6 +853,11 @@ ValidFormComparison.prototype.check = function () {
 			if (strValue.slice(-self.value.length) == self.value) {
 				blnReturn = true;
 			}
+			break;
+		case "regex":
+			var strRexEx = self.value.replace('\/', '').replace('\/i', '');
+			var objRegEx = new RegExp(strRexEx);
+			blnReturn = objRegEx.test(strValue);
 			break;
 	}
 
@@ -1223,6 +1261,12 @@ ValidFormElement.prototype.getRequired = function (blnDefaultState) {
 ValidFormElement.prototype.setEnabled = function (blnValue) {
 	this.disabled = !blnValue;
 
+	var $parent = $("#" + this.id).parent();
+	if ($parent.hasClass("vf__multifielditem")) {
+		// Multifield item
+		$parent = $parent.parent();
+	}
+	
 	if (blnValue) {
 		// Enabled == true, e.g. disabled = false
 		$("#" + this.id)
@@ -1231,7 +1275,7 @@ ValidFormElement.prototype.setEnabled = function (blnValue) {
 			.removeClass("vf__disabled")
 			.removeAttr("disabled");
 
-		$("#" + this.id).parent().addClass("vf__optional").removeClass("vf__required");
+		$parent.addClass("vf__optional").removeClass("vf__required");
 	} else {
 		// Enabled == false, e.g. disabled = true
 		$("#" + this.id)
@@ -1240,7 +1284,7 @@ ValidFormElement.prototype.setEnabled = function (blnValue) {
 			.addClass("vf__disabled")
 			.attr("disabled", "disabled");
 
-		$("#" + this.id).parent().removeClass("vf__optional").addClass("vf__required");
+		//$parent.removeClass("vf__optional").addClass("vf__required");
 	}
 };
 

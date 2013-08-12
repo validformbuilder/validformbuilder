@@ -52,6 +52,7 @@ define("VFORM_COMPARISON_GREATER_THAN_OR_EQUAL", "greaterthanorequal");
 define("VFORM_COMPARISON_CONTAINS", "contains");
 define("VFORM_COMPARISON_STARTS_WITH", "startswith");
 define("VFORM_COMPARISON_ENDS_WITH", "endswith");
+define("VFORM_COMPARISON_REGEX", "regex");
 
 define("VFORM_MATCH_ALL", "all");
 define("VFORM_MATCH_ANY", "any");

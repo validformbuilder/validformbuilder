@@ -144,6 +144,9 @@ class VF_Comparison extends VF_ClassDynamic {
 			case VFORM_COMPARISON_CONTAINS:
 				$blnReturn = (strpos($strLowerValue, $strCompareAgainst) !== false);
 				break;
+			case VFORM_COMPARISON_REGEX:
+				$blnReturn = preg_match($this->__value, $strValue);
+				break;
 		}
 
 		return $blnReturn;
