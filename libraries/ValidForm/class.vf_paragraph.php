@@ -47,6 +47,8 @@ class VF_Paragraph extends VF_Base {
 		// Call this before __getMetaString();
 		$this->setConditionalMeta();
 
+		$this->setMeta("class", "vf__paragraph");
+
 		$strOutput = "<div{$this->__getMetaString()}>\n";
 
 		// Add header if not empty.
