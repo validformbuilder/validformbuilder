@@ -131,13 +131,13 @@ class ValidWizard extends ValidForm {
 	}
 
 	public function addPage($id = "", $header = "", $meta = array()) {
-		if ($this->__elements->count() == 0) {
+		$objPage = new VF_Page($id, $header, $meta);
+		$this->__elements->addObject($objPage);
+
+		if ($this->__elements->count() == 1) {
 			// Add unique id field.
 			$this->addHiddenField("vf__uniqueid", VFORM_STRING, array("default" => $this->getUniqueId()));
 		}
-
-		$objPage = new VF_Page($id, $header, $meta);
-		$this->__elements->addObject($objPage);
 
 		$this->__pagecount++;
 
