@@ -165,8 +165,7 @@ class VF_FieldValidator extends VF_ClassDynamic {
 		$value = $this->getValue($intDynamicPosition);
 
 		//*** Get required an visible states from condition and overwrite values for validation purposes
-		$objCondition = $this->__field->getCondition("required");
-		$objCondition = (!is_object($objCondition) && !is_null($this->__field->getMeta("parent", null))) ? $this->__field->getMeta("parent")->getCondition("required") : $objCondition;
+		$objCondition = $this->__field->getConditionRecursive("required");
 		if (is_object($objCondition)) {
 			if ($objCondition->isMet($intDynamicPosition)) {
 				$this->__required = $objCondition->getValue();
@@ -175,8 +174,7 @@ class VF_FieldValidator extends VF_ClassDynamic {
 			}
 		}
 
-		$objCondition = $this->__field->getCondition("enabled");
-		$objCondition = (!is_object($objCondition) && !is_null($this->__field->getMeta("parent", null))) ? $this->__field->getMeta("parent")->getCondition("enabled") : $objCondition;
+		$objCondition = $this->__field->getConditionRecursive("enabled");
 		if (is_object($objCondition)) {
 			if ($objCondition->isMet($intDynamicPosition)) {
 				$this->__required = ($objCondition->getValue()) ? $this->__required : false;
@@ -185,8 +183,7 @@ class VF_FieldValidator extends VF_ClassDynamic {
 			}
 		}
 
-		$objCondition = $this->__field->getCondition("visible");
-		$objCondition = (!is_object($objCondition) && !is_null($this->__field->getMeta("parent", null))) ? $this->__field->getMeta("parent")->getCondition("visible") : $objCondition;
+		$objCondition = $this->__field->getConditionRecursive("visible");
 		if (is_object($objCondition)) {
 			if ($objCondition->isMet($intDynamicPosition)) {
 				$this->__required = ($objCondition->getValue()) ? $this->__required : false;
@@ -204,7 +201,7 @@ class VF_FieldValidator extends VF_ClassDynamic {
 
 		//*** Check "required" option.
 		if (is_array($value)) {
-			$blnEmpty 		= TRUE;
+			$blnEmpty 		= true;
 			$intCount 		= 0;
 
 			foreach ($value as $valueItem) {

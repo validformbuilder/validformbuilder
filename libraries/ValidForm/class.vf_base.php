@@ -131,6 +131,8 @@ class VF_Base extends VF_ClassDynamic {
 			}
 		}
 
+		//*** This if statement should be deprecated soon. It seems as if
+		//*** some logic is still depending on this at the moment.
 		if (is_null($objReturn) && is_object($this->__parent)) {
 			//*** Find condition in parent.
 			$objReturn = $this->__parent->getMetCondition($strProperty);
@@ -160,6 +162,35 @@ class VF_Base extends VF_ClassDynamic {
 
 	public function hasConditions() {
 		return (count($this->__conditions) > 0);
+	}
+
+	/**
+	 * This gets the condition of a given property, just like getCondition().
+	 * When no condition is found on the current element, the method searches for a condition in it's parent element.
+	 *
+	 * @param string $strProperty
+	 * @param VF_Element $objContext
+	 * @return Ambigous <NULL, VF_Condition>
+	 */
+	public function getConditionRecursive($strProperty, $objContext = null)
+	{
+	    $objReturn = null;
+	    $objContext = (is_null($objContext)) ? $this : $objContext;
+
+	    $objCondition = $objContext->getCondition($strProperty);
+
+	    if (!is_object($objCondition)) {
+	        // Go look for a condition at this element's parent.
+	        $objParent = $objContext->getMeta("parent", null);
+
+	        if (!is_null($objParent)) {
+	            $objReturn = $objContext->getConditionRecursive($strProperty, $objParent);
+	        }
+	    } else {
+	        $objReturn = $objCondition;
+	    }
+
+        return $objReturn;
 	}
 
 	/**
