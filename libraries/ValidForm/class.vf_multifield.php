@@ -62,8 +62,18 @@ class VF_MultiField extends VF_Base {
 		    //*** The dynamic count can be influenced by a meta value.
 		    $intDynamicCount = (isset($meta["dynamicCount"])) ? $meta["dynamicCount"] : 0;
 
-			$objHiddenField = new VF_Hidden($objField->getId() . "_dynamic", VFORM_INTEGER, array("default" => $intDynamicCount, "dynamicCounter" => true));
-			$this->__fields->addObject($objHiddenField);
+			$objHiddenField = new VF_Hidden(
+			    $objField->getId() . "_dynamic",
+			    VFORM_INTEGER,
+			    array(
+			        "default" => $intDynamicCount,
+			        "dynamicCounter" => true
+			    )
+			);
+
+			$this
+			    ->__fields
+			    ->addObject($objHiddenField);
 
 			$objField->setDynamicCounter($objHiddenField);
 		}
@@ -197,8 +207,10 @@ class VF_MultiField extends VF_Base {
 			$strReturn .= $field->toJS($this->__dynamic);
 		}
 
-		//*** Condition logic.
-		$strReturn .= $this->conditionsToJs();
+		if ($this->__fields->count() > 0) {
+    		//*** Condition logic.
+    		$strReturn .= $this->conditionsToJs();
+		}
 
 		return $strReturn;
 	}
