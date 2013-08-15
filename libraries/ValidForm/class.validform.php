@@ -485,8 +485,11 @@ class ValidForm extends VF_ClassDynamic {
 		$strTableOutput = "";
 
 		foreach ($objFieldset->getFields() as $objField) {
-			if (is_object($objField)) {
-				$strValue = (is_array($objField->getValue())) ? implode(", ", $objField->getValue()) : $objField->getValue();
+			if (is_object($objField) && get_class($objField) !== "VF_Hidden") {
+			    $strValue = $objField->getValue();
+			    if (is_array($strValue)) {
+			        $strValue = implode(" ", $strValue);
+			    }
 
 				if ((!empty($strValue) && $hideEmpty) || (!$hideEmpty && !is_null($strValue))) {
 					if ($objField->hasFields()) {
