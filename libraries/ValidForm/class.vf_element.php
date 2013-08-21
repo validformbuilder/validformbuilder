@@ -69,24 +69,43 @@ class VF_Element extends VF_Base {
 		switch ($type) {
 			case VFORM_STRING:
 				$this->setFieldMeta("class", "vf__string");
+				$this->setFieldMeta("class", "vf__text");
+				break;
 			case VFORM_WORD:
 				$this->setFieldMeta("class", "vf__word");
+				$this->setFieldMeta("class", "vf__text");
+				break;
 			case VFORM_EMAIL:
 				$this->setFieldMeta("class", "vf__email");
+				$this->setFieldMeta("class", "vf__text");
+				break;
 			case VFORM_URL:
 			case VFORM_SIMPLEURL:
 				$this->setFieldMeta("class", "vf__url");
+				$this->setFieldMeta("class", "vf__text");
+				break;
 			case VFORM_CUSTOM:
 				$this->setFieldMeta("class", "vf__custom");
+				$this->setFieldMeta("class", "vf__text");
+				break;
 			case VFORM_CURRENCY:
 				$this->setFieldMeta("class", "vf__currency");
+				$this->setFieldMeta("class", "vf__text");
+				break;
 			case VFORM_DATE:
 				$this->setFieldMeta("class", "vf__date");
+				$this->setFieldMeta("class", "vf__text");
+				break;
 			case VFORM_NUMERIC:
 				$this->setFieldMeta("class", "vf__numeric");
+				$this->setFieldMeta("class", "vf__text");
+				break;
 			case VFORM_INTEGER:
 				$this->setFieldMeta("class", "vf__integer");
+				$this->setFieldMeta("class", "vf__text");
+				break;
 			case VFORM_PASSWORD:
+				$this->setFieldMeta("class", "vf__password");
 				$this->setFieldMeta("class", "vf__text");
 				break;
 			case VFORM_CAPTCHA:
@@ -94,8 +113,12 @@ class VF_Element extends VF_Base {
 				break;
 			case VFORM_HTML:
 				$this->setFieldMeta("class", "vf__html");
+				$this->setFieldMeta("class", "vf__text");
+				break;
 			case VFORM_CUSTOM_TEXT:
 				$this->setFieldMeta("class", "vf__custom");
+				$this->setFieldMeta("class", "vf__text");
+				break;
 			case VFORM_TEXT:
 				$this->setFieldMeta("class", "vf__text");
 				break;
