@@ -68,15 +68,24 @@ class VF_Element extends VF_Base {
 	protected function setClass($type, &$meta) {
 		switch ($type) {
 			case VFORM_STRING:
+				$this->setFieldMeta("class", "vf__string");
 			case VFORM_WORD:
+				$this->setFieldMeta("class", "vf__word");
 			case VFORM_EMAIL:
+				$this->setFieldMeta("class", "vf__email");
 			case VFORM_URL:
 			case VFORM_SIMPLEURL:
+				$this->setFieldMeta("class", "vf__url");
 			case VFORM_CUSTOM:
+				$this->setFieldMeta("class", "vf__custom");
 			case VFORM_CURRENCY:
+				$this->setFieldMeta("class", "vf__currency");
 			case VFORM_DATE:
+				$this->setFieldMeta("class", "vf__date");
 			case VFORM_NUMERIC:
+				$this->setFieldMeta("class", "vf__numeric");
 			case VFORM_INTEGER:
+				$this->setFieldMeta("class", "vf__integer");
 			case VFORM_PASSWORD:
 				$this->setFieldMeta("class", "vf__text");
 				break;
@@ -84,7 +93,9 @@ class VF_Element extends VF_Base {
 				$this->setFieldMeta("class", "vf__text_small");
 				break;
 			case VFORM_HTML:
+				$this->setFieldMeta("class", "vf__html");
 			case VFORM_CUSTOM_TEXT:
+				$this->setFieldMeta("class", "vf__custom");
 			case VFORM_TEXT:
 				$this->setFieldMeta("class", "vf__text");
 				break;
@@ -104,6 +115,8 @@ class VF_Element extends VF_Base {
 				} else {
 					$this->setFieldMeta("class", "vf__multiple");
 				}
+
+				$this->setFieldMeta("class", "vf__select");
 				break;
 		}
 	}
