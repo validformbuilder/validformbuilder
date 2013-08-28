@@ -272,6 +272,8 @@ ValidForm.prototype.dynamicDuplication = function () {
 								if (jQuery(this).val() == "") {
 									jQuery(this).val(objOriginal.validator.hint);
 									jQuery(this).parent().addClass("vf__hint");
+								} else {
+									jQuery(this).parent().removeClass("vf__hint");
 								}
 							});
 					}
@@ -1164,6 +1166,8 @@ function ValidFormElement(strFormId, strElementName, strElementId, strValidation
 					if (jQuery(this).val() == "") {
 						jQuery(this).val(__this.validator.hint);
 						jQuery(this).parent().addClass("vf__hint");
+					} else {
+						jQuery(this).parent().removeClass("vf__hint");
 					}
 				});
 		}
