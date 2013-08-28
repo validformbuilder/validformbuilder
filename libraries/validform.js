@@ -1229,7 +1229,9 @@ ValidFormElement.prototype.setRequired = function (blnValue) {
 	// The state has changed, remove it's alert.
 	this.validator.removeAlert();
 
-	var $parent = $("#" + this.id).parent();
+	var $element = $("[name='" + this.name + "']");
+
+	var $parent = $element.parent();
 	if ($parent.hasClass("vf__multifielditem")) {
 		// Multifield item
 		$parent = $parent.parent();
@@ -1261,7 +1263,9 @@ ValidFormElement.prototype.getRequired = function (blnDefaultState) {
 ValidFormElement.prototype.setEnabled = function (blnValue) {
 	this.disabled = !blnValue;
 
-	var $parent = $("#" + this.id).parent();
+	var $element = $("[name='" + this.name + "']");
+
+	var $parent = $element.parent();
 	if ($parent.hasClass("vf__multifielditem")) {
 		// Multifield item
 		$parent = $parent.parent();
@@ -1269,7 +1273,7 @@ ValidFormElement.prototype.setEnabled = function (blnValue) {
 	
 	if (blnValue) {
 		// Enabled == true, e.g. disabled = false
-		$("#" + this.id)
+		$element
 			// .addClass("vf__optional")
 			// .removeClass("vf__required")
 			.removeClass("vf__disabled")
@@ -1278,7 +1282,7 @@ ValidFormElement.prototype.setEnabled = function (blnValue) {
 		$parent.addClass("vf__optional").removeClass("vf__required");
 	} else {
 		// Enabled == false, e.g. disabled = true
-		$("#" + this.id)
+		$element
 			// .removeClass("vf__optional")
 			// .addClass("vf__required")
 			.addClass("vf__disabled")
