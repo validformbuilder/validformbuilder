@@ -47,8 +47,8 @@ class VF_String extends VF_Base {
 
 			$strOutput = str_replace("[[metaString]]", $this->__getMetaString(), $this->__body);
 		} else {
-			$strClass = (array_key_exists("class", $this->__meta)) ? $this->__meta["class"] : "";
-			$strOutput = "<div class=\"vf__multifielditem {$strClass}\"><span>{$this->__body}</span></div>\n";
+		    $this->setMeta("class", "vf__multifielditem");
+			$strOutput = "<div " . $this->__getMetaString() . "><span>{$this->__body}</span></div>\n";
 		}
 
 		return $strOutput;
