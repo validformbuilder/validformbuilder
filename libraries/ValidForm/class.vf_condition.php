@@ -49,6 +49,34 @@ class VF_Condition extends VF_ClassDynamic {
 	}
 
 	/**
+	 * Define getters - no need to use the VF_ClassDynamic for that.
+	 */
+	public function getSubject()
+	{
+	    return $this->__subject;
+	}
+
+	public function getProperty()
+	{
+	    return $this->__property;
+	}
+
+	public function getValue()
+	{
+	    return $this->__value;
+	}
+
+	public function getComparisons()
+	{
+	    return $this->__comparisons;
+	}
+
+	public function getComparisonType()
+	{
+	    return $this->__comparisontype;
+	}
+
+	/**
 	 * Add new comparison to Condition
 	 * @param VF_Comparison|Array $varComparison Comparison array or VF_Comparison object
 	 */

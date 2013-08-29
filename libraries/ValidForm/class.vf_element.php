@@ -265,6 +265,15 @@ class VF_Element extends VF_Base {
 		}
 	}
 
+	/**
+	 * Get default value
+	 * @return Ambigous <array, string>
+	 */
+	public function getDefault()
+	{
+	    return $this->__default;
+	}
+
 	public function setDefault($varValue) {
 		$this->__default = $varValue;
 	}

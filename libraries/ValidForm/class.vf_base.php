@@ -94,6 +94,15 @@ class VF_Base extends VF_ClassDynamic {
 	}
 
 	/**
+	 * Define getter method - no need to use VF_ClassDynamic for that.
+	 * @return array:
+	 */
+	public function getConditions()
+	{
+	    return $this->__conditions;
+	}
+
+	/**
 	 * Get element's VF_Condition object
 	 * Note: When chaining methods, always use hasCondition() first before chaining
 	 * for example 'getCondition()->isMet()'.
