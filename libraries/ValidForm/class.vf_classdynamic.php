@@ -55,11 +55,6 @@ class VF_ClassDynamic {
 	}
 
 	public function __call($method, $values) {
-		$test = file_get_contents(__DIR__ . "/test.txt");
-		$test .= "\n\r" . $method;
-
-		file_put_contents(__DIR__ . "/test.txt", $test);
-
 		if (substr($method, 0, 3) == "get") {
 			$property = substr($method, 3);
 			return $this->$property;
