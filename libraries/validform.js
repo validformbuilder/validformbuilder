@@ -425,6 +425,24 @@ ValidForm.prototype.attachAreaEvents = function(objActiveTrigger) {
 					if (typeof $dynamicTrigger === "object") {
 						$dynamicTrigger.show();
 					}
+					
+					/* 
+					 * Walk through the conditions to "reset" conditions that have been overruled by the code above.
+					 * TODO: Only check comparisons that are part of this area.
+					 */ 
+					for (var i = 0; i <= __this.conditions.length; i++) {
+						if (typeof __this.conditions[i] !== "undefined") {
+							var condition = __this.conditions[i];
+							for (var j = 0; j <= condition.comparisons.length; j++) {
+								if (typeof condition.comparisons[j] !== "undefined") {
+									var subject = condition.comparisons[j].subject;									
+									if (subject) {
+										$("[name='" + subject.name + "']").triggerHandler("change");
+									}
+								}
+							}
+						}
+					}
 
 					$("#" + __this.id).trigger("VF_EnableActiveArea", [{ValidForm: __this, objArea: currentFieldset}]);
 				} else {
