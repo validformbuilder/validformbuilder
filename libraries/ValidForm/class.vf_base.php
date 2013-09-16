@@ -32,7 +32,7 @@ class VF_Base extends VF_ClassDynamic {
 	protected $__labelmeta = array();
 	protected $__magicmeta = array("label", "field");
 	protected $__magicreservedmeta = array("labelRange");
-	protected $__reservedfieldmeta = array("multiple");
+	protected $__reservedfieldmeta = array("multiple", "rows", "cols");
 	protected $__reservedlabelmeta = array();
 	protected $__reservedmeta = array(
 		"parent",

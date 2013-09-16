@@ -28,9 +28,15 @@ require_once('class.vf_element.php');
 class VF_Textarea extends VF_Element {
 
 	public function __construct($name, $type, $label = "", $validationRules = array(), $errorHandlers = array(), $meta = array()) {
-		$meta["class"] = (!isset($meta["class"])) ? "vf__text" : $meta["class"] . " vf__text";
-		if (!isset($meta["rows"])) $meta["rows"] = "5";
-		if (!isset($meta["cols"])) $meta["cols"] = "21";
+
+	    $varRows = $this->getFieldMeta("rows", null);
+	    if (is_null($varRows)) {
+	        $this->setFieldMeta("rows", "5");
+	    }
+	    $varCols = $this->getFieldMeta("cols", null);
+	    if (is_null($varCols)) {
+	        $this->setFieldMeta("cols", "21");
+	    }
 
 		parent::__construct($name, $type, $label, $validationRules, $errorHandlers, $meta);
 	}
