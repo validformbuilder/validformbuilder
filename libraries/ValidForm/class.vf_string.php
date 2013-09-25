@@ -28,6 +28,7 @@ require_once('class.vf_base.php');
 class VF_String extends VF_Base {
 	protected $__id;
 	protected $__body;
+	protected $__dynamiccounter = false;
 
 	public function __construct($bodyString, $meta = array()) {
 		$this->__body = $bodyString;

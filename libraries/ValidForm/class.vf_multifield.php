@@ -141,7 +141,7 @@ class VF_MultiField extends VF_Base {
 		if ($blnError) $this->setMeta("class", "vf__error");
 		$this->setMeta("class", "vf__multifield vf__cf");
 
-		$strId = ($intCount == 0) ? " id=\"{$this->getId()}\"" : "";
+		$strId = ($intCount == 0) ? " id=\"{$this->getId()}\"" : " id=\"" . $this->getId() . "_{$intCount}" . "\"";
 		$strOutput = "<div{$this->__getMetaString()}{$strId}>\n";
 
 		if ($blnError) $strOutput .= "<p class=\"vf__error\">" . implode("</p><p class=\"vf__error\">", $arrError) . "</p>";
@@ -190,17 +190,26 @@ class VF_MultiField extends VF_Base {
 		return $strReturn;
 	}
 
-	public function toJS() {
-		$strReturn = "";
+	public function toJS($blnParentIsDynamic = FALSE) {
+		$strOutput = "";
 
 		foreach ($this->__fields as $field) {
-			$strReturn .= $field->toJS($this->__dynamic);
+			$strOutput .= $field->toJS($this->__dynamic);
 		}
 
 		//*** Condition logic.
-		$strReturn .= $this->conditionsToJs();
+		if ($this->__dynamic || $blnParentIsDynamic) {
+		    $intDynamicCount = $this->getDynamicCount($blnParentIsDynamic);
+		    for($intCount = 0; $intCount <= $intDynamicCount; $intCount++) {
+		        //*** Render the condition logic per dynamic field.
+		        $strOutput .= $this->conditionsToJs($intCount);
+		    }
+		} else {
+		    //*** Condition logic.
+		    $strOutput .= $this->conditionsToJs();
+		}
 
-		return $strReturn;
+		return $strOutput;
 	}
 
 	public function isValid() {
@@ -221,12 +230,18 @@ class VF_MultiField extends VF_Base {
 		return ($this->__dynamic) ? true : false;
 	}
 
-	public function getDynamicCount() {
+	public function getDynamicCount($blnParentIsDynamic = FALSE) {
 		$intReturn = 0;
 
-		if ($this->__dynamic) {
+		if ($this->__dynamic || $blnParentIsDynamic) {
 			$objSubFields = $this->getFields();
-			$objSubField = ($objSubFields->count() > 0) ? $objSubFields->getFirst() : NULL;
+			$objSubField = null;
+			foreach ($objSubFields as $objSubFieldItem) {
+			    if ($objSubFieldItem->getDynamicCounter()) {
+			        $objSubField = $objSubFieldItem;
+			        break;
+			    }
+		    }
 
 			if (is_object($objSubField)) {
 				$intReturn = $objSubField->getDynamicCounter()->getValidator()->getValue();
@@ -264,13 +279,16 @@ class VF_MultiField extends VF_Base {
 
 		foreach ($this->__fields as $objField) {
 			if (get_class($objField) !== "VF_Hidden") {
-				$varValue = $objField->getValidator()->getValue($intCount);
+			    $objValidator = $objField->getValidator();
+			    if (is_object($objValidator)) {
+    				$varValue = $objValidator->getValue($intCount);
 
-				if (!empty($varValue)) {
-					$blnReturn = true;
+    				if (!empty($varValue)) {
+    					$blnReturn = true;
 
-					break;
-				}
+    					break;
+    				}
+			    }
 			}
 		}
 

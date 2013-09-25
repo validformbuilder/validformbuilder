@@ -292,6 +292,21 @@ ValidForm.prototype.dynamicDuplication = function () {
 				}
 
 			});
+			
+			//*** Fix multifields in areas.
+			if (typeof counter == "object" && copy.hasClass("vf__area")) {
+				copy.find(".vf__multifield").each(function(){
+					if (counter.val() == 1) {
+						fieldId = jQuery(this).attr("id");
+					} else {
+						var arrFieldId = jQuery(this).attr("id").split("_");
+						arrFieldId.pop();
+						fieldId = arrFieldId.join("_");
+					}
+					
+					jQuery(this).attr("id", fieldId + "_" + counter.val());
+				});
+			}
 
 			//*** Remove 'required' styling.
 			copy
@@ -358,16 +373,31 @@ ValidForm.prototype.attachDynamicConditions = function(arrElementNames, dynamicC
 		if (typeof self.conditions[i] !== "undefined") {
 			var blnInDynamic = false;
 			var newCondSubject = self.conditions[i].subject.name;
-
-			if ($.inArray(self.conditions[i].subject.name, arrElementNames) > -1) {
-				blnInDynamic = true;
-				newCondSubject = self.conditions[i].subject.name + "_" + dynamicCount;
+			
+			if (!newCondSubject) {
+				//*** Probably a multifield.
+				if (self.conditions[i].subject instanceof jQuery) {
+					$.each(arrElementNames, function(){
+						if (self.conditions[i].subject.find("[name='" + this + "']").length > 0) {
+							blnInDynamic = true;
+							newCondSubject = self.conditions[i].subject.attr("id") + "_" + dynamicCount;
+							
+							return false;
+						}
+					});
+				}
 			} else {
-				var comparisons = self.conditions[i].comparisons;
-				for (var j = 0; j < comparisons.length; j++) {					
-					if ($.inArray(comparisons[j].subject.name, arrElementNames) > -1) {
-						blnInDynamic = true;
-						break;
+				//*** Regular field (ValidFormElement).
+				if ($.inArray(newCondSubject, arrElementNames) > -1) {
+					blnInDynamic = true;
+					newCondSubject = newCondSubject + "_" + dynamicCount;
+				} else {
+					var comparisons = self.conditions[i].comparisons;
+					for (var j = 0; j < comparisons.length; j++) {					
+						if ($.inArray(comparisons[j].subject.name, arrElementNames) > -1) {
+							blnInDynamic = true;
+							break;
+						}
 					}
 				}
 			}
