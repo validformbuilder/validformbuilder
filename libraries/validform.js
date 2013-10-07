@@ -1010,7 +1010,7 @@ ValidFormCondition.prototype.set = function (blnResult) {
 				}
 
 				if ($objSubject.attr("type") == "checkbox" || $objSubject.attr("type") == "radio") {
-					$objSubject.parent().parent().parent().show();
+					$objSubject.closest("div").show();
 				}
 
 				if ($objSubject.next().hasClass("vf__dynamic")) {
@@ -1033,7 +1033,7 @@ ValidFormCondition.prototype.set = function (blnResult) {
 				}
 
 				if ($objSubject.attr("type") == "checkbox" || $objSubject.attr("type") == "radio") {
-					$objSubject.parent().parent().parent().hide();
+					$objSubject.closest("div").hide();
 				}
 
 				if ($objSubject.next().hasClass("vf__dynamic")) {
