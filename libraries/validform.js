@@ -1001,20 +1001,22 @@ ValidFormCondition.prototype.set = function (blnResult) {
 	var Util = {
 		"visible": function (blnValue) {
 			var $objSubject = (self.subject instanceof jQuery) ? self.subject : $("[name='" + self.subject.name + "']");
+			var $objBase = $objSubject;
 
 			if (blnValue) {
 				$objSubject.show();
 
 				if (!$objSubject.is("div") && !$objSubject.is("fieldset")) {
-					$objSubject.parent().show();
+					$objBase = $objSubject.parent();
+					$objBase.show();
 				}
 
 				if ($objSubject.attr("type") == "checkbox" || $objSubject.attr("type") == "radio") {
 					$objSubject.closest("div").show();
 				}
 
-				if ($objSubject.next().hasClass("vf__dynamic")) {
-					$objSubject.next().show();
+				if ($objBase.next().hasClass("vf__dynamic")) {
+					$objBase.next().show();
 				}
 
 				$objSubject.nextAll(".vf__clone, .vf__dynamic").show();
@@ -1029,15 +1031,16 @@ ValidFormCondition.prototype.set = function (blnResult) {
 				$objSubject.hide();
 
 				if (!$objSubject.is("div") && !$objSubject.is("fieldset")) {
-					$objSubject.parent().hide();
+					$objBase = $objSubject.parent();
+					$objBase.hide();
 				}
 
 				if ($objSubject.attr("type") == "checkbox" || $objSubject.attr("type") == "radio") {
 					$objSubject.closest("div").hide();
 				}
 
-				if ($objSubject.next().hasClass("vf__dynamic")) {
-					$objSubject.next().hide();
+				if ($objBase.next().hasClass("vf__dynamic")) {
+					$objBase.next().hide();
 				}
 
 				$objSubject.nextAll(".vf__clone, .vf__dynamic").hide();
