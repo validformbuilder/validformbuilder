@@ -24,6 +24,7 @@ require_once('class.vf_collection.php');
 require_once('class.vf_button.php');
 require_once('class.vf_fieldset.php');
 require_once('class.vf_note.php');
+require_once('class.vf_string.php');
 require_once('class.vf_text.php');
 require_once('class.vf_password.php');
 require_once('class.vf_textarea.php');
