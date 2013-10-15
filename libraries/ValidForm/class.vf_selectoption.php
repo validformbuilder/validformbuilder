@@ -39,9 +39,16 @@ class VF_SelectOption extends VF_Element {
 		$this->__meta = $meta;
 	}
 
-	public function toHtml($value = NULL) {
-		$strSelected = ($this->__selected && is_null($value)) ? " selected=\"selected\"" : "";
-		$strSelected = ($value == $this->__value) ? " selected=\"selected\"" : $strSelected;
+	public function toHtml($value = null) {
+	    $strSelected = "";
+	    if ($this->__selected && is_null($value)) {
+	        $strSelected = " selected=\"selected\"";
+	    }
+
+	    if ($value == $this->__value) {
+	        $strSelected = " selected=\"selected\"";
+	    }
+
 		$strOutput = "<option value=\"{$this->__value}\"{$strSelected} {$this->__getMetaString()}>{$this->__label}</option>\n";
 
 		return $strOutput;

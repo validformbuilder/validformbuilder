@@ -55,7 +55,10 @@ class VF_GroupField extends VF_Element {
 					$this->setFieldMeta("checked", "checked");
 					break;
 				} else {
-					$this->setFieldMeta("checked", null, true); // Remove 'checked'
+				    if ($this->__type == VFORM_RADIO_LIST) {
+				        // Uncheck all others if this is a radio list
+    					$this->setFieldMeta("checked", null, true); // Remove 'checked'
+				    }
 				}
 			}
 		} else {

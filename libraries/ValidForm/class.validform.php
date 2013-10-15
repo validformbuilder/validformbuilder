@@ -60,6 +60,7 @@ require_once('vf_constants.php');
 class ValidForm extends VF_ClassDynamic {
 	protected $__description;
 	protected $__meta;
+	protected $__defaults = array();
 	protected $__action;
 	protected $__submitlabel;
 	protected $__jsevents = array(); // Keep it lowercase to enable magic methods from VF_ClassDynamic
@@ -69,6 +70,8 @@ class ValidForm extends VF_ClassDynamic {
 	protected $__requiredstyle;
 	protected $__novaluesmessage;
 	protected $__invalidfields = array();
+
+	private   $__cachedfields = null;
 	private   $__uniqueid;
 
 	/**
@@ -93,6 +96,18 @@ class ValidForm extends VF_ClassDynamic {
 		} else {
 			$this->__action = $action;
 		}
+	}
+
+	public function setDefaults($arrDefaults = array())
+	{
+	    if (is_array($arrDefaults)) {
+	        $this->__defaults = $arrDefaults;
+	    } else{
+	        throw new InvalidArgumentException(
+	            "Invalid argument passed in to ValidForm->setDefaults(). Expected array got " . gettype($arrDefaults),
+	            E_ERROR
+            );
+	    }
 	}
 
 	/**
@@ -292,6 +307,15 @@ class ValidForm extends VF_ClassDynamic {
 		$this->__jsevents[$strEvent] = $strMethod;
 	}
 
+	/**
+	 * Generate HTML output - build form
+	 *
+	 * @param string $blnClientSide
+	 * @param string $blnForceSubmitted
+	 * @param string $strCustomJs
+	 *
+	 * @return string Generated HTML output
+	 */
 	public function toHtml($blnClientSide = true, $blnForceSubmitted = false, $strCustomJs = "") {
 		$strOutput = "";
 
@@ -332,6 +356,34 @@ class ValidForm extends VF_ClassDynamic {
 	public function fieldsToHtml($blnForceSubmitted = false, &$blnNavigation = false) {
 		$strReturn = "";
 
+		if (is_array($this->__defaults) && count($this->__defaults) > 0) {
+		    $objFields = $this->getCachedFields();
+		    foreach ($objFields as $objField) {
+		        $strName = $objField->getName(true); // true strips the [] off a checkbox's name
+
+		        if (array_key_exists($strName, $this->__defaults)) {
+		            $varValue = $this->__defaults[$strName];
+
+		            $blnDynamic = $objField->isDynamic();
+		            if (!$blnDynamic) {
+		                $objParent = $objField->getMeta("parent", null);
+		                if (is_object($objParent)) {
+		                    $blnDynamic = $objParent->isDynamic();
+		                }
+		            }
+
+		            if (is_array($varValue)
+	                    && !array_key_exists($strName . "_dynamic", $this->__defaults)
+		                && $blnDynamic
+			        ) {
+                        $this->__defaults[$strName . "_dynamic"] = count($varValue) - 1; // convert to zero-based
+		            }
+
+                    $objField->setDefault($varValue);
+		        }
+		    }
+		}
+
 		foreach ($this->__elements as $element) {
 			$strReturn .= $element->toHtml($this->isSubmitted($blnForceSubmitted), false, true, !$blnForceSubmitted);
 
@@ -359,6 +411,12 @@ class ValidForm extends VF_ClassDynamic {
 		return base64_encode(gzcompress(serialize($this)));
 	}
 
+	/**
+	 * Unserialize previously serialized ValidForm object
+	 *
+	 * @param string $strSerialized Serialized ValidForm object
+	 * @return ValidForm
+	 */
 	public static function unserialize($strSerialized) {
 		return unserialize(gzuncompress(base64_decode($strSerialized)));
 	}
@@ -375,6 +433,23 @@ class ValidForm extends VF_ClassDynamic {
 		} else {
 			return FALSE;
 		}
+	}
+
+	/**
+	 * Fetch a cached flat collection of form fields instead of making
+	 * an expensive getFields() call and looping through all elements
+	 *
+	 * @return VF_Collection
+	 */
+	public function getCachedFields()
+	{
+	    $objReturn = $this->__cachedfields;
+
+	    if (is_null($objReturn)) {
+	        $objReturn = $this->getFields();
+	    }
+
+	    return $objReturn;
 	}
 
 	public function getFields() {
@@ -415,6 +490,8 @@ class ValidForm extends VF_ClassDynamic {
 				$objFields->addObject($objFieldset);
 			}
 		}
+
+		$this->__cachedfields = $objFields;
 
 		return $objFields;
 	}
