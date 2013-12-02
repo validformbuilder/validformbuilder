@@ -1572,8 +1572,10 @@ ValidFormFieldValidator.prototype.validate = function(value) {
 
 			//*** Check if the length of the value is within the range.
 			if (this.minLength > 0 && value.length < this.minLength) {
-				this.showAlert(sprintf(this.minLengthError, this.minLength));
-				return false;
+				if (this.required || (!this.required && value !== "")) {
+					this.showAlert(sprintf(this.minLengthError, this.minLength));
+					return false;
+				}
 			}
 
 			if (this.maxLength > 0 && value.length > this.maxLength) {
