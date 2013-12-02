@@ -1251,6 +1251,27 @@ function ValidFormElement(strFormId, strElementName, strElementId, strValidation
 	};
 };
 
+ValidFormElement.prototype.setHintValue = function (value) {
+	if (this.getValue() === this.getHintValue()) {
+		// Update hint value
+		this.setValue(value);
+	}
+
+	this.validator.hint = value;
+};
+
+ValidFormElement.prototype.getHintValue = function () {
+	return this.validator.hint;
+};
+
+ValidFormElement.prototype.getValue = function () {
+	return $("#" + this.id).val();
+};
+
+ValidFormElement.prototype.setValue = function (value) {
+	$("#" + this.id).val(value);
+};
+
 /**
  * Validate this form element
  * @return {boolean} True if valid, false if not
