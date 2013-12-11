@@ -316,7 +316,11 @@ class VF_FieldValidator extends VF_ClassDynamic {
 				unset($this->__validvalues[$intDynamicPosition]);
 				$this->__errors[$intDynamicPosition] = $this->__typeerror;
 			} else {
-				$this->__validvalues[$intDynamicPosition] = $value;
+			    if (is_array($value)) {
+			        $this->__validvalues = $value;
+			    } else{
+    				$this->__validvalues[$intDynamicPosition] = $value;
+			    }
 			}
 		}
 
