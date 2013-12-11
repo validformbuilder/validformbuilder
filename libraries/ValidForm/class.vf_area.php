@@ -262,20 +262,20 @@ class VF_Area extends VF_Base {
 		$intReturn = 0;
 
 		if ($this->__dynamic) {
-			$objSubFields = $this->getFields();
-			$objSubField = ($objSubFields->count() > 0) ? $objSubFields->getFirst() : NULL;
-			if (get_class($objSubField) == "VF_Paragraph") $objSubField = $objSubFields->next();
+			$objCounters = $this->getCountersRecursive($this->getFields());
 
-			if (is_object($objSubField) && get_class($objSubField) !== "VF_Paragraph") {
-				if ($objSubField->hasFields()) {
-					$objSubFields = $objSubField->getFields();
-					$objSubField = $objSubFields->getFirst();
+			foreach ($objCounters as $objCounter) {
+			    $intCounterValue = $objCounter->getValidator()->getValue();
+			    if ($intCounterValue > $intReturn) {
+			        $intReturn = $intCounterValue;
+			    }
+			}
 
-					if (get_class($objSubField) == "VF_Paragraph") $objSubField = $objSubFields->next();
-				}
-
-				$intReturn = $objSubField->getDynamicCounter()->getValidator()->getValue(); // old, faulty way to get dynamic count
-				// $intReturn = $objSubField->getDynamicCount(); // new --- NOT working
+			if ($intReturn > 0) {
+			    // Equalize all counter values inside this area
+			    foreach ($objCounters as $objCounter) {
+			        $objCounter->setDefault($intReturn);
+			    }
 			}
 		}
 

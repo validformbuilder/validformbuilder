@@ -58,6 +58,32 @@ class VF_Base extends VF_ClassDynamic {
 	);
 
 	/**
+	 * Get a collection of fields and look for dynamic counters recursively
+	 *
+	 * @param VF_Collection $objFields
+	 * @param VF_Collection $objCollection
+	 * @return VF_Collection
+	 */
+	protected function getCountersRecursive($objFields, $objCollection = null)
+	{
+	    if (is_null($objCollection)) {
+	        $objCollection = new VF_Collection();
+	    }
+
+	    foreach ($objFields as $objField) {
+	        if ($objField instanceof VF_Element && $objField->isDynamicCounter()) {
+	            $objCollection->addObject($objField);
+	        }
+
+	        if ($objField->hasFields()) {
+	            $this->getCountersRecursive($objField->getFields(), $objCollection);
+	        }
+	    }
+
+	    return $objCollection;
+	}
+
+	/**
 	 * Add a new condition to the current field
 	 * @param [type] $strType           [description]
 	 * @param [type] $blnValue          [description]
@@ -636,4 +662,3 @@ class VF_Base extends VF_ClassDynamic {
 		}
 	}
 }
-?>

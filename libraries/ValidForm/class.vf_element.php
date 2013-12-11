@@ -65,6 +65,10 @@ class VF_Element extends VF_Base {
 		$this->__validator = new VF_FieldValidator($this, $validationRules, $errorHandlers);
 	}
 
+	public function isDynamicCounter() {
+		return false;
+	}
+
 	protected function setClass($type, &$meta) {
 		switch ($type) {
 			case VFORM_STRING:

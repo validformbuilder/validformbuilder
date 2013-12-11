@@ -230,21 +230,24 @@ class VF_MultiField extends VF_Base {
 		return ($this->__dynamic) ? true : false;
 	}
 
-	public function getDynamicCount($blnParentIsDynamic = FALSE) {
+	public function getDynamicCount() {
 		$intReturn = 0;
 
-		if ($this->__dynamic || $blnParentIsDynamic) {
-			$objSubFields = $this->getFields();
-			$objSubField = null;
-			foreach ($objSubFields as $objSubFieldItem) {
-			    if ($objSubFieldItem->getDynamicCounter()) {
-			        $objSubField = $objSubFieldItem;
-			        break;
-			    }
-		    }
+		if ($this->__dynamic) {
+			$objCounters = $this->getCountersRecursive($this->getFields());
 
-			if (is_object($objSubField)) {
-				$intReturn = $objSubField->getDynamicCounter()->getValidator()->getValue();
+			foreach ($objCounters as $objCounter) {
+			    $intCounterValue = $objCounter->getValidator()->getValue();
+			    if ($intCounterValue > $intReturn) {
+			        $intReturn = $intCounterValue;
+			    }
+			}
+
+			if ($intReturn > 0) {
+			    // Equalize all counter values inside this area
+			    foreach ($objCounters as $objCounter) {
+			        $objCounter->setDefault($intReturn);
+			    }
 			}
 		}
 
