@@ -397,7 +397,12 @@ class ValidForm extends VF_ClassDynamic {
 	                    && !array_key_exists($strName . "_dynamic", $this->__defaults)
 		                && $blnDynamic
 			        ) {
-                        $this->__defaults[$strName . "_dynamic"] = count($varValue) - 1; // convert to zero-based
+		                $intDynamicCount = 0;
+		                if (count($varValue) > 0) {
+		                    $intDynamicCount = count($varValue) - 1; // convert to zero-based
+		                }
+
+                        $this->__defaults[$strName . "_dynamic"] = $intDynamicCount;
 		            }
 
                     $objField->setDefault($varValue);
