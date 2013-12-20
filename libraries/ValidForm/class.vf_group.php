@@ -106,7 +106,7 @@ class VF_Group extends VF_Element {
 		return $strOutput;
 	}
 
-	public function toJS($blnParentIsDynamic = FALSE) {
+	public function toJS($blnParentIsDynamic = false) {
 		$strOutput = "";
 		$strCheck = $this->__validator->getCheck();
 		$strCheck = (empty($strCheck)) ? "''" : str_replace("'", "\\'", $strCheck);
@@ -159,7 +159,7 @@ class VF_Group extends VF_Element {
 		return $name;
 	}
 
-	public function addField($label, $value, $checked = FALSE, $meta = array()) {
+	public function addField($label, $value, $checked = false, $meta = array()) {
 		$name = $this->getName();
 
 		$objField = new VF_GroupField($this->getRandomId($name), $name, $this->__type, $label, $value, $checked, $meta);
