@@ -1342,12 +1342,7 @@ ValidFormElement.prototype.setRequired = function (blnValue) {
 
     var $element = $("[name='" + this.name + "']");
 
-    var $parent = $element.parent();
-    if ($parent.hasClass("vf__multifielditem")) {
-        // Multifield item
-        $parent = $parent.parent();
-    }
-
+    var $parent = $element.closest("div.vf__optional, div.vf__required");
     if (blnValue) {
         // Required == true
         $parent.removeClass("vf__optional").addClass("vf__required");
@@ -1375,31 +1370,23 @@ ValidFormElement.prototype.setEnabled = function (blnValue) {
     this.disabled = !blnValue;
 
     var $element = $("[name='" + this.name + "']");
-
-    var $parent = $element.parent();
-    if ($parent.hasClass("vf__multifielditem")) {
-        // Multifield item
-        $parent = $parent.parent();
+    var $parent = $element.closest("div.vf__optional, div.vf__required, div.vf__multifielditem");
+    
+    if (this.id === "formfield_insuredactivitypercentage") {
+    	var hi = "debug";
     }
     
     if (blnValue) {
         // Enabled == true, e.g. disabled = false
         $element
-            // .addClass("vf__optional")
-            // .removeClass("vf__required")
             .removeClass("vf__disabled")
-            .removeAttr("disabled");
+            .prop("disabled", false);
 
-        $parent.addClass("vf__optional").removeClass("vf__required");
     } else {
         // Enabled == false, e.g. disabled = true
         $element
-            // .removeClass("vf__optional")
-            // .addClass("vf__required")
             .addClass("vf__disabled")
-            .attr("disabled", "disabled");
-
-        //$parent.removeClass("vf__optional").addClass("vf__required");
+            .prop("disabled", true);
     }
 };
 
