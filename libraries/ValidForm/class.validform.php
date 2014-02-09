@@ -411,7 +411,7 @@ class ValidForm extends VF_ClassDynamic {
 		}
 
 		foreach ($this->__elements as $element) {
-			$strReturn .= $element->toHtml($this->isSubmitted($blnForceSubmitted), false, true, !$blnForceSubmitted);
+			$strReturn .= $element->toHtml($this->isSubmitted($blnForceSubmitted), false, true, $blnForceSubmitted);
 
 			if (get_class($element) == "VF_Navigation") {
 				$blnNavigation = true;
