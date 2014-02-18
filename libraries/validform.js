@@ -47,7 +47,7 @@ function ValidForm(strFormId, strMainAlert) {
 
 	// Initialize ValidForm class
 	this._init();
-};
+}
 
 /**
  * Initialize ValidForm Builder client side after all elements are added to the collection.
@@ -137,7 +137,7 @@ ValidForm.prototype.showAlerts = function (objFields) {
 	} catch (e) {
 		try {
 			console.error("Show alerts failed: ", e.message, e); // Log error
-		} catch (e) {} // Or die trying
+        } catch (err) {} // Or die trying
 	}
 };
 
@@ -270,7 +270,7 @@ ValidForm.prototype.dynamicDuplication = function () {
 								}
 							})
 							.bind("blur", function() {
-								if (jQuery(this).val() == "") {
+                                if (jQuery(this).val() === "") {
 									jQuery(this).val(objOriginal.validator.hint);
 									jQuery(this).parent().addClass("vf__hint");
 								} else {
@@ -344,7 +344,7 @@ ValidForm.prototype.dynamicDuplication = function () {
 				var originalTrigger = jQuery("legend :checkbox", $original);
 
 				if (copiedTrigger.length > 0) {
-					var counter = $("#" + copiedTrigger.attr("name") + "_dynamic");
+                    counter = $("#" + copiedTrigger.attr("name") + "_dynamic");
 
 					// +1 on the counter
 					counter.val(parseInt(counter.val()) + 1);
@@ -379,7 +379,9 @@ ValidForm.prototype.dynamicDuplication = function () {
 };
 
 ValidForm.prototype.attachDynamicConditions = function(arrElementNames, dynamicCount) {
-	var self = this;
+    var self = this,
+        j = 0, // Used as a counter inside the for loop.
+        comparisons;
 	
 	for (var i = 0; i <= self.conditions.length; i++) {
 		var condition = self.conditions[i];
@@ -391,23 +393,25 @@ ValidForm.prototype.attachDynamicConditions = function(arrElementNames, dynamicC
 			if (!newCondSubject) {
 				//*** Probably a multifield.
 				if (condition.subject instanceof jQuery) {
-					$.each(arrElementNames, function(){
-						if (condition.subject.find("[name='" + this + "']").length > 0) {
+                    for (var elementNameIndex in arrElementNames) {
+                        if (arrElementNames.hasOwnProperty(elementNameIndex)) {
+                            if (condition.subject.find("[name='" + arrElementNames[elementNameIndex] + "']").length > 0) {
 							blnInDynamic = true;
 							newCondSubject = condition.subject.attr("id") + "_" + dynamicCount;
 							
-							return false;
+                                break;
 						}
-					});
 				}
+                    }
+                }
 			} else {
 				//*** Regular field (ValidFormElement).
 				if ($.inArray(newCondSubject, arrElementNames) > -1) {
 					blnInDynamic = true;
 					newCondSubject = newCondSubject + "_" + dynamicCount;
 				} else {
-					var comparisons = condition.comparisons;
-					for (var j = 0; j < comparisons.length; j++) {					
+                    comparisons = condition.comparisons;
+                    for (j = 0; j < comparisons.length; j++) {                    
 						if ($.inArray(comparisons[j].subject.name, arrElementNames) > -1) {
 							blnInDynamic = true;
 							break;
@@ -419,8 +423,8 @@ ValidForm.prototype.attachDynamicConditions = function(arrElementNames, dynamicC
 			if (blnInDynamic) {
 				var arrComparisons = [];
 				
-				var comparisons = condition.comparisons;
-				for (var j = 0; j < comparisons.length; j++) {
+                comparisons = condition.comparisons;
+                for (j = 0; j < comparisons.length; j++) {
 					var newCompSubject = comparisons[j].subject.name;
 					
 					if ($.inArray(comparisons[j].subject.name, arrElementNames) > -1) {
@@ -448,7 +452,8 @@ ValidForm.prototype.attachDynamicConditions = function(arrElementNames, dynamicC
 };
 
 ValidForm.prototype.attachAreaEvents = function(objActiveTrigger) {
-	var __this = this;
+    var __this = this,
+        inputNames = [];
 
 	objActiveTrigger.unbind("change").bind("change", function(){
 		self = this;
@@ -456,7 +461,8 @@ ValidForm.prototype.attachAreaEvents = function(objActiveTrigger) {
 		var fieldsets = jQuery("input[name='" + jQuery(this).attr("name") + "']").closest(".vf__area");
 		var currentFieldset = jQuery(objActiveTrigger).closest(".vf__area");
 		fieldsets.each(function(){
-			fieldset = jQuery(this);
+            var fieldset = jQuery(this),
+                $dynamicTrigger;
 			
 			if (fieldset[0] == currentFieldset[0]) {
 				if (self.checked) {
@@ -465,7 +471,7 @@ ValidForm.prototype.attachAreaEvents = function(objActiveTrigger) {
 					jQuery(".vf__dynamic a", currentFieldset).removeClass("vf__disabled");
 					jQuery(currentFieldset).removeClass("vf__disabled");
 
-					var $dynamicTrigger = jQuery(currentFieldset).data("vf__dynamicTrigger");
+                    $dynamicTrigger = jQuery(currentFieldset).data("vf__dynamicTrigger");
 					if (typeof $dynamicTrigger === "object") {
 						$dynamicTrigger.show();
 					}
@@ -491,7 +497,8 @@ ValidForm.prototype.attachAreaEvents = function(objActiveTrigger) {
 					$("#" + __this.id).trigger("VF_EnableActiveArea", [{ValidForm: __this, objArea: currentFieldset}]);
 				} else {
 					// Disable active area & remove error's
-					var inputNames = [];
+                    inputNames = [];
+                    
 					jQuery("div > input, select, textarea", currentFieldset)
 						.attr("disabled", "disabled")
 						.each(function () {
@@ -503,7 +510,7 @@ ValidForm.prototype.attachAreaEvents = function(objActiveTrigger) {
 					jQuery(currentFieldset).addClass("vf__disabled");
 
 					// Get the dynamic trigger, if available
-					var $dynamicTrigger = $("[data-target-id='" + inputNames.join("|") + "']");
+                    $dynamicTrigger = $("[data-target-id='" + inputNames.join("|") + "']");
 					if ($dynamicTrigger.length > 0) {
 						$dynamicTrigger.hide();
 
@@ -520,7 +527,8 @@ ValidForm.prototype.attachAreaEvents = function(objActiveTrigger) {
 				}
 			} else {
 				// Disable active area & remove error's
-				var inputNames = [];
+                inputNames = [];
+                
 				jQuery("div > input, select, textarea", fieldset)
 					.attr("disabled", "disabled")
 					.each(function () {
@@ -532,7 +540,7 @@ ValidForm.prototype.attachAreaEvents = function(objActiveTrigger) {
 				jQuery(fieldset).addClass("vf__disabled");
 
 				// Get the dynamic trigger, if available
-				var $dynamicTrigger = $("[data-target-id='" + inputNames.join("|") + "']");
+                $dynamicTrigger = $("[data-target-id='" + inputNames.join("|") + "']");
 				if ($dynamicTrigger.length > 0) {
 					$dynamicTrigger.hide();
 
@@ -577,9 +585,11 @@ ValidForm.prototype.addElement = function() {
 		var minLengthError	= "";
 		var maxLength		= null;
 		var maxLengthError	= "";
+        var strElementId = null;
+        var strValidation = null;
 
 		if (arguments.length > 0) {
-			var strElementId = arguments[0];
+            strElementId = arguments[0];
 		} else {
 			return false;
 		}
@@ -591,7 +601,7 @@ ValidForm.prototype.addElement = function() {
 		}
 
 		if (arguments.length > 2) {
-			var strValidation = arguments[2];
+            strValidation = arguments[2];
 		} else {
 			return false;
 		}
@@ -717,8 +727,12 @@ ValidForm.prototype.validate = function(strSelector) {
 		for (var strElement in this.elements) {
 			var objElement = this.elements[strElement];
 
-			if (((strSelector !== null) && (jQuery(strSelector).has(jQuery("[name='" + objElement.name + "']")).length > 0))
-				|| (strSelector == null)) {
+            if ((
+                    (strSelector !== null) && 
+                    (jQuery(strSelector).has(jQuery("[name='" + objElement.name + "']")).length > 0)
+                ) ||
+                (strSelector === null)
+            ) {
 				//*** Check if the element is part of an area.
 				var objArea = jQuery("[name='" + objElement.name + "']").parentsUntil(".vf__area").parent(".vf__area");
 				if (objArea.length > 0) {
@@ -778,12 +792,12 @@ function ValidFormComparison (objForm, subject, comparison, value) {
 	} else {
 		return false;
 	}
-};
+}
 
 ValidFormComparison.prototype._init = function () {
 	try {
-		var self 		= this
-		,	$objSubject = (this.subject instanceof jQuery) ? this.subject : $("[name='" + this.subject.name + "']");
+        var self = this,
+        $objSubject = (this.subject instanceof jQuery) ? this.subject : $("[name='" + this.subject.name + "']");
 
 		//*** Set event listeners. Trigger 'change' event
 		if ($objSubject.is("input") || $objSubject.is("textarea")) {
@@ -844,9 +858,10 @@ ValidFormComparison.prototype._setSubject = function (objForm, strSubject) {
 };
 
 ValidFormComparison.prototype.check = function () {
-	var blnReturn 	= false
-	,	self		= this
-	,	strValue 	= (self.subject instanceof jQuery) ? self.subject.val() : self.subject.getValue();
+    var blnReturn = false,
+        self = this,
+        strValue = (self.subject instanceof jQuery) ? self.subject.val() : self.subject.getValue(),
+        intCurrentValue, varCurrentValue;
 
 	switch (self.comparison) {
 		case "equal":
@@ -867,37 +882,37 @@ ValidFormComparison.prototype.check = function () {
 			}
 			break;
 		case "notempty":
-			if (strValue != "") {
+            if (strValue !== "") {
 				blnReturn = true;
 			}
 			break;
 		case "lessthan":
-			var intCurrentValue = parseInt(strValue)
-			,	varCurrentValue = (isNaN(intCurrentValue)) ? strValue : intCurrentValue;
+            intCurrentValue = parseInt(strValue);
+            varCurrentValue = (isNaN(intCurrentValue)) ? strValue : intCurrentValue;
 
 			if (varCurrentValue < self.value) {
 				blnReturn = true;
 			}
 			break;
 		case "greaterthan":
-			var intCurrentValue = parseInt(strValue)
-			,	varCurrentValue = (isNaN(intCurrentValue)) ? strValue : intCurrentValue;
+            intCurrentValue = parseInt(strValue);
+            varCurrentValue = (isNaN(intCurrentValue)) ? strValue : intCurrentValue;
 
 			if (varCurrentValue > self.value) {
 				blnReturn = true;
 			}
 			break;
 		case "lessthanorequal":
-			var intCurrentValue = parseInt(strValue)
-			,	varCurrentValue = (isNaN(intCurrentValue)) ? strValue : intCurrentValue;
+            intCurrentValue = parseInt(strValue);
+            varCurrentValue = (isNaN(intCurrentValue)) ? strValue : intCurrentValue;
 
 			if (varCurrentValue <= self.value) {
 				blnReturn = true;
 			}
 			break;
 		case "greaterthanorequal":
-			var intCurrentValue = parseInt(strValue)
-			,	varCurrentValue = (isNaN(intCurrentValue)) ? strValue : intCurrentValue;
+            intCurrentValue = parseInt(strValue);
+            varCurrentValue = (isNaN(intCurrentValue)) ? strValue : intCurrentValue;
 
 			if (varCurrentValue >= self.value) {
 				blnReturn = true;
@@ -919,25 +934,25 @@ ValidFormComparison.prototype.check = function () {
 			}
 			break;
 		case "regex":
-			var strRexEx = self.value.replace('\/', '').replace('\/i', '');
-			var objRegEx = new RegExp(strRexEx);
+            var strRexEx = self.value.replace('\/', '').replace('\/i', ''),
+                objRegEx = new RegExp(strRexEx);
+            
 			blnReturn = objRegEx.test(strValue);
 			break;
 	}
 
 	self.isMet = blnReturn;
+    
 	return blnReturn;
 };
 
 function ValidFormCondition (objForm, objCondition) {
-	if (typeof objCondition !== "object" || objCondition == null) {
+    if (typeof objCondition !== "object" || objCondition === null) {
 		throw new Error("Invalid condition object supplied in ValidFormCondition construct.");
-
 	}
 
 	if (typeof objForm === "undefined" || !(objForm instanceof ValidForm)) {
 		throw new Error("Form object undefined or not an instance of ValidForm in ValidFormCondition construct.");
-
 	}
 
 	try {
@@ -954,12 +969,12 @@ function ValidFormCondition (objForm, objCondition) {
 	}
 
 	return this;
-};
+}
 
 ValidFormCondition.prototype._init = function () {
 	try {
-		var self = this
-		,	objComparisons = this.condition.comparisons;
+        var self = this,
+            objComparisons = this.condition.comparisons;
 
 		if (typeof objComparisons === "object" && objComparisons.length > 0) {
 			for (var i = 0; i < objComparisons.length; i++) {
@@ -1118,7 +1133,7 @@ ValidFormCondition.prototype.set = function (blnResult) {
 	};
 
 	// Set the condition
-	Util[self.property]((blnResult == !!self.value));
+    Util[self.property]((blnResult === self.value));
 };
 
 ValidFormCondition.prototype.addComparison = function (objComparison) {
@@ -1130,8 +1145,8 @@ ValidFormCondition.prototype.addComparison = function (objComparison) {
 };
 
 ValidFormCondition.prototype.isMet = function () {
-	var self = this
-	,	def = $.Deferred();
+    var self = this,
+        def = $.Deferred();
 
 	// Count met comparisons
 	var _checkComparisons = function () {
@@ -1161,23 +1176,27 @@ ValidFormCondition.prototype.isMet = function () {
 		return _checkComparisons() > 0;
 	};
 
-	for (var i = 0; i < self.comparisons.length; i++) {
-		if (self.comparisonType === "all") {
-			self.comparisons[i].promise.progress(function (blnResult) {
+    var matchAnyProgressCallback = function (blnResult) {
 				if (_matchAll()) {
 					def.notify(true);
 				} else {
 					def.notify(false);
 				}
-			});
-		} else {
-			self.comparisons[i].promise.progress(function (blnResult) {
+    };
+    
+    var matchAllProgressCallback = function (blnResult) {
 				if (_matchAny()) {
 					def.notify(true);
 				} else {
 					def.notify(false);
 				}
-			});
+    };
+
+    for (var i = 0; i < self.comparisons.length; i++) {
+        if (self.comparisonType === "all") {
+            self.comparisons[i].promise.progress(matchAnyProgressCallback);
+        } else {
+            self.comparisons[i].promise.progress(matchAllProgressCallback);
 		}
 	}
 
@@ -1196,7 +1215,7 @@ function ValidFormElement(strFormId, strElementName, strElementId, strValidation
 	this.formId					= strFormId;
 	this.id 					= strElementId;
 	this.name 					= strElementName;
-	this.disabled 				= !!($("#" + strElementId).attr("disabled") === "disabled");
+    this.disabled             = ($("#" + strElementId).attr("disabled") === "disabled");
 	this.validator 				= new ValidFormFieldValidator(strElementId, strElementName);
 	this.validator.check 		= strValidation;
 	this.validator.required		= false;
@@ -1221,7 +1240,7 @@ function ValidFormElement(strFormId, strElementName, strElementId, strValidation
 		this.validator.hint = arguments[7];
 
 		var __this = this;
-		if (this.validator.hint != "") {
+        if (this.validator.hint !== "") {
 			jQuery("#" + this.id)
 				.bind("focus", function(){
 					if (jQuery(this).val() == __this.validator.hint) {
@@ -1230,7 +1249,7 @@ function ValidFormElement(strFormId, strElementName, strElementId, strValidation
 					}
 				})
 				.bind("blur", function(){
-					if (jQuery(this).val() == "") {
+                    if (jQuery(this).val() === "") {
 						jQuery(this).val(__this.validator.hint);
 						jQuery(this).parent().addClass("vf__hint");
 					} else {
@@ -1265,7 +1284,7 @@ function ValidFormElement(strFormId, strElementName, strElementId, strValidation
 		"required": this.validator.required,
 		"enabled": !this.disabled
 	};
-};
+}
 
 ValidFormElement.prototype.setHintValue = function (value) {
 	if (this.getValue() === this.getHintValue()) {
@@ -1297,8 +1316,8 @@ ValidFormElement.prototype.validate = function() {
 };
 
 ValidFormElement.prototype.getValue = function () {
-	var $field 	= jQuery("[name='" + this.name + "']")
-	,	value;
+    var $field     = jQuery("[name='" + this.name + "']"),
+        value;
 
 	switch ($field.attr("type")) {
 		case "radio":
@@ -1323,12 +1342,7 @@ ValidFormElement.prototype.setRequired = function (blnValue) {
 
 	var $element = $("[name='" + this.name + "']");
 
-	var $parent = $element.parent();
-	if ($parent.hasClass("vf__multifielditem")) {
-		// Multifield item
-		$parent = $parent.parent();
-	}
-
+    var $parent = $element.closest("div.vf__optional, div.vf__required");
 	if (blnValue) {
 		// Required == true
 		$parent.removeClass("vf__optional").addClass("vf__required");
@@ -1356,6 +1370,7 @@ ValidFormElement.prototype.setEnabled = function (blnValue) {
 	this.disabled = !blnValue;
 
 	var $element = $("[name='" + this.name + "']");
+    var $parent = $element.closest("div.vf__optional, div.vf__required, div.vf__multifielditem");
 
 	var $parent = $element.parent();
 	if ($parent.hasClass("vf__multifielditem")) {
@@ -1366,21 +1381,15 @@ ValidFormElement.prototype.setEnabled = function (blnValue) {
 	if (blnValue) {
 		// Enabled == true, e.g. disabled = false
 		$element
-			// .addClass("vf__optional")
-			// .removeClass("vf__required")
 			.removeClass("vf__disabled")
-			.removeAttr("disabled");
+            .prop("disabled", false);
 
 		$parent.addClass("vf__optional").removeClass("vf__required");
 	} else {
 		// Enabled == false, e.g. disabled = true
 		$element
-			// .removeClass("vf__optional")
-			// .addClass("vf__required")
 			.addClass("vf__disabled")
-			.attr("disabled", "disabled");
-
-		//$parent.removeClass("vf__optional").addClass("vf__required");
+            .prop("disabled", true);
 	}
 };
 
@@ -1434,7 +1443,7 @@ function ValidFormValidator(strFormId) {
 	 * @type {String}
 	 */
 	this.mainAlert			= "";
-};
+}
 
 /**
  * Remove main form error message
@@ -1505,7 +1514,7 @@ function ValidFormFieldValidator(strElementId, strElementName) {
 	 * Element's disabled status
 	 * @type {Boolean}
 	 */
-	this.disabled 			= !!($("#" + strElementId).attr("disabled") === "disabled");
+    this.disabled             = ($("#" + strElementId).attr("disabled") === "disabled");
 
 	this.check				= null;
 	/**
@@ -1553,7 +1562,7 @@ function ValidFormFieldValidator(strElementId, strElementName) {
 	 * @type {String}
 	 */
 	this.maxLengthError		= "";
-};
+}
 
 /**
  * Element validator
@@ -1568,7 +1577,7 @@ ValidFormFieldValidator.prototype.validate = function(value) {
 
 	// Check if the disabled attribute has been set if so, no validation is
 	// needed because this field value will not be submitted anyway.
-	this.disabled = !!(objElement.attr("disabled") === "disabled");
+    this.disabled = (objElement.attr("disabled") === "disabled");
 
 
 	if (!this.disabled) {
@@ -1580,18 +1589,17 @@ ValidFormFieldValidator.prototype.validate = function(value) {
 			switch (objDOMElement.type) {
 				case 'checkbox':
 				case 'radiobutton':
-					throw "Checkbox or radio button detected.";
-					break;
+                    throw new Error("Checkbox or radio button detected.");
 			}
 
 			//*** Required, but empty is not good.
-			if (this.required && value == "") {
+            if (this.required && value === "") {
 				this.showAlert(this.requiredError);
 				return false;
 			}
 
 			//*** Check if there is a matchWith field to validate against
-			if (typeof this.matchWith == "object") {
+            if (typeof this.matchWith === "object") {
 				if (this.matchWith.validate()) {
 					if (jQuery("#" + this.matchWith.id).val() != value) {
 						this.matchWith.validator.showAlert(this.matchError);
@@ -1627,26 +1635,28 @@ ValidFormFieldValidator.prototype.validate = function(value) {
 				if (this.required && value !== "") {
 					blnReturn = this.check.test(value);
 
-					if (blnReturn == false) this.showAlert(this.typeError);
+                    if (blnReturn === false) {
+                        this.showAlert(this.typeError);
+                    }
 
 					return blnReturn;
 				} else {
 					return true;
 				}
 			}
-		} catch(e) {
+        } catch(err) {
 			var objElements = jQuery("input[name='" + this.name + "']");
 			if (objElements.length > 0) {
 				var objValidElements = objElements.filter(":checked");
 				value = objValidElements.val();
 
 				//*** Required, but empty is not good.
-				if (this.required && value == undefined && objElements.attr("disabled") !== "disabled") {
+                if (this.required && typeof value === "undefined" && objElements.attr("disabled") !== "disabled") {
 					this.showAlert(this.requiredError);
 					return false;
-				} else if (!this.required && value == undefined) {
+                } else if (!this.required && typeof value === "undefined") {
 					return true;
-				} else if (this.required && value == undefined && objElements.attr("disabled") == "disabled") {
+                } else if (this.required && typeof value === "undefined" && objElements.attr("disabled") == "disabled") {
 					return true;
 				}
 
@@ -1662,7 +1672,8 @@ ValidFormFieldValidator.prototype.validate = function(value) {
 				}
 
 				//*** Check specific types using the type array.
-				if (typeof this.check == "array") {
+                // TODO: Validate that the code block below is still needed and working
+                if (typeof this.check === "object") {
 					for (var intCount = 0; intCount < objValidElements.length; intCount++) {
 						if (!ValidForm.inArray(this.check, objValidElements.get(intCount))) {
 							this.showAlert(this.typeError);
@@ -1685,7 +1696,7 @@ ValidFormFieldValidator.prototype.validate = function(value) {
 ValidFormFieldValidator.prototype.removeAlert = function() {
 	var objElement = jQuery("#" + this.id);
 
-	if (objElement.length == 0) {
+    if (objElement.length === 0) {
 		objElement = jQuery("input[name='" + this.name + "']:first").closest(".vf__list");
 	}
 
@@ -1698,7 +1709,7 @@ ValidFormFieldValidator.prototype.removeAlert = function() {
 
 ValidFormFieldValidator.prototype.showAlert = function(strAlert) {
 	var objElement = jQuery("#" + this.id);
-	if (objElement.length == 0) {
+    if (objElement.length === 0) {
 		objElement = jQuery("input[name='" + this.name + "']:first").closest(".vf__list");
 	}
 
@@ -1724,7 +1735,7 @@ ValidFormFieldValidator.prototype.showAlert = function(strAlert) {
  * @author Ariel Flesler
  * @version 1.4.3.1
  */
-;(function($){var h=$.scrollTo=function(a,b,c){$(window).scrollTo(a,b,c)};h.defaults={axis:'xy',duration:parseFloat($.fn.jquery)>=1.3?0:1,limit:true};h.window=function(a){return $(window)._scrollable()};$.fn._scrollable=function(){return this.map(function(){var a=this,isWin=!a.nodeName||$.inArray(a.nodeName.toLowerCase(),['iframe','#document','html','body'])!=-1;if(!isWin)return a;var b=(a.contentWindow||a).document||a.ownerDocument||a;return/webkit/i.test(navigator.userAgent)||b.compatMode=='BackCompat'?b.body:b.documentElement})};$.fn.scrollTo=function(e,f,g){if(typeof f=='object'){g=f;f=0}if(typeof g=='function')g={onAfter:g};if(e=='max')e=9e9;g=$.extend({},h.defaults,g);f=f||g.duration;g.queue=g.queue&&g.axis.length>1;if(g.queue)f/=2;g.offset=both(g.offset);g.over=both(g.over);return this._scrollable().each(function(){if(e==null)return;var d=this,$elem=$(d),targ=e,toff,attr={},win=$elem.is('html,body');switch(typeof targ){case'number':case'string':if(/^([+-]=)?\d+(\.\d+)?(px|%)?$/.test(targ)){targ=both(targ);break}targ=$(targ,this);if(!targ.length)return;case'object':if(targ.is||targ.style)toff=(targ=$(targ)).offset()}$.each(g.axis.split(''),function(i,a){var b=a=='x'?'Left':'Top',pos=b.toLowerCase(),key='scroll'+b,old=d[key],max=h.max(d,a);if(toff){attr[key]=toff[pos]+(win?0:old-$elem.offset()[pos]);if(g.margin){attr[key]-=parseInt(targ.css('margin'+b))||0;attr[key]-=parseInt(targ.css('border'+b+'Width'))||0}attr[key]+=g.offset[pos]||0;if(g.over[pos])attr[key]+=targ[a=='x'?'width':'height']()*g.over[pos]}else{var c=targ[pos];attr[key]=c.slice&&c.slice(-1)=='%'?parseFloat(c)/100*max:c}if(g.limit&&/^\d+$/.test(attr[key]))attr[key]=attr[key]<=0?0:Math.min(attr[key],max);if(!i&&g.queue){if(old!=attr[key])animate(g.onAfterFirst);delete attr[key]}});animate(g.onAfter);function animate(a){$elem.animate(attr,f,g.easing,a&&function(){a.call(this,e,g)})}}).end()};h.max=function(a,b){var c=b=='x'?'Width':'Height',scroll='scroll'+c;if(!$(a).is('html,body'))return a[scroll]-$(a)[c.toLowerCase()]();var d='client'+c,html=a.ownerDocument.documentElement,body=a.ownerDocument.body;return Math.max(html[scroll],body[scroll])-Math.min(html[d],body[d])};function both(a){return typeof a=='object'?a:{top:a,left:a}}})(jQuery);
+;(function($){var h=$.scrollTo=function(a,b,c){$(window).scrollTo(a,b,c);};h.defaults={axis:'xy',duration:parseFloat($.fn.jquery)>=1.3?0:1,limit:true};h.window=function(a){return $(window)._scrollable();};$.fn._scrollable=function(){return this.map(function(){var a=this,isWin=!a.nodeName||$.inArray(a.nodeName.toLowerCase(),['iframe','#document','html','body'])!=-1;if(!isWin)return a;var b=(a.contentWindow||a).document||a.ownerDocument||a;return/webkit/i.test(navigator.userAgent)||b.compatMode=='BackCompat'?b.body:b.documentElement;});};$.fn.scrollTo=function(e,f,g){if(typeof f=='object'){g=f;f=0;}if(typeof g=='function')g={onAfter:g};if(e=='max')e=9e9;g=$.extend({},h.defaults,g);f=f||g.duration;g.queue=g.queue&&g.axis.length>1;if(g.queue)f/=2;g.offset=both(g.offset);g.over=both(g.over);return this._scrollable().each(function(){if(e===null)return;var d=this,$elem=$(d),targ=e,toff,attr={},win=$elem.is('html,body');switch(typeof targ){case'number':case'string':if(/^([+-]=)?\d+(\.\d+)?(px|%)?$/.test(targ)){targ=both(targ);break;}targ=$(targ,this);if(!targ.length)return;break;case'object':if(targ.is||targ.style)toff=(targ=$(targ)).offset();}$.each(g.axis.split(''),function(i,a){var b=a=='x'?'Left':'Top',pos=b.toLowerCase(),key='scroll'+b,old=d[key],max=h.max(d,a);if(toff){attr[key]=toff[pos]+(win?0:old-$elem.offset()[pos]);if(g.margin){attr[key]-=parseInt(targ.css('margin'+b))||0;attr[key]-=parseInt(targ.css('border'+b+'Width'))||0;}attr[key]+=g.offset[pos]||0;if(g.over[pos])attr[key]+=targ[a=='x'?'width':'height']()*g.over[pos];}else{var c=targ[pos];attr[key]=c.slice&&c.slice(-1)=='%'?parseFloat(c)/100*max:c;}if(g.limit&&/^\d+$/.test(attr[key]))attr[key]=attr[key]<=0?0:Math.min(attr[key],max);if(!i&&g.queue){if(old!=attr[key])animate(g.onAfterFirst);delete attr[key];}});animate(g.onAfter);function animate(a){$elem.animate(attr,f,g.easing,a&&function(){a.call(this,e,g);});}}).end();};h.max=function(a,b){var c=b=='x'?'Width':'Height',scroll='scroll'+c;if(!$(a).is('html,body'))return a[scroll]-$(a)[c.toLowerCase()]();var d='client'+c,html=a.ownerDocument.documentElement,body=a.ownerDocument.body;return Math.max(html[scroll],body[scroll])-Math.min(html[d],body[d]);};function both(a){return typeof a=='object'?a:{top:a,left:a};}})(jQuery);
 
 /**
  * sprintf() for JavaScript 0.7-beta1
