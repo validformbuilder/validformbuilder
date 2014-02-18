@@ -124,7 +124,7 @@ class VF_FieldValidator extends VF_ClassDynamic {
 
 				// Overwrite cached value with value from REQUEST array if available
 				if (isset($_REQUEST[$strFieldName])) {
-					$varReturn = $_REQUEST[$strFieldName];
+					$varReturn = htmlspecialchars($_REQUEST[$strFieldName], ENT_QUOTES); // NEVER return unsanitized output
 				} else {
 					$varReturn = $varValidValue;
 				}
