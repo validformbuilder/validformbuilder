@@ -300,9 +300,13 @@ class VF_Element extends VF_Base {
 			}
 		} else {
 		    if (is_array($this->__default)) {
-    			if (isset($this->__default[$intDynamicPosition]) && strlen($this->__default[$intDynamicPosition]) > 0) {
-    				$varReturn = $this->__default[$intDynamicPosition];
-    			}
+		    	if ($this->isDynamic()) {
+	    			if (isset($this->__default[$intDynamicPosition]) && strlen($this->__default[$intDynamicPosition]) > 0) {
+	    				$varReturn = $this->__default[$intDynamicPosition];
+	    			}
+		    	} else {
+		    		$varReturn = $this->__default;
+		    	}
 		    } else {
     			if (strlen($this->__default) > 0) {
     				$varReturn = $this->__default;
