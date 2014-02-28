@@ -1037,7 +1037,7 @@ ValidFormCondition.prototype.set = function (blnResult) {
 
 				if (!$objSubject.is("div") && !$objSubject.is("fieldset")) {
 					// $objBase = $objSubject.parent(); // Original
-					$objBase = $objSubject.closest("div.vf__optional, div.vf__required");
+					$objBase = $objSubject.closest("div.vf__optional, div.vf__required, div.vf__multifielditem");
 					$objBase.show();
 				}
 
@@ -1062,7 +1062,7 @@ ValidFormCondition.prototype.set = function (blnResult) {
 
 				if (!$objSubject.is("div") && !$objSubject.is("fieldset")) {
 					// $objBase = $objSubject.parent(); // Original
-					$objBase = $objSubject.closest("div.vf__optional, div.vf__required");
+					$objBase = $objSubject.closest("div.vf__optional, div.vf__required, div.vf__multifielditem");
 					$objBase.hide();
 				}
 
