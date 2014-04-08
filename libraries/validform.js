@@ -456,7 +456,7 @@ ValidForm.prototype.attachAreaEvents = function(objActiveTrigger) {
         inputNames = [];
 
 	objActiveTrigger.unbind("change").bind("change", function(){
-		self = this;
+		var self = this;
 		
 		var fieldsets = jQuery("input[name='" + jQuery(this).attr("name") + "']").closest(".vf__area");
 		var currentFieldset = jQuery(objActiveTrigger).closest(".vf__area");
