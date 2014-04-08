@@ -141,8 +141,8 @@ class VF_MultiField extends VF_Base {
 		if ($blnError) $this->setMeta("class", "vf__error");
 		$this->setMeta("class", "vf__multifield vf__cf");
 
-		$strId = ($intCount == 0) ? " id=\"{$this->getId()}\"" : " id=\"" . $this->getId() . "_{$intCount}" . "\"";
-		$strOutput = "<div{$this->__getMetaString()}{$strId}>\n";
+		$strId = ($intCount == 0) ? $this->getId() : $this->getId() . "_{$intCount}";
+		$strOutput = "<div{$this->__getMetaString()} id=\"{$strId}\">\n";
 
 		if ($blnError) $strOutput .= "<p class=\"vf__error\">" . implode("</p><p class=\"vf__error\">", $arrError) . "</p>";
 
