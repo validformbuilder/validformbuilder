@@ -1,0 +1,14 @@
+
+.DS_Store
+
+.buildpath
+
+.project
+
+.settings/org.eclipse.php.core.prefs
+
+.settings/org.eclipse.php.formatter.core.prefs
+
+.settings/org.eclipse.php.ui.prefs
+
+.settings/org.phpsrc.eclipse.pti.tools.codesniffer.prefs
