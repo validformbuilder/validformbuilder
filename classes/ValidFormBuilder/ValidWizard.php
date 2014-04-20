@@ -119,13 +119,13 @@ class ValidWizard extends ValidForm
         $objField->setRequiredStyle($this->__requiredstyle);
 
         // *** Page already defined?
-        $objPage = $this->__elements->getLast("Page");
+        $objPage = $this->__elements->getLast("ValidFormBuilder\\Page");
         if ($this->__elements->count() == 0 || ! is_object($objPage)) {
             $objPage = $this->addPage();
         }
 
         // *** Fieldset already defined?
-        $objFieldset = $objPage->getElements()->getLast("Fieldset");
+        $objFieldset = $objPage->getElements()->getLast("ValidFormBuilder\\Fieldset");
         if ($this->__elements->count() == 0 || ! is_object($objFieldset)) {
             $objFieldset = $this->addFieldset();
         }
@@ -216,7 +216,7 @@ class ValidWizard extends ValidForm
     {
         $objFieldSet = new Fieldset($label, $noteHeader, $noteBody, $options);
 
-        $objPage = $this->__elements->getLast("Page");
+        $objPage = $this->__elements->getLast("ValidFormBuilder\\Page");
         if (! is_object($objPage)) {
             $objPage = $this->addPage();
         }

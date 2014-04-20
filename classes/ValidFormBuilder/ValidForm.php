@@ -184,7 +184,7 @@ class ValidForm extends ClassDynamic
 
         if (! $blnJustRender) {
             // *** Fieldset already defined?
-            $objFieldset = $this->__elements->getLast("Fieldset");
+            $objFieldset = $this->__elements->getLast("ValidFormBuilder\\Fieldset");
             if ($this->__elements->count() == 0 || ! is_object($objFieldset)) {
                 $objFieldset = $this->addFieldset();
             }
@@ -257,7 +257,7 @@ class ValidForm extends ClassDynamic
 
         if (! $blnJustRender) {
             // *** Fieldset already defined?
-            $objFieldset = $this->__elements->getLast("Fieldset");
+            $objFieldset = $this->__elements->getLast("ValidFormBuilder\\Fieldset");
             if ($this->__elements->count() == 0 || ! is_object($objFieldset)) {
                 $objFieldset = $this->addFieldset();
             }
@@ -276,7 +276,7 @@ class ValidForm extends ClassDynamic
         $objParagraph = new Paragraph($strHeader, $strBody, $meta);
 
         // *** Fieldset already defined?
-        $objFieldset = $this->__elements->getLast("Fieldset");
+        $objFieldset = $this->__elements->getLast("ValidFormBuilder\\Fieldset");
         if ($this->__elements->count() == 0 || ! is_object($objFieldset)) {
             $objFieldset = $this->addFieldset();
         }
@@ -294,7 +294,7 @@ class ValidForm extends ClassDynamic
         $objButton = new Button($strLabel, $arrMeta);
 
         // *** Fieldset already defined?
-        $objFieldset = $this->__elements->getLast("Fieldset");
+        $objFieldset = $this->__elements->getLast("ValidFormBuilder\\Fieldset");
         if ($this->__elements->count() == 0 || ! is_object($objFieldset)) {
             $objFieldset = $this->addFieldset();
         }
@@ -314,7 +314,7 @@ class ValidForm extends ClassDynamic
         $objArea->setRequiredStyle($this->__requiredstyle);
 
         // *** Fieldset already defined?
-        $objFieldset = $this->__elements->getLast("Fieldset");
+        $objFieldset = $this->__elements->getLast("ValidFormBuilder\\Fieldset");
         if ($this->__elements->count() == 0 || ! is_object($objFieldset)) {
             $objFieldset = $this->addFieldset();
         }
@@ -334,7 +334,7 @@ class ValidForm extends ClassDynamic
         $objField->setRequiredStyle($this->__requiredstyle);
 
         // *** Fieldset already defined?
-        $objFieldset = $this->__elements->getLast("Fieldset");
+        $objFieldset = $this->__elements->getLast("ValidFormBuilder\\Fieldset");
         if ($this->__elements->count() == 0 || ! is_object($objFieldset)) {
             $objFieldset = $this->addFieldset();
         }
