@@ -191,9 +191,19 @@ class Group extends Element
         $this->__fields->addObject($objField);
 
         // *** Set the default value if "checked" is set.
-        if ($checked) {
-            $this->__default = $value;
-        }
+		if ($checked) {
+		    switch ($this->__type) {
+		        case ValidForm::VFORM_CHECK_LIST:
+		            $arrDefault = (is_array($this->__default)) ? $this->__default : array($this->__default);
+		            $arrDefault[] = $value;
+
+		            $this->__default = $arrDefault;
+
+		            break;
+		        default:
+		            $this->__default = $value;
+		    }
+		}
 
         return $objField;
     }
