@@ -67,7 +67,7 @@ class Hidden extends Element
         return $this->__dynamiccounter;
     }
 
-    public function isValid()
+    public function isValid($intCount = null)
     {
         $blnReturn = false;
         $intDynamicCount = ($this->isDynamicCounter()) ? $this->__validator->getValue() : 0;
