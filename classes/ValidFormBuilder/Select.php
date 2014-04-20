@@ -33,17 +33,17 @@ class Select extends Element
 
     public function __construct($name, $type, $label = "", $validationRules = array(), $errorHandlers = array(), $meta = array())
     {
-        $this->__options = new VF_Collection();
+        $this->__options = new Collection();
 
         parent::__construct($name, $type, $label, $validationRules, $errorHandlers, $meta);
 
-        // *** Parse ranges if meta ranges are set. Thisway, the VF_Select element is filled before calling toHtml and therefore ready for custom manipulation
+        // *** Parse ranges if meta ranges are set. Thisway, the Select element is filled before calling toHtml and therefore ready for custom manipulation
         if ($this->__options->count() == 0) {
             $this->__parseRanges();
         }
     }
 
-    public function toHtml($submitted = FALSE, $blnSimpleLayout = FALSE, $blnLabel = true, $blnDisplayErrors = true)
+    public function toHtml($submitted = false, $blnSimpleLayout = false, $blnLabel = true, $blnDisplayErrors = true)
     {
         $strOutput = "";
 
@@ -59,13 +59,13 @@ class Select extends Element
         return $strOutput;
     }
 
-    public function __toHtml($submitted = FALSE, $blnSimpleLayout = FALSE, $blnLabel = true, $blnDisplayErrors = true, $intCount = 0)
+    public function __toHtml($submitted = false, $blnSimpleLayout = false, $blnLabel = true, $blnDisplayErrors = true, $intCount = 0)
     {
         $strOutput = "";
 
         $strName = ($intCount == 0) ? $this->__name : $this->__name . "_" . $intCount;
         $strId = ($intCount == 0) ? $this->__id : $this->__id . "_" . $intCount;
-        $blnError = ($submitted && ! $this->__validator->validate($intCount) && $blnDisplayErrors) ? TRUE : FALSE;
+        $blnError = ($submitted && ! $this->__validator->validate($intCount) && $blnDisplayErrors) ? true : false;
 
         if (! $blnSimpleLayout) {
             // *** We asume that all dynamic fields greater than 0 are never required.
@@ -178,7 +178,7 @@ class Select extends Element
         return $strReturn;
     }
 
-    public function toJS($blnParentIsDynamic = FALSE)
+    public function toJS($blnParentIsDynamic = false)
     {
         $strCheck = $this->__validator->getCheck();
         $strCheck = (empty($strCheck)) ? "''" : str_replace("'", "\\'", $strCheck);
@@ -213,9 +213,9 @@ class Select extends Element
         return $strOutput;
     }
 
-    public function addField($value, $label, $selected = FALSE, $meta = array())
+    public function addField($value, $label, $selected = false, $meta = array())
     {
-        $objOption = new VF_SelectOption($value, $label, $selected, $meta);
+        $objOption = new SelectOption($value, $label, $selected, $meta);
         $objOption->setMeta("parent", $this, true);
 
         $this->__options->addObject($objOption);
@@ -225,7 +225,7 @@ class Select extends Element
 
     public function addGroup($label)
     {
-        $objGroup = new VF_SelectGroup($label);
+        $objGroup = new SelectGroup($label);
         $objGroup->setMeta("parent", $this, true);
 
         $this->__options->addObject($objGroup);

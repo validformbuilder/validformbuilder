@@ -49,10 +49,10 @@ class Page extends Base
         $this->__id = (empty($id)) ? $this->getRandomId("vf__page") : $id;
         $this->__isOverview = (isset($meta["overview"])) ? $meta["overview"] : false;
 
-        $this->__elements = new VF_Collection();
+        $this->__elements = new Collection();
     }
 
-    public function toHtml($submitted = FALSE, $blnSimpleLayout = FALSE, $blnLabel = true, $blnDisplayError = true)
+    public function toHtml($submitted = false, $blnSimpleLayout = false, $blnLabel = true, $blnDisplayError = true)
     {
         $strClass = (! empty($this->__class)) ? " class=\"{$this->__class} vf__page\"" : "class=\"vf__page\"";
         $strStyle = (! empty($this->__style)) ? " style=\"{$this->__style}\"" : "";
@@ -75,12 +75,12 @@ class Page extends Base
 
     public function addField($objField)
     {
-        if (get_class($objField) == "VF_Fieldset") {
+        if (get_class($objField) == "ValidFormBuilder\\Fieldset") {
             $objField->setMeta("parent", $this, true);
             $this->__elements->addObject($objField);
         } else {
             if ($this->__elements->count() == 0) {
-                $objFieldset = new VF_Fieldset();
+                $objFieldset = new Fieldset();
                 $this->__elements->addObject($objFieldset);
             }
 
@@ -89,8 +89,9 @@ class Page extends Base
             $objField->setMeta("parent", $objFieldset, true);
             $objFieldset->getFields()->addObject($objField);
 
-            if ($objField->isDynamic() && get_class($objField) !== "VF_MultiField" && get_class($objField) !== "VF_Area") {
-                $objHidden = new VF_Hidden($objField->getId() . "_dynamic", VFORM_INTEGER, array(
+            if ($objField->isDynamic() && get_class($objField) !== "ValidFormBuilder\\MultiField"
+                    && get_class($objField) !== "ValidFormBuilder\\Area") {
+                $objHidden = new Hidden($objField->getId() . "_dynamic", VFORM_INTEGER, array(
                     "default" => 0,
                     "dynamicCounter" => true
                 ));
@@ -125,7 +126,7 @@ class Page extends Base
 
     public function hasFields()
     {
-        return ($this->__elements->count() > 0) ? TRUE : FALSE;
+        return ($this->__elements->count() > 0) ? true : false;
     }
 
     public function getFields()
@@ -135,7 +136,7 @@ class Page extends Base
 
     /**
      * Get the short header if available.
-     * If no short header is set (meta 'summaryLabel' on the VF_Page object),
+     * If no short header is set (meta 'summaryLabel' on the Page object),
      * the full-length regular header is returned.
      *
      * @return string Page (short)header as a string
@@ -156,7 +157,7 @@ class Page extends Base
     {
         $strReturn = $name;
 
-        if (strpos($name, "[]") !== FALSE) {
+        if (strpos($name, "[]") !== false) {
             $strReturn = str_replace("[]", "_" . rand(100000, 900000), $name);
         } else {
             $strReturn = $name . "_" . rand(100000, 900000);
@@ -167,11 +168,11 @@ class Page extends Base
 
     private function __validate()
     {
-        $blnReturn = TRUE;
+        $blnReturn = true;
 
         foreach ($this->__elements as $field) {
             if (! $field->isValid()) {
-                $blnReturn = FALSE;
+                $blnReturn = false;
                 break;
             }
         }

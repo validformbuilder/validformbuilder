@@ -41,7 +41,7 @@ class ValidForm extends ClassDynamic
 
     protected $__submitlabel;
 
-    protected $__jsevents = array(); // Keep it lowercase to enable magic methods from VF_ClassDynamic
+    protected $__jsevents = array(); // Keep it lowercase to enable magic methods from ClassDynamic
 
     protected $__elements;
 
@@ -74,7 +74,7 @@ class ValidForm extends ClassDynamic
      *            Array with meta data. The array gets directly parsed into the form tag with the keys as
      *            attribute names and the values as values.
      */
-    public function __construct($name = NULL, $description = NULL, $action = NULL, $meta = array())
+    public function __construct($name = null, $description = null, $action = null, $meta = array())
     {
         $this->__name = (is_null($name)) ? $this->__generateName() : $name;
         $this->__description = $description;
@@ -82,7 +82,7 @@ class ValidForm extends ClassDynamic
         $this->__meta = $meta;
         $this->__uniqueid = (isset($meta["uniqueId"])) ? $meta["uniqueId"] : $this->generateId();
 
-        $this->__elements = new VF_Collection();
+        $this->__elements = new Collection();
 
         if (is_null($action)) {
             $this->__action = (isset($_SERVER['REQUEST_URI'])) ? parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) : $_SERVER['PHP_SELF'];
@@ -109,7 +109,7 @@ class ValidForm extends ClassDynamic
      */
     public function addHtml($html)
     {
-        $objString = new VF_String($html);
+        $objString = new String($html);
         $this->__elements->addObject($objString);
 
         return $objString;
@@ -125,15 +125,15 @@ class ValidForm extends ClassDynamic
      */
     public function addNavigation($meta = array())
     {
-        $objNavigation = new VF_Navigation($meta);
+        $objNavigation = new Navigation($meta);
         $this->__elements->addObject($objNavigation);
 
         return $objNavigation;
     }
 
-    public function addFieldset($label = NULL, $noteHeader = NULL, $noteBody = NULL, $meta = array())
+    public function addFieldset($label = null, $noteHeader = null, $noteBody = null, $meta = array())
     {
-        $objFieldSet = new VF_Fieldset($label, $noteHeader, $noteBody, $meta);
+        $objFieldSet = new Fieldset($label, $noteHeader, $noteBody, $meta);
         $this->__elements->addObject($objFieldSet);
 
         return $objFieldSet;
@@ -141,11 +141,11 @@ class ValidForm extends ClassDynamic
 
     public function addHiddenField($name, $type, $meta = array(), $blnJustRender = false)
     {
-        $objField = new VF_Hidden($name, $type, $meta);
+        $objField = new Hidden($name, $type, $meta);
 
         if (! $blnJustRender) {
             // *** Fieldset already defined?
-            $objFieldset = $this->__elements->getLast("VF_Fieldset");
+            $objFieldset = $this->__elements->getLast("Fieldset");
             if ($this->__elements->count() == 0 || ! is_object($objFieldset)) {
                 $objFieldset = $this->addFieldset();
             }
@@ -173,44 +173,44 @@ class ValidForm extends ClassDynamic
             case VFORM_DATE:
             case VFORM_NUMERIC:
             case VFORM_INTEGER:
-                $objField = new VF_Text($name, $type, $label, $validationRules, $errorHandlers, $meta);
+                $objField = new Text($name, $type, $label, $validationRules, $errorHandlers, $meta);
                 break;
             case VFORM_PASSWORD:
-                $objField = new VF_Password($name, $type, $label, $validationRules, $errorHandlers, $meta);
+                $objField = new Password($name, $type, $label, $validationRules, $errorHandlers, $meta);
                 break;
             case VFORM_CAPTCHA:
-                $objField = new VF_Captcha($name, $type, $label, $validationRules, $errorHandlers, $meta);
+                $objField = new Captcha($name, $type, $label, $validationRules, $errorHandlers, $meta);
                 break;
             case VFORM_HTML:
             case VFORM_CUSTOM_TEXT:
             case VFORM_TEXT:
-                $objField = new VF_Textarea($name, $type, $label, $validationRules, $errorHandlers, $meta);
+                $objField = new Textarea($name, $type, $label, $validationRules, $errorHandlers, $meta);
                 break;
             case VFORM_FILE:
-                $objField = new VF_File($name, $type, $label, $validationRules, $errorHandlers, $meta);
+                $objField = new File($name, $type, $label, $validationRules, $errorHandlers, $meta);
                 break;
             case VFORM_BOOLEAN:
-                $objField = new VF_Checkbox($name, $type, $label, $validationRules, $errorHandlers, $meta);
+                $objField = new Checkbox($name, $type, $label, $validationRules, $errorHandlers, $meta);
                 break;
             case VFORM_RADIO_LIST:
             case VFORM_CHECK_LIST:
-                $objField = new VF_Group($name, $type, $label, $validationRules, $errorHandlers, $meta);
+                $objField = new Group($name, $type, $label, $validationRules, $errorHandlers, $meta);
                 break;
             case VFORM_SELECT_LIST:
-                $objField = new VF_Select($name, $type, $label, $validationRules, $errorHandlers, $meta);
+                $objField = new Select($name, $type, $label, $validationRules, $errorHandlers, $meta);
                 break;
             case VFORM_HIDDEN:
-                $objField = new VF_Hidden($name, $type, $meta);
+                $objField = new Hidden($name, $type, $meta);
                 break;
             default:
-                $objField = new VF_Element($name, $type, $label, $validationRules, $errorHandlers, $meta);
+                $objField = new Element($name, $type, $label, $validationRules, $errorHandlers, $meta);
                 break;
         }
 
         return $objField;
     }
 
-    public function addField($name, $label, $type, $validationRules = array(), $errorHandlers = array(), $meta = array(), $blnJustRender = FALSE)
+    public function addField($name, $label, $type, $validationRules = array(), $errorHandlers = array(), $meta = array(), $blnJustRender = false)
     {
         $objField = self::renderField($name, $label, $type, $validationRules, $errorHandlers, $meta);
 
@@ -218,7 +218,7 @@ class ValidForm extends ClassDynamic
 
         if (! $blnJustRender) {
             // *** Fieldset already defined?
-            $objFieldset = $this->__elements->getLast("VF_Fieldset");
+            $objFieldset = $this->__elements->getLast("Fieldset");
             if ($this->__elements->count() == 0 || ! is_object($objFieldset)) {
                 $objFieldset = $this->addFieldset();
             }
@@ -234,10 +234,10 @@ class ValidForm extends ClassDynamic
 
     public function addParagraph($strBody, $strHeader = "", $meta = array())
     {
-        $objParagraph = new VF_Paragraph($strHeader, $strBody, $meta);
+        $objParagraph = new Paragraph($strHeader, $strBody, $meta);
 
         // *** Fieldset already defined?
-        $objFieldset = $this->__elements->getLast("VF_Fieldset");
+        $objFieldset = $this->__elements->getLast("Fieldset");
         if ($this->__elements->count() == 0 || ! is_object($objFieldset)) {
             $objFieldset = $this->addFieldset();
         }
@@ -252,10 +252,10 @@ class ValidForm extends ClassDynamic
 
     public function addButton($strLabel, $arrMeta = array())
     {
-        $objButton = new VF_Button($strLabel, $arrMeta);
+        $objButton = new Button($strLabel, $arrMeta);
 
         // *** Fieldset already defined?
-        $objFieldset = $this->__elements->getLast("VF_Fieldset");
+        $objFieldset = $this->__elements->getLast("Fieldset");
         if ($this->__elements->count() == 0 || ! is_object($objFieldset)) {
             $objFieldset = $this->addFieldset();
         }
@@ -268,14 +268,14 @@ class ValidForm extends ClassDynamic
         return $objButton;
     }
 
-    public function addArea($label = NULL, $active = FALSE, $name = NULL, $checked = FALSE, $meta = array())
+    public function addArea($label = null, $active = false, $name = null, $checked = false, $meta = array())
     {
-        $objArea = new VF_Area($label, $active, $name, $checked, $meta);
+        $objArea = new Area($label, $active, $name, $checked, $meta);
 
         $objArea->setRequiredStyle($this->__requiredstyle);
 
         // *** Fieldset already defined?
-        $objFieldset = $this->__elements->getLast("VF_Fieldset");
+        $objFieldset = $this->__elements->getLast("Fieldset");
         if ($this->__elements->count() == 0 || ! is_object($objFieldset)) {
             $objFieldset = $this->addFieldset();
         }
@@ -288,14 +288,14 @@ class ValidForm extends ClassDynamic
         return $objArea;
     }
 
-    public function addMultiField($label = NULL, $meta = array())
+    public function addMultiField($label = null, $meta = array())
     {
-        $objField = new VF_MultiField($label, $meta);
+        $objField = new MultiField($label, $meta);
 
         $objField->setRequiredStyle($this->__requiredstyle);
 
         // *** Fieldset already defined?
-        $objFieldset = $this->__elements->getLast("VF_Fieldset");
+        $objFieldset = $this->__elements->getLast("Fieldset");
         if ($this->__elements->count() == 0 || ! is_object($objFieldset)) {
             $objFieldset = $this->addFieldset();
         }
@@ -401,7 +401,7 @@ class ValidForm extends ClassDynamic
         foreach ($this->__elements as $element) {
             $strReturn .= $element->toHtml($this->isSubmitted($blnForceSubmitted), false, true, $blnForceSubmitted);
 
-            if (get_class($element) == "VF_Navigation") {
+            if (get_class($element) == "ValidFormBuilder\\Navigation") {
                 $blnNavigation = true;
             }
         }
@@ -452,9 +452,9 @@ class ValidForm extends ClassDynamic
     public function isSubmitted($blnForce = false)
     {
         if (ValidForm::get("vf__dispatch") == $this->__name || $blnForce) {
-            return TRUE;
+            return true;
         } else {
-            return FALSE;
+            return false;
         }
     }
 
@@ -462,7 +462,7 @@ class ValidForm extends ClassDynamic
      * Fetch a cached flat collection of form fields instead of making
      * an expensive getFields() call and looping through all elements
      *
-     * @return VF_Collection
+     * @return Collection
      */
     public function getCachedFields()
     {
@@ -477,21 +477,21 @@ class ValidForm extends ClassDynamic
 
     public function getFields()
     {
-        $objFields = new VF_Collection();
+        $objFields = new Collection();
 
         foreach ($this->__elements as $objFieldset) {
             if ($objFieldset->hasFields()) {
                 foreach ($objFieldset->getFields() as $objField) {
                     if (is_object($objField)) {
                         if ($objField->hasFields()) {
-                            if (get_class($objField) == "VF_Area" && $objField->isActive()) {
+                            if (get_class($objField) == "ValidFormBuilder\\Area" && $objField->isActive()) {
                                 $objFields->addObject($objField);
                             }
 
                             foreach ($objField->getFields() as $objSubField) {
                                 if (is_object($objSubField)) {
                                     if ($objSubField->hasFields()) {
-                                        if (get_class($objSubField) == "VF_Area" && $objSubField->isActive()) {
+                                        if (get_class($objSubField) == "ValidFormBuilder\\Area" && $objSubField->isActive()) {
                                             $objFields->addObject($objSubField);
                                         }
 
@@ -522,7 +522,7 @@ class ValidForm extends ClassDynamic
 
     public function getValidField($id)
     {
-        $objReturn = NULL;
+        $objReturn = null;
 
         $objFields = $this->getFields();
         foreach ($objFields as $objField) {
@@ -565,7 +565,7 @@ class ValidForm extends ClassDynamic
         return $this->__validate();
     }
 
-    public function valuesAsHtml($hideEmpty = FALSE, $collection = null)
+    public function valuesAsHtml($hideEmpty = false, $collection = null)
     {
         $strTable = "\t<table border=\"0\" cellspacing=\"0\" cellpadding=\"0\" class=\"validform\">\n";
         $strTableOutput = "";
@@ -592,13 +592,13 @@ class ValidForm extends ClassDynamic
         $strTableOutput = "";
 
         foreach ($objFieldset->getFields() as $objField) {
-            if (is_object($objField) && get_class($objField) !== "VF_Hidden") {
+            if (is_object($objField) && get_class($objField) !== "ValidFormBuilder\\Hidden") {
                 $strValue = (is_array($objField->getValue())) ? implode(", ", $objField->getValue()) : $objField->getValue();
 
                 if ((! empty($strValue) && $hideEmpty) || (! $hideEmpty && ! is_null($strValue))) {
                     if ($objField->hasFields()) {
                         switch (get_class($objField)) {
-                            case "VF_MultiField":
+                            case "ValidFormBuilder\\MultiField":
                                 $strSet .= $this->multiFieldAsHtml($objField, $hideEmpty);
 
                                 break;
@@ -616,12 +616,12 @@ class ValidForm extends ClassDynamic
                     if ($intDynamicCount > 0) {
                         for ($intCount = 1; $intCount <= $intDynamicCount; $intCount ++) {
                             switch (get_class($objField)) {
-                                case "VF_MultiField":
+                                case "ValidFormBuilder\\MultiField":
                                     $strSet .= $this->multiFieldAsHtml($objField, $hideEmpty, $intCount);
 
                                     break;
 
-                                case "VF_Area":
+                                case "ValidFormBuilder\\Area":
                                     $strSet .= $this->areaAsHtml($objField, $hideEmpty, $intCount);
 
                                     break;
@@ -652,16 +652,16 @@ class ValidForm extends ClassDynamic
         return $strTableOutput;
     }
 
-    private function areaAsHtml($objField, $hideEmpty = FALSE, $intDynamicCount = 0)
+    private function areaAsHtml($objField, $hideEmpty = false, $intDynamicCount = 0)
     {
         $strReturn = "";
         $strSet = "";
 
         if ($objField->hasContent($intDynamicCount)) {
             foreach ($objField->getFields() as $objSubField) {
-                if (get_class($objSubField) !== "VF_Paragraph") {
+                if (get_class($objSubField) !== "ValidFormBuilder\\Paragraph") {
                     switch (get_class($objSubField)) {
-                        case "VF_MultiField":
+                        case "ValidFormBuilder\\MultiField":
                             $strSet .= $this->multiFieldAsHtml($objSubField, $hideEmpty, $intDynamicCount);
 
                             break;
@@ -705,7 +705,7 @@ class ValidForm extends ClassDynamic
         return $strReturn;
     }
 
-    private function multiFieldAsHtml($objField, $hideEmpty = FALSE, $intDynamicCount = 0)
+    private function multiFieldAsHtml($objField, $hideEmpty = false, $intDynamicCount = 0)
     {
         $strReturn = "";
 
@@ -718,7 +718,7 @@ class ValidForm extends ClassDynamic
                 foreach ($objSubFields as $objSubField) {
                     $intCount ++;
 
-                    if (get_class($objSubField) == "VF_Hidden" && $objSubField->isDynamicCounter()) {
+                    if (get_class($objSubField) == "ValidFormBuilder\\Hidden" && $objSubField->isDynamicCounter()) {
                         continue;
                     }
 
@@ -741,7 +741,7 @@ class ValidForm extends ClassDynamic
         return $strReturn;
     }
 
-    private function fieldAsHtml($objField, $hideEmpty = FALSE, $intDynamicCount = 0)
+    private function fieldAsHtml($objField, $hideEmpty = false, $intDynamicCount = 0)
     {
         $strReturn = "";
 
@@ -751,7 +751,7 @@ class ValidForm extends ClassDynamic
         $strValue = (is_array($varValue)) ? implode(", ", $varValue) : $varValue;
 
         if ((! empty($strValue) && $hideEmpty) || (! $hideEmpty && ! is_null($strValue))) {
-            if ((get_class($objField) == "VF_Hidden") && $objField->isDynamicCounter()) {
+            if ((get_class($objField) == "ValidFormBuilder\\Hidden") && $objField->isDynamicCounter()) {
                 return $strReturn;
             } else {
                 switch ($objField->getType()) {
@@ -886,11 +886,11 @@ class ValidForm extends ClassDynamic
 
     private function __validate()
     {
-        $blnReturn = TRUE;
+        $blnReturn = true;
 
         foreach ($this->__elements as $element) {
             if (! $element->isValid()) {
-                $blnReturn = FALSE;
+                $blnReturn = false;
                 break;
             }
         }

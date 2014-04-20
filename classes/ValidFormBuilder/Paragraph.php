@@ -31,7 +31,7 @@ class Paragraph extends Base
 
     protected $__body;
 
-    public function __construct($header = NULL, $body = NULL, $meta = array())
+    public function __construct($header = null, $body = null, $meta = array())
     {
         $this->__header = $header;
         $this->__body = $body;
@@ -44,10 +44,10 @@ class Paragraph extends Base
 
     public function __toHtml()
     {
-        return $this->toHtml($submitted = FALSE, $blnSimpleLayout = FALSE, $blnLabel = true, $blnDisplayError = true);
+        return $this->toHtml($submitted = false, $blnSimpleLayout = false, $blnLabel = true, $blnDisplayError = true);
     }
 
-    public function toHtml($submitted = FALSE, $blnSimpleLayout = FALSE, $blnLabel = true, $blnDisplayError = true)
+    public function toHtml($submitted = false, $blnSimpleLayout = false, $blnLabel = true, $blnDisplayError = true)
     {
         // Call this before __getMetaString();
         $this->setConditionalMeta();
@@ -74,7 +74,7 @@ class Paragraph extends Base
         return $strOutput;
     }
 
-    public function toJS($blnParentIsDynamic = FALSE)
+    public function toJS($blnParentIsDynamic = false)
     {
         $strOutput = "";
 
@@ -92,22 +92,22 @@ class Paragraph extends Base
 
     public function isValid()
     {
-        return TRUE;
+        return true;
     }
 
     public function isDynamic()
     {
-        return FALSE;
+        return false;
     }
 
     public function getValue()
     {
-        return NULL;
+        return null;
     }
 
     public function hasFields()
     {
-        return FALSE;
+        return false;
     }
 
     public function getFields()

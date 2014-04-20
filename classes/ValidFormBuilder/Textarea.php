@@ -41,7 +41,7 @@ class Textarea extends Element
         parent::__construct($name, $type, $label, $validationRules, $errorHandlers, $meta);
     }
 
-    public function toHtml($submitted = FALSE, $blnSimpleLayout = FALSE, $blnLabel = true, $blnDisplayErrors = true)
+    public function toHtml($submitted = false, $blnSimpleLayout = false, $blnLabel = true, $blnDisplayErrors = true)
     {
         $strOutput = "";
 
@@ -57,7 +57,7 @@ class Textarea extends Element
         return $strOutput;
     }
 
-    public function __toHtml($submitted = FALSE, $blnSimpleLayout = FALSE, $blnLabel = true, $blnDisplayErrors = true, $intCount = 0)
+    public function __toHtml($submitted = false, $blnSimpleLayout = false, $blnLabel = true, $blnDisplayErrors = true, $intCount = 0)
     {
         $strOutput = "";
 
@@ -68,7 +68,7 @@ class Textarea extends Element
 
         $varValue = $this->__getValue($submitted, $intCount);
 
-        $blnError = ($submitted && ! $this->__validator->validate($intCount) && $blnDisplayErrors) ? TRUE : FALSE;
+        $blnError = ($submitted && ! $this->__validator->validate($intCount) && $blnDisplayErrors) ? true : false;
         if (! $blnSimpleLayout) {
             // *** We asume that all dynamic fields greater than 0 are never required.
             if ($this->__validator->getRequired() && $intCount == 0) {
@@ -136,7 +136,7 @@ class Textarea extends Element
         return $strOutput;
     }
 
-    public function toJS($blnParentIsDynamic = FALSE)
+    public function toJS($blnParentIsDynamic = false)
     {
         $strOutput = "";
         $strCheck = $this->__validator->getCheck();

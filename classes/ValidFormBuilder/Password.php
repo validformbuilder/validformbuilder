@@ -29,7 +29,7 @@ namespace ValidFormBuilder;
 class Password extends Element
 {
 
-    public function toHtml($submitted = FALSE, $blnSimpleLayout = FALSE, $blnLabel = true, $blnDisplayErrors = true)
+    public function toHtml($submitted = false, $blnSimpleLayout = false, $blnLabel = true, $blnDisplayErrors = true)
     {
         $strOutput = "";
 
@@ -45,7 +45,7 @@ class Password extends Element
         return $strOutput;
     }
 
-    public function __toHtml($submitted = FALSE, $blnSimpleLayout = FALSE, $blnLabel = true, $blnDisplayErrors = true, $intCount = 0)
+    public function __toHtml($submitted = false, $blnSimpleLayout = false, $blnLabel = true, $blnDisplayErrors = true, $intCount = 0)
     {
         $strOutput = "";
 
@@ -54,7 +54,7 @@ class Password extends Element
 
         $varValue = $this->__getValue($submitted, $intCount);
 
-        $blnError = ($submitted && ! $this->__validator->validate($intCount) && $blnDisplayErrors) ? TRUE : FALSE;
+        $blnError = ($submitted && ! $this->__validator->validate($intCount) && $blnDisplayErrors) ? true : false;
 
         if (! $blnSimpleLayout) {
             // *** We asume that all dynamic fields greater than 0 are never required.
@@ -129,7 +129,7 @@ class Password extends Element
         return $strOutput;
     }
 
-    public function toJS($blnParentIsDynamic = FALSE)
+    public function toJS($blnParentIsDynamic = false)
     {
         $strCheck = $this->__validator->getCheck();
         $strCheck = (empty($strCheck)) ? "''" : str_replace("'", "\\'", $strCheck);

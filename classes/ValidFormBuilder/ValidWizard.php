@@ -57,7 +57,7 @@ class ValidWizard extends ValidForm
      *            Array with meta data. The array gets directly parsed into the form tag with the keys as
      *            attribute names and the values as values.
      */
-    public function __construct($name = NULL, $description = NULL, $action = NULL, $meta = array())
+    public function __construct($name = null, $description = null, $action = null, $meta = array())
     {
         parent::__construct($name, $description, $action, $meta);
 
@@ -86,7 +86,7 @@ class ValidWizard extends ValidForm
      */
     public function isSubmitted($blnForce = false)
     {
-        $blnReturn = FALSE;
+        $blnReturn = false;
 
         if (ValidForm::get("vf__dispatch") == $this->__name) {
             // *** Try to retrieve the uniqueId from a REQUEST value.
@@ -95,9 +95,9 @@ class ValidWizard extends ValidForm
                 $this->__setUniqueId($strUniqueId);
             }
 
-            $blnReturn = TRUE;
+            $blnReturn = true;
         } elseif ($blnForce) {
-            $blnReturn = TRUE;
+            $blnReturn = true;
         }
 
         return $blnReturn;
@@ -112,20 +112,20 @@ class ValidWizard extends ValidForm
      * @param array $meta
      *            [description]
      */
-    public function addMultiField($label = NULL, $meta = array())
+    public function addMultiField($label = null, $meta = array())
     {
-        $objField = new VF_MultiField($label, $meta);
+        $objField = new MultiField($label, $meta);
 
         $objField->setRequiredStyle($this->__requiredstyle);
 
         // *** Page already defined?
-        $objPage = $this->__elements->getLast("VF_Page");
+        $objPage = $this->__elements->getLast("Page");
         if ($this->__elements->count() == 0 || ! is_object($objPage)) {
             $objPage = $this->addPage();
         }
 
         // *** Fieldset already defined?
-        $objFieldset = $objPage->getElements()->getLast("VF_Fieldset");
+        $objFieldset = $objPage->getElements()->getLast("Fieldset");
         if ($this->__elements->count() == 0 || ! is_object($objFieldset)) {
             $objFieldset = $this->addFieldset();
         }
@@ -143,7 +143,7 @@ class ValidWizard extends ValidForm
      *
      * @param Integer $intIndex
      *            Zero-based position
-     * @return VF_Page VF_Page element, if found.
+     * @return Page Page element, if found.
      */
     public function getPage($intIndex = 0)
     {
@@ -151,7 +151,7 @@ class ValidWizard extends ValidForm
         $this->__elements->seek($intIndex);
 
         $objReturn = $this->__elements->current();
-        if ($objReturn === false || get_class($objReturn) !== "VF_Page") {
+        if ($objReturn === false || get_class($objReturn) !== "ValidFormBuilder\\Page") {
             $objReturn = null;
         }
 
@@ -160,7 +160,7 @@ class ValidWizard extends ValidForm
 
     public function addPage($id = "", $header = "", $meta = array())
     {
-        $objPage = new VF_Page($id, $header, $meta);
+        $objPage = new Page($id, $header, $meta);
         $this->__elements->addObject($objPage);
 
         if ($this->__elements->count() == 1) {
@@ -193,7 +193,7 @@ class ValidWizard extends ValidForm
         return ! ! $this->__hasconfirmpage;
     }
 
-    public function addField($name, $label, $type, $validationRules = array(), $errorHandlers = array(), $meta = array(), $blnJustRender = FALSE)
+    public function addField($name, $label, $type, $validationRules = array(), $errorHandlers = array(), $meta = array(), $blnJustRender = false)
     {
         $objField = parent::renderField($name, $label, $type, $validationRules, $errorHandlers, $meta);
 
@@ -212,11 +212,11 @@ class ValidWizard extends ValidForm
         return $objField;
     }
 
-    public function addFieldset($label = NULL, $noteHeader = NULL, $noteBody = NULL, $options = array())
+    public function addFieldset($label = null, $noteHeader = null, $noteBody = null, $options = array())
     {
-        $objFieldSet = new VF_Fieldset($label, $noteHeader, $noteBody, $options);
+        $objFieldSet = new Fieldset($label, $noteHeader, $noteBody, $options);
 
-        $objPage = $this->__elements->getLast("VF_Page");
+        $objPage = $this->__elements->getLast("Page");
         if (! is_object($objPage)) {
             $objPage = $this->addPage();
         }
@@ -232,7 +232,7 @@ class ValidWizard extends ValidForm
         $strTableOutput = "";
 
         foreach ($this->__elements as $objPage) {
-            if (get_class($objPage) === "VF_Page") {
+            if (get_class($objPage) === "ValidFormBuilder\\Page") {
                 $strHeader = $objPage->getShortHeader(); // Passing 'true' will return the optional 'short header' if available.
 
                 $strTableOutput .= "<tr><td colspan=\"3\" class=\"vf__page-header\">{$strHeader}</td></tr>";
@@ -258,7 +258,7 @@ class ValidWizard extends ValidForm
     {
         $objReturn = parent::unserialize($strSerialized);
 
-        if (get_class($objReturn) == "ValidWizard" && ! empty($strUniqueId)) {
+        if (get_class($objReturn) == "ValidFormBuilder\\ValidWizard" && ! empty($strUniqueId)) {
             $objReturn->__setUniqueId($strUniqueId);
         }
 
@@ -290,7 +290,7 @@ class ValidWizard extends ValidForm
     {
         $strOutput = "";
         foreach ($this->getElements() as $objPage) {
-            if (get_class($objPage) == "VF_Hidden") {
+            if (get_class($objPage) == "ValidFormBuilder\\Hidden") {
                 continue;
             }
 
@@ -298,12 +298,12 @@ class ValidWizard extends ValidForm
                 foreach ($objFieldSet->getFields() as $objField) {
                     if ($objField->hasFields()) {
                         foreach ($objField->getFields() as $objSubField) {
-                            if (get_class($objSubField) == "VF_Hidden") {
+                            if (get_class($objSubField) == "ValidFormBuilder\\Hidden") {
                                 $strOutput .= $objSubField->toHtml(true);
                             }
                         }
                     } else {
-                        if (get_class($objField) == "VF_Hidden") {
+                        if (get_class($objField) == "ValidFormBuilder\\Hidden") {
                             $strOutput .= $objField->toHtml(true);
                         }
                     }
@@ -398,11 +398,11 @@ class ValidWizard extends ValidForm
      *
      * @param boolean $blnIncludeMultiFields
      *            Set this to true if you want to include MultiFields in the collection
-     * @return VF_Collection The collection of fields.
+     * @return Collection The collection of fields.
      */
     public function getFields($blnIncludeMultiFields = false)
     {
-        $objFields = new VF_Collection();
+        $objFields = new Collection();
 
         foreach ($this->__elements as $objPage) {
             if ($objPage->hasFields()) {
@@ -412,7 +412,7 @@ class ValidWizard extends ValidForm
                             if (is_object($objField)) {
                                 if ($objField->hasFields()) {
                                     // Also add the multifield to the resulting collection, if $blnIncludeMultiFields is true.
-                                    if (get_class($objField) == "VF_MultiField" && $blnIncludeMultiFields) {
+                                    if (get_class($objField) == "ValidFormBuilder\\MultiField" && $blnIncludeMultiFields) {
                                         $objFields->addObject($objField);
                                     }
 
@@ -420,7 +420,7 @@ class ValidWizard extends ValidForm
                                         if (is_object($objSubField)) {
                                             if ($objSubField->hasFields()) {
                                                 // Also add the multifield to the resulting collection, if $blnIncludeMultiFields is true.
-                                                if (get_class($objField) == "VF_MultiField" && $blnIncludeMultiFields) {
+                                                if (get_class($objField) == "ValidFormBuilder\\MultiField" && $blnIncludeMultiFields) {
                                                     $objFields->addObject($objField);
                                                 }
 

@@ -34,7 +34,7 @@ class SelectGroup extends Base
     public function __construct($label)
     {
         $this->__label = $label;
-        $this->__options = new VF_Collection();
+        $this->__options = new Collection();
     }
 
     public function toHtml($value = null)
@@ -50,7 +50,7 @@ class SelectGroup extends Base
 
     public function addField($label, $value, $selected = false)
     {
-        $objOption = new VF_SelectOption($label, $value, $selected);
+        $objOption = new SelectOption($label, $value, $selected);
         $objOption->setMeta("parent", $this, true);
 
         $this->__options->addObject($objOption);

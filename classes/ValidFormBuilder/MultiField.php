@@ -47,7 +47,7 @@ class MultiField extends Base
         // *** Set label & field specific meta
         $this->__initializeMeta();
 
-        $this->__fields = new VF_Collection();
+        $this->__fields = new Collection();
 
         $this->__dynamic = $this->getMeta("dynamic", $this->__dynamic);
         $this->__dynamicLabel = $this->getMeta("dynamicLabel", $this->__dynamicLabel);
@@ -76,7 +76,7 @@ class MultiField extends Base
             // *** The dynamic count can be influenced by a meta value.
             $intDynamicCount = (isset($meta["dynamicCount"])) ? $meta["dynamicCount"] : 0;
 
-            $objHiddenField = new VF_Hidden($objField->getId() . "_dynamic", VFORM_INTEGER, array(
+            $objHiddenField = new Hidden($objField->getId() . "_dynamic", VFORM_INTEGER, array(
                 "default" => $intDynamicCount,
                 "dynamicCounter" => true
             ));
@@ -90,7 +90,7 @@ class MultiField extends Base
 
     public function addText($strText, $meta = array())
     {
-        $objString = new VF_String($strText, $meta);
+        $objString = new String($strText, $meta);
         $objString->setMeta("parent", $this, true);
 
         $this->__fields->addObject($objString);
@@ -98,7 +98,7 @@ class MultiField extends Base
         return $objString;
     }
 
-    public function toHtml($submitted = FALSE, $blnSimpleLayout = FALSE, $blnLabel = true, $blnDisplayError = true)
+    public function toHtml($submitted = false, $blnSimpleLayout = false, $blnLabel = true, $blnDisplayError = true)
     {
         $strOutput = "";
 
@@ -114,7 +114,7 @@ class MultiField extends Base
         return $strOutput;
     }
 
-    public function __toHtml($submitted = FALSE, $blnSimpleLayout = FALSE, $blnLabel = true, $blnDisplayError = true, $intCount = 0)
+    public function __toHtml($submitted = false, $blnSimpleLayout = false, $blnLabel = true, $blnDisplayError = true, $intCount = 0)
     {
         // *** Conditional meta should be set before all other meta. Otherwise the set meta is being reset.
         $this->setConditionalMeta();
@@ -128,18 +128,18 @@ class MultiField extends Base
         $arrError = array();
 
         $strId = "";
-        $blnRequired = FALSE;
+        $blnRequired = false;
 
         foreach ($this->__fields as $field) {
             $objValidator = $field->getValidator();
             if (is_object($objValidator)) {
                 // *** Check if this multifield should have required styling.
                 if ($objValidator->getRequired()) {
-                    $blnRequired = TRUE;
+                    $blnRequired = true;
                 }
 
                 if ($submitted && ! $objValidator->validate($intCount) && $blnDisplayError) {
-                    $blnError = TRUE;
+                    $blnError = true;
 
                     $strError = $field->getValidator()->getError($intCount);
                     if (! in_array($strError, $arrError)) {
@@ -177,7 +177,7 @@ class MultiField extends Base
 
         foreach ($this->__fields as $field) {
             // Skip the hidden dynamic counter fields.
-            if (($intCount > 0) && (get_class($field) == "VF_Hidden") && $field->isDynamicCounter()) {
+            if (($intCount > 0) && (get_class($field) == "ValidFormBuilder\\Hidden") && $field->isDynamicCounter()) {
                 continue;
             }
 
@@ -206,7 +206,7 @@ class MultiField extends Base
             // Generate an array of field id's
             foreach ($this->__fields as $field) {
                 // Skip the hidden dynamic counter fields.
-                if ((get_class($field) == "VF_Hidden") && $field->isDynamicCounter()) {
+                if ((get_class($field) == "ValidFormBuilder\\Hidden") && $field->isDynamicCounter()) {
                     continue;
                 }
                 $arrFields[$field->getId()] = $field->getName();
@@ -220,7 +220,7 @@ class MultiField extends Base
         return $strReturn;
     }
 
-    public function toJS($blnParentIsDynamic = FALSE)
+    public function toJS($blnParentIsDynamic = false)
     {
         $strOutput = "";
 
@@ -295,7 +295,7 @@ class MultiField extends Base
 
     public function getValue()
     {
-        return TRUE;
+        return true;
     }
 
     public function getId()
@@ -322,7 +322,7 @@ class MultiField extends Base
         $blnReturn = false;
 
         foreach ($this->__fields as $objField) {
-            if (get_class($objField) !== "VF_Hidden") {
+            if (get_class($objField) !== "ValidFormBuilder\\Hidden") {
                 $objValidator = $objField->getValidator();
                 if (is_object($objValidator)) {
                     $varValue = $objValidator->getValue($intCount);
@@ -341,7 +341,7 @@ class MultiField extends Base
 
     public function hasFields()
     {
-        return ($this->__fields->count() > 0) ? TRUE : FALSE;
+        return ($this->__fields->count() > 0) ? true : false;
     }
 
     /**
@@ -399,10 +399,11 @@ class MultiField extends Base
 
     private function __validate($intCount = null)
     {
-        $blnReturn = TRUE;
+        $blnReturn = true;
+
         foreach ($this->__fields as $field) {
             if (! $field->isValid($intCount)) {
-                $blnReturn = FALSE;
+                $blnReturn = false;
                 break;
             }
         }

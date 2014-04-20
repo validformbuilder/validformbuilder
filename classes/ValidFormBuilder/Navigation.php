@@ -36,12 +36,12 @@ class Navigation extends Base
         $this->__meta = $meta;
         $this->__initializeMeta();
 
-        $this->__fields = new VF_Collection();
+        $this->__fields = new Collection();
     }
 
     public function addButton($label, $options = array())
     {
-        $objButton = new VF_Button($label, $options);
+        $objButton = new Button($label, $options);
         // *** Set the parent for the new field.
         $objButton->setMeta("parent", $this, true);
 
@@ -52,14 +52,14 @@ class Navigation extends Base
 
     public function addHtml($html)
     {
-        $objString = new VF_String($html);
+        $objString = new String($html);
         $objString->setMeta("parent", $this, true);
         $this->__fields->addObject($objString);
 
         return $objString;
     }
 
-    public function toHtml($submitted = FALSE, $blnSimpleLayout = FALSE, $blnLabel = true, $blnDisplayError = true)
+    public function toHtml($submitted = false, $blnSimpleLayout = false, $blnLabel = true, $blnDisplayError = true)
     {
         $this->setConditionalMeta();
 
@@ -98,7 +98,7 @@ class Navigation extends Base
 
     public function getValue()
     {
-        return TRUE;
+        return true;
     }
 
     public function getId()
@@ -123,6 +123,6 @@ class Navigation extends Base
 
     public function hasFields()
     {
-        return ($this->__fields->count() > 0) ? TRUE : FALSE;
+        return ($this->__fields->count() > 0) ? true : false;
     }
 }

@@ -39,12 +39,12 @@ class String extends Base
         $this->__meta = $meta;
     }
 
-    public function toHtml($submitted = FALSE, $blnSimpleLayout = FALSE)
+    public function toHtml($submitted = false, $blnSimpleLayout = false)
     {
         return $this->__toHtml($submitted, $blnSimpleLayout);
     }
 
-    public function __toHtml($submitted = FALSE, $blnSimpleLayout = FALSE)
+    public function __toHtml($submitted = false, $blnSimpleLayout = false)
     {
         $strOutput = "";
 
@@ -61,7 +61,7 @@ class String extends Base
         return $strOutput;
     }
 
-    public function toJS($blnParentIsDynamic = FALSE)
+    public function toJS($blnParentIsDynamic = false)
     {
         $strOutput = "";
 
@@ -79,12 +79,12 @@ class String extends Base
 
     public function isValid()
     {
-        return TRUE;
+        return true;
     }
 
     public function hasFields()
     {
-        return FALSE;
+        return false;
     }
 
     public function getValue()

@@ -1,0 +1,24 @@
+{
+    "name": "neverwoods/validformbuilder",
+    "type": "library",
+    "description": "The easiest tool for generating XHTML 1.0 valid and CSS enabled webforms.",
+    "keywords": ["form", "validation", "building"],
+    "homepage": "http://www.validformbuilder.org/",
+    "license": "GNU GPL v2",
+    "authors": [
+        {
+            "name": "Felix Langfeldt",
+            "email": "felix@neverwoods.com"
+        },
+        {
+            "name": "Robin van Baalen",
+            "email": "robin@neverwoods.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.0"
+    },
+    "autoload": {
+        "psr-0": {"ValidFormBuilder": "classes/"}
+    }
+}
