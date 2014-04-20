@@ -123,7 +123,7 @@ class Group extends Element
         return $strOutput;
     }
 
-    public function toJS($blnParentIsDynamic = false)
+    public function toJS($intDynamicPosition = 0)
     {
         $strOutput = "";
         $strCheck = $this->__validator->getCheck();
@@ -132,8 +132,8 @@ class Group extends Element
         $intMaxLength = ($this->__validator->getMaxLength() > 0) ? $this->__validator->getMaxLength() : "null";
         $intMinLength = ($this->__validator->getMinLength() > 0) ? $this->__validator->getMinLength() : "null";
 
-        if ($this->__dynamic || $blnParentIsDynamic) {
-            $intDynamicCount = $this->getDynamicCount($blnParentIsDynamic);
+        if ($this->__dynamic || $intDynamicPosition) {
+            $intDynamicCount = $this->getDynamicCount($intDynamicPosition);
             for ($intCount = 0; $intCount <= $intDynamicCount; $intCount ++) {
                 $strId = ($intCount == 0) ? $this->getId() : $this->getId() . "_" . $intCount;
                 $strName = ($intCount == 0) ? $this->getName() : $this->getName() . "_" . $intCount;

@@ -74,7 +74,7 @@ class Paragraph extends Base
         return $strOutput;
     }
 
-    public function toJS($blnParentIsDynamic = false)
+    public function toJS($intDynamicPosition = 0)
     {
         $strOutput = "";
 
@@ -84,7 +84,7 @@ class Paragraph extends Base
             $strOutput = "objForm.addElement('{$strId}', '{$strId}');\n";
 
             // *** Condition logic.
-            $strOutput .= $this->conditionsToJs();
+            $strOutput .= $this->conditionsToJs($intDynamicPosition);
         }
 
         return $strOutput;

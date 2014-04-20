@@ -103,12 +103,12 @@ class Page extends Base
         }
     }
 
-    public function toJS()
+    public function toJS($intDynamicPosition = 0)
     {
         $strReturn = "objForm.addPage('" . $this->getId() . "');\n";
 
         foreach ($this->__elements as $field) {
-            $strReturn .= $field->toJS();
+            $strReturn .= $field->toJS($intDynamicPosition);
         }
 
         return $strReturn;

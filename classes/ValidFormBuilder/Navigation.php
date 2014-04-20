@@ -75,12 +75,12 @@ class Navigation extends Base
         return $strReturn;
     }
 
-    public function toJS()
+    public function toJS($intDynamicPosition = 0)
     {
         $strReturn = "";
 
         foreach ($this->__fields as $field) {
-            $strReturn .= $field->toJS();
+            $strReturn .= $field->toJS($intDynamicPosition);
         }
 
         return $strReturn;

@@ -178,7 +178,7 @@ class Element extends Base
         $this->__validator->setError($strError, $intDynamicPosition);
     }
 
-    public function toJS()
+    public function toJS($intDynamicPosition = 0)
     {
         return "alert('Field type of field {$this->__name} not defined.');\n";
     }

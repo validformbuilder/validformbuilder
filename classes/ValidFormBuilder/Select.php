@@ -178,7 +178,7 @@ class Select extends Element
         return $strReturn;
     }
 
-    public function toJS($blnParentIsDynamic = false)
+    public function toJS($intDynamicPosition = 0)
     {
         $strCheck = $this->__validator->getCheck();
         $strCheck = (empty($strCheck)) ? "''" : str_replace("'", "\\'", $strCheck);
@@ -187,8 +187,8 @@ class Select extends Element
         $intMinLength = ($this->__validator->getMinLength() > 0) ? $this->__validator->getMinLength() : "null";
         $strOutput = "";
 
-        if ($this->__dynamic || $blnParentIsDynamic) {
-            $intDynamicCount = $this->getDynamicCount($blnParentIsDynamic);
+        if ($this->__dynamic || $intDynamicPosition) {
+            $intDynamicCount = $this->getDynamicCount($intDynamicPosition);
             for ($intCount = 0; $intCount <= $intDynamicCount; $intCount ++) {
                 $strId = ($intCount == 0) ? $this->__id : $this->__id . "_" . $intCount;
                 $strName = ($intCount == 0) ? $this->__name : $this->__name . "_" . $intCount;

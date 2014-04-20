@@ -105,7 +105,7 @@ class Checkbox extends Element
         return $strOutput;
     }
 
-    public function toJS()
+    public function toJS($intDynamicPosition = 0)
     {
         $strOutput = "";
 
@@ -119,7 +119,7 @@ class Checkbox extends Element
         $strOutput .= "objForm.addElement('{$this->__id}', '{$this->__name}', {$strCheck}, {$strRequired}, {$intMaxLength}, {$intMinLength}, '" . addslashes($this->__validator->getFieldHint()) . "', '" . addslashes($this->__validator->getTypeError()) . "', '" . addslashes($this->__validator->getRequiredError()) . "', '" . addslashes($this->__validator->getHintError()) . "', '" . addslashes($this->__validator->getMinLengthError()) . "', '" . addslashes($this->__validator->getMaxLengthError()) . "');\n";
 
         // *** Condition logic.
-        $strOutput .= $this->conditionsToJs();
+        $strOutput .= $this->conditionsToJs($intDynamicPosition);
 
         return $strOutput;
     }

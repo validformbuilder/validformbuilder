@@ -220,7 +220,7 @@ class MultiField extends Base
         return $strReturn;
     }
 
-    public function toJS($blnParentIsDynamic = false)
+    public function toJS($intDynamicPosition = 0)
     {
         $strOutput = "";
 
@@ -229,8 +229,8 @@ class MultiField extends Base
         }
 
         // *** Condition logic.
-        if ($this->__dynamic || $blnParentIsDynamic) {
-            $intDynamicCount = $this->getDynamicCount($blnParentIsDynamic);
+        if ($this->__dynamic || $intDynamicPosition) {
+            $intDynamicCount = $this->getDynamicCount($intDynamicPosition);
             for ($intCount = 0; $intCount <= $intDynamicCount; $intCount ++) {
                 // *** Render the condition logic per dynamic field.
                 $strOutput .= $this->conditionsToJs($intCount);

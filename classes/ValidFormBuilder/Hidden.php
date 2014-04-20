@@ -47,12 +47,12 @@ class Hidden extends Element
         return $strOutput;
     }
 
-    public function toJS()
+    public function toJS($intDynamicPosition = 0)
     {
         $strOutput = "";
 
         // *** Condition logic.
-        $strOutput .= $this->conditionsToJs();
+        $strOutput .= $this->conditionsToJs($intDynamicPosition);
 
         return $strOutput;
     }

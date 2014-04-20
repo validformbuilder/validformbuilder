@@ -90,7 +90,7 @@ class Captcha extends Element
         return $strOutput;
     }
 
-    public function toJS()
+    public function toJS($intDynamicPosition = 0)
     {
         $strCheck = $this->__validator->getCheck();
         $strCheck = (empty($strCheck)) ? "''" : str_replace("'", "\\'", $strCheck);

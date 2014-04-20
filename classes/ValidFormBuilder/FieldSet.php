@@ -91,16 +91,16 @@ class Fieldset extends Base
         return $strOutput;
     }
 
-    public function toJS()
+    public function toJS($intDynamicPosition = 0)
     {
         $strReturn = "";
 
         foreach ($this->__fields as $field) {
-            $strReturn .= $field->toJS();
+            $strReturn .= $field->toJS($intDynamicPosition);
         }
 
         // *** Render Conditions logic.
-        $strReturn .= $this->conditionsToJs();
+        $strReturn .= $this->conditionsToJs($intDynamicPosition);
 
         return $strReturn;
     }

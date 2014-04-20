@@ -104,7 +104,7 @@ class Area extends Base
             $meta["dynamic"] = $this->__dynamic;
         }
 
-            // *** Overwrite dynamic settings. We cannot have a dynamic multifield inside a dynamic area.
+        // *** Overwrite dynamic settings. We cannot have a dynamic multifield inside a dynamic area.
         if ($this->__dynamic) {
             $meta["dynamic"] = $this->__dynamic;
             $meta["dynamicLabel"] = "";
@@ -256,7 +256,7 @@ class Area extends Base
         return $strReturn;
     }
 
-    public function toJS()
+    public function toJS($intDynamicPosition = 0)
     {
         $strReturn = "";
 
@@ -264,7 +264,7 @@ class Area extends Base
             $strReturn .= $field->toJS($this->__dynamic);
         }
 
-        $strReturn .= $this->conditionsToJs();
+        $strReturn .= $this->conditionsToJs($intDynamicPosition);
 
         return $strReturn;
     }

@@ -61,7 +61,7 @@ class String extends Base
         return $strOutput;
     }
 
-    public function toJS($blnParentIsDynamic = false)
+    public function toJS($intDynamicPosition = 0)
     {
         $strOutput = "";
 
@@ -71,7 +71,7 @@ class String extends Base
             $strOutput = "objForm.addElement('{$strId}', '{$strId}');\n";
 
             // *** Condition logic.
-            $strOutput .= $this->conditionsToJs();
+            $strOutput .= $this->conditionsToJs($intDynamicPosition);
         }
 
         return $strOutput;
