@@ -27,7 +27,7 @@ namespace ValidFormBuilder;
 class Validator
 {
 
-    protected static $checks = array(
+    public static $checks = array(
         ValidForm::VFORM_STRING => '/^[-a-zàáâãäåæçèéêëìíîïðñòóôõöøùúûüýß€0-9%\s*.\'+\/",_!?:;()|& ]*$/i',
         ValidForm::VFORM_TEXT => '/^[-a-zàáâãäåæçèéêëìíîïðñòóôõöøùúûüý€ß0-9%\s*.\'+\’\/"_,?#@:;^*!&() ]*$/i',
         ValidForm::VFORM_HTML => '/^[-a-zàáâãäåæçèéêëìíîïðñòóôõöøùúûüý€0-9%\s*.\'\’\/"_,?#@;^*!&() ]*$<:>="/i',
