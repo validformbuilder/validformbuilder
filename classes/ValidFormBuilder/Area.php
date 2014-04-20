@@ -140,8 +140,8 @@ class Area extends Base
         $blnReturn = false;
 
         foreach ($this->__fields as $objField) {
-            if (get_class($objField) !== "ValidFormBuiler\\Hidden" || get_class($objField) !== "ValidFormBuiler\\Paragraph") {
-                if (get_class($objField) == "ValidFormBuiler\\MultiField") {
+            if (get_class($objField) !== "ValidFormBuilder\\Hidden" || get_class($objField) !== "ValidFormBuilder\\Paragraph") {
+                if (get_class($objField) == "ValidFormBuilder\\MultiField") {
                     $blnReturn = $objField->hasContent($intCount);
                     if ($blnReturn) {
                         break;
@@ -202,7 +202,7 @@ class Area extends Base
 
         $blnHasContent = $this->hasContent($intCount);
         foreach ($this->__fields as $objField) {
-            if (($intCount > 0) && get_class($objField) == "ValidFormBuiler\\Hidden" && $objField->isDynamicCounter()) {
+            if (($intCount > 0) && get_class($objField) == "ValidFormBuilder\\Hidden" && $objField->isDynamicCounter()) {
                 continue;
             }
 
@@ -228,10 +228,10 @@ class Area extends Base
             // Generate an array of field id's
             foreach ($this->__fields as $field) {
                 switch (get_class($field)) {
-                    case "ValidFormBuiler\\MultiField":
+                    case "ValidFormBuilder\\MultiField":
                         foreach ($field->getFields() as $subfield) {
                             // Skip the hidden dynamic counter fields.
-                            if ((get_class($subfield) == "ValidFormBuiler\\Hidden") && $subfield->isDynamicCounter()) {
+                            if ((get_class($subfield) == "ValidFormBuilder\\Hidden") && $subfield->isDynamicCounter()) {
                                 continue;
                             }
                             $arrFields[$subfield->getId()] = $subfield->getName();
@@ -240,7 +240,7 @@ class Area extends Base
                         break;
                     default:
                         // Skip the hidden dynamic counter fields.
-                        if ((get_class($field) == "ValidFormBuiler\\Hidden") && $field->isDynamicCounter()) {
+                        if ((get_class($field) == "ValidFormBuilder\\Hidden") && $field->isDynamicCounter()) {
                             continue;
                         }
                         $arrFields[$field->getId()] = $field->getName();

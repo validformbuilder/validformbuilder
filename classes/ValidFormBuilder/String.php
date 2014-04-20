@@ -102,7 +102,7 @@ class String extends Base
         return;
     }
 
-    public function getData()
+    public function getData($strKey = null)
     {
         return;
     }

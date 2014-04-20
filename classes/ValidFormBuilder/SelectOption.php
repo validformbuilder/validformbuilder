@@ -61,7 +61,7 @@ class SelectOption extends Element
         return $strOutput;
     }
 
-    public function getValue()
+    public function getValue($intDynamicPosition = 0)
     {
         return $this->__value;
     }

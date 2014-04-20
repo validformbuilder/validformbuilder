@@ -95,7 +95,7 @@ class Comparison extends ClassDynamic
 
     public function jsonSerialize($intDynamicPosition = null)
     {
-        if (get_class($this->__subject) == "ValidFormBuiler\\GroupField") {
+        if (get_class($this->__subject) == "ValidFormBuilder\\GroupField") {
             $identifier = $this->__subject->getId();
         } else {
             $identifier = $this->__subject->getName();

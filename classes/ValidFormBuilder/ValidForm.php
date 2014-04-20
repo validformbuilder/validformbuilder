@@ -874,7 +874,7 @@ class ValidForm extends ClassDynamic
 
         $strReturn .= "function {$this->__name}_init() {\n";
 
-        $strCalledClass = get_called_class();
+        $strCalledClass = static::getStrippedClassName(get_called_class());
         $strArguments = (count($arrInitArguments) > 0) ? "\"{$this->__name}\", \"{$this->__mainalert}\", " . json_encode($arrInitArguments) : "\"{$this->__name}\", \"{$this->__mainalert}\"";
         $strReturn .= "\tvar objForm = (typeof {$strCalledClass} !== \"undefined\") ? new {$strCalledClass}({$strArguments}) : new ValidForm(\"{$this->__name}\", \"{$this->__mainalert}\");\n";
 

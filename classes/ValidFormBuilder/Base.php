@@ -132,7 +132,7 @@ class Base extends ClassDynamic
         if (is_array($arrComparisons) && count($arrComparisons) > 0) {
             /* @var $varComparison Array|Comparison */
             foreach ($arrComparisons as $varComparison) {
-                if (is_array($varComparison) || get_class($varComparison) === "ValidFormBuiler\\Comparison") {
+                if (is_array($varComparison) || get_class($varComparison) === "ValidFormBuilder\\Comparison") {
                     try {
                         $objCondition->addComparison($varComparison);
                     } catch (\InvalidArgumentException $e) {
@@ -316,28 +316,28 @@ class Base extends ClassDynamic
                 // Continueing to the required property.
                 case "required":
                     // This can only be applied on all subjects except for Paragraphs
-                    if (get_class($objCondition->getSubject()) !== "ValidFormBuiler\\Paragraph") {
+                    if (get_class($objCondition->getSubject()) !== "ValidFormBuilder\\Paragraph") {
 
                         if ($blnResult) {
                             if ($objCondition->getValue()) {
-                                if (get_class($this) !== "ValidFormBuiler\\Fieldset") {
+                                if (get_class($this) !== "ValidFormBuilder\\Fieldset") {
                                     // TODO Disabled because it messes up multifields.
                                     // $this->setMeta("class", "vf__required", true);
                                 }
                             } else {
-                                if (get_class($this) !== "ValidFormBuiler\\Fieldset") {
+                                if (get_class($this) !== "ValidFormBuilder\\Fieldset") {
                                     // TODO Disabled because it messes up multifields.
                                     // $this->setMeta("class", "vf__optional", true);
                                 }
                             }
                         } else {
                             if ($objCondition->getValue()) {
-                                if (get_class($this) !== "ValidFormBuiler\\Fieldset") {
+                                if (get_class($this) !== "ValidFormBuilder\\Fieldset") {
                                     // TODO Disabled because it messes up multifields.
                                     // $this->setMeta("class", "vf__optional", true);
                                 }
                             } else {
-                                if (get_class($this) !== "ValidFormBuiler\\Fieldset") {
+                                if (get_class($this) !== "ValidFormBuilder\\Fieldset") {
                                     // TODO Disabled because it messes up multifields.
                                     // $this->setMeta("class", "vf__required", true);
                                 }
@@ -348,7 +348,7 @@ class Base extends ClassDynamic
 
                 case "enabled":
                     // This can only be applied on all subjects except for Paragraphs
-                    if (get_class($objCondition->getSubject()) !== "ValidFormBuiler\\Paragraph") {
+                    if (get_class($objCondition->getSubject()) !== "ValidFormBuilder\\Paragraph") {
 
                         if ($blnResult) {
                             if ($objCondition->getValue()) {
@@ -683,7 +683,7 @@ class Base extends ClassDynamic
             }
 
             // *** Add the value to the property string.
-            $arrMeta = explode($strDelimiter, $varMeta);
+            $arrMeta = (! is_array($varMeta)) ? explode($strDelimiter, $varMeta) : $varMeta;
             $arrMeta[] = $value;
 
             // Make sure no empty values are left in the array.
