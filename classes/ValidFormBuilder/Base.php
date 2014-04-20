@@ -558,7 +558,7 @@ class Base extends ClassDynamic
 
     protected function __generateName()
     {
-        return strtolower(get_class($this)) . "_" . mt_rand();
+        return strtolower(ValidForm::getStrippedClassName(get_class($this))) . "_" . mt_rand();
     }
 
     protected function __getMetaString()

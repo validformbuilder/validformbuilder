@@ -910,7 +910,7 @@ class ValidForm extends ClassDynamic
      */
     protected function __generateName()
     {
-        return strtolower(get_class($this)) . "_" . mt_rand();
+        return strtolower(static::getStrippedClassName(get_class($this))) . "_" . mt_rand();
     }
 
     /**
@@ -948,5 +948,15 @@ class ValidForm extends ClassDynamic
         }
 
         return $strReturn;
+    }
+
+    public static function getStrippedClassName($classname)
+    {
+        $pos = strrpos($classname, '\\');
+        if ($pos) {
+            return substr($classname, $pos + 1);
+        }
+
+        return $pos;
     }
 }

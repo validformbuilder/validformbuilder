@@ -79,6 +79,6 @@ class Button extends Base
 
     private function __generateId()
     {
-        return strtolower(get_class($this)) . "_" . mt_rand();
+        return strtolower(ValidForm::getStrippedClassName(get_class($this))) . "_" . mt_rand();
     }
 }
