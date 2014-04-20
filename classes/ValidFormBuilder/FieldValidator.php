@@ -352,7 +352,8 @@ class FieldValidator extends ClassDynamic
                 unset($this->__validvalues[$intDynamicPosition]);
                 $this->__errors[$intDynamicPosition] = $this->__typeerror;
             } else {
-                if (is_array($value)) {
+                if (is_array($value) && is_array($value[0])) {
+                    //*** Set the value directly when the value is a nested array.
                     $this->__validvalues = $value;
                 } else {
                     $this->__validvalues[$intDynamicPosition] = $value;
