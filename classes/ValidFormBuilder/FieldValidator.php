@@ -138,7 +138,7 @@ class FieldValidator extends ClassDynamic
         } else {
             $strFieldName = ($intDynamicPosition > 0) ? $this->__fieldname . "_" . $intDynamicPosition : $this->__fieldname;
 
-            if ($this->__type !== VFORM_FILE) {
+            if ($this->__type !== ValidForm::VFORM_FILE) {
                 // Default value
                 $varValidValue = $this->__field->getDefault();
 
@@ -340,12 +340,12 @@ class FieldValidator extends ClassDynamic
         // *** Check specific types.
         if (! $this->__hasError($intDynamicPosition)) {
             switch ($this->__field->getType()) {
-                case VFORM_CUSTOM:
-                case VFORM_CUSTOM_TEXT:
+                case ValidForm::VFORM_CUSTOM:
+                case ValidForm::VFORM_CUSTOM_TEXT:
                     $blnValidType = Validator::validate($this->__validation, $value);
                     break;
                 default:
-                    $blnValidType = Validator::validate($this->__field->getType(), ($this->__field->getType() == VFORM_CAPTCHA) ? $this->__fieldname : $value);
+                    $blnValidType = Validator::validate($this->__field->getType(), ($this->__field->getType() == ValidForm::VFORM_CAPTCHA) ? $this->__fieldname : $value);
             }
 
             if (! $blnValidType) {
@@ -384,8 +384,8 @@ class FieldValidator extends ClassDynamic
         $strReturn = "";
 
         switch ($this->__field->getType()) {
-            case VFORM_CUSTOM:
-            case VFORM_CUSTOM_TEXT:
+            case ValidForm::VFORM_CUSTOM:
+            case ValidForm::VFORM_CUSTOM_TEXT:
                 $strReturn = $this->__validation;
                 break;
             default:

@@ -28,26 +28,26 @@ class Validator
 {
 
     protected static $checks = array(
-        VFORM_STRING => '/^[-a-zàáâãäåæçèéêëìíîïðñòóôõöøùúûüýß€0-9%\s*.\'+\/",_!?:;()|& ]*$/i',
-        VFORM_TEXT => '/^[-a-zàáâãäåæçèéêëìíîïðñòóôõöøùúûüý€ß0-9%\s*.\'+\’\/"_,?#@:;^*!&() ]*$/i',
-        VFORM_HTML => '/^[-a-zàáâãäåæçèéêëìíîïðñòóôõöøùúûüý€0-9%\s*.\'\’\/"_,?#@;^*!&() ]*$<:>="/i',
-        VFORM_NUMERIC => '/^[-]*[0-9,\.]*$/i',
-        VFORM_INTEGER => '/^[0-9]*$/i',
-        VFORM_WORD => '/^[-a-zàáâãäåæçèéêëìíîïðñòóôõöøùúûüýß€0-9%_]*$/i',
-        VFORM_EMAIL => '/^[^@\s]+@([-a-z0-9]+\.)+[a-z]{2,}$/i',
-        VFORM_PASSWORD => '/^[-A-Z0-9.\'"_!@#()$%^&*?]*$/i',
-        VFORM_SIMPLEURL => '/^[-A-Z0-9]+\.[-A-Z0-9]+/i',
-        VFORM_URL => '/^(http(s)?:\/\/)*[a-z0-9-]+(.[a-z0-9-]+)*(:[0-9]+)?(\/.*)?$/i',
-        VFORM_FILE => '/^[-a-zàáâãäåæçèéêëìíîïðñòóôõöøùúûüýß0-9.\':"\\\\_\/ ]*$/i',
-        VFORM_BOOLEAN => '/^[on]*$/i',
-        VFORM_CAPTCHA => '/^[-a-z]*$/i',
-        VFORM_RADIO_LIST => '',
-        VFORM_CHECK_LIST => '',
-        VFORM_SELECT_LIST => '',
-        VFORM_PARAGRAPH => '',
-        VFORM_CURRENCY => '',
-        VFORM_HIDDEN => '',
-        VFORM_DATE => '/^(\d{2}[-|\/|\\\\|\.]\d{2}[-|\/|\\\\|\.]\d{4})$/i'
+        ValidForm::VFORM_STRING => '/^[-a-zàáâãäåæçèéêëìíîïðñòóôõöøùúûüýß€0-9%\s*.\'+\/",_!?:;()|& ]*$/i',
+        ValidForm::VFORM_TEXT => '/^[-a-zàáâãäåæçèéêëìíîïðñòóôõöøùúûüý€ß0-9%\s*.\'+\’\/"_,?#@:;^*!&() ]*$/i',
+        ValidForm::VFORM_HTML => '/^[-a-zàáâãäåæçèéêëìíîïðñòóôõöøùúûüý€0-9%\s*.\'\’\/"_,?#@;^*!&() ]*$<:>="/i',
+        ValidForm::VFORM_NUMERIC => '/^[-]*[0-9,\.]*$/i',
+        ValidForm::VFORM_INTEGER => '/^[0-9]*$/i',
+        ValidForm::VFORM_WORD => '/^[-a-zàáâãäåæçèéêëìíîïðñòóôõöøùúûüýß€0-9%_]*$/i',
+        ValidForm::VFORM_EMAIL => '/^[^@\s]+@([-a-z0-9]+\.)+[a-z]{2,}$/i',
+        ValidForm::VFORM_PASSWORD => '/^[-A-Z0-9.\'"_!@#()$%^&*?]*$/i',
+        ValidForm::VFORM_SIMPLEURL => '/^[-A-Z0-9]+\.[-A-Z0-9]+/i',
+        ValidForm::VFORM_URL => '/^(http(s)?:\/\/)*[a-z0-9-]+(.[a-z0-9-]+)*(:[0-9]+)?(\/.*)?$/i',
+        ValidForm::VFORM_FILE => '/^[-a-zàáâãäåæçèéêëìíîïðñòóôõöøùúûüýß0-9.\':"\\\\_\/ ]*$/i',
+        ValidForm::VFORM_BOOLEAN => '/^[on]*$/i',
+        ValidForm::VFORM_CAPTCHA => '/^[-a-z]*$/i',
+        ValidForm::VFORM_RADIO_LIST => '',
+        ValidForm::VFORM_CHECK_LIST => '',
+        ValidForm::VFORM_SELECT_LIST => '',
+        ValidForm::VFORM_PARAGRAPH => '',
+        ValidForm::VFORM_CURRENCY => '',
+        ValidForm::VFORM_HIDDEN => '',
+        ValidForm::VFORM_DATE => '/^(\d{2}[-|\/|\\\\|\.]\d{2}[-|\/|\\\\|\.]\d{4})$/i'
     );
 
     public static function validate($checkType, $value)
@@ -59,7 +59,7 @@ class Validator
                 $blnReturn = true;
             } else {
                 switch ($checkType) {
-                    case VFORM_CAPTCHA:
+                    case ValidForm::VFORM_CAPTCHA:
                         // FIXME: Disabled PhpCaptcha until we find a better solution.
                         // $blnReturn = PhpCaptcha::Validate(ValidForm::get($value));
 

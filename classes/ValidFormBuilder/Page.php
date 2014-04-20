@@ -91,7 +91,7 @@ class Page extends Base
 
             if ($objField->isDynamic() && get_class($objField) !== "ValidFormBuilder\\MultiField"
                     && get_class($objField) !== "ValidFormBuilder\\Area") {
-                $objHidden = new Hidden($objField->getId() . "_dynamic", VFORM_INTEGER, array(
+                $objHidden = new Hidden($objField->getId() . "_dynamic", ValidForm::VFORM_INTEGER, array(
                     "default" => 0,
                     "dynamicCounter" => true
                 ));

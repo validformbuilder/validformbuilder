@@ -165,7 +165,7 @@ class ValidWizard extends ValidForm
 
         if ($this->__elements->count() == 1) {
             // Add unique id field.
-            $this->addHiddenField("vf__uniqueid", VFORM_STRING, array(
+            $this->addHiddenField("vf__uniqueid", ValidForm::VFORM_STRING, array(
                 "default" => $this->getUniqueId()
             ));
         }

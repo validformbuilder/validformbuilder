@@ -43,7 +43,7 @@ class Condition extends ClassDynamic
         "required"
     );
 
-    public function __construct($objField, $strProperty, $blnValue = null, $strComparisonType = VFORM_MATCH_ANY)
+    public function __construct($objField, $strProperty, $blnValue = null, $strComparisonType = ValidForm::VFORM_MATCH_ANY)
     {
         $strProperty = strtolower($strProperty);
 
@@ -127,7 +127,7 @@ class Condition extends ClassDynamic
 
         switch ($this->__comparisontype) {
             default:
-            case VFORM_MATCH_ANY:
+            case ValidForm::VFORM_MATCH_ANY:
 				/* @var $objComparison Comparison */
 				foreach ($this->__comparisons as $objComparison) {
                     if ($objComparison->check($intDynamicPosition)) {
@@ -138,7 +138,7 @@ class Condition extends ClassDynamic
 
                 break;
 
-            case VFORM_MATCH_ALL:
+            case ValidForm::VFORM_MATCH_ALL:
                 $blnFailed = false;
                 foreach ($this->__comparisons as $objComparison) {
                     if (! $objComparison->check($intDynamicPosition)) {

@@ -76,7 +76,7 @@ class MultiField extends Base
             // *** The dynamic count can be influenced by a meta value.
             $intDynamicCount = (isset($meta["dynamicCount"])) ? $meta["dynamicCount"] : 0;
 
-            $objHiddenField = new Hidden($objField->getId() . "_dynamic", VFORM_INTEGER, array(
+            $objHiddenField = new Hidden($objField->getId() . "_dynamic", ValidForm::VFORM_INTEGER, array(
                 "default" => $intDynamicCount,
                 "dynamicCounter" => true
             ));

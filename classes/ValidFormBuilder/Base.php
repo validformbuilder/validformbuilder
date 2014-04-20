@@ -119,7 +119,7 @@ class Base extends ClassDynamic
      * @param [type] $intComparisonType
      *            [description]
      */
-    public function addCondition($strType, $blnValue, $arrComparisons, $intComparisonType = VFORM_MATCH_ANY)
+    public function addCondition($strType, $blnValue, $arrComparisons, $intComparisonType = ValidForm::VFORM_MATCH_ANY)
     {
         if ($this->hasCondition($strType)) {
             // Get an existing condition if it's already there.

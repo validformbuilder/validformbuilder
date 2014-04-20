@@ -41,13 +41,13 @@ class Comparison extends ClassDynamic
 
     public function __construct($objSubject, $varComparison, $varValue = null)
     {
-        if (($varComparison !== VFORM_COMPARISON_EMPTY && $varComparison !== VFORM_COMPARISON_NOT_EMPTY) && is_null($varValue)) {
+        if (($varComparison !== ValidForm::VFORM_COMPARISON_EMPTY && $varComparison !== ValidForm::VFORM_COMPARISON_NOT_EMPTY) && is_null($varValue)) {
             // If the comparison is not 'empty' or 'not empty', a 'value' key is required in the 'arrData' argument.
             throw new \InvalidArgumentException("Value is required in Comparison construct when using comparison '" . $varComparison . "'.", 1);
         }
 
         // If the subject is a required field, we cannot set the VFORM_COMPARISON_EMPTY check
-        if ($objSubject->getValidator()->getRequired() && $varComparison === VFORM_COMPARISON_EMPTY) {
+        if ($objSubject->getValidator()->getRequired() && $varComparison === ValidForm::VFORM_COMPARISON_EMPTY) {
             throw new \Exception("Cannot add 'empty' comparison to required field '{$objSubject->getName()}'.", 1);
         }
 
@@ -127,41 +127,41 @@ class Comparison extends ClassDynamic
         $strCompareAgainst = strtolower($this->__value);
 
         switch ($this->__comparison) {
-            case VFORM_COMPARISON_EQUAL:
+            case ValidForm::VFORM_COMPARISON_EQUAL:
                 $blnReturn = ($strLowerValue == $strCompareAgainst);
                 break;
-            case VFORM_COMPARISON_NOT_EQUAL:
+            case ValidForm::VFORM_COMPARISON_NOT_EQUAL:
                 $blnReturn = ($strLowerValue != $strCompareAgainst);
                 break;
-            case VFORM_COMPARISON_LESS_THAN:
+            case ValidForm::VFORM_COMPARISON_LESS_THAN:
                 $blnReturn = ($strValue < $this->__value);
                 break;
-            case VFORM_COMPARISON_GREATER_THAN:
+            case ValidForm::VFORM_COMPARISON_GREATER_THAN:
                 $blnReturn = ($strValue > $this->__value);
                 break;
-            case VFORM_COMPARISON_LESS_THAN_OR_EQUAL:
+            case ValidForm::VFORM_COMPARISON_LESS_THAN_OR_EQUAL:
                 $blnReturn = ($strValue <= $this->__value);
                 break;
-            case VFORM_COMPARISON_GREATER_THAN_OR_EQUAL:
+            case ValidForm::VFORM_COMPARISON_GREATER_THAN_OR_EQUAL:
                 $blnReturn = ($strValue >= $this->__value);
                 break;
-            case VFORM_COMPARISON_EMPTY:
+            case ValidForm::VFORM_COMPARISON_EMPTY:
                 $blnReturn = empty($strValue);
                 break;
-            case VFORM_COMPARISON_NOT_EMPTY:
+            case ValidForm::VFORM_COMPARISON_NOT_EMPTY:
                 $blnReturn = ! empty($strValue);
                 break;
-            case VFORM_COMPARISON_STARTS_WITH:
+            case ValidForm::VFORM_COMPARISON_STARTS_WITH:
                 // strpos is faster than substr and way faster than preg_match.
                 $blnReturn = (strpos($strLowerValue, $strCompareAgainst) === 0);
                 break;
-            case VFORM_COMPARISON_ENDS_WITH:
+            case ValidForm::VFORM_COMPARISON_ENDS_WITH:
                 $blnReturn = (substr($strLowerValue, - strlen($strCompareAgainst)) === $strCompareAgainst);
                 break;
-            case VFORM_COMPARISON_CONTAINS:
+            case ValidForm::VFORM_COMPARISON_CONTAINS:
                 $blnReturn = (strpos($strLowerValue, $strCompareAgainst) !== false);
                 break;
-            case VFORM_COMPARISON_REGEX:
+            case ValidForm::VFORM_COMPARISON_REGEX:
                 $blnReturn = preg_match($this->__value, $strValue);
                 break;
         }

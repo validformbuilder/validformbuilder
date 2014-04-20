@@ -57,7 +57,7 @@ class Fieldset extends Base
 
         if ($field->isDynamic() && get_class($field) !== "ValidFormBuilder\\MultiField"
                 && get_class($field) !== "ValidFormBuilder\\Area") {
-            $objHidden = new Hidden($field->getId() . "_dynamic", VFORM_INTEGER, array(
+            $objHidden = new Hidden($field->getId() . "_dynamic", ValidForm::VFORM_INTEGER, array(
                 "default" => 0,
                 "dynamicCounter" => true
             ));

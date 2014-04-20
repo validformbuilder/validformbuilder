@@ -48,7 +48,7 @@ class GroupField extends Element
     {
         $strChecked = "";
 
-        if ($this->__type == VFORM_CHECK_LIST) {
+        if ($this->__type == ValidForm::VFORM_CHECK_LIST) {
             $strName = ($intCount == 0) ? $this->__name : str_replace("[]", "", $this->__name) . "_" . $intCount . "[]";
         } else {
             $strName = ($intCount == 0) ? $this->__name : $this->__name . "_" . $intCount;
@@ -61,7 +61,7 @@ class GroupField extends Element
                     $this->setFieldMeta("checked", "checked");
                     break;
                 } else {
-                    if ($this->__type == VFORM_RADIO_LIST) {
+                    if ($this->__type == ValidForm::VFORM_RADIO_LIST) {
                         // Uncheck all others if this is a radio list
                         $this->setFieldMeta("checked", null, true); // Remove 'checked'
                     }
@@ -87,10 +87,10 @@ class GroupField extends Element
         /* TODO: Refactor to typeToHtmlType method and implement in all element classes. */
         $type = "";
         switch ($this->__type) {
-            case VFORM_RADIO_LIST:
+            case ValidForm::VFORM_RADIO_LIST:
                 $type = "radio";
                 break;
-            case VFORM_CHECK_LIST:
+            case ValidForm::VFORM_CHECK_LIST:
                 $type = "checkbox";
                 break;
         }

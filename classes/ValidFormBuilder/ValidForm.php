@@ -31,6 +31,45 @@ namespace ValidFormBuilder;
 class ValidForm extends ClassDynamic
 {
 
+    const VFORM_STRING = 1;
+    const VFORM_TEXT = 2;
+    const VFORM_NUMERIC = 3;
+    const VFORM_INTEGER = 4;
+    const VFORM_WORD = 5;
+    const VFORM_EMAIL = 6;
+    const VFORM_PASSWORD = 7;
+    const VFORM_SIMPLEURL = 8;
+    const VFORM_FILE = 9;
+    const VFORM_BOOLEAN = 10;
+    const VFORM_CAPTCHA = 11;
+    const VFORM_RADIO_LIST = 12;
+    const VFORM_CHECK_LIST = 13;
+    const VFORM_SELECT_LIST = 14;
+    const VFORM_PARAGRAPH = 15;
+    const VFORM_CURRENCY = 16;
+    const VFORM_DATE = 17;
+    const VFORM_CUSTOM = 18;
+    const VFORM_CUSTOM_TEXT = 19;
+    const VFORM_HTML = 20;
+    const VFORM_URL = 21;
+    const VFORM_HIDDEN = 22;
+
+    const VFORM_COMPARISON_EQUAL = "equal";
+    const VFORM_COMPARISON_NOT_EQUAL = "notequal";
+    const VFORM_COMPARISON_EMPTY = "empty";
+    const VFORM_COMPARISON_NOT_EMPTY = "notempty";
+    const VFORM_COMPARISON_LESS_THAN = "lessthan";
+    const VFORM_COMPARISON_GREATER_THAN = "greaterthan";
+    const VFORM_COMPARISON_LESS_THAN_OR_EQUAL = "lessthanorequal";
+    const VFORM_COMPARISON_GREATER_THAN_OR_EQUAL = "greaterthanorequal";
+    const VFORM_COMPARISON_CONTAINS = "contains";
+    const VFORM_COMPARISON_STARTS_WITH = "startswith";
+    const VFORM_COMPARISON_ENDS_WITH = "endswith";
+    const VFORM_COMPARISON_REGEX = "regex";
+
+    const VFORM_MATCH_ALL = "all";
+    const VFORM_MATCH_ANY = "any";
+
     protected $__description;
 
     protected $__meta;
@@ -163,43 +202,43 @@ class ValidForm extends ClassDynamic
     {
         $objField = null;
         switch ($type) {
-            case VFORM_STRING:
-            case VFORM_WORD:
-            case VFORM_EMAIL:
-            case VFORM_URL:
-            case VFORM_SIMPLEURL:
-            case VFORM_CUSTOM:
-            case VFORM_CURRENCY:
-            case VFORM_DATE:
-            case VFORM_NUMERIC:
-            case VFORM_INTEGER:
+            case static::VFORM_STRING:
+            case static::VFORM_WORD:
+            case static::VFORM_EMAIL:
+            case static::VFORM_URL:
+            case static::VFORM_SIMPLEURL:
+            case static::VFORM_CUSTOM:
+            case static::VFORM_CURRENCY:
+            case static::VFORM_DATE:
+            case static::VFORM_NUMERIC:
+            case static::VFORM_INTEGER:
                 $objField = new Text($name, $type, $label, $validationRules, $errorHandlers, $meta);
                 break;
-            case VFORM_PASSWORD:
+            case static::VFORM_PASSWORD:
                 $objField = new Password($name, $type, $label, $validationRules, $errorHandlers, $meta);
                 break;
-            case VFORM_CAPTCHA:
+            case static::VFORM_CAPTCHA:
                 $objField = new Captcha($name, $type, $label, $validationRules, $errorHandlers, $meta);
                 break;
-            case VFORM_HTML:
-            case VFORM_CUSTOM_TEXT:
-            case VFORM_TEXT:
+            case static::VFORM_HTML:
+            case static::VFORM_CUSTOM_TEXT:
+            case static::VFORM_TEXT:
                 $objField = new Textarea($name, $type, $label, $validationRules, $errorHandlers, $meta);
                 break;
-            case VFORM_FILE:
+            case static::VFORM_FILE:
                 $objField = new File($name, $type, $label, $validationRules, $errorHandlers, $meta);
                 break;
-            case VFORM_BOOLEAN:
+            case static::VFORM_BOOLEAN:
                 $objField = new Checkbox($name, $type, $label, $validationRules, $errorHandlers, $meta);
                 break;
-            case VFORM_RADIO_LIST:
-            case VFORM_CHECK_LIST:
+            case static::VFORM_RADIO_LIST:
+            case static::VFORM_CHECK_LIST:
                 $objField = new Group($name, $type, $label, $validationRules, $errorHandlers, $meta);
                 break;
-            case VFORM_SELECT_LIST:
+            case static::VFORM_SELECT_LIST:
                 $objField = new Select($name, $type, $label, $validationRules, $errorHandlers, $meta);
                 break;
-            case VFORM_HIDDEN:
+            case static::VFORM_HIDDEN:
                 $objField = new Hidden($name, $type, $meta);
                 break;
             default:
@@ -212,7 +251,7 @@ class ValidForm extends ClassDynamic
 
     public function addField($name, $label, $type, $validationRules = array(), $errorHandlers = array(), $meta = array(), $blnJustRender = false)
     {
-        $objField = self::renderField($name, $label, $type, $validationRules, $errorHandlers, $meta);
+        $objField = static::renderField($name, $label, $type, $validationRules, $errorHandlers, $meta);
 
         $objField->setRequiredStyle($this->__requiredstyle);
 
@@ -755,7 +794,7 @@ class ValidForm extends ClassDynamic
                 return $strReturn;
             } else {
                 switch ($objField->getType()) {
-                    case VFORM_BOOLEAN:
+                    case static::VFORM_BOOLEAN:
                         $strValue = ($strValue == 1) ? "yes" : "no";
                         break;
                 }

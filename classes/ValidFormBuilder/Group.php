@@ -169,10 +169,10 @@ class Group extends Element
             $name = $this->__name;
         } else {
             switch ($this->__type) {
-                case VFORM_RADIO_LIST:
+                case ValidForm::VFORM_RADIO_LIST:
                     $name = $this->__name;
                     break;
-                case VFORM_CHECK_LIST:
+                case ValidForm::VFORM_CHECK_LIST:
                     $name = (strpos($this->__name, "[]") === false) ? $this->__name . "[]" : $this->__name;
                     break;
             }
