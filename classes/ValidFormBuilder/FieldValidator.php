@@ -149,7 +149,15 @@ class FieldValidator extends ClassDynamic
 
                 // Overwrite cached value with value from REQUEST array if available
                 if (isset($_REQUEST[$strFieldName])) {
-                    $varReturn = htmlspecialchars($_REQUEST[$strFieldName], ENT_QUOTES); // NEVER return unsanitized output
+                    if (is_array($_REQUEST[$strFieldName])) {
+                        $varReturn = [];
+
+                        foreach ($_REQUEST[$strFieldName] as $key => $value) {
+                            $varReturn[$key] = htmlspecialchars($value, ENT_QUOTES); // NEVER return unsanitized output
+                        }
+                    } else {
+                        $varReturn = htmlspecialchars($_REQUEST[$strFieldName], ENT_QUOTES); // NEVER return unsanitized output
+                    }
                 } else {
                     $varReturn = $varValidValue;
                 }
