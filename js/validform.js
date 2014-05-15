@@ -266,7 +266,7 @@ ValidForm.prototype.dynamicDuplication = function () {
 							.bind("focus", function() {
 								if (jQuery(this).val() == objOriginal.validator.hint) {
 									jQuery(this).val("");
-									jQuery(this).parent().removeClass("vf__hint");
+									jQuery(this).closest(".vf__hint").removeClass("vf__hint");
 								}
 							})
 							.bind("blur", function() {
@@ -274,7 +274,7 @@ ValidForm.prototype.dynamicDuplication = function () {
 									jQuery(this).val(objOriginal.validator.hint);
 									jQuery(this).parent().addClass("vf__hint");
 								} else {
-									jQuery(this).parent().removeClass("vf__hint");
+									jQuery(this).closest(".vf__hint").removeClass("vf__hint");
 								}
 							});
 					}
@@ -1245,7 +1245,7 @@ function ValidFormElement(strFormId, strElementName, strElementId, strValidation
 				.bind("focus", function(){
 					if (jQuery(this).val() == __this.validator.hint) {
 						jQuery(this).val("");
-						jQuery(this).parent().removeClass("vf__hint");
+						jQuery(this).closest(".vf__hint").removeClass("vf__hint");
 					}
 				})
 				.bind("blur", function(){
@@ -1253,7 +1253,7 @@ function ValidFormElement(strFormId, strElementName, strElementId, strValidation
 						jQuery(this).val(__this.validator.hint);
 						jQuery(this).parent().addClass("vf__hint");
 					} else {
-						jQuery(this).parent().removeClass("vf__hint");
+						jQuery(this).closest(".vf__hint").removeClass("vf__hint");
 					}
 				});
 		}
