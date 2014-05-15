@@ -121,6 +121,8 @@ class Textarea extends Element
             $this->setFieldMeta("maxlength", $this->__validator->getMaxLength());
         }
 
+        $varValue = htmlspecialchars($varValue, ENT_QUOTES);
+
         $strOutput .= "<textarea name=\"{$strName}\" id=\"{$strId}\" {$this->__getFieldMetaString()}>{$varValue}</textarea>\n";
 
         if (! empty($this->__tip)) {

@@ -114,6 +114,8 @@ class Password extends Element
             $this->setFieldMeta("maxlength", $this->__validator->getMaxLength());
         }
 
+        $varValue = htmlspecialchars($varValue, ENT_QUOTES);
+
         $strOutput .= "<input type=\"password\" value=\"{$varValue}\" name=\"{$strName}\" id=\"{$strId}\"{$this->__getFieldMetaString()} />\n";
 
         if (! empty($this->__tip)) {

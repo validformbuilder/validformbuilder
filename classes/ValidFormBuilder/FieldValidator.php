@@ -153,10 +153,10 @@ class FieldValidator extends ClassDynamic
                         $varReturn = [];
 
                         foreach ($_REQUEST[$strFieldName] as $key => $value) {
-                            $varReturn[$key] = htmlspecialchars($value, ENT_QUOTES); // NEVER return unsanitized output
+                            $varReturn[$key] = $value; // NEVER return unsanitized output
                         }
                     } else {
-                        $varReturn = htmlspecialchars($_REQUEST[$strFieldName], ENT_QUOTES); // NEVER return unsanitized output
+                        $varReturn = $_REQUEST[$strFieldName]; // NEVER return unsanitized output
                     }
                 } else {
                     $varReturn = $varValidValue;

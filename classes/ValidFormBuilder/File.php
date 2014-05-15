@@ -103,7 +103,10 @@ class File extends Element
         $intMaxFileSize = $this->convertToBytes(ini_get("upload_max_filesize"));
         $strOutput .= "<input type=\"hidden\" name=\"MAX_FILE_SIZE\" value=\"{$intMaxFileSize}\" />";
 
-        $strOutput .= "<input type=\"file\" value=\"{$this->__getValue($submitted, $intCount)}\" name=\"{$strName}[]\" id=\"{$strId}\"{$this->__getFieldMetaString()} />\n";
+        $strValue = $this->__getValue($submitted, $intCount);
+        $strValue = htmlspecialchars($strValue, ENT_QUOTES);
+
+        $strOutput .= "<input type=\"file\" value=\"{$strValue}\" name=\"{$strName}[]\" id=\"{$strId}\"{$this->__getFieldMetaString()} />\n";
 
         if (! empty($this->__tip)) {
             $strOutput .= "<small class=\"vf__tip\">{$this->__tip}</small>\n";

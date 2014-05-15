@@ -770,8 +770,11 @@ class ValidForm extends ClassDynamic
                 $strLabel = $objField->getShortLabel(); // Passing 'true' gets the short label if available.
 
                 if ((! empty($strValue) && $hideEmpty) || (! $hideEmpty && ! empty($strValue))) {
+                    $strValue = nl2br($strValue);
+                    $strValue = htmlspecialchars($strValue, ENT_QUOTES);
+
                     $strReturn .= "<tr class=\"vf__field_value\">";
-                    $strReturn .= "<td valign=\"top\" style=\"white-space:nowrap; padding-right: 20px\" class=\"vf__field\">{$strLabel}</td><td valign=\"top\" class=\"vf__value\"><strong>" . nl2br($strValue) . "</strong></td>\n";
+                    $strReturn .= "<td valign=\"top\" style=\"white-space:nowrap; padding-right: 20px\" class=\"vf__field\">{$strLabel}</td><td valign=\"top\" class=\"vf__value\"><strong>" . $strValue . "</strong></td>\n";
                     $strReturn .= "</tr>";
                 }
             }
@@ -802,8 +805,11 @@ class ValidForm extends ClassDynamic
                 if (empty($strLabel) && empty($strValue)) {
                     // *** Skip the field.
                 } else {
+                    $strValue = nl2br($strValue);
+                    $strValue = htmlspecialchars($strValue, ENT_QUOTES);
+
                     $strReturn .= "<tr class=\"vf__field_value\">";
-                    $strReturn .= "<td valign=\"top\" style=\"padding-right: 20px\" class=\"vf__field\">{$strLabel}</td><td valign=\"top\" class=\"vf__value\"><strong>" . nl2br($strValue) . "</strong></td>\n";
+                    $strReturn .= "<td valign=\"top\" style=\"padding-right: 20px\" class=\"vf__field\">{$strLabel}</td><td valign=\"top\" class=\"vf__value\"><strong>" . $strValue . "</strong></td>\n";
                     $strReturn .= "</tr>";
                 }
             }
