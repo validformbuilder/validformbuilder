@@ -204,11 +204,12 @@ ValidWizard.prototype.getLastDirtyPage = function () {
 ValidWizard.prototype.getPage = function (strPageId) {
 	var $element = jQuery("#" + strPageId);
 	var self = this;
+	var lastPageOffset = (self.hasConfirmPage) ? 2 : 1;
 
 	return {
 		id: strPageId,
 		element: $element,
-		isLast: function () { return (self.pages[self.pages.length - 1] === strPageId); },
+		isLast: function () { return (self.pages[self.pages.length - lastPageOffset] === strPageId); },
 		isFirst: function () { return (self.pages[0] === strPageId); },
 		isDirty: function () { return ($element.data("state") === "dirty"); },
 		isPristine: function () { return ($element.data("state") === "pristine"); },
