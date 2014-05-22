@@ -363,7 +363,10 @@ ValidForm.prototype.dynamicDuplication = function () {
 			
 			//*** Fix conditions that might be attached to the original elements.
 			var copyName = copy.prop("name");
-			if (typeof counter == "object" && !__this.inArray(names, copyName)) {
+			if (typeof counter == "object"
+				&& typeof copyName !== "undefined"
+				&& !__this.inArray(names, copyName)
+			) {
 				__this.attachDynamicConditions(names, counter.val());
 			}
 
