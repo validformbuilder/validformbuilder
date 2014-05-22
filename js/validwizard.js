@@ -203,12 +203,13 @@ ValidWizard.prototype.getLastDirtyPage = function () {
  */
 ValidWizard.prototype.getPage = function (strPageId) {
 	var $element = jQuery("#" + strPageId);
+	var self = this;
 
 	return {
 		id: strPageId,
 		element: $element,
-		isLast: function () { return (this.pages[this.pages.length - 1] === strPageId); },
-		isFirst: function () { return (this.pages[0] === strPageId); },
+		isLast: function () { return (self.pages[self.pages.length - 1] === strPageId); },
+		isFirst: function () { return (self.pages[0] === strPageId); },
 		isDirty: function () { return ($element.data("state") === "dirty"); },
 		isPristine: function () { return ($element.data("state") === "pristine"); },
 		equals: function (page) { return (page.id === strPageId); }
