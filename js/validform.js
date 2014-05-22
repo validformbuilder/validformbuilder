@@ -809,7 +809,7 @@ ValidFormComparison.prototype._init = function () {
 
 					clearTimeout(delay);
 					delay = setTimeout(function () {
-						$self.trigger("change");
+						$self.triggerHandler("change");
 					}, 300);
 				});
 			}
@@ -819,7 +819,7 @@ ValidFormComparison.prototype._init = function () {
 			.on("change", function () {
 				self._deferred.notifyWith(self, [self.check()]);
 			})
-			.trigger("change"); // make sure conditions are met onload
+			.triggerHandler("change"); // make sure conditions are met onload
 
 	} catch (e) {
 		throw new Error("Failed to initialize ValidFormComparison: " + e.message, 1);
