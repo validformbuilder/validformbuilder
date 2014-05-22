@@ -4,6 +4,10 @@
  * support for pagination and other fancy wizard stuff.
  *
  * @author Robin van Baalen <robin@neverwoods.com>
+ *
+ * CHANGELOG
+ * 	1.0	Initial release
+ * 	1.1	Added getValidUntil, setValidUntil, updateValidUntil. getValidUntil returns the latest validated wizard page.
  */
 ValidWizard.prototype = new ValidForm();
 
@@ -19,6 +23,7 @@ function ValidWizard(strFormId, strMainAlert, options) {
 	this.currentPage 	= jQuery("#" + this.id + " .vf__page:first");
 	this.hasConfirmPage = false;
 	this.initialPage	= 0;
+	this.validUntil 	= this.currentPage.attr("id");
 
 	if (typeof options !== "undefined") {
 		if (typeof options.confirmPage !== "undefined" && !!options.confirmPage) {
@@ -45,6 +50,18 @@ ValidWizard.prototype._init = function () {
 		this.currentPage.hide();
 		this.currentPage = $objPage;
 	}
+}
+
+ValidWizard.prototype.getValidUntil = function () {
+	return this.validUntil;
+}
+
+ValidWizard.prototype.setValidUntil = function (strId) {
+	this.validUntil = strId;
+}
+
+ValidWizard.prototype.updateValidUntil = function () {
+	this.validUntil = this.currentPage.next().attr("id");
 }
 
 /**
@@ -133,6 +150,7 @@ ValidWizard.prototype.addConfirmPage = function () {
 ValidWizard.prototype.addPage = function (strPageId) {
 	var __this = this;
 	var $page = jQuery("#" + strPageId);
+	$page.data("state", "pristine"); // Untouched, fresh new page.
 
 	// Add page to the pages collection
 	this.pages.push(strPageId);
@@ -144,6 +162,10 @@ ValidWizard.prototype.addPage = function (strPageId) {
 	$page.hide();
 	jQuery("#" + __this.id).find(".vf__navigation").hide();
 
+	jQuery("#" + __this.id).on("change", "#" + strPageId, function () {
+		$(this).data("state", "dirty"); // Someone touched this page.
+	});
+
 	if (this.pages.length == 1) {
 		this.showPage($page);
 	}
@@ -152,6 +174,45 @@ ValidWizard.prototype.addPage = function (strPageId) {
 		var blnIsConfirmPage = (strPageId == "vf_confirm_" + this.id);
 		this.addPreviousButton(strPageId, blnIsConfirmPage);
 	}
+}
+
+ValidWizard.prototype.getLastDirtyPage = function () {
+	var lastDirtyPage = null;
+
+	for (var index in this.pages) {
+		if (this.pages.hasOwnProperty(index)) {
+			var page = this.getPage(this.pages[index]);
+
+			if (page.isDirty()) {
+				lastDirtyPage = page;
+			}
+		}
+	}
+
+	return lastDirtyPage;
+}
+
+/**
+ * This method takes a page ID and returns a page object with properties like:
+ *  - ID The page ID
+ *  - element A jQuery representation of the page's DOM element
+ *  - isLast Method returning a boolean indicating if the current page is the last page
+ *  - isFirst Method returning a boolean indicating if the current page is the first page
+ *  - isDirty Method returning a boolean indicating if the current page has been touched by the user
+ *  - isPristine The opposite of isDirty; indicating this page hasn't been touched by a user yet
+ */
+ValidWizard.prototype.getPage = function (strPageId) {
+	var $element = jQuery("#" + strPageId);
+
+	return {
+		id: strPageId,
+		element: $element,
+		isLast: function () { return (this.pages[this.pages.length - 1] === strPageId); },
+		isFirst: function () { return (this.pages[0] === strPageId); },
+		isDirty: function () { return ($element.data("state") === "dirty"); },
+		isPristine: function () { return ($element.data("state") === "pristine"); },
+		equals: function (page) { return (page.id === strPageId); }
+	};
 }
 
 ValidWizard.prototype.addPreviousButton = function (strPageId, blnIsConfirmPage) {
@@ -209,6 +270,8 @@ ValidWizard.prototype.nextPage = function () {
 		}
 
 		if (this.validate("#" + this.currentPage.attr("id"))) {
+			this.updateValidUntil();
+
 			if (this.nextIsLast()) {
 				jQuery("#" + this.id).trigger("VF_ShowOverview", [{ValidForm: this}]);
 			}
