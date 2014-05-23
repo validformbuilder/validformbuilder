@@ -442,15 +442,38 @@ class Base extends ClassDynamic
         }
     }
 
-    public function getName()
-    {
-        $strName = parent::getName();
-        if (empty($strName)) {
-            $strName = $this->__name = $this->__generateName();
-        }
+	/**
+	 * Return the (original) name of the current field. Use getDynamicName() to get the field name + dynamic count
+	 *
+	 * @return string The original field name
+	 */
+	public function getName() 
+	{
+		$strName = parent::getName();
+		if (empty($strName)) {
+			$strName = $this->__name = $this->__generateName();
+		}
 
-        return $strName;
-    }
+		return $strName;
+	}
+
+	/**
+	 * Same as getName() except getDynamicName adds the current dynamic count to the fieldname as a suffix (_1, _2 etc)
+	 * When the dynamic count === 0, the return value equals the output of getName()
+	 *
+	 * @param number $intCount The dynamic count
+	 * @return string The field name
+	 */
+	public function getDynamicName($intCount = 0) 
+	{
+	    $strName = $this->getName();
+
+	    if ($intCount > 0) {
+	        $strName = $strName . "_" . $intCount;
+	    }
+
+	    return $strName;
+	}
 
     /**
      * Get the short label (meta 'summaryLabel') if available.
