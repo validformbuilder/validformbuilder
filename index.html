@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link href='https://fonts.googleapis.com/css?family=Architects+Daughter' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
+
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <title>ValidForm Builder by rvanbaalen</title>
+  </head>
+
+  <body>
+    <header>
+      <div class="inner">
+        <h1>ValidForm Builder</h1>
+        <h2>Easy and safe XHTML 1.0 strict forms with client and server-side validation!</h2>
+        <a href="https://github.com/rvanbaalen/validformbuilder" class="button"><small>View project on</small>GitHub</a>
+      </div>
+    </header>
+
+    <div id="content-wrapper">
+      <div class="inner clearfix">
+        <section id="main-content">
+          <h1>
+<a name="validform-builder" class="anchor" href="#validform-builder"><span class="octicon octicon-link"></span></a>ValidForm Builder</h1>
+
+<p>The ValidForm Builder is a PHP and JavaScript library that simplifies the often tedious creation of standards based web forms. Correct field validation of forms is an often overlooked problem and can lead to serious security issues. Building a form and adding validation to it was never that easy.</p>
+
+<ul>
+<li>The API generates XHTML Strict 1.0 compliant code.</li>
+<li>Field validation on the client side to minimize traffic overhead.</li>
+<li>Field validation on the server to enforce validation rules and prevent tempering with the form through SQL injection.</li>
+<li>Client side validation displays inline to improve user satisfaction. No more annoying popups that don't really tell you anything.</li>
+<li>Creation of complex form structures.</li>
+<li>Uses the popular jQuery Javascript library for DOM manipulation.</li>
+<li>Completely customizable using CSS rules.</li>
+<li>Automatic creation of field summaries for form mailers in HTML and plain text.</li>
+</ul><h2>
+<a name="why-use-validform-builder" class="anchor" href="#why-use-validform-builder"><span class="octicon octicon-link"></span></a>Why use ValidForm Builder?</h2>
+
+<ul>
+<li>Super fast web form creation.</li>
+<li>Get rid of SQL injection problems.</li>
+<li>Create standards based CSS forms. No tables inside.</li>
+<li>Make form entry fun for the user. More feedback from your website.</li>
+<li>Write client- and server-side validation at the same time</li>
+</ul><h1>
+<a name="documentation" class="anchor" href="#documentation"><span class="octicon octicon-link"></span></a>Documentation</h1>
+
+<p><a href="https://github.com/neverwoods/validformbuilder/blob/master/docs/documentation.md">The documentation</a> still isn't as complete as we'd like it to be but it should enable you to get started with the essential basics of ValidForm Builder.</p>
+
+<p>If you have any questions, please ask them on <a href="http://stackoverflow.com">StackOverflow.com</a> and be sure to tag your question with the 'validform' tag. We regulary monitor these questions and try to answer them as soon as we can :)</p>
+
+<h2>
+<a name="get-started-with-conditions-and-comparisons" class="anchor" href="#get-started-with-conditions-and-comparisons"><span class="octicon octicon-link"></span></a>Get started with Conditions and Comparisons</h2>
+
+<p>This feature is as new as it is powerful. Since <em>ValidForm Builder 2.0 public beta</em> (that's what we called it back then), one of the many new awesome features are conditional fields. Here's a quick preview on how they work:</p>
+
+<p>1) Create two regular fields</p>
+
+<pre><code>$objFirstName = $objForm-&gt;addField("name", "Your name", VFORM_STRING, array("required" =&gt; true), array("required" =&gt; "This field is required"));
+$objLastName = $objForm-&gt;addField("lastname", "Last name", VFORM_STRING, array("required" =&gt; true), array("required" =&gt; "This field is required for almost everyone..")); // not required
+</code></pre>
+
+<p>2) Now, add a condition to the <code>lastname</code> field. For example, we want it to become optional when <code>name</code> is <code>Robin</code>. After all, we all know that Robin's last name is 'Hood'. So the way we'll write that out in plain text would be: lastname-field's property <code>required</code> will become <code>false</code> when name-field's <code>value</code> will be <code>Robin</code>. Here's how the condition will look in PHP:</p>
+
+<pre><code>$objLastName-&gt;addCondition("required", false, array(
+    new VF_Comparison($objFirstName, VFORM_COMPARISON_EQUAL, "robin") // Comparison values are case insensitive.
+), VFORM_MATCH_ANY);
+</code></pre>
+
+<p>3) When you run this example and type in 'Robin' in the name field, last name will become optional. As always with ValidForm Builder: this validates both client-side and server-side!</p>
+
+<p>For more information you'll just have to dig in the code for now. More than ever we added comments and PHPDoc blocks to all the code we've been working on. This release is for those who don't need to RTFM.</p>
+
+<h2>
+<a name="happy-coding" class="anchor" href="#happy-coding"><span class="octicon octicon-link"></span></a>Happy coding!</h2>
+
+<p>Felix &amp; Robin</p>
+        </section>
+
+        <aside id="sidebar">
+          <a href="https://github.com/rvanbaalen/validformbuilder/zipball/master" class="button">
+            <small>Download</small>
+            .zip file
+          </a>
+          <a href="https://github.com/rvanbaalen/validformbuilder/tarball/master" class="button">
+            <small>Download</small>
+            .tar.gz file
+          </a>
+
+          <p class="repo-owner"><a href="https://github.com/rvanbaalen/validformbuilder"></a> is maintained by <a href="https://github.com/rvanbaalen">rvanbaalen</a>.</p>
+
+          <p>This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the Architect theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.</p>
+        </aside>
+      </div>
+    </div>
+
+            <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("UA-15677034-1");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
+  </body>
+</html>
