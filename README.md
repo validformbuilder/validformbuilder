@@ -20,3 +20,16 @@ Why use ValidForm Builder?
 - Create standards based CSS forms. No tables inside.
 - Make form entry fun for the user. More feedback from your website.
 - Write client- and server-side validation at the same time
+
+
+Documentation
+=============
+
+[The documentation](https://github.com/neverwoods/validformbuilder/blob/master/docs/documentation.md) still isn't as complete as we'd like it to be but it should enable you to get started with the essential basics of ValidForm Builder.
+
+If you have any questions, please ask them on [StackOverflow.com](http://stackoverflow.com) and be sure to tag your question with the 'validform' tag. We regulary monitor these questions and try to answer them as soon as we can :)
+
+
+Happy coding!
+
+Felix & Robin
