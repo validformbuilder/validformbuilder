@@ -29,7 +29,7 @@ Documentation
 
 If you have any questions, please ask them on [StackOverflow.com](http://stackoverflow.com) and be sure to tag your question with the 'validform' tag. We regulary monitor these questions and try to answer them as soon as we can :)
 
-Quick explanation of Conditions and Comparisons in ValidForm Builder
+Get started with Conditions and Comparisons in ValidForm Builder
 ---------
 
 This feature is as new as it is powerful. Since *ValidForm Builder 2.0 public beta* (that's what we called it back then), one of the many new awesome features are conditional fields. Here's a quick preview on how they work:
