@@ -891,7 +891,16 @@ class ValidForm extends ClassDynamic
         foreach ($childrenArray as $strType => $arrChildData) {
             switch ($strType) {
             	case "field":
+            	    $arrChildData = FormArrayValidator::sanitizeForParentFingerprint($objParent, $arrChildData);
                     call_user_func_array(array($objParent, "addField"), $arrChildData);
+            	    break;
+            	case "multifield":
+            	    $objMultiField = call_user_func_array(array($objParent, "addMultiField"), $arrChildData);
+            	    if (is_object($objMultiField)) {
+            	        //*** MultiField initialized, add children
+            	        self::childrenFromArray($arrChildData["children"], $objMultiField);
+            	    }
+            	    var_dump($objMultiField);exit;
             	    break;
             	default:
             	    throw new Exception\InvalidChildType("Invalid Child Type supplied in ValidForm::fromArray", E_ERROR);
