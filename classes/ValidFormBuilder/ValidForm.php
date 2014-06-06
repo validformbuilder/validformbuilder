@@ -912,7 +912,9 @@ class ValidForm extends ClassDynamic
             	case "area":
             	    $strMethod = "addArea";
             	case "select":
-            	    $strMethod = "addField";
+            	    if (is_null($strMethod)) {
+                	    $strMethod = "addField";
+            	    }
             	case "multifield":
             	    //*** We haven't hit 'select' or 'area' yet, so this is probably a multifield.
             	    if (is_null($strMethod)) {
