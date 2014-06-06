@@ -104,6 +104,5 @@ class FormArrayValidator
         }
 
         return $blnReturn;
-        return isset($child["objectType"]);
     }
 }
