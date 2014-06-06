@@ -207,7 +207,7 @@ class ValidForm extends ClassDynamic
         return $objField;
     }
 
-    public static function renderField($name, $label, $type, $validationRules, $errorHandlers, $meta)
+    public static function renderField($name, $label, $type, $validationRules = array(), $errorHandlers = array(), $meta = array())
     {
         $objField = null;
         switch ($type) {
@@ -900,6 +900,7 @@ class ValidForm extends ClassDynamic
         foreach ($childrenArray as $strType => $arrChildData) {
             switch ($strType) {
             	case "field":
+            	    $arrChildData = FormArrayValidator::sanitizeForParentFingerprint($objParent, "addField", $arrChildData);
                     call_user_func_array(array($objParent, "addField"), $arrChildData);
             	    break;
             	case "multifield":
