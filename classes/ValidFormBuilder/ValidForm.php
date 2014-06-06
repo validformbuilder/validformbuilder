@@ -902,29 +902,55 @@ class ValidForm extends ClassDynamic
             }
 
             switch ($child["objectType"]) {
+            	case "option":
             	case "field":
             	    $arrChildData = FormArrayValidator::sanitizeForParentFingerprint($objParent, "addField", $child);
                     call_user_func_array(array($objParent, "addField"), $arrChildData);
             	    break;
-            	case "select":
-            	    $arrChildData = FormArrayValidator::sanitizeForParentFingerprint($objParent, "addField", $child);
-                    call_user_func_array(array($objParent, "addField"), $arrChildData);
-            	    break;
             	case "multifield":
+            	    $strMethod = "addMultiField";
             	    $arrChildData = FormArrayValidator::sanitizeForParentFingerprint(
             	        $objParent,
-            	        "addMultiField",
+            	        $strMethod,
             	        $child
                     );
 
-            	    $objMultiField = call_user_func_array(array($objParent, "addMultiField"), $arrChildData);
-            	    if (is_object($objMultiField)) {
-            	        //*** MultiField initialized, add children
-            	        self::childrenFromArray($child["children"], $objMultiField);
+            	    $objElement = call_user_func_array(array($objParent, $strMethod), $arrChildData);
+            	    if (is_object($objElement)) {
+            	        //*** Element initialized, add children
+            	        self::childrenFromArray($child["children"], $objElement);
+            	    }
+            	    break;
+            	case "select":
+            	    $strMethod = "addField";
+            	    $arrChildData = FormArrayValidator::sanitizeForParentFingerprint(
+            	        $objParent,
+            	        $strMethod,
+            	        $child
+                    );
+
+            	    $objElement = call_user_func_array(array($objParent, $strMethod), $arrChildData);
+            	    if (is_object($objElement)) {
+            	        //*** Element initialized, add children
+            	        self::childrenFromArray($child["children"], $objElement);
+            	    }
+            	    break;
+            	case "area":
+            	    $strMethod = "addArea";
+            	    $arrChildData = FormArrayValidator::sanitizeForParentFingerprint(
+            	        $objParent,
+            	        $strMethod,
+            	        $child
+                    );
+
+            	    $objElement = call_user_func_array(array($objParent, $strMethod), $arrChildData);
+            	    if (is_object($objElement)) {
+            	        //*** Element initialized, add children
+            	        self::childrenFromArray($child["children"], $objElement);
             	    }
             	    break;
             	default:
-            	    throw new Exception\InvalidChildType("Invalid Child Type supplied in ValidForm::fromArray", E_ERROR);
+            	    throw new Exception\InvalidChildType("Invalid Child Type '{$child["objectType"]}' supplied in ValidForm::fromArray in child #{$childNumber}", E_ERROR);
             }
         }
     }
