@@ -901,42 +901,23 @@ class ValidForm extends ClassDynamic
                 );
             }
 
+            $strMethod = null;
+
             switch ($child["objectType"]) {
             	case "option":
             	case "field":
             	    $arrChildData = FormArrayValidator::sanitizeForParentFingerprint($objParent, "addField", $child);
                     call_user_func_array(array($objParent, "addField"), $arrChildData);
             	    break;
-            	case "multifield":
-            	    $strMethod = "addMultiField";
-            	    $arrChildData = FormArrayValidator::sanitizeForParentFingerprint(
-            	        $objParent,
-            	        $strMethod,
-            	        $child
-                    );
-
-            	    $objElement = call_user_func_array(array($objParent, $strMethod), $arrChildData);
-            	    if (is_object($objElement)) {
-            	        //*** Element initialized, add children
-            	        self::childrenFromArray($child["children"], $objElement);
-            	    }
-            	    break;
-            	case "select":
-            	    $strMethod = "addField";
-            	    $arrChildData = FormArrayValidator::sanitizeForParentFingerprint(
-            	        $objParent,
-            	        $strMethod,
-            	        $child
-                    );
-
-            	    $objElement = call_user_func_array(array($objParent, $strMethod), $arrChildData);
-            	    if (is_object($objElement)) {
-            	        //*** Element initialized, add children
-            	        self::childrenFromArray($child["children"], $objElement);
-            	    }
-            	    break;
             	case "area":
             	    $strMethod = "addArea";
+            	case "select":
+            	    $strMethod = "addField";
+            	case "multifield":
+            	    //*** We haven't hit 'select' or 'area' yet, so this is probably a multifield.
+            	    if (is_null($strMethod)) {
+                	    $strMethod = "addMultiField";
+            	    }
             	    $arrChildData = FormArrayValidator::sanitizeForParentFingerprint(
             	        $objParent,
             	        $strMethod,
