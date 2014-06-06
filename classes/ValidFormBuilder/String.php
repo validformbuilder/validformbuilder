@@ -39,6 +39,15 @@ class String extends Base
         $this->__meta = $meta;
     }
 
+    /**
+     * This method is used to initialize this object from an array structure.
+     * @return array
+     */
+    public function getFingerprint()
+    {
+        return ["body", "meta"];
+    }
+
     public function toHtml($submitted = false, $blnSimpleLayout = false)
     {
         return $this->__toHtml($submitted, $blnSimpleLayout);

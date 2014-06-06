@@ -42,6 +42,15 @@ class Paragraph extends Base
         $this->setMeta("id", $this->getName());
     }
 
+    /**
+     * This method is used to initialize this object from an array structure.
+     * @return array
+     */
+    public function getFingerprint()
+    {
+        return ["header", "body", "meta"];
+    }
+
     public function __toHtml()
     {
         return $this->toHtml($submitted = false, $blnSimpleLayout = false, $blnLabel = true, $blnDisplayError = true);

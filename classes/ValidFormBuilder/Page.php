@@ -52,6 +52,15 @@ class Page extends Base
         $this->__elements = new Collection();
     }
 
+    /**
+     * This method is used to initialize this object from an array structure.
+     * @return array
+     */
+    public function getFingerprint()
+    {
+        return ["id", "header", "meta"];
+    }
+
     public function toHtml($submitted = false, $blnSimpleLayout = false, $blnLabel = true, $blnDisplayError = true)
     {
         $strClass = (! empty($this->__class)) ? " class=\"{$this->__class} vf__page\"" : "class=\"vf__page\"";

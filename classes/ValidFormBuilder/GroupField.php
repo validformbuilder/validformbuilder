@@ -44,6 +44,15 @@ class GroupField extends Element
         $this->__checked = $checked;
     }
 
+    /**
+     * This method is used to initialize this object from an array structure.
+     * @return array
+     */
+    public function getFingerprint()
+    {
+        return ["id", "name", "type", "label", "value", "checked", "meta"];
+    }
+
     public function toHtml($value = null, $submitted = false, $intCount = 0)
     {
         $strChecked = "";

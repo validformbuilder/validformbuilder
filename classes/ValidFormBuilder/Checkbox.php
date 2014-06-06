@@ -29,7 +29,6 @@ namespace ValidFormBuilder;
  */
 class Checkbox extends Element
 {
-
     public function toHtml($submitted = false, $blnSimpleLayout = false, $blnLabel = true, $blnDisplayErrors = true)
     {
         $blnError = ($submitted && ! $this->__validator->validate() && $blnDisplayErrors) ? true : false;

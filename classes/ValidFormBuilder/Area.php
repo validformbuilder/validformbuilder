@@ -62,6 +62,15 @@ class Area extends Base
         $this->__dynamicLabel = $this->getMeta("dynamicLabel", null);
     }
 
+    /**
+     * This method is used to initialize this object from an array structure.
+     * @return array
+     */
+    public function getFingerprint()
+    {
+        return ["label", "active", "name", "checked", "meta"];
+    }
+
     public function addField($name, $label, $type, $validationRules = array(), $errorHandlers = array(), $meta = array())
     {
         $objField = ValidForm::renderField($name, $label, $type, $validationRules, $errorHandlers, $meta);

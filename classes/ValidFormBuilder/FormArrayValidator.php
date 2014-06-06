@@ -46,4 +46,9 @@ class FormArrayValidator
 
         return $blnReturn;
     }
+
+    public static function sanitizeForParentFingerprint($objParent, $arrData)
+    {
+        echo get_class($objParent);exit;
+    }
 }

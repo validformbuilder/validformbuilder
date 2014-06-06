@@ -39,6 +39,15 @@ class Navigation extends Base
         $this->__fields = new Collection();
     }
 
+    /**
+     * This method is used to initialize this object from an array structure.
+     * @return array
+     */
+    public function getFingerprint()
+    {
+        return ["meta"];
+    }
+
     public function addButton($label, $options = array())
     {
         $objButton = new Button($label, $options);

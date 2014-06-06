@@ -51,6 +51,15 @@ class Button extends Base
         }
     }
 
+    /**
+     * This method is used to initialize this object from an array structure.
+     * @return array
+     */
+    public function getFingerprint()
+    {
+        return ["label", "meta"];
+    }
+
     public function toHtml($submitted = false, $blnSimpleLayout = false, $blnLabel = true, $blnDisplayErrors = true)
     {
         if (! empty($this->__disabled)) {

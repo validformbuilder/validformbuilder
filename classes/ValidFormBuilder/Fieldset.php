@@ -48,6 +48,15 @@ class Fieldset extends Base
         }
     }
 
+    /**
+     * This method is used to initialize this object from an array structure.
+     * @return array
+     */
+    public function getFingerprint()
+    {
+        return ["header", "noteHeader", "noteBody", "meta"];
+    }
+
     public function addField($field)
     {
         $this->__fields->addObject($field);

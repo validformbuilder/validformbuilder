@@ -37,6 +37,15 @@ class SelectGroup extends Base
         $this->__options = new Collection();
     }
 
+    /**
+     * This method is used to initialize this object from an array structure.
+     * @return array
+     */
+    public function getFingerprint()
+    {
+        return ["label"];
+    }
+
     public function toHtml($value = null)
     {
         $strOutput = "<optgroup label=\"{$this->__label}\">\n";
