@@ -130,6 +130,15 @@ class ValidForm extends ClassDynamic
         }
     }
 
+    /**
+     * This method is used to initialize this object from an array structure.
+     * @return array
+     */
+    public function getFingerprint()
+    {
+        return ["name", "description", "action", "meta"];
+    }
+
     public function setDefaults($arrDefaults = array())
     {
         if (is_array($arrDefaults)) {
@@ -872,8 +881,8 @@ class ValidForm extends ClassDynamic
             /** @var $objReturn ValidForm */
             $objReturn = $objReflection->newInstanceArgs($formArray["form"]);
 
-            if (isset($formData["children"])) {
-                self::childrenFromArray($formArray["children"], $objReturn);
+            if (isset($formData["children"]) && is_array($formData["children"])) {
+                self::childrenFromArray($formData["children"], $objReturn);
             }
         }
 
@@ -891,7 +900,6 @@ class ValidForm extends ClassDynamic
         foreach ($childrenArray as $strType => $arrChildData) {
             switch ($strType) {
             	case "field":
-            	    $arrChildData = FormArrayValidator::sanitizeForParentFingerprint($objParent, $arrChildData);
                     call_user_func_array(array($objParent, "addField"), $arrChildData);
             	    break;
             	case "multifield":
@@ -900,7 +908,6 @@ class ValidForm extends ClassDynamic
             	        //*** MultiField initialized, add children
             	        self::childrenFromArray($arrChildData["children"], $objMultiField);
             	    }
-            	    var_dump($objMultiField);exit;
             	    break;
             	default:
             	    throw new Exception\InvalidChildType("Invalid Child Type supplied in ValidForm::fromArray", E_ERROR);
