@@ -36,15 +36,6 @@ class Hidden extends Element
         parent::__construct($name, $type, "", array(), array(), $meta);
     }
 
-    /**
-     * This method is used to initialize this object from an array structure.
-     * @return array
-     */
-    public function getFingerprint()
-    {
-        return ["name", "type", "meta"];
-    }
-
     public function toHtml($submitted = false, $blnSimpleLayout = false, $blnLabel = true, $blnDisplayError = true)
     {
         $strOutput = "";

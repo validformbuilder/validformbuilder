@@ -45,15 +45,6 @@ class SelectOption extends Element
         $this->__meta = $meta;
     }
 
-    /**
-     * This method is used to initialize this object from an array structure.
-     * @return array
-     */
-    public function getFingerprint()
-    {
-        return ["label", "value", "selected", "meta"];
-    }
-
     public function toHtml($value = null)
     {
         $strSelected = "";

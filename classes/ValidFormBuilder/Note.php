@@ -42,15 +42,6 @@ class Note extends Base
         $this->__initializeMeta();
     }
 
-    /**
-     * This method is used to initialize this object from an array structure.
-     * @return array
-     */
-    public function getFingerprint()
-    {
-        return ["header", "body", "meta"];
-    }
-
     public function toHtml()
     {
         $this->setMeta("class", "vf__notes");

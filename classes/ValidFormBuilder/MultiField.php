@@ -53,15 +53,6 @@ class MultiField extends Base
         $this->__dynamicLabel = $this->getMeta("dynamicLabel", $this->__dynamicLabel);
     }
 
-    /**
-     * This method is used to initialize this object from an array structure.
-     * @return array
-     */
-    public function getFingerprint()
-    {
-        return ["label", "meta"];
-    }
-
     public function addField($name, $type, $validationRules = array(), $errorHandlers = array(), $meta = array())
     {
         // Creating dynamic fields inside a multifield is not supported.

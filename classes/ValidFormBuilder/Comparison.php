@@ -58,15 +58,6 @@ class Comparison extends ClassDynamic
     }
 
     /**
-     * This method is used to initialize this object from an array structure.
-     * @return array
-     */
-    public function getFingerprint()
-    {
-        return ["subject", "comparison", "value"];
-    }
-
-    /**
      * Check this comparison
      *
      * @param

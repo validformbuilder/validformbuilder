@@ -77,15 +77,6 @@ class Element extends Base
         $this->__validator = new FieldValidator($this, $validationRules, $errorHandlers);
     }
 
-    /**
-     * This method is used to initialize this object from an array structure.
-     * @return array
-     */
-    public function getFingerprint()
-    {
-        return ["name", "type", "label", "validationRules", "errorHandlers", "meta"];
-    }
-
     public function isDynamicCounter()
     {
         return false;

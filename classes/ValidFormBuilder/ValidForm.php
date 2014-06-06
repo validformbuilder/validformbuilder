@@ -130,15 +130,6 @@ class ValidForm extends ClassDynamic
         }
     }
 
-    /**
-     * This method is used to initialize this object from an array structure.
-     * @return array
-     */
-    public function getFingerprint()
-    {
-        return ["name", "description", "action", "meta"];
-    }
-
     public function setDefaults($arrDefaults = array())
     {
         if (is_array($arrDefaults)) {

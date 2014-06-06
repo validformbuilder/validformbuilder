@@ -62,15 +62,6 @@ class Condition extends ClassDynamic
     }
 
     /**
-     * This method is used to initialize this object from an array structure.
-     * @return array
-     */
-    public function getFingerprint()
-    {
-        return ["field", "property", "value", "comparisonType"];
-    }
-
-    /**
      * Define getters - no need to use the ClassDynamic for that.
      */
     public function getSubject()
