@@ -873,6 +873,8 @@ class ValidForm extends ClassDynamic
             $objReturn = $objReflection->newInstanceArgs($formArray["form"]);
         }
 
+        //*** Hello
+
         return $objReturn;
     }
 
