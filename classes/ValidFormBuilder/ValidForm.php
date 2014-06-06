@@ -855,6 +855,27 @@ class ValidForm extends ClassDynamic
         return $strReturn;
     }
 
+    /**
+     * Generate a new ValidForm Builder object based on array data
+     * @param array $formArray The raw form array data, usually output from json_decode
+     * @return \ValidFormBuilder\ValidForm
+     */
+    public static function fromArray($formArray = array())
+    {
+        $objReturn = new ValidForm();
+
+        if (FormArrayValidator::isValid($formArray)) {
+            $formData = $formArray["form"];
+            /** @var $objReflection ReflectionClass */
+            $objReflection = new \ReflectionClass("\\ValidFormBuilder\\ValidForm");
+
+            /** @var $objReturn ValidForm */
+            $objReturn = $objReflection->newInstanceArgs($formArray["form"]);
+        }
+
+        return $objReturn;
+    }
+
     protected function __toJS($strCustomJs = "", $arrInitArguments = array(), $blnRawJs = false)
     {
         $strReturn = "";
