@@ -88,7 +88,7 @@ class FormArrayValidator
             	case "select":
             	    $allowedChildren = ["option", "optionGroup"];
             	    if (!isset($child["children"]) || !is_array($child["children"])) {
-            	        break 2;
+            	        break;
             	    }
 
             	    foreach ($child["children"] as $grandChild) {
