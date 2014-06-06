@@ -873,7 +873,7 @@ class ValidForm extends ClassDynamic
             $objReturn = $objReflection->newInstanceArgs($formArray["form"]);
 
             if (isset($formData["children"])) {
-                self::initializeChildren($formArray["children"], $objReturn);
+                self::childrenFromArray($formArray["children"], $objReturn);
             }
         }
 
