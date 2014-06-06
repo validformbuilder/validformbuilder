@@ -65,8 +65,10 @@ class FormArrayValidator
         }
 
         $arrReturn = [];
-        foreach ($arrParameters as $strKey => $strKeyName) {
-            $arrReturn[$strKeyName] = $arrData[$strKeyName];
+        foreach ($arrParameters as $strKey) {
+            if (isset($arrData[$strKey])) {
+                $arrReturn[$strKey] = $arrData[$strKey];
+            }
         }
 
         return $arrReturn;
