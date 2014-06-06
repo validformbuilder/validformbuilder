@@ -32,7 +32,6 @@ class FormArrayValidator
 {
     /**
      * Validate if the input array is a valid array to generate a ValidForm object from.
-     *
      * @param array $arr The form array to validate
      * @return boolean True if the array is valid to work with (e.g. contains the 'form' key) false if not. Default: false
      */
@@ -47,6 +46,14 @@ class FormArrayValidator
         return $blnReturn;
     }
 
+    /**
+     * This method makes sure only the required parameters are passed to the method being called and it makes
+     * sure that these parameters are called in the right order.
+     * @param ValidForm|ValidWizard|VF_Element|VF_Base $objParent
+     * @param string $strMethod The method being validated against
+     * @param array $arrData Child data to sanitize
+     * @return array An array of parameters for the given method
+     */
     public static function sanitizeForParentFingerprint($objParent, $strMethod, $arrData)
     {
         $objReflection = new \ReflectionMethod($objParent, $strMethod);
@@ -63,5 +70,38 @@ class FormArrayValidator
         }
 
         return $arrReturn;
+    }
+
+    /**
+     * Validate if the given child array has the required keys set.
+     * @param array $child
+     * @return boolean True if child is valid, false if not.
+     */
+    public static function isValidChild($child)
+    {
+        $blnReturn = false;
+
+        if (isset($child["objectType"])) {
+            switch ($child["objectType"]) {
+            	case "select":
+            	    $allowedChildren = ["option", "optionGroup"];
+            	    if (!isset($child["children"]) || !is_array($child["children"])) {
+            	        break 2;
+            	    }
+
+            	    foreach ($child["children"] as $grandChild) {
+            	        if (!isset($grandChild["objectType"])
+                            || !in_array($grandChild["objectType"], $allowedChildren)
+                        ) {
+                            break 2;
+                        }
+            	    }
+            	default:
+            	    $blnReturn = true;
+            }
+        }
+
+        return $blnReturn;
+        return isset($child["objectType"]);
     }
 }
