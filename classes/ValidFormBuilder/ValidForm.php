@@ -886,19 +886,41 @@ class ValidForm extends ClassDynamic
      * @param VF_Element,VF_Base,ValidForm $objParent
      * @throws Exception\InvalidChildType
      */
-    protected static function childrenFromArray($childrenArray, &$objParent)
+    protected static function childrenFromArray($children, &$objParent)
     {
-        foreach ($childrenArray as $strType => $arrChildData) {
-            switch ($strType) {
+        if (!is_array($children)) {
+            throw new \InvalidArgumentException("No children array supplied in ValidForm::childrenFromArray", E_ERROR);
+        }
+
+        foreach ($children as $childNumber => $child) {
+            //*** Throw exception if this isn't a valid child array
+            if (!FormArrayValidator::isValidChild($child)) {
+                throw new Exception\InvalidChildType(
+                    "No child type defined in child {$childNumber} of " . get_class($objParent),
+                    E_ERROR
+                );
+            }
+
+            switch ($child["objectType"]) {
             	case "field":
-            	    $arrChildData = FormArrayValidator::sanitizeForParentFingerprint($objParent, "addField", $arrChildData);
+            	    $arrChildData = FormArrayValidator::sanitizeForParentFingerprint($objParent, "addField", $child);
+                    call_user_func_array(array($objParent, "addField"), $arrChildData);
+            	    break;
+            	case "select":
+            	    $arrChildData = FormArrayValidator::sanitizeForParentFingerprint($objParent, "addField", $child);
                     call_user_func_array(array($objParent, "addField"), $arrChildData);
             	    break;
             	case "multifield":
+            	    $arrChildData = FormArrayValidator::sanitizeForParentFingerprint(
+            	        $objParent,
+            	        "addMultiField",
+            	        $child
+                    );
+
             	    $objMultiField = call_user_func_array(array($objParent, "addMultiField"), $arrChildData);
             	    if (is_object($objMultiField)) {
             	        //*** MultiField initialized, add children
-            	        self::childrenFromArray($arrChildData["children"], $objMultiField);
+            	        self::childrenFromArray($child["children"], $objMultiField);
             	    }
             	    break;
             	default:
