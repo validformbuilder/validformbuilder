@@ -871,11 +871,32 @@ class ValidForm extends ClassDynamic
 
             /** @var $objReturn ValidForm */
             $objReturn = $objReflection->newInstanceArgs($formArray["form"]);
+
+            if (isset($formData["children"])) {
+                self::initializeChildren($formArray["children"], $objReturn);
+            }
         }
 
-        //*** Hello
-
         return $objReturn;
+    }
+
+    /**
+     * Initialize children
+     * @param array $childrenArray
+     * @param VF_Element,VF_Base,ValidForm $objParent
+     * @throws Exception\InvalidChildType
+     */
+    protected static function childrenFromArray($childrenArray, &$objParent)
+    {
+        foreach ($childrenArray as $strType => $arrChildData) {
+            switch ($strType) {
+            	case "field":
+                    call_user_func_array(array($objParent, "addField"), $arrChildData);
+            	    break;
+            	default:
+            	    throw new Exception\InvalidChildType("Invalid Child Type supplied in ValidForm::fromArray", E_ERROR);
+            }
+        }
     }
 
     protected function __toJS($strCustomJs = "", $arrInitArguments = array(), $blnRawJs = false)
