@@ -12,3 +12,9 @@
 .settings/org.eclipse.php.ui.prefs
 
 .settings/org.phpsrc.eclipse.pti.tools.codesniffer.prefs
+
+/vendor/
+
+/composer.lock
+
+/.settings/
