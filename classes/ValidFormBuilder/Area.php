@@ -83,6 +83,17 @@ class Area extends Base
      * The label is used as a small 'header' above the area. When setting an area to 'active', this label becomes
      * clickable using a checkbox. This clickable header can toggle child fields to be enabled / disabled.
      *
+     * **We strongly encourage you to use `\ValidFormBuilder\ValidForm->addArea()` instead of
+     * creating your own area instances.**
+     *
+     * Super short example:
+     *
+     * ```
+     * <?php
+     * new \ValidFormBuilder\Area("Cool area label", true, "cool-area", true);
+     * ?>
+     * ```
+     *
      * @param string $label The Area's label
      * @param boolean $active Whether the area should be active or not.
      * When active, a checkbox will be prefixed to the header.
@@ -109,6 +120,15 @@ class Area extends Base
 
     /**
      * Add a field to the Area.
+     *
+     * Example adding a string field to the area:
+     *
+     * ```
+     * <?php
+     * $objArea = $objForm->addArea("Cool area");
+     * $objArea->addField("first-name", "First name", ValidForm::VFORM_STRING);
+     * ?>
+     * ```
      *
      * @param string $name
      * @param string $label
@@ -144,6 +164,17 @@ class Area extends Base
 
     /**
      * Add paragraph to Area
+     *
+     * Example:
+     *
+     * ```
+     * <?php
+     * $objArea->addParagraph(
+     *     "Cool paragraph with lots of text in it. It's an absolute must-read.",
+     *     "You must read this"
+     * );
+     * ?>
+     * ```
      *
      * @param string $strBody The paragraph's body text
      * @param string $strHeader The paragraph's optional header
