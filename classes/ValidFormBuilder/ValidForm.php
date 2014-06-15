@@ -1,10 +1,8 @@
 <?php
-namespace ValidFormBuilder;
-
 /**
  * ValidForm Builder - build valid and secure web forms quickly
  *
- * Copyright (c) 2009-2013 Neverwoods Internet Technology - http://neverwoods.com
+ * Copyright (c) 2009-2014 Neverwoods Internet Technology - http://neverwoods.com
  *
  * Felix Langfeldt <felix@neverwoods.com>
  * Robin van Baalen <robin@neverwoods.com>
@@ -15,10 +13,12 @@ namespace ValidFormBuilder;
  *
  * @package ValidForm
  * @author Felix Langfeldt <felix@neverwoods.com>, Robin van Baalen <robin@neverwoods.com>
- * @copyright 2009-2013 Neverwoods Internet Technology - http://neverwoods.com
+ * @copyright 2009-2014 Neverwoods Internet Technology - http://neverwoods.com
  * @license http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU GPL v2
  * @link http://validformbuilder.org
  */
+
+namespace ValidFormBuilder;
 
 /**
  * ValidForm Builder base class
@@ -30,7 +30,6 @@ namespace ValidFormBuilder;
  */
 class ValidForm extends ClassDynamic
 {
-
     const VFORM_STRING = 1;
     const VFORM_TEXT = 2;
     const VFORM_NUMERIC = 3;
@@ -70,32 +69,78 @@ class ValidForm extends ClassDynamic
     const VFORM_MATCH_ALL = "all";
     const VFORM_MATCH_ANY = "any";
 
+    /**
+     * The form's description paragraph content
+     * @var string
+     */
     protected $__description;
-
+    /**
+     * Form's custom meta like style, classes etc.
+     * @var array
+     */
     protected $__meta;
-
+    /**
+     * Default values array
+     * @var array
+     */
     protected $__defaults = array();
-
+    /**
+     * The HTML <form>-tag's 'action' attribute value
+     * @var string
+     */
     protected $__action;
-
+    /**
+     * The submit button's label
+     * @var string
+     */
     protected $__submitlabel;
-
-    protected $__jsevents = array(); // Keep it lowercase to enable magic methods from ClassDynamic
-
+    /**
+     * An array of custom javascript events to include in javascript parsing
+     * @var unknown
+     */
+    protected $__jsevents = array();
+    /**
+     * The main elements Collection
+     * @var \ValidFormBuilder\Collection
+     */
     protected $__elements;
-
+    /**
+     * The form's name
+     * @var string
+     */
     protected $__name;
-
+    /**
+     * The main alert to be shown when any alert has happened after trying to submit.
+     * @var string
+     */
     protected $__mainalert;
-
+    /**
+     * Define the field required style. Note: **This value will be passed to `sprintf`** so be sure to throw in an %s.
+     *
+     * Example:
+     * ```
+     * $objForm->setRequiredStyle("%s *");
+     *
+     * //*** Now when a required field is parsed, it's output will be 'Label *' where the * is the 'required style'.
+     * ```
+     * @var string
+     */
     protected $__requiredstyle;
-
+    /**
+     * This message is shown in `valuesAsHtml()` output when for
+     * example an area or fieldset don't contain any submitted values.
+     * @var string
+     */
     protected $__novaluesmessage;
-
-    protected $__invalidfields = array();
-
+    /**
+     * The collection of cached fields.
+     * @var \ValidFormBuilder\Collection
+     */
     private $__cachedfields = null;
-
+    /**
+     * A uniquely generated string to identify the form with.
+     * @var string
+     */
     private $__uniqueid;
 
     /**
@@ -130,6 +175,43 @@ class ValidForm extends ClassDynamic
         }
     }
 
+    /**
+     * Use an array to set default values on all the forms children.
+     * The array's keys should be the form name to set the default value of, the value is the actual value
+     * or values to set.
+     *
+     * Example 1 - Basic defaults:
+     * ```
+     * <?php
+     * //*** The form
+     * $objCheck = $objForm->addField("cool", "Coolest PHP Library", ValidForm::VFORM_STRING);
+     *
+     * //*** Set field 'cool' default value to "ValidForm Builder"
+     * $objForm->setDefaults([
+     *     "cool" => "ValidForm Builder"
+     * ]);
+     * ?>
+     * ```
+     *
+     * Example 2 - An array of defaults:
+     * ```
+     * <?php
+     * //*** The form
+     * $objCheck = $objForm->addField("cool", "Cool checklist", ValidForm::VFORM_CHECK_LIST);
+     * $objCheck->addField("Option 1", "option1");
+     * $objCheck->addField("Option 2", "option2");
+     * $objCheck->addField("Option 3", "option3");
+     *
+     * //*** Check options 2 and 3 by default using setDefaults()
+     * $objForm->setDefaults([
+     *     "cool" => ["option2", "option3"]
+     * ]);
+     * ?>
+     * ```
+     *
+     * @param array $arrDefaults The array of default values. Keys are field names, values strings or arrays
+     * @throws \InvalidArgumentException
+     */
     public function setDefaults($arrDefaults = array())
     {
         if (is_array($arrDefaults)) {
@@ -140,11 +222,9 @@ class ValidForm extends ClassDynamic
     }
 
     /**
-     *
-     *
-     * Insert an HTML block into the form
-     *
-     * @param string $html
+     * Use addHtml to inject custom HTML code in the form.
+     * @param string $html The HTML code to inject
+     * @return \ValidFormBuilder\String
      */
     public function addHtml($html)
     {
@@ -155,12 +235,9 @@ class ValidForm extends ClassDynamic
     }
 
     /**
-     *
-     *
      * Set the navigation of the form. Overides the default navigation (submit button).
-     *
-     * @param array $meta
-     *            Array with meta data. Only the "style" attribute is supported as of now
+     * @param array $meta Array with meta data. Only the "style" attribute is supported as of now
+     * @return \ValidFormBuilder\Navigation
      */
     public function addNavigation($meta = array())
     {
@@ -170,6 +247,21 @@ class ValidForm extends ClassDynamic
         return $objNavigation;
     }
 
+    /**
+     * Add a fieldset to the form field collection
+     *
+     * Example:
+     * ```
+     * <?php
+     * $objForm->addFieldset("
+     * ?>
+     * ```
+     * @param string $label
+     * @param string $noteHeader
+     * @param string $noteBody
+     * @param unknown $meta
+     * @return \ValidFormBuilder\Fieldset
+     */
     public function addFieldset($label = null, $noteHeader = null, $noteBody = null, $meta = array())
     {
         $objFieldSet = new Fieldset($label, $noteHeader, $noteBody, $meta);
