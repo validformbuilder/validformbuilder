@@ -198,7 +198,7 @@ class ValidForm extends ClassDynamic
         return $objField;
     }
 
-    public static function renderField($name, $label, $type, $validationRules, $errorHandlers, $meta)
+    public static function renderField($name, $label, $type, $validationRules = array(), $errorHandlers = array(), $meta = array())
     {
         $objField = null;
         switch ($type) {
@@ -853,6 +853,89 @@ class ValidForm extends ClassDynamic
         }
 
         return $strReturn;
+    }
+
+    /**
+     * Generate a new ValidForm Builder object based on array data
+     * @param array $formArray The raw form array data, usually output from json_decode
+     * @return \ValidFormBuilder\ValidForm
+     */
+    public static function fromArray($formArray = array())
+    {
+        $objReturn = new ValidForm();
+
+        if (FormArrayValidator::isValid($formArray)) {
+            $formData = $formArray["form"];
+            /** @var $objReflection ReflectionClass */
+            $objReflection = new \ReflectionClass("\\ValidFormBuilder\\ValidForm");
+
+            /** @var $objReturn ValidForm */
+            $objReturn = $objReflection->newInstanceArgs($formArray["form"]);
+
+            if (isset($formData["children"]) && is_array($formData["children"])) {
+                self::childrenFromArray($formData["children"], $objReturn);
+            }
+        }
+
+        return $objReturn;
+    }
+
+    /**
+     * Initialize children
+     * @param array $childrenArray
+     * @param VF_Element,VF_Base,ValidForm $objParent
+     * @throws Exception\InvalidChildType
+     */
+    protected static function childrenFromArray($children, &$objParent)
+    {
+        if (!is_array($children)) {
+            throw new \InvalidArgumentException("No children array supplied in ValidForm::childrenFromArray", E_ERROR);
+        }
+
+        foreach ($children as $childNumber => $child) {
+            //*** Throw exception if this isn't a valid child array
+            if (!FormArrayValidator::isValidChild($child)) {
+                throw new Exception\InvalidChildType(
+                    "No child type defined in child {$childNumber} of " . get_class($objParent),
+                    E_ERROR
+                );
+            }
+
+            $strMethod = null;
+
+            switch ($child["objectType"]) {
+            	case "option":
+            	case "field":
+            	    $arrChildData = FormArrayValidator::sanitizeForParentFingerprint($objParent, "addField", $child);
+                    call_user_func_array(array($objParent, "addField"), $arrChildData);
+            	    break;
+            	case "area":
+            	    $strMethod = "addArea";
+            	case "select":
+            	    if (is_null($strMethod)) {
+                	    $strMethod = "addField";
+            	    }
+            	case "multifield":
+            	    //*** We haven't hit 'select' or 'area' yet, so this is probably a multifield.
+            	    if (is_null($strMethod)) {
+                	    $strMethod = "addMultiField";
+            	    }
+            	    $arrChildData = FormArrayValidator::sanitizeForParentFingerprint(
+            	        $objParent,
+            	        $strMethod,
+            	        $child
+                    );
+
+            	    $objElement = call_user_func_array(array($objParent, $strMethod), $arrChildData);
+            	    if (is_object($objElement)) {
+            	        //*** Element initialized, add children
+            	        self::childrenFromArray($child["children"], $objElement);
+            	    }
+            	    break;
+            	default:
+            	    throw new Exception\InvalidChildType("Invalid Child Type '{$child["objectType"]}' supplied in ValidForm::fromArray in child #{$childNumber}", E_ERROR);
+            }
+        }
     }
 
     protected function __toJS($strCustomJs = "", $arrInitArguments = array(), $blnRawJs = false)
