@@ -9,8 +9,11 @@ cd "$HOME"
 #git config --global user.name "travis-ci"
 git clone --branch=gh-pages https://github.com/neverwoods/validformbuilder.git gh-pages || exit 1
 
-echo "Entering gh-pages/docs"
-cd $HOME/gh-pages/docs
+echo "Entering gh-pages"
+cd $HOME/gh-pages
+
+mkdir docs
+
 git rm -rf .
 
 echo "Copy generated docs from $TRAVIS_BUILD_DIR/docs/* to $HOME/gh-pages/docs"
