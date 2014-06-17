@@ -12,13 +12,10 @@ git clone --branch=gh-pages https://github.com/neverwoods/validformbuilder.git g
 echo "Entering gh-pages"
 cd gh-pages/docs
 
-git rm -rf .
+git rm -r **/*
+git rm *.*
+
 cd ..
-
-mkdir docs
-
-echo "Verify docs dir is created"
-ls -la
 
 echo "Copy generated docs from $TRAVIS_BUILD_DIR/docs/* to ./docs"
 cp -Rf $TRAVIS_BUILD_DIR/docs/* ./docs
