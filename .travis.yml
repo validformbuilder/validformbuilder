@@ -6,5 +6,4 @@ script:
  - ./.travis-generate-docs.sh
 
 before_script:
- - composer selfupdate --quiet
- - composer install -n --prefer-source --dev
+ - curl -O http://phpdoc.org/phpDocumentor.phar
