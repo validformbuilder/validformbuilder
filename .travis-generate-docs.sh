@@ -10,11 +10,11 @@ cd "$HOME"
 git clone --branch=gh-pages https://github.com/neverwoods/validformbuilder.git gh-pages || exit 1
 
 echo "Entering gh-pages/docs"
-cd gh-pages/docs
+cd $HOME/gh-pages/docs
 git rm -rf .
 
-echo "Copy generated docs from $TRAVIS_BUILD_DIR/docs/* to ./"
-cp -rf "$TRAVIS_BUILD_DIR"/docs/* ./ || exit 1
+echo "Copy generated docs from $TRAVIS_BUILD_DIR/docs/* to $HOME/gh-pages/docs"
+cp -Rf $TRAVIS_BUILD_DIR/docs/* $HOME/gh-pages/docs/*
 
 git add .
 git commit -F- <<EOF
