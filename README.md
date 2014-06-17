@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/neverwoods/validformbuilder.png)](https://travis-ci.org/simkimsia/UtilityBehaviors)
+
 ValidForm Builder
 ================
 
