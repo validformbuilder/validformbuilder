@@ -23,6 +23,18 @@ Why use ValidForm Builder?
 - Make form entry fun for the user. More feedback from your website.
 - Write client- and server-side validation at the same time
 
+Installation
+------------
+You're free to download the source and [get started](https://github.com/neverwoods/validformbuilder/blob/master/docs/documentation.md#installing-validform-builder-in-your-project) but we highly recommend that you use [Composer](https://getcomposer.org/) to install ValidForm Builder. Add the following to your project's `composer.json` file:
+```
+{
+    "require": {
+        "neverwoods/validformbuilder": "~3.0"
+    }
+}
+```
+By [using the tilde](https://getcomposer.org/doc/01-basic-usage.md#package-versions) you'll automatically install bug fixes and new features. See [Composer documentation](https://getcomposer.org/doc/01-basic-usage.md#package-versions) for details.
+
 
 Documentation
 =============
