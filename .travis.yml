@@ -3,10 +3,10 @@ php:
 - 5.4
 before_script:
 - curl -O http://phpdoc.org/phpDocumentor.phar
-- git config credential.helper "store --file=.git/credentials"
+- git config --global credential.helper "store --file=.git/credentials"
 - echo "https://${GH_TOKEN}:@github.com" > .git/credentials
 script:
 - bash .travis-generate-docs.sh
 env:
   global:
-    secure: g97xVnlPkycEV5A0Q90OTbnQwvqnY1yPCoYqBfDswRS8uOzNDWrbF/HsXB+affh16VcjMlKSZMwIyXwbkd0+IGvXqz6wQzHY6xPrPFhrnqgxY1eDewm+DNTiVyptI2hnABvqE7ZFQ0c85FD32CRnS82ph9LKyKDLK0m/ITN+8RY=
+    secure: Uu5Bz73vVwNuVDcB6qiIFC5tT4al7p6shVV5cNzJ4YQag3qEO0DeaU+y+V6DNLorKXYcksHp4MnyiOnQm3UyXS4X/xTbXx7wzefzBl6usFjD9kbxiaCSGFZfNURwGQ3u4pqiD9W7t9+5dibQ8LHR7O+cAbSOw/s7rWFtkRtY5eg=
