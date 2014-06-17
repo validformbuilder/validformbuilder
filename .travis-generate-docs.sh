@@ -2,7 +2,7 @@
 
 echo "Generating docs with PHPDocumentor..."
 
-./vendor/phpdoc
+php phpDocumentor.phar
 
 cd "$HOME"
 #git config --global user.email "travis@travis-ci.org"
