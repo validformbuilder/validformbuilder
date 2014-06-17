@@ -1,3 +1,7 @@
+### Note
+This documentation is slightly outdated. That means, since ValidForm Builder 3.0 we've moved to a namespaced Composer structure in favor of the old 'libraries'-folder structure as mentioned below. The API hasn't changed much though and the examples should be enough to get you going!
+Just keep in mind that we use namespaces now and therefore some class names are simplified.
+
 # Downloading and Installing ValidForm Builder
 First of all, we need to download the ValidForm Builder package. If you're using a version control system, we recommend you get the latest and greatest version from our GitHub master branch.
 We've also prepared some unpack-and-go downloads in the downloads section.
@@ -15,27 +19,21 @@ Internet Explorer >= 8, Firefox >= 4, Opera >= 9, Safari >= 4 are officially sup
     The package should consist of the following files and folders:
     
     * **css [folder]**
-    
         *Contains the default CSS file for the form design*
         
     * **libraries [folder]** 
-    
         *Holds the library files*
         
         * **ValidForm [folder]** 
-    
             *The PHP files for the library*
         
         * **jquery.js [file]** 
-    
             *Latest version of jQuery*
         
         * **validform.js [file]** 
-    
             *Javascript part of the library*
         
     * **vf_captcha.php [file]** 
-    
         *PHP file for the CAPTCHA type field.**
         
 \* *At this point, Captcha fields are not fully supported and tested since the incorporated Captcha PHP library is outdated. We're working on that!*
