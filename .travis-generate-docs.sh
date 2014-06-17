@@ -13,6 +13,7 @@ echo "Entering gh-pages"
 cd gh-pages/docs
 
 git rm -r **/*
+touch placeholder
 git rm *.*
 
 cd ..
@@ -20,11 +21,10 @@ cd ..
 echo "Copy generated docs from $TRAVIS_BUILD_DIR/docs/* to ./docs"
 cp -Rf $TRAVIS_BUILD_DIR/docs/* ./docs
 
-echo "Current dir"
-ls -la .
 
-cd ./docs
-git add .
+ls -la ./docs
+
+#git add -all
 
 #git commit -F- <<EOF
 #Latest docs on successful travis build $TRAVIS_BUILD_NUMBER
