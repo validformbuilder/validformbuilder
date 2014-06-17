@@ -9,7 +9,7 @@ git config --global user.email "robin@trainedby.ninja"
 git config --global user.name "Travis CI"
 #git clone --branch=gh-pages https://${GH_TOKEN}:github.com/neverwoods/validformbuilder.git gh-pages > /dev/null 2>& || exit 1
 #temp enable error feedback
-git clone --branch=gh-pages https://${GH_TOKEN}:github.com/neverwoods/validformbuilder.git gh-pages > /dev/null 2>& || exit 1
+git clone --branch=gh-pages https://${GH_TOKEN}:github.com/neverwoods/validformbuilder.git gh-pages
 
 echo "Entering gh-pages"
 cd gh-pages/docs
