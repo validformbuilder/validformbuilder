@@ -14,7 +14,7 @@ cd $HOME/gh-pages/docs
 git rm -rf .
 
 echo "Copy generated docs from $TRAVIS_BUILD_DIR/docs/* to $HOME/gh-pages/docs"
-cp -Rf $TRAVIS_BUILD_DIR/docs/* $HOME/gh-pages/docs/*
+cp -Rf $TRAVIS_BUILD_DIR/docs/* $HOME/gh-pages/docs
 
 git add .
 git commit -F- <<EOF
