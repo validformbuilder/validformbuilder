@@ -1,0 +1,1267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+    <meta charset="utf-8"/>
+    <title>API Documentation</title>
+    <meta name="author" content=""/>
+    <meta name="description" content=""/>
+
+    <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.no-icons.min.css" rel="stylesheet">
+    <link href="https://netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.min.css" rel="stylesheet">
+    <link href="../css/prism.css" rel="stylesheet" media="all"/>
+    <link href="../css/template.css" rel="stylesheet" media="all"/>
+    
+    <!--[if lt IE 9]>
+    <script src="https://html5shim.googlecode.com/svn/trunk/html5.js" type="text/javascript"></script>
+    <![endif]-->
+    <script src="https://code.jquery.com/jquery-1.11.0.min.js" type="text/javascript"></script>
+    <script src="https://code.jquery.com/ui/1.10.4/jquery-ui.min.js" type="text/javascript"></script>
+    <script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
+    <script src="../js/jquery.smooth-scroll.js"></script>
+    <script src="../js/prism.min.js"></script>
+    <!-- TODO: Add http://jscrollpane.kelvinluck.com/ to style the scrollbars for browsers not using webkit-->
+    <script type="text/javascript">
+    function loadExternalCodeSnippets() {
+        Array.prototype.slice.call(document.querySelectorAll('pre[data-src]')).forEach(function (pre) {
+            var src = pre.getAttribute('data-src');
+            var extension = (src.match(/\.(\w+)$/) || [, ''])[1];
+            var language = 'php';
+
+            var code = document.createElement('code');
+            code.className = 'language-' + language;
+
+            pre.textContent = '';
+
+            code.textContent = 'Loading…';
+
+            pre.appendChild(code);
+
+            var xhr = new XMLHttpRequest();
+
+            xhr.open('GET', src, true);
+
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState == 4) {
+
+                    if (xhr.status < 400 && xhr.responseText) {
+                        code.textContent = xhr.responseText;
+
+                        Prism.highlightElement(code);
+                    }
+                    else if (xhr.status >= 400) {
+                        code.textContent = '✖ Error ' + xhr.status + ' while fetching file: ' + xhr.statusText;
+                    }
+                    else {
+                        code.textContent = '✖ Error: File does not exist or is empty';
+                    }
+                }
+            };
+
+            xhr.send(null);
+        });
+    }
+
+    $(document).ready(function(){
+        loadExternalCodeSnippets();
+    });
+    $('#source-view').on('shown', function () {
+        loadExternalCodeSnippets();
+    })
+</script>
+
+    <link rel="shortcut icon" href="../images/favicon.ico"/>
+    <link rel="apple-touch-icon" href="../images/apple-touch-icon.png"/>
+    <link rel="apple-touch-icon" sizes="72x72" href="../images/apple-touch-icon-72x72.png"/>
+    <link rel="apple-touch-icon" sizes="114x114" href="../images/apple-touch-icon-114x114.png"/>
+</head>
+<body>
+
+<div class="navbar navbar-fixed-top">
+    <div class="navbar-inner">
+        <div class="container">
+            <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                <i class="icon-ellipsis-vertical"></i>
+            </a>
+            <a class="brand" href="../index.html">API Documentation</a>
+
+            <div class="nav-collapse">
+                <ul class="nav pull-right">
+                                        <li class="dropdown">
+                        <a href="../index.html" class="dropdown-toggle" data-toggle="dropdown">
+                            API Documentation <b class="caret"></b>
+                        </a>
+                        <ul class="dropdown-menu">
+                                                        <li><a href="../namespaces/ValidFormBuilder.html">\ValidFormBuilder</a></li>
+                                                    </ul>
+                    </li>
+                                        <li class="dropdown" id="charts-menu">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                            Charts <b class="caret"></b>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a href="../graphs/class.html">
+                                    <i class="icon-list-alt"></i>&#160;Class hierarchy diagram
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="dropdown" id="reports-menu">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                            Reports <b class="caret"></b>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a href="../reports/errors.html">
+                                                                                                                                                                                                                                                                    <i class="icon-list-alt"></i>&#160;Errors <span class="label label-info pull-right">84</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="../reports/markers.html">
+                                                                                                                                                                                                                                                                    <i class="icon-list-alt"></i>&#160;Markers <span class="label label-info pull-right">0</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="../reports/deprecated.html">
+                                                                                                            <i class="icon-list-alt"></i>&#160;Deprecated <span class="label label-info pull-right">0</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <!--<div class="go_to_top">-->
+    <!--<a href="#___" style="color: inherit">Back to top&#160;&#160;<i class="icon-upload icon-white"></i></a>-->
+    <!--</div>-->
+</div>
+
+<div id="___" class="container-fluid">
+        <section class="row-fluid">
+        <div class="span2 sidebar">
+                                <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle " data-toggle="collapse" data-target="#namespace-1744222634"></a>
+                                <a href="../namespaces/default.html" style="margin-left: 30px; padding-left: 0">\</a>
+            </div>
+            <div id="namespace-1744222634" class="accordion-body collapse in">
+                <div class="accordion-inner">
+
+                                                    <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-1179856952"></a>
+                                <a href="../namespaces/ValidFormBuilder.html" style="margin-left: 30px; padding-left: 0">ValidFormBuilder</a>
+            </div>
+            <div id="namespace-1179856952" class="accordion-body collapse ">
+                <div class="accordion-inner">
+
+                    
+                    <ul>
+                                                                                                    <li class="class"><a href="../classes/ValidFormBuilder.Area.html">Area</a></li>
+                                                    <li class="class"><a href="../classes/ValidFormBuilder.ValidForm.html">ValidForm</a></li>
+                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+                    
+                    <ul>
+                                                                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+        </div>
+    </section>
+    <section class="row-fluid">
+        <div class="span10 offset2">
+            <div class="row-fluid">
+                <div class="span8 content class">
+                    <nav>
+                                                <a href="../namespaces/ValidFormBuilder.html">\ValidFormBuilder</a> <i class="icon-level-up"></i>
+                                            </nav>
+                    <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal"><i class="icon-code"></i></a>
+
+                    <h1><small>\ValidFormBuilder</small>Area</h1>
+                    <p><em>Group fields together in an Area</em></p>
+                    <p>An Area can be used to group form fields together. When an Area is active, it can toggle the disabled state
+on all it's child form fields using the auto-generated checkbox in the Area's legend.</p>
+
+                    <section id="summary">
+                        <h2>Summary</h2>
+                        <section class="row-fluid heading">
+                            <section class="span4">
+                                <a href="#methods">Methods</a>
+                            </section>
+                            <section class="span4">
+                                <a href="#properties">Properties</a>
+                            </section>
+                            <section class="span4">
+                                <a href="#constants">Constants</a>
+                            </section>
+                        </section>
+                        <section class="row-fluid public">
+                            <section class="span4">
+                                                                    <a href="../classes/ValidFormBuilder.Area.html#method___construct" class="">__construct()</a><br />
+                                                                    <a href="../classes/ValidFormBuilder.Area.html#method_addField" class="">addField()</a><br />
+                                                                    <a href="../classes/ValidFormBuilder.Area.html#method_addParagraph" class="">addParagraph()</a><br />
+                                                                    <a href="../classes/ValidFormBuilder.Area.html#method_addMultiField" class="">addMultiField()</a><br />
+                                                                    <a href="../classes/ValidFormBuilder.Area.html#method_toHtml" class="">toHtml()</a><br />
+                                                                    <a href="../classes/ValidFormBuilder.Area.html#method_hasContent" class="">hasContent()</a><br />
+                                                                    <a href="../classes/ValidFormBuilder.Area.html#method_toJS" class="">toJS()</a><br />
+                                                                    <a href="../classes/ValidFormBuilder.Area.html#method_isActive" class="">isActive()</a><br />
+                                                                    <a href="../classes/ValidFormBuilder.Area.html#method_isValid" class="">isValid()</a><br />
+                                                                    <a href="../classes/ValidFormBuilder.Area.html#method_isDynamic" class="">isDynamic()</a><br />
+                                                                    <a href="../classes/ValidFormBuilder.Area.html#method_getDynamicCount" class="">getDynamicCount()</a><br />
+                                                                    <a href="../classes/ValidFormBuilder.Area.html#method_getFields" class="">getFields()</a><br />
+                                                                    <a href="../classes/ValidFormBuilder.Area.html#method_getValue" class="">getValue()</a><br />
+                                                                    <a href="../classes/ValidFormBuilder.Area.html#method_getId" class="">getId()</a><br />
+                                                                    <a href="../classes/ValidFormBuilder.Area.html#method_getType" class="">getType()</a><br />
+                                                                    <a href="../classes/ValidFormBuilder.Area.html#method_hasFields" class="">hasFields()</a><br />
+                                                            </section>
+                            <section class="span4">
+                                                                    <em>No public properties found</em>
+                                                            </section>
+                            <section class="span4">
+                                                                    <em>No constants found</em>
+                                                            </section>
+                        </section>
+                        <section class="row-fluid protected">
+                            <section class="span4">
+                                                                    <a href="../classes/ValidFormBuilder.Area.html#method___toHtml" class="">__toHtml()</a><br />
+                                                                    <a href="../classes/ValidFormBuilder.Area.html#method___addDynamicHtml" class="">__addDynamicHtml()</a><br />
+                                                            </section>
+                            <section class="span4">
+                                                                    <a href="../classes/ValidFormBuilder.Area.html#property___label" class="">$__label</a><br />
+                                                                    <a href="../classes/ValidFormBuilder.Area.html#property___active" class="">$__active</a><br />
+                                                                    <a href="../classes/ValidFormBuilder.Area.html#property___checked" class="">$__checked</a><br />
+                                                                    <a href="../classes/ValidFormBuilder.Area.html#property___dynamic" class="">$__dynamic</a><br />
+                                                                    <a href="../classes/ValidFormBuilder.Area.html#property___dynamicLabel" class="">$__dynamicLabel</a><br />
+                                                                    <a href="../classes/ValidFormBuilder.Area.html#property___requiredstyle" class="">$__requiredstyle</a><br />
+                                                                    <a href="../classes/ValidFormBuilder.Area.html#property___fields" class="">$__fields</a><br />
+                                                            </section>
+                            <section class="span4">
+                                <em>N/A</em>
+                            </section>
+                        </section>
+                        <section class="row-fluid private">
+                            <section class="span4">
+                                                                    <a href="../classes/ValidFormBuilder.Area.html#method___validate" class="">__validate()</a><br />
+                                                            </section>
+                            <section class="span4">
+                                                                    <em>No private properties found</em>
+                                                            </section>
+                            <section class="span4">
+                                <em>N/A</em>
+                            </section>
+                        </section>
+                    </section>
+                </div>
+                <aside class="span4 detailsbar">
+                                        
+                    
+                    <dl>
+                        <dt>File</dt>
+                            <dd><a href="../files/Area.html"><div class="path-wrapper">Area.php</div></a></dd>
+                                                <dt>Package</dt>
+                            <dd><div class="namespace-wrapper">\ValidForm</div></dd>
+                                                <dt>Class hierarchy</dt>
+                            <dd class="hierarchy">
+                                                                                                                                                                                                                                                                                                
+                                        <div class="namespace-wrapper">\ValidFormBuilder\Base</div>
+                                                                                                    <div class="namespace-wrapper">\ValidFormBuilder\Area</div>
+                            </dd>
+
+                        
+                        
+                        
+                        
+                                                                        </dl>
+                    <h2>Tags</h2>
+                    <table class="table table-condensed">
+                                            <tr>
+                            <th>
+                                author
+                            </th>
+                            <td>
+                                                                    <p>Felix Langfeldt</p>
+                                                            </td>
+                        </tr>
+                                            <tr>
+                            <th>
+                                version
+                            </th>
+                            <td>
+                                                                    
+                                                            </td>
+                        </tr>
+                                        </table>
+                </aside>
+            </div>
+
+                        
+                                    <a id="properties" name="properties"></a>
+            <div class="row-fluid">
+                <div class="span8 content class">
+                    <h2>Properties</h2>
+                </div>
+                <aside class="span4 detailsbar"></aside>
+            </div>
+
+                                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="property___label" name="property___label" class="anchor"></a>
+            <article class="property">
+                <h3 class="protected ">$__label</h3>
+                <pre class="signature">$__label : string</pre>
+                <p><em>The Area&#039;s label, presented as a &#039;legend&#039; header above the area</em></p>
+                
+
+                                <h4>Type</h4>
+                string
+                                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                        <dl>
+                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="property___active" name="property___active" class="anchor"></a>
+            <article class="property">
+                <h3 class="protected ">$__active</h3>
+                <pre class="signature">$__active : boolean</pre>
+                <p><em>Make this an active area with __active set on true. When active, the entire area
+can be enabled and disabled with a checkbox.</em></p>
+                
+
+                                <h4>Type</h4>
+                boolean
+                                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                        <dl>
+                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="property___checked" name="property___checked" class="anchor"></a>
+            <article class="property">
+                <h3 class="protected ">$__checked</h3>
+                <pre class="signature">$__checked : boolean</pre>
+                <p><em>Use in combination with &#039;active&#039;; defines if the active area is checked by default or not</em></p>
+                
+
+                                <h4>Type</h4>
+                boolean
+                                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                        <dl>
+                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="property___dynamic" name="property___dynamic" class="anchor"></a>
+            <article class="property">
+                <h3 class="protected ">$__dynamic</h3>
+                <pre class="signature">$__dynamic : boolean</pre>
+                <p><em>Defines if this area is dynamic</em></p>
+                
+
+                                <h4>Type</h4>
+                boolean
+                                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                        <dl>
+                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="property___dynamicLabel" name="property___dynamicLabel" class="anchor"></a>
+            <article class="property">
+                <h3 class="protected ">$__dynamicLabel</h3>
+                <pre class="signature">$__dynamicLabel : string</pre>
+                <p><em>The label used by __addDynamicHtml() which a user can click to clone this dynamic area</em></p>
+                
+
+                                <h4>Type</h4>
+                string
+                                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                        <dl>
+                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="property___requiredstyle" name="property___requiredstyle" class="anchor"></a>
+            <article class="property">
+                <h3 class="protected ">$__requiredstyle</h3>
+                <pre class="signature">$__requiredstyle : \ValidFormBuilder\unknown</pre>
+                <p><em>Using the dynamic &#039;setRequiredStyle()&#039;, you can add for instance an asterix to each required field like so:
+$this-&gt;setRequiredStyle(&#039;%s *&#039;); // First show the label, %s, then show an asterix after the label.</em></p>
+                
+
+                                <h4>Type</h4>
+                \ValidFormBuilder\unknown
+                                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                        <dl>
+                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="property___fields" name="property___fields" class="anchor"></a>
+            <article class="property">
+                <h3 class="protected ">$__fields</h3>
+                <pre class="signature">$__fields : \ValidFormBuilder\Collection</pre>
+                <p><em>The child fields collection</em></p>
+                
+
+                                <h4>Type</h4>
+                \ValidFormBuilder\Collection
+                                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                        <dl>
+                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                            
+                                    <a id="methods" name="methods"></a>
+            <div class="row-fluid">
+                <div class="span8 content class"><h2>Methods</h2></div>
+                <aside class="span4 detailsbar"></aside>
+            </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method___construct" name="method___construct" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">__construct()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">__construct(string <span class="argument">$label</span>, boolean <span class="argument">$active</span>, string <span class="argument">$name</span>, boolean <span class="argument">$checked</span>, array <span class="argument">$meta</span>)</pre>
+                <p><em>Create a new Area instance</em></p>
+                <p>The label is used as a small 'header' above the area. When setting an area to 'active', this label becomes
+clickable using a checkbox. This clickable header can toggle child fields to be enabled / disabled.</p>
+<p><strong>We strongly encourage you to use <code>\ValidFormBuilder\ValidForm-&gt;addArea()</code> instead of
+creating your own area instances.</strong></p>
+<p>Super short example:</p>
+<pre><code>&lt;?php
+new \ValidFormBuilder\Area("Cool area label", true, "cool-area", true);
+?&gt;</code></pre>
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>string</td>
+                                <td>$label </td>
+                                <td><p>The Area's label</p></td>
+                            </tr>
+                                                    <tr>
+                                <td>boolean</td>
+                                <td>$active </td>
+                                <td><p>Whether the area should be active or not.
+When active, a checkbox will be prefixed to the header.</p></td>
+                            </tr>
+                                                    <tr>
+                                <td>string</td>
+                                <td>$name </td>
+                                <td><p>The name for this area</p></td>
+                            </tr>
+                                                    <tr>
+                                <td>boolean</td>
+                                <td>$checked </td>
+                                <td><p>Whether or not the active area should be checked by default</p></td>
+                            </tr>
+                                                    <tr>
+                                <td>array</td>
+                                <td>$meta </td>
+                                <td><p>The optional meta array</p></td>
+                            </tr>
+                                            </table>
+                
+                
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_addField" name="method_addField" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">addField()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">addField(string <span class="argument">$name</span>, string <span class="argument">$label</span>, integer <span class="argument">$type</span>, array <span class="argument">$validationRules</span>, array <span class="argument">$errorHandlers</span>, array <span class="argument">$meta</span>) : \ValidFormBuilder\Ambigous</pre>
+                <p><em>Add a field to the Area.</em></p>
+                <p>Example adding a string field to the area:</p>
+<pre><code>&lt;?php
+$objArea = $objForm-&gt;addArea("Cool area");
+$objArea-&gt;addField("first-name", "First name", ValidForm::VFORM_STRING);
+?&gt;</code></pre>
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>string</td>
+                                <td>$name </td>
+                                <td></td>
+                            </tr>
+                                                    <tr>
+                                <td>string</td>
+                                <td>$label </td>
+                                <td></td>
+                            </tr>
+                                                    <tr>
+                                <td>integer</td>
+                                <td>$type </td>
+                                <td><p>One of the ValidForm::VFORM_ field types</p></td>
+                            </tr>
+                                                    <tr>
+                                <td>array</td>
+                                <td>$validationRules </td>
+                                <td><p>Standard validation rules array</p></td>
+                            </tr>
+                                                    <tr>
+                                <td>array</td>
+                                <td>$errorHandlers </td>
+                                <td><p>Standard error handler array</p></td>
+                            </tr>
+                                                    <tr>
+                                <td>array</td>
+                                <td>$meta </td>
+                                <td><p>Standard meta array</p></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    \ValidFormBuilder\Ambigous
+                                            &mdash; <p><NULL, \ValidFormBuilder\Element> Returns an instance of the field type generated</p>
+                                                </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_addParagraph" name="method_addParagraph" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">addParagraph()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">addParagraph(string <span class="argument">$strBody</span>, string <span class="argument">$strHeader</span>, array <span class="argument">$meta</span>) : \ValidFormBuilder\Paragraph</pre>
+                <p><em>Add paragraph to Area</em></p>
+                <p>Example:</p>
+<pre><code>&lt;?php
+$objArea-&gt;addParagraph(
+    "Cool paragraph with lots of text in it. It's an absolute must-read.",
+    "You must read this"
+);
+?&gt;</code></pre>
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>string</td>
+                                <td>$strBody </td>
+                                <td><p>The paragraph's body text</p></td>
+                            </tr>
+                                                    <tr>
+                                <td>string</td>
+                                <td>$strHeader </td>
+                                <td><p>The paragraph's optional header</p></td>
+                            </tr>
+                                                    <tr>
+                                <td>array</td>
+                                <td>$meta </td>
+                                <td><p>Standard meta array</p></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    \ValidFormBuilder\Paragraph
+                                                </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_addMultiField" name="method_addMultiField" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">addMultiField()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">addMultiField(string <span class="argument">$label</span>, array <span class="argument">$meta</span>) : \ValidFormBuilder\MultiField</pre>
+                <p><em>Add a multifield to the Area</em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>string</td>
+                                <td>$label </td>
+                                <td><p>The multifield's label</p></td>
+                            </tr>
+                                                    <tr>
+                                <td>array</td>
+                                <td>$meta </td>
+                                <td><p>The standard meta array</p></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    \ValidFormBuilder\MultiField
+                                                </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_toHtml" name="method_toHtml" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">toHtml()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">toHtml(boolean <span class="argument">$submitted</span>, boolean <span class="argument">$blnSimpleLayout</span>, boolean <span class="argument">$blnLabel</span>, boolean <span class="argument">$blnDisplayErrors</span>) : string</pre>
+                <p><em>Render the Area and it&#039;s children with toHtml()</em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>boolean</td>
+                                <td>$submitted </td>
+                                <td><p>Define if the area has been submitted and propagate that flag to the child fields</p></td>
+                            </tr>
+                                                    <tr>
+                                <td>boolean</td>
+                                <td>$blnSimpleLayout </td>
+                                <td><p>Only render in simple layout mode</p></td>
+                            </tr>
+                                                    <tr>
+                                <td>boolean</td>
+                                <td>$blnLabel </td>
+                                <td></td>
+                            </tr>
+                                                    <tr>
+                                <td>boolean</td>
+                                <td>$blnDisplayErrors </td>
+                                <td><p>Display generated errors</p></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    string
+                                            &mdash; <p>Rendered Area</p>
+                                                </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_hasContent" name="method_hasContent" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">hasContent()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">hasContent(\ValidFormBuilder\number <span class="argument">$intCount</span>) : boolean</pre>
+                <p><em>Verify if any of the child fields in this area has submitted data</em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>\ValidFormBuilder\number</td>
+                                <td>$intCount </td>
+                                <td><p>Optional counter to do the same for dynamic multifields.</p></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    boolean
+                                            &mdash; <p>True if area childs contain submitted data, false if not.</p>
+                                                </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_toJS" name="method_toJS" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">toJS()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">toJS(mixed <span class="argument">$intDynamicPosition</span>) : string</pre>
+                <p><em>Generate Javascript code.</em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>mixed</td>
+                                <td>$intDynamicPosition </td>
+                                <td><p>The dynamic position counter</p></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    string
+                                            &mdash; <p>Generated javascript code</p>
+                                                </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                                            <dt>See also</dt>
+                                                                <dd><a href=""><span class="namespace-wrapper"></span></a></dd>
+                                                                </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_isActive" name="method_isActive" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">isActive()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">isActive() : boolean</pre>
+                <p><em>Check if this is an active area</em></p>
+                
+
+                
+                
+                                    <h4>Returns</h4>
+                    boolean
+                                                </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_isValid" name="method_isValid" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">isValid()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">isValid() : boolean</pre>
+                <p><em>Verify if all submitted data of this area and it&#039;s children is valid.</em></p>
+                
+
+                
+                
+                                    <h4>Returns</h4>
+                    boolean
+                                                </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_isDynamic" name="method_isDynamic" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">isDynamic()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">isDynamic() : boolean</pre>
+                <p><em>Check if this area is a dynamic area</em></p>
+                
+
+                
+                
+                                    <h4>Returns</h4>
+                    boolean
+                                                </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_getDynamicCount" name="method_getDynamicCount" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">getDynamicCount()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">getDynamicCount() : \ValidFormBuilder\number</pre>
+                <p><em>Get the dynamic counter value if this is an dynamic area.</em></p>
+                
+
+                
+                
+                                    <h4>Returns</h4>
+                    \ValidFormBuilder\number
+                                            &mdash; <p>Defaults to 0 if not an dynamic area. If dynamic, this returns the number of times the user
+duplicated this area.</p>
+                                                </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_getFields" name="method_getFields" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">getFields()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">getFields() : \ValidFormBuilder\Collection</pre>
+                <p><em>Return all children in a Collection</em></p>
+                
+
+                
+                
+                                    <h4>Returns</h4>
+                    \ValidFormBuilder\Collection
+                                                </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_getValue" name="method_getValue" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">getValue()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">getValue(string <span class="argument">$intCount</span>) : boolean</pre>
+                <p><em>If this is an active area, this will return the value of the checkbox.</em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>string</td>
+                                <td>$intCount </td>
+                                <td><p>Dynamic counter, defaults to null</p></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    boolean
+                                                </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_getId" name="method_getId" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">getId()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">getId() : string</pre>
+                <p><em>Return the Area name</em></p>
+                
+
+                
+                
+                                    <h4>Returns</h4>
+                    string
+                                                </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_getType" name="method_getType" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">getType()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">getType() : \ValidFormBuilder\number</pre>
+                <p><em>For API compatibility, we&#039;ve added the placeholder method &#039;getType&#039;</em></p>
+                
+
+                
+                
+                                    <h4>Returns</h4>
+                    \ValidFormBuilder\number
+                                                </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_hasFields" name="method_hasFields" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">hasFields()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">hasFields() : boolean</pre>
+                <p><em>Check if this area contains child objects.</em></p>
+                
+
+                
+                
+                                    <h4>Returns</h4>
+                    boolean
+                                            &mdash; <p>True if fields collection > 0, false if not.</p>
+                                                </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method___toHtml" name="method___toHtml" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">__toHtml()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">__toHtml(boolean <span class="argument">$submitted</span>, boolean <span class="argument">$blnSimpleLayout</span>, boolean <span class="argument">$blnLabel</span>, boolean <span class="argument">$blnDisplayErrors</span>, \ValidFormBuilder\number <span class="argument">$intCount</span>) : string</pre>
+                <p><em>Same as toHtml() but with dynamic counter as extra parameter</em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>boolean</td>
+                                <td>$submitted </td>
+                                <td><p>Define if the area has been submitted and propagate that flag to the child fields</p></td>
+                            </tr>
+                                                    <tr>
+                                <td>boolean</td>
+                                <td>$blnSimpleLayout </td>
+                                <td><p>Only render in simple layout mode</p></td>
+                            </tr>
+                                                    <tr>
+                                <td>boolean</td>
+                                <td>$blnLabel </td>
+                                <td></td>
+                            </tr>
+                                                    <tr>
+                                <td>boolean</td>
+                                <td>$blnDisplayErrors </td>
+                                <td><p>Display generated errors</p></td>
+                            </tr>
+                                                    <tr>
+                                <td>\ValidFormBuilder\number</td>
+                                <td>$intCount </td>
+                                <td><p>The dynamic count of this area</p></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    string
+                                            &mdash; <p>Rendered Area</p>
+                                                </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method___addDynamicHtml" name="method___addDynamicHtml" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">__addDynamicHtml()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">__addDynamicHtml() : string</pre>
+                <p><em>Generate extra HTML output to facilitate the dynamic duplication logic</em></p>
+                
+
+                
+                
+                                    <h4>Returns</h4>
+                    string
+                                                </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method___validate" name="method___validate" class="anchor"></a>
+            <article class="method">
+                <h3 class="private ">__validate()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">__validate(string <span class="argument">$intCount</span>) : boolean</pre>
+                <p><em>Validate this Area and it&#039;s children&#039;s submitted values</em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>string</td>
+                                <td>$intCount </td>
+                                <td><p>The dynamic counter</p></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    boolean
+                                            &mdash; <p>True if Area and children are valid, false if not.</p>
+                                                </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    </div>
+    </section>
+
+    <div id="source-view" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="source-view-label" aria-hidden="true">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            <h3 id="source-view-label">Area.php</h3>
+        </div>
+        <div class="modal-body">
+            <pre data-src="../files/Area.php.txt" class="language-php line-numbers"></pre>
+        </div>
+    </div>
+
+    <footer class="row-fluid">
+        <section class="span10 offset2">
+            <section class="row-fluid">
+                <section class="span10 offset1">
+                    <section class="row-fluid footer-sections">
+                        <section class="span4">
+                                                        <h1><i class="icon-code"></i></h1>
+                            <div>
+                                <ul>
+                                                                            <li><a href="../namespaces/ValidFormBuilder.html">\ValidFormBuilder</a></li>
+                                                                    </ul>
+                            </div>
+                        </section>
+                        <section class="span4">
+                                                        <h1><i class="icon-bar-chart"></i></h1>
+                            <div>
+                                <ul>
+                                    <li><a href="../graphs/class.html">Class Hierarchy Diagram</a></li>
+                                </ul>
+                            </div>
+                        </section>
+                        <section class="span4">
+                                                        <h1><i class="icon-pushpin"></i></h1>
+                            <div>
+                                <ul>
+                                    <li><a href="../reports/errors.html">Errors</a></li>
+                                    <li><a href="../reports/markers.html">Markers</a></li>
+                                </ul>
+                            </div>
+                        </section>
+                    </section>
+                </section>
+            </section>
+            <section class="row-fluid">
+                <section class="span10 offset1">
+                    <hr />
+                    Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor </a> and authored
+                    on June 17th, 2014 at 06:19.
+                </section>
+            </section>
+        </section>
+    </footer>
+</div>
+
+</body>
+</html>
