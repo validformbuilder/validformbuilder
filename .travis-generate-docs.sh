@@ -13,7 +13,7 @@ echo "Entering gh-pages/docs"
 cd gh-pages/docs
 git rm -rf .
 
-echo "Copy generated docs from $TRAVIS_BUILD_DIR/docs to ./"
+echo "Copy generated docs from $TRAVIS_BUILD_DIR/docs/* to ./"
 cp -rf "$TRAVIS_BUILD_DIR"/docs/* ./ || exit 1
 
 git add .
