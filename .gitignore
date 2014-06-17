@@ -18,3 +18,5 @@
 /composer.lock
 
 /.settings/
+
+/phpDocumentor.phar
