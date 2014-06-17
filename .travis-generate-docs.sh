@@ -15,9 +15,10 @@ cd gh-pages/docs
 git rm -rf .
 cd ..
 
-echo "show the location"
+mkdir docs
+
+echo "Verify docs dir is created"
 ls -la
-echo "========"
 
 echo "Copy generated docs from $TRAVIS_BUILD_DIR/docs/* to ./docs"
 cp -Rf $TRAVIS_BUILD_DIR/docs/* ./docs
