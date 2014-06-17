@@ -10,9 +10,10 @@ cd ~
 git clone --branch=gh-pages https://github.com/neverwoods/validformbuilder.git gh-pages || exit 1
 
 echo "Entering gh-pages"
-cd gh-pages
+cd gh-pages/docs
 
-git rm -rf ./docs/*
+git rm -rf .
+cd ..
 
 echo "Copy generated docs from $TRAVIS_BUILD_DIR/docs/* to ./docs"
 cp -Rf $TRAVIS_BUILD_DIR/docs/* ./docs
@@ -20,10 +21,9 @@ cp -Rf $TRAVIS_BUILD_DIR/docs/* ./docs
 echo "Current dir"
 ls -la .
 
-echo "One level deeper"
-ls -la ./docs
+cd ./docs
+git add .
 
-#git add .
 #git commit -F- <<EOF
 #Latest docs on successful travis build $TRAVIS_BUILD_NUMBER
 
