@@ -17,14 +17,19 @@ mkdir docs
 git rm -rf .
 
 echo "Copy generated docs from $TRAVIS_BUILD_DIR/docs/* to $HOME/gh-pages/docs"
-cp -Rf $TRAVIS_BUILD_DIR/docs/* $HOME/gh-pages/docs
+#cp -Rf $TRAVIS_BUILD_DIR/docs/* $HOME/gh-pages/docs
 
-git add .
-git commit -F- <<EOF
-Latest docs on successful travis build $TRAVIS_BUILD_NUMBER
+ls -la $HOME/gh-pages
 
-ValidForm Builder commit $TRAVIS_COMMIT
-EOF
-git push origin gh-pages
+echo "One level deeper"
+ls -la $HOME/gh-pages/docs
+
+#git add .
+#git commit -F- <<EOF
+#Latest docs on successful travis build $TRAVIS_BUILD_NUMBER
+
+#ValidForm Builder commit $TRAVIS_COMMIT
+#EOF
+#git push origin gh-pages
 
 echo "Published docs to gh-pages."
