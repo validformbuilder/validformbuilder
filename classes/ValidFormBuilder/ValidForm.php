@@ -21,7 +21,12 @@
 namespace ValidFormBuilder;
 
 /**
- * ValidForm Builder base class
+ * ValidForm Builder
+ *
+ * Create a new ValidForm Builder instance like this:
+ * ```
+ * $objForm = new ValidForm("cool_new_form", "Please fill out my cool form", "/awesome-submits");
+ * ```
  *
  * @package ValidForm
  * @author Felix Langfeldt, Robin van Baalen
