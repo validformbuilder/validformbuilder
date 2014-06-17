@@ -3,7 +3,7 @@ php:
   - 5.4
 
 script:
- - ./.travis-generate-docs.sh
+ - bash .travis-generate-docs.sh
 
 before_script:
  - curl -O http://phpdoc.org/phpDocumentor.phar
