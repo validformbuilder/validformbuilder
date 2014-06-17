@@ -5,9 +5,9 @@ php phpDocumentor.phar
 
 echo "Going home $HOME"
 cd ~
-git config --global user.email "travis@travis-ci.org"
-git config --global user.name "travis-ci"
-git clone --branch=gh-pages https://github.com/neverwoods/validformbuilder.git gh-pages || exit 1
+git config --global user.email "robin@trainedby.ninja"
+git config --global user.name "Travis CI"
+git clone --branch=gh-pages https://${GH_TOKEN}:github.com/neverwoods/validformbuilder.git gh-pages > /dev/null 2>&1 || exit 1
 
 echo "Entering gh-pages"
 cd gh-pages/docs
@@ -23,8 +23,7 @@ cp -Rf $TRAVIS_BUILD_DIR/docs/* ./docs
 
 rm docs/placeholder #docs is filled, no need for placeholder anymore
 
-git add -all
-
+git add --all
 git commit -F- <<EOF
 Latest docs on successful travis build $TRAVIS_BUILD_NUMBER
 ValidForm Builder commit $TRAVIS_COMMIT
