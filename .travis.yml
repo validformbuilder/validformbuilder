@@ -5,6 +5,8 @@ script:
 - bash .travis-generate-docs.sh
 before_script:
 - curl -O http://phpdoc.org/phpDocumentor.phar
+- git config credential.helper "store --file=.git/credentials"
+- echo "https://${GH_TOKEN}:@github.com" > .git/credentials
 env:
   global:
     secure: g97xVnlPkycEV5A0Q90OTbnQwvqnY1yPCoYqBfDswRS8uOzNDWrbF/HsXB+affh16VcjMlKSZMwIyXwbkd0+IGvXqz6wQzHY6xPrPFhrnqgxY1eDewm+DNTiVyptI2hnABvqE7ZFQ0c85FD32CRnS82ph9LKyKDLK0m/ITN+8RY=
