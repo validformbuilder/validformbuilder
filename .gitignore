@@ -20,3 +20,14 @@
 /.settings/
 
 /phpDocumentor.phar
+
+/docs/build/
+/docs/classes/
+/docs/css/
+/docs/files/
+/docs/graphs/
+/docs/images/
+/docs/index.html
+/docs/js/
+/docs/namespaces/
+/docs/reports/
