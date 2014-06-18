@@ -66,8 +66,7 @@
         </span><pre>addArea()</pre></a></li>
 <li class="method public "><a href="#method_addButton" title="addButton() :: "><span class="description">addButton()
         </span><pre>addButton()</pre></a></li>
-<li class="method public "><a href="#method_addField" title="addField() :: "><span class="description">addField()
-        </span><pre>addField()</pre></a></li>
+<li class="method public "><a href="#method_addField" title="addField() :: Add a new element to the internal elements collection"><span class="description">Add a new element to the internal elements collection</span><pre>addField()</pre></a></li>
 <li class="method public "><a href="#method_addFieldset" title="addFieldset() :: Add a fieldset to the form field collection"><span class="description">Add a fieldset to the form field collection</span><pre>addFieldset()</pre></a></li>
 <li class="method public "><a href="#method_addHiddenField" title="addHiddenField() :: Add a hidden input field to the form collection."><span class="description">Add a hidden input field to the form collection.</span><pre>addHiddenField()</pre></a></li>
 <li class="method public "><a href="#method_addHtml" title="addHtml() :: Use addHtml to inject custom HTML code in the form."><span class="description">Use addHtml to inject custom HTML code in the form.</span><pre>addHtml()</pre></a></li>
@@ -300,20 +299,37 @@ $objForm = new ValidForm("cool_new_form", "Please fill out my cool form", "/awes
 </div></div>
 </div>
 <a id="method_addField"></a><div class="element clickable method public method_addField" data-toggle="collapse" data-target=".method_addField .collapse" title="public">
-<h2>addField()
-        </h2>
-<pre>addField($name, $label, $type, $validationRules<code> = array()</code>, $errorHandlers<code> = array()</code>, $meta<code> = array()</code>, $blnJustRender<code> = false</code>) </pre>
+<h2>Add a new element to the internal elements collection</h2>
+<pre>addField(string $name, string $label, \ValidFormBuilder\number $type, array $validationRules<code> = array()</code>, array $errorHandlers<code> = array()</code>, array $meta<code> = array()</code>, boolean $blnJustRender<code> = false</code>) : \ValidFormBuilder\Element</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
 <div class="long_description"></div>
 <h3>Parameters</h3>
-<div class="subelement argument"><h4>$name</h4></div>
-<div class="subelement argument"><h4>$label</h4></div>
-<div class="subelement argument"><h4>$type</h4></div>
-<div class="subelement argument"><h4>$validationRules</h4></div>
-<div class="subelement argument"><h4>$errorHandlers</h4></div>
-<div class="subelement argument"><h4>$meta</h4></div>
-<div class="subelement argument"><h4>$blnJustRender</h4></div>
+<div class="subelement argument">
+<h4>$name</h4>
+<code>string</code><p>The element's name</p></div>
+<div class="subelement argument">
+<h4>$label</h4>
+<code>string</code><p>The element's label</p></div>
+<div class="subelement argument">
+<h4>$type</h4>
+<code>\ValidFormBuilder\number</code><p>The element's validation type</p></div>
+<div class="subelement argument">
+<h4>$validationRules</h4>
+<code>array</code><p>Optional.Custom validation rules array</p></div>
+<div class="subelement argument">
+<h4>$errorHandlers</h4>
+<code>array</code><p>Custom error handling array</p></div>
+<div class="subelement argument">
+<h4>$meta</h4>
+<code>array</code><p>Optional. Meta data array</p></div>
+<div class="subelement argument">
+<h4>$blnJustRender</h4>
+<code>boolean</code><p>When true, the element is not added to the internal elements collection.
+<code>addField()</code> with <code>$blnJustRender</code> set to true is exactly the same as calling <code>ValidForm::renderField()</code></p></div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>\ValidFormBuilder\Element</code>Returns null when no valid type is defined</div>
 </div></div>
 </div>
 <a id="method_addFieldset"></a><div class="element clickable method public method_addFieldset" data-toggle="collapse" data-target=".method_addFieldset .collapse" title="public">
@@ -1188,7 +1204,7 @@ $objForm->setRequiredStyle("%s *");
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.4.0
 </a> and<br>
-            generated on 2014-06-18T03:06:36Z.<br></footer></div>
+            generated on 2014-06-18T03:08:20Z.<br></footer></div>
 </div>
 </body>
 </html>
