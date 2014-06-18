@@ -61,7 +61,7 @@
 <li class="nav-header">
 <i title="Methods" class="icon-custom icon-method"></i> Methods
                     <ul>
-<li class="method public "><a href="#method___construct" title="__construct() :: Create an instance of the ValidForm Builder"><span class="description">Create an instance of the ValidForm Builder</span><pre>__construct()</pre></a></li>
+<li class="method public "><a href="#method___construct" title="__construct() :: Create a new ValidForm Builder instance"><span class="description">Create a new ValidForm Builder instance</span><pre>__construct()</pre></a></li>
 <li class="method public "><a href="#method_addArea" title="addArea() :: "><span class="description">addArea()
         </span><pre>addArea()</pre></a></li>
 <li class="method public "><a href="#method_addButton" title="addButton() :: "><span class="description">addButton()
@@ -69,14 +69,15 @@
 <li class="method public "><a href="#method_addField" title="addField() :: "><span class="description">addField()
         </span><pre>addField()</pre></a></li>
 <li class="method public "><a href="#method_addFieldset" title="addFieldset() :: Add a fieldset to the form field collection"><span class="description">Add a fieldset to the form field collection</span><pre>addFieldset()</pre></a></li>
-<li class="method public "><a href="#method_addHiddenField" title="addHiddenField() :: "><span class="description">addHiddenField()
-        </span><pre>addHiddenField()</pre></a></li>
+<li class="method public "><a href="#method_addHiddenField" title="addHiddenField() :: Add a hidden input field to the form collection."><span class="description">Add a hidden input field to the form collection.</span><pre>addHiddenField()</pre></a></li>
 <li class="method public "><a href="#method_addHtml" title="addHtml() :: Use addHtml to inject custom HTML code in the form."><span class="description">Use addHtml to inject custom HTML code in the form.</span><pre>addHtml()</pre></a></li>
 <li class="method public "><a href="#method_addJSEvent" title="addJSEvent() :: "><span class="description">addJSEvent()
         </span><pre>addJSEvent()</pre></a></li>
 <li class="method public "><a href="#method_addMultiField" title="addMultiField() :: "><span class="description">addMultiField()
         </span><pre>addMultiField()</pre></a></li>
-<li class="method public "><a href="#method_addNavigation" title="addNavigation() :: Set the navigation of the form. Overides the default navigation (submit button)."><span class="description">Set the navigation of the form. Overides the default navigation (submit button).</span><pre>addNavigation()</pre></a></li>
+<li class="method public "><a href="#method_addNavigation" title="addNavigation() :: Add 'navigation' to the form. By navigation we mean a 'navigation div' at the buttom of the form containing
+the submit button. This method is optional for customization purposes -- navigation is created automatically."><span class="description">Add 'navigation' to the form. By navigation we mean a 'navigation div' at the buttom of the form containing
+the submit button. This method is optional for customization purposes -- navigation is created automatically.</span><pre>addNavigation()</pre></a></li>
 <li class="method public "><a href="#method_addParagraph" title="addParagraph() :: "><span class="description">addParagraph()
         </span><pre>addParagraph()</pre></a></li>
 <li class="method public "><a href="#method_fieldsToHtml" title="fieldsToHtml() :: "><span class="description">fieldsToHtml()
@@ -248,25 +249,28 @@ $objForm = new ValidForm("cool_new_form", "Please fill out my cool form", "/awes
 <h3>
 <i title="Methods" class="icon-custom icon-method"></i> Methods</h3>
 <a id="method___construct"></a><div class="element clickable method public method___construct" data-toggle="collapse" data-target=".method___construct .collapse" title="public">
-<h2>Create an instance of the ValidForm Builder</h2>
-<pre>__construct(string|null $name<code> = null</code>, string|null $description<code> = null</code>, string|null $action<code> = null</code>, array $meta<code> = array()</code>) </pre>
+<h2>Create a new ValidForm Builder instance</h2>
+<pre>__construct(string $name<code> = null</code>, string $description<code> = null</code>, string $action<code> = null</code>, array $meta<code> = array()</code>) : \ValidFormBuilder\ValidForm</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
 <div class="long_description"></div>
 <h3>Parameters</h3>
 <div class="subelement argument">
 <h4>$name</h4>
-<code>string</code><code>null</code><p>The name and id of the form in the HTML DOM and JavaScript.</p></div>
+<code>string</code><p>The form's name. This will also be the value of the name attribute in the generated HTML.
+<strong>Note</strong>: At this moment, it is mandatory to enter a name even though the API states that it is optional. Check
+<a href="https://github.com/neverwoods/validformbuilder/issues/8">issue 8</a> for more details.</p></div>
 <div class="subelement argument">
 <h4>$description</h4>
-<code>string</code><code>null</code><p>Desriptive text which is displayed above the form.</p></div>
+<code>string</code><p>Optional. A descriptive text shown above the form fields.</p></div>
 <div class="subelement argument">
 <h4>$action</h4>
-<code>string</code><code>null</code><p>Form action. If left empty the form will post to itself.</p></div>
+<code>string</code><p>The generated form element's <code>action</code> attribute.</p></div>
 <div class="subelement argument">
 <h4>$meta</h4>
-<code>array</code><p>Array with meta data. The array gets directly parsed into the form tag with the keys as
-           attribute names and the values as values.</p></div>
+<code>array</code><p>Custom form meta array</p></div>
+<h3>Returns</h3>
+<div class="subelement response"><code>\ValidFormBuilder\ValidForm</code></div>
 </div></div>
 </div>
 <a id="method_addArea"></a><div class="element clickable method public method_addArea" data-toggle="collapse" data-target=".method_addArea .collapse" title="public">
@@ -346,17 +350,30 @@ $objForm->addFieldset("
 </div></div>
 </div>
 <a id="method_addHiddenField"></a><div class="element clickable method public method_addHiddenField" data-toggle="collapse" data-target=".method_addHiddenField .collapse" title="public">
-<h2>addHiddenField()
-        </h2>
-<pre>addHiddenField($name, $type, $meta<code> = array()</code>, $blnJustRender<code> = false</code>) </pre>
+<h2>Add a hidden input field to the form collection.</h2>
+<pre>addHiddenField(string $name, string $type, array $meta<code> = array()</code>, boolean $blnJustRender<code> = false</code>) : \ValidFormBuilder\Hidden</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
 <div class="long_description"></div>
 <h3>Parameters</h3>
-<div class="subelement argument"><h4>$name</h4></div>
-<div class="subelement argument"><h4>$type</h4></div>
-<div class="subelement argument"><h4>$meta</h4></div>
-<div class="subelement argument"><h4>$blnJustRender</h4></div>
+<div class="subelement argument">
+<h4>$name</h4>
+<code>string</code><p>The hidden field's <code>name</code> attribute</p></div>
+<div class="subelement argument">
+<h4>$type</h4>
+<code>string</code><p>Define a validation type using one of the ValidForm::VFORM_ constants. This does <strong>not</strong>
+influence the fact that you're creating a hidden field. This is only used for validation of the hidden field's
+content.</p></div>
+<div class="subelement argument">
+<h4>$meta</h4>
+<code>array</code><p>Optional meta array</p></div>
+<div class="subelement argument">
+<h4>$blnJustRender</h4>
+<code>boolean</code><p>If true, only create a <code>\ValidFormBuilder\Hidden</code> instance and return it. When
+false, this <code>\ValidFormBuilder\Hidden</code> instance is added to the internal <code>elements</code> collection and will be
+parsed when <code>toHtml()</code> is called.</p></div>
+<h3>Returns</h3>
+<div class="subelement response"><code>\ValidFormBuilder\Hidden</code></div>
 </div></div>
 </div>
 <a id="method_addHtml"></a><div class="element clickable method public method_addHtml" data-toggle="collapse" data-target=".method_addHtml .collapse" title="public">
@@ -398,7 +415,8 @@ $objForm->addFieldset("
 </div></div>
 </div>
 <a id="method_addNavigation"></a><div class="element clickable method public method_addNavigation" data-toggle="collapse" data-target=".method_addNavigation .collapse" title="public">
-<h2>Set the navigation of the form. Overides the default navigation (submit button).</h2>
+<h2>Add 'navigation' to the form. By navigation we mean a 'navigation div' at the buttom of the form containing
+the submit button. This method is optional for customization purposes -- navigation is created automatically.</h2>
 <pre>addNavigation(array $meta<code> = array()</code>) : \ValidFormBuilder\Navigation</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
@@ -406,7 +424,7 @@ $objForm->addFieldset("
 <h3>Parameters</h3>
 <div class="subelement argument">
 <h4>$meta</h4>
-<code>array</code><p>Array with meta data. Only the "style" attribute is supported as of now</p></div>
+<code>array</code><p>Array with meta data. Only the "style" attribute is supported as for now.</p></div>
 <h3>Returns</h3>
 <div class="subelement response"><code>\ValidFormBuilder\Navigation</code></div>
 </div></div>
@@ -1157,7 +1175,7 @@ $objForm->setRequiredStyle("%s *");
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.4.0
 </a> and<br>
-            generated on 2014-06-18T02:43:48Z.<br></footer></div>
+            generated on 2014-06-18T02:56:47Z.<br></footer></div>
 </div>
 </body>
 </html>
