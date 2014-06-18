@@ -299,19 +299,16 @@ class ValidForm extends ClassDynamic
     private $__uniqueid;
 
     /**
+     * Create a new ValidForm Builder instance
      *
+     * @param string $name The form's name. This will also be the value of the name attribute in the generated HTML.
+     * **Note**: At this moment, it is mandatory to enter a name even though the API states that it is optional. Check
+     * [issue 8](https://github.com/neverwoods/validformbuilder/issues/8) for more details.
+     * @param string $description Optional. A descriptive text shown above the form fields.
+     * @param string $action The generated form element's `action` attribute.
+     * @param array $meta Custom form meta array
      *
-     * Create an instance of the ValidForm Builder
-     *
-     * @param string|null $name
-     *            The name and id of the form in the HTML DOM and JavaScript.
-     * @param string|null $description
-     *            Desriptive text which is displayed above the form.
-     * @param string|null $action
-     *            Form action. If left empty the form will post to itself.
-     * @param array $meta
-     *            Array with meta data. The array gets directly parsed into the form tag with the keys as
-     *            attribute names and the values as values.
+     * @return \ValidFormBuilder\ValidForm
      */
     public function __construct($name = null, $description = null, $action = null, $meta = array())
     {
