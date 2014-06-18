@@ -387,8 +387,9 @@ class ValidForm extends ClassDynamic
     }
 
     /**
-     * Set the navigation of the form. Overides the default navigation (submit button).
-     * @param array $meta Array with meta data. Only the "style" attribute is supported as of now
+     * Add 'navigation' to the form. By navigation we mean a 'navigation div' at the buttom of the form containing
+     * the submit button. This method is optional for customization purposes -- navigation is created automatically.
+     * @param array $meta Array with meta data. Only the "style" attribute is supported as for now.
      * @return \ValidFormBuilder\Navigation
      */
     public function addNavigation($meta = array())
@@ -422,6 +423,19 @@ class ValidForm extends ClassDynamic
         return $objFieldSet;
     }
 
+    /**
+     * Add a hidden input field to the form collection.
+     * @param string $name The hidden field's `name` attribute
+     * @param string $type Define a validation type using one of the ValidForm::VFORM_ constants. This does **not**
+     * influence the fact that you're creating a hidden field. This is only used for validation of the hidden field's
+     * content.
+     * @param array $meta Optional meta array
+     * @param boolean $blnJustRender If true, only create a `\ValidFormBuilder\Hidden` instance and return it. When
+     * false, this `\ValidFormBuilder\Hidden` instance is added to the internal `elements` collection and will be
+     * parsed when `toHtml()` is called.
+     *
+     * @return \ValidFormBuilder\Hidden
+     */
     public function addHiddenField($name, $type, $meta = array(), $blnJustRender = false)
     {
         $objField = new Hidden($name, $type, $meta);
