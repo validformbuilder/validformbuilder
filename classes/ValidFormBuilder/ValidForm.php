@@ -29,49 +29,223 @@ namespace ValidFormBuilder;
  * ```
  *
  * @package ValidForm
- * @author Felix Langfeldt, Robin van Baalen
- * @version Release: 0.2.7
+ * @author Felix Langfeldt <felix@neverwoods.com>
+ * @author Robin van Baalen <robin@neverwoods.com>
+ * @version 3.0.0
  *
  */
 class ValidForm extends ClassDynamic
 {
+    /**
+     * Input type[text] with standard string validation
+     * @var number
+     */
     const VFORM_STRING = 1;
+    /**
+     * Textarea element type
+     * @var number
+     */
     const VFORM_TEXT = 2;
+    /**
+     * Input type[text] with numeric validation
+     * @var number
+     */
     const VFORM_NUMERIC = 3;
+    /**
+     * Input type[text] with integer validation
+     * @var number
+     */
     const VFORM_INTEGER = 4;
+    /**
+     * Input type[text] with single word validation
+     * @var number
+     */
     const VFORM_WORD = 5;
+    /**
+     * Input type[text] with email validation
+     * @var number
+     */
     const VFORM_EMAIL = 6;
+    /**
+     * Input type[password]
+     * @var number
+     */
     const VFORM_PASSWORD = 7;
+    /**
+     * Input type[text] with basic URL validation
+     * @var number
+     */
     const VFORM_SIMPLEURL = 8;
+    /**
+     * Input type[file]
+     * @var number
+     */
     const VFORM_FILE = 9;
+    /**
+     * Input type[radio]
+     * @var number
+     */
     const VFORM_BOOLEAN = 10;
+    /**
+     * Input type[text] with numeric validation
+     * @deprecated Don't use VFORM_CAPTCHA. Captcha support is deprecated
+     * @var number
+     */
     const VFORM_CAPTCHA = 11;
+    /**
+     * Group element. Each added element is an input[type=radio]
+     * @var number
+     */
     const VFORM_RADIO_LIST = 12;
+    /**
+     * Group element. Each added element is an input[type=checkbox]
+     * @var number
+     */
     const VFORM_CHECK_LIST = 13;
+    /**
+     * Group element. Each added element is an option element
+     * @var number
+     */
     const VFORM_SELECT_LIST = 14;
+    /**
+     * Not an element. This creates a paragraph in between form fields.
+     * @var number
+     */
     const VFORM_PARAGRAPH = 15;
+    /**
+     * Input element
+     * @var number
+     */
     const VFORM_CURRENCY = 16;
+    /**
+     * Input type[text] with European date validation (dd/mm/yyyy)
+     * @var number
+     */
     const VFORM_DATE = 17;
+    /**
+     * Input type[text] with custom regular expression validation
+     * @var number
+     */
     const VFORM_CUSTOM = 18;
+    /**
+     * Textarea with custom regular expression validation
+     * @var number
+     */
     const VFORM_CUSTOM_TEXT = 19;
+    /**
+     * Textarea with basic input validation + HTML tags allowed
+     * @var number
+     */
     const VFORM_HTML = 20;
+    /**
+     * Input type[text] with url validation
+     * @var number
+     */
     const VFORM_URL = 21;
+    /**
+     * Input type[hidden]
+     * @var number
+     */
     const VFORM_HIDDEN = 22;
 
+    /**
+     * ValidForm Comparison type.
+     *
+     * Check if this value is equal (case insensitive)
+     * @var string
+     */
     const VFORM_COMPARISON_EQUAL = "equal";
+    /**
+     * ValidForm Comparison type.
+     *
+     * Check if this value is **not** equal (case insensitive)
+     * @var string
+     */
     const VFORM_COMPARISON_NOT_EQUAL = "notequal";
+    /**
+     * ValidForm Comparison type.
+     *
+     * Check if this value is empty
+     * @var string
+     */
     const VFORM_COMPARISON_EMPTY = "empty";
+    /**
+     * ValidForm Comparison type.
+     *
+     * Check if this value is **not** empty
+     * @var string
+     */
     const VFORM_COMPARISON_NOT_EMPTY = "notempty";
+    /**
+     * ValidForm Comparison type.
+     *
+     * Check if this value is less than
+     * @var string
+     */
     const VFORM_COMPARISON_LESS_THAN = "lessthan";
+    /**
+     * ValidForm Comparison type.
+     *
+     * Check if this value is greater than
+     * @var string
+     */
     const VFORM_COMPARISON_GREATER_THAN = "greaterthan";
+    /**
+     * ValidForm Comparison type.
+     *
+     * Check if this value is less than or equal
+     * @var string
+     */
     const VFORM_COMPARISON_LESS_THAN_OR_EQUAL = "lessthanorequal";
+    /**
+     * ValidForm Comparison type.
+     *
+     * Check if this value is greater than or equal
+     * @var string
+     */
     const VFORM_COMPARISON_GREATER_THAN_OR_EQUAL = "greaterthanorequal";
+    /**
+     * ValidForm Comparison type.
+     *
+     * Check if the value contains this string (case insensitive)
+     * @var string
+     */
     const VFORM_COMPARISON_CONTAINS = "contains";
+    /**
+     * ValidForm Comparison type.
+     *
+     * Check if the value **starts** with this string
+     * @var string
+     */
     const VFORM_COMPARISON_STARTS_WITH = "startswith";
+    /**
+     * ValidForm Comparison type.
+     *
+     * Check if the value **ends** with this string
+     * @var string
+     */
     const VFORM_COMPARISON_ENDS_WITH = "endswith";
+    /**
+     * ValidForm Comparison type.
+     *
+     * Check if the value matches your own custom regular expression
+     * @var string
+     */
     const VFORM_COMPARISON_REGEX = "regex";
 
+    /**
+     * ValidForm Condition match
+     *
+     * Match **all** of the defined conditions
+     * @var string
+     */
     const VFORM_MATCH_ALL = "all";
+    /**
+     * ValidForm Condition match
+     *
+     * Match **any** of the defined conditions
+     * @var string
+     */
     const VFORM_MATCH_ANY = "any";
 
     /**
@@ -979,7 +1153,7 @@ class ValidForm extends ClassDynamic
 
         $strCalledClass = static::getStrippedClassName(get_called_class());
         $strArguments = (count($arrInitArguments) > 0) ? "\"{$this->__name}\", \"{$this->__mainalert}\", " . json_encode($arrInitArguments) : "\"{$this->__name}\", \"{$this->__mainalert}\"";
-        
+
         if ($strCalledClass !== "ValidForm") {
             $strReturn .= "\tvar objForm = (typeof {$strCalledClass} !== \"undefined\") ? new {$strCalledClass}({$strArguments}) : new ValidForm(\"{$this->__name}\", \"{$this->__mainalert}\");\n";
         } else {
