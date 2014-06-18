@@ -26,6 +26,6 @@
         <level>error</level>
     </logging>
     <transformations>
-        <template name="responsive"/>
+        <template name="clean"/>
     </transformations>
 </phpdocumentor>
