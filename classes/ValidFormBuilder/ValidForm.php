@@ -456,6 +456,19 @@ class ValidForm extends ClassDynamic
         return $objField;
     }
 
+    /**
+     * Use this utility method to only render \ValidFormBuilder\Element instances of the defined types.
+     *
+     * Elements rendered with this method aren't added to the internal elements collection.
+     * @param string $name The element's name
+     * @param string $label The element's label
+     * @param number $type The element's validation type
+     * @param array $validationRules Optional.Custom validation rules array
+     * @param array $errorHandlers Custom error handling array
+     * @param array $meta Optional. Meta data array
+     *
+     * @return \ValidFormBuilder\Element Returns null when no valid type is defined
+     */
     public static function renderField($name, $label, $type, $validationRules, $errorHandlers, $meta)
     {
         $objField = null;
