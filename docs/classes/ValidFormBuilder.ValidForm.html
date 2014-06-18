@@ -77,8 +77,7 @@
 <li class="method public "><a href="#method_addNavigation" title="addNavigation() :: Add 'navigation' to the form. By navigation we mean a 'navigation div' at the buttom of the form containing
 the submit button. This method is optional for customization purposes -- navigation is created automatically."><span class="description">Add 'navigation' to the form. By navigation we mean a 'navigation div' at the buttom of the form containing
 the submit button. This method is optional for customization purposes -- navigation is created automatically.</span><pre>addNavigation()</pre></a></li>
-<li class="method public "><a href="#method_addParagraph" title="addParagraph() :: "><span class="description">addParagraph()
-        </span><pre>addParagraph()</pre></a></li>
+<li class="method public "><a href="#method_addParagraph" title="addParagraph() :: Adds a \ValidFormBuilder\Paragraph object to the internal elements collection."><span class="description">Adds a \ValidFormBuilder\Paragraph object to the internal elements collection.</span><pre>addParagraph()</pre></a></li>
 <li class="method public "><a href="#method_fieldsToHtml" title="fieldsToHtml() :: "><span class="description">fieldsToHtml()
         </span><pre>fieldsToHtml()</pre></a></li>
 <li class="method public "><a href="#method_fieldsetAsHtml" title="fieldsetAsHtml() :: "><span class="description">fieldsetAsHtml()
@@ -445,16 +444,33 @@ the submit button. This method is optional for customization purposes -- navigat
 </div></div>
 </div>
 <a id="method_addParagraph"></a><div class="element clickable method public method_addParagraph" data-toggle="collapse" data-target=".method_addParagraph .collapse" title="public">
-<h2>addParagraph()
-        </h2>
-<pre>addParagraph($strBody, $strHeader<code> = ""</code>, $meta<code> = array()</code>) </pre>
+<h2>Adds a \ValidFormBuilder\Paragraph object to the internal elements collection.</h2>
+<pre>addParagraph(\ValidFormBuilder\unknown $strBody, string $strHeader<code> = ""</code>, \ValidFormBuilder\unknown $meta<code> = array()</code>) : \ValidFormBuilder\Paragraph</pre>
 <div class="labels"></div>
 <div class="row collapse"><div class="detail-description">
-<div class="long_description"></div>
+<div class="long_description">This renders a paragraph inside the form. Formfields can be added before and after the paragraph.
+**Example:**
+
+```
+$objForm->addField("name", "Your Name", ValidForm::VFORM_STRING);
+$objForm->addParagraph("Next, you should enter your last name.", "Enter your name!");
+$objForm->addField("last-name", "Last Name", ValidForm::VFORM_STRING);
+```</div>
 <h3>Parameters</h3>
-<div class="subelement argument"><h4>$strBody</h4></div>
-<div class="subelement argument"><h4>$strHeader</h4></div>
-<div class="subelement argument"><h4>$meta</h4></div>
+<div class="subelement argument">
+<h4>$strBody</h4>
+<code>\ValidFormBuilder\unknown</code>
+</div>
+<div class="subelement argument">
+<h4>$strHeader</h4>
+<code>string</code>
+</div>
+<div class="subelement argument">
+<h4>$meta</h4>
+<code>\ValidFormBuilder\unknown</code>
+</div>
+<h3>Returns</h3>
+<div class="subelement response"><code>\ValidFormBuilder\Paragraph</code></div>
 </div></div>
 </div>
 <a id="method_fieldsToHtml"></a><div class="element clickable method public method_fieldsToHtml" data-toggle="collapse" data-target=".method_fieldsToHtml .collapse" title="public">
@@ -1204,7 +1220,7 @@ $objForm->setRequiredStyle("%s *");
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.4.0
 </a> and<br>
-            generated on 2014-06-18T03:08:34Z.<br></footer></div>
+            generated on 2014-06-18T03:18:36Z.<br></footer></div>
 </div>
 </body>
 </html>
