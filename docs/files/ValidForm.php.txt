@@ -568,9 +568,9 @@ class ValidForm extends ClassDynamic
      * $objForm->addField("last-name", "Last Name", ValidForm::VFORM_STRING);
      * ```
      *
-     * @param unknown $strBody
-     * @param string $strHeader
-     * @param unknown $meta
+     * @param string $strBody Paragraph body
+     * @param string $strHeader Optional header above the paragraph
+     * @param array $meta Custom meta array
      * @return \ValidFormBuilder\Paragraph
      */
     public function addParagraph($strBody, $strHeader = "", $meta = array())
