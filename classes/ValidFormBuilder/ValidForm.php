@@ -520,6 +520,20 @@ class ValidForm extends ClassDynamic
         return $objField;
     }
 
+    /**
+     * Add a new element to the internal elements collection
+     *
+     * @param string $name The element's name
+     * @param string $label The element's label
+     * @param number $type The element's validation type
+     * @param array $validationRules Optional.Custom validation rules array
+     * @param array $errorHandlers Custom error handling array
+     * @param array $meta Optional. Meta data array
+     * @param boolean $blnJustRender When true, the element is not added to the internal elements collection.
+     * `addField()` with `$blnJustRender` set to true is exactly the same as calling `ValidForm::renderField()`
+     *
+     * @return \ValidFormBuilder\Element Returns null when no valid type is defined
+     */
     public function addField($name, $label, $type, $validationRules = array(), $errorHandlers = array(), $meta = array(), $blnJustRender = false)
     {
         $objField = static::renderField($name, $label, $type, $validationRules, $errorHandlers, $meta);
