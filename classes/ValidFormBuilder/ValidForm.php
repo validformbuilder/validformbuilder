@@ -149,85 +149,61 @@ class ValidForm extends ClassDynamic
     const VFORM_HIDDEN = 22;
 
     /**
-     * ValidForm Comparison type.
-     *
      * Check if this value is equal (case insensitive)
      * @var string
      */
     const VFORM_COMPARISON_EQUAL = "equal";
     /**
-     * ValidForm Comparison type.
-     *
      * Check if this value is **not** equal (case insensitive)
      * @var string
      */
     const VFORM_COMPARISON_NOT_EQUAL = "notequal";
     /**
-     * ValidForm Comparison type.
-     *
      * Check if this value is empty
-     * @var string
+     * @var stringq
      */
     const VFORM_COMPARISON_EMPTY = "empty";
     /**
-     * ValidForm Comparison type.
-     *
      * Check if this value is **not** empty
      * @var string
      */
     const VFORM_COMPARISON_NOT_EMPTY = "notempty";
     /**
-     * ValidForm Comparison type.
-     *
      * Check if this value is less than
      * @var string
      */
     const VFORM_COMPARISON_LESS_THAN = "lessthan";
     /**
-     * ValidForm Comparison type.
-     *
      * Check if this value is greater than
      * @var string
      */
     const VFORM_COMPARISON_GREATER_THAN = "greaterthan";
     /**
-     * ValidForm Comparison type.
-     *
      * Check if this value is less than or equal
      * @var string
      */
     const VFORM_COMPARISON_LESS_THAN_OR_EQUAL = "lessthanorequal";
     /**
-     * ValidForm Comparison type.
-     *
      * Check if this value is greater than or equal
      * @var string
      */
     const VFORM_COMPARISON_GREATER_THAN_OR_EQUAL = "greaterthanorequal";
     /**
-     * ValidForm Comparison type.
-     *
      * Check if the value contains this string (case insensitive)
      * @var string
      */
     const VFORM_COMPARISON_CONTAINS = "contains";
     /**
-     * ValidForm Comparison type.
-     *
      * Check if the value **starts** with this string
      * @var string
      */
     const VFORM_COMPARISON_STARTS_WITH = "startswith";
     /**
-     * ValidForm Comparison type.
-     *
      * Check if the value **ends** with this string
      * @var string
      */
     const VFORM_COMPARISON_ENDS_WITH = "endswith";
     /**
-     * ValidForm Comparison type.
-     *
      * Check if the value matches your own custom regular expression
      * @var string
      */
