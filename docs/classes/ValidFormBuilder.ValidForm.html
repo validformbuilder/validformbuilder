@@ -106,8 +106,7 @@ vf__dispatch field."><span class="description">Check if the form is submitted by
 vf__dispatch field.</span><pre>isSubmitted()</pre></a></li>
 <li class="method public "><a href="#method_isValid" title="isValid() :: "><span class="description">isValid()
         </span><pre>isValid()</pre></a></li>
-<li class="method public "><a href="#method_renderField" title="renderField() :: "><span class="description">renderField()
-        </span><pre>renderField()</pre></a></li>
+<li class="method public "><a href="#method_renderField" title="renderField() :: Use this utility method to only render \ValidFormBuilder\Element instances of the defined types."><span class="description">Use this utility method to only render \ValidFormBuilder\Element instances of the defined types.</span><pre>renderField()</pre></a></li>
 <li class="method public "><a href="#method_serialize" title="serialize() :: Serialize, compress and encode the entire form including it's values"><span class="description">Serialize, compress and encode the entire form including it's values</span><pre>serialize()</pre></a></li>
 <li class="method public "><a href="#method_setDefaults" title="setDefaults() :: Use an array to set default values on all the forms children."><span class="description">Use an array to set default values on all the forms children.</span><pre>setDefaults()</pre></a></li>
 <li class="method public "><a href="#method_toHtml" title="toHtml() :: Generate HTML output - build form"><span class="description">Generate HTML output - build form</span><pre>toHtml()</pre></a></li>
@@ -568,19 +567,33 @@ vf__dispatch field.</h2>
 <div class="row collapse"><div class="detail-description"><div class="long_description"></div></div></div>
 </div>
 <a id="method_renderField"></a><div class="element clickable method public method_renderField" data-toggle="collapse" data-target=".method_renderField .collapse" title="public">
-<h2>renderField()
-        </h2>
-<pre>renderField($name, $label, $type, $validationRules, $errorHandlers, $meta) </pre>
+<h2>Use this utility method to only render \ValidFormBuilder\Element instances of the defined types.</h2>
+<pre>renderField(string $name, string $label, \ValidFormBuilder\number $type, array $validationRules, array $errorHandlers, array $meta) : \ValidFormBuilder\Element</pre>
 <div class="labels"><span class="label">Static</span></div>
 <div class="row collapse"><div class="detail-description">
-<div class="long_description"></div>
+<div class="long_description">Elements rendered with this method aren't added to the internal elements collection.</div>
 <h3>Parameters</h3>
-<div class="subelement argument"><h4>$name</h4></div>
-<div class="subelement argument"><h4>$label</h4></div>
-<div class="subelement argument"><h4>$type</h4></div>
-<div class="subelement argument"><h4>$validationRules</h4></div>
-<div class="subelement argument"><h4>$errorHandlers</h4></div>
-<div class="subelement argument"><h4>$meta</h4></div>
+<div class="subelement argument">
+<h4>$name</h4>
+<code>string</code><p>The element's name</p></div>
+<div class="subelement argument">
+<h4>$label</h4>
+<code>string</code><p>The element's label</p></div>
+<div class="subelement argument">
+<h4>$type</h4>
+<code>\ValidFormBuilder\number</code><p>The element's validation type</p></div>
+<div class="subelement argument">
+<h4>$validationRules</h4>
+<code>array</code><p>Optional.Custom validation rules array</p></div>
+<div class="subelement argument">
+<h4>$errorHandlers</h4>
+<code>array</code><p>Custom error handling array</p></div>
+<div class="subelement argument">
+<h4>$meta</h4>
+<code>array</code><p>Optional. Meta data array</p></div>
+<h3>Returns</h3>
+<div class="subelement response">
+<code>\ValidFormBuilder\Element</code>Returns null when no valid type is defined</div>
 </div></div>
 </div>
 <a id="method_serialize"></a><div class="element clickable method public method_serialize" data-toggle="collapse" data-target=".method_serialize .collapse" title="public">
@@ -1175,7 +1188,7 @@ $objForm->setRequiredStyle("%s *");
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by <a href="http://glyphicons.com/">Glyphicons</a>.<br>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor 2.4.0
 </a> and<br>
-            generated on 2014-06-18T02:56:50Z.<br></footer></div>
+            generated on 2014-06-18T03:05:53Z.<br></footer></div>
 </div>
 </body>
 </html>
