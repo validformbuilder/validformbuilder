@@ -556,6 +556,23 @@ class ValidForm extends ClassDynamic
         return $objField;
     }
 
+    /**
+     * Adds a \ValidFormBuilder\Paragraph object to the internal elements collection.
+     *
+     * This renders a paragraph inside the form. Formfields can be added before and after the paragraph.
+     * **Example:**
+     *
+     * ```
+     * $objForm->addField("name", "Your Name", ValidForm::VFORM_STRING);
+     * $objForm->addParagraph("Next, you should enter your last name.", "Enter your name!");
+     * $objForm->addField("last-name", "Last Name", ValidForm::VFORM_STRING);
+     * ```
+     *
+     * @param unknown $strBody
+     * @param string $strHeader
+     * @param unknown $meta
+     * @return \ValidFormBuilder\Paragraph
+     */
     public function addParagraph($strBody, $strHeader = "", $meta = array())
     {
         $objParagraph = new Paragraph($strHeader, $strBody, $meta);
