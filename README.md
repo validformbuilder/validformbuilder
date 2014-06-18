@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/neverwoods/validformbuilder.png)](https://travis-ci.org/simkimsia/UtilityBehaviors)
+[![Build Status](https://travis-ci.org/neverwoods/validformbuilder.svg?branch=wip-new-documentation)](https://travis-ci.org/neverwoods/validformbuilder)
 
 ValidForm Builder
 ================
