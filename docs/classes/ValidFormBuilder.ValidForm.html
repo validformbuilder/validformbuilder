@@ -114,7 +114,7 @@
                         <ul class="dropdown-menu">
                             <li>
                                 <a href="../reports/errors.html">
-                                                                                                                                                                                                                                                                    <i class="icon-list-alt"></i>&#160;Errors <span class="label label-info pull-right">57</span>
+                                                                                                                                                                                                                                                                    <i class="icon-list-alt"></i>&#160;Errors <span class="label label-info pull-right">48</span>
                                 </a>
                             </li>
                             <li>
@@ -144,19 +144,19 @@
                                 <div class="accordion" style="margin-bottom: 0">
         <div class="accordion-group">
             <div class="accordion-heading">
-                                    <a class="accordion-toggle " data-toggle="collapse" data-target="#namespace-2137616931"></a>
+                                    <a class="accordion-toggle " data-toggle="collapse" data-target="#namespace-1768454530"></a>
                                 <a href="../namespaces/default.html" style="margin-left: 30px; padding-left: 0">\</a>
             </div>
-            <div id="namespace-2137616931" class="accordion-body collapse in">
+            <div id="namespace-1768454530" class="accordion-body collapse in">
                 <div class="accordion-inner">
 
                                                     <div class="accordion" style="margin-bottom: 0">
         <div class="accordion-group">
             <div class="accordion-heading">
-                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-157810960"></a>
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-1718202615"></a>
                                 <a href="../namespaces/ValidFormBuilder.html" style="margin-left: 30px; padding-left: 0">ValidFormBuilder</a>
             </div>
-            <div id="namespace-157810960" class="accordion-body collapse ">
+            <div id="namespace-1718202615" class="accordion-body collapse ">
                 <div class="accordion-inner">
 
                     
@@ -2172,7 +2172,20 @@ parsed when <code>toHtml()</code> is called.</p></td>
                 <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
                 <pre class="signature" style="margin-right: 54px;">addField(string <span class="argument">$name</span>, string <span class="argument">$label</span>, \ValidFormBuilder\number <span class="argument">$type</span>, array <span class="argument">$validationRules</span>, array <span class="argument">$errorHandlers</span>, array <span class="argument">$meta</span>, boolean <span class="argument">$blnJustRender</span>) : \ValidFormBuilder\Element</pre>
                 <p><em>Add a new element to the internal elements collection</em></p>
-                
+                <p><em>Example; add a text field</em>:</p>
+<pre><code>$objForm-&gt;addField(
+    "first-name",
+    "First name",
+    ValidForm::VFORM_STRING,
+    array(
+        // Make this field required
+        "required" =&gt; true
+    ),
+    array(
+        // Show this error to indicate this is an required field if no value is submitted
+        "required" =&gt; "This field is required"
+    )
+);</code></pre>
 
                                     <h4>Parameters</h4>
                     <table class="table table-condensed table-hover">
@@ -2352,41 +2365,73 @@ For example, you can add a custom class property to the button like this:</p>
             <article class="method">
                 <h3 class="public ">addArea()</h3>
                 <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
-                <pre class="signature" style="margin-right: 54px;">addArea( <span class="argument">$label</span>,  <span class="argument">$active</span>,  <span class="argument">$name</span>,  <span class="argument">$checked</span>,  <span class="argument">$meta</span>)</pre>
-                <p><em></em></p>
-                
+                <pre class="signature" style="margin-right: 54px;">addArea(string <span class="argument">$label</span>, string <span class="argument">$active</span>, string <span class="argument">$name</span>, string <span class="argument">$checked</span>, array <span class="argument">$meta</span>) : \ValidFormBuilder\Area</pre>
+                <p><em>Add an area to the internal elements collection.</em></p>
+                <p>An area is about the same as a fieldset but an Area has more interactive options like the 'active'
+property or even the 'dynamic' meta. Using the 'active' property, the area gets a label and checkbox
+which activates or disables all the fields inside this area.</p>
+<p><em>Example 1: Active area</em></p>
+<pre><code>$objArea = $objForm-&gt;addArea("Disable fields", true, "fields-disabled");
+$objArea-&gt;addField(
+    "first-name",
+    "First name",
+    ValidForm::VFORM_STRING,
+    array(
+        // Make this field required
+        "required" =&gt; true
+    ),
+    array(
+        // Show this error to indicate this is an required field if no value is submitted
+        "required" =&gt; "This field is required"
+    )
+);
+$objArea-&gt;addField(
+    "last-name",
+    "Last name",
+    ValidForm::VFORM_STRING,
+    array(
+        // Make this field required
+        "required" =&gt; true
+    ),
+    array(
+        // Show this error to indicate this is an required field if no value is submitted
+        "required" =&gt; "This field is required"
+    )
+);</code></pre>
 
                                     <h4>Parameters</h4>
                     <table class="table table-condensed table-hover">
                                                     <tr>
-                                <td></td>
+                                <td>string</td>
                                 <td>$label </td>
-                                <td></td>
+                                <td><p>The title of this area</p></td>
                             </tr>
                                                     <tr>
-                                <td></td>
+                                <td>string</td>
                                 <td>$active </td>
-                                <td></td>
+                                <td><p>If true, the title has a checkbox which can enable or disable all child elements</p></td>
                             </tr>
                                                     <tr>
-                                <td></td>
+                                <td>string</td>
                                 <td>$name </td>
-                                <td></td>
+                                <td><p>The ID of this area</p></td>
                             </tr>
                                                     <tr>
-                                <td></td>
+                                <td>string</td>
                                 <td>$checked </td>
-                                <td></td>
+                                <td><p>Use in combination with $active; if true, the checkbox will be checked by default</p></td>
                             </tr>
                                                     <tr>
-                                <td></td>
+                                <td>array</td>
                                 <td>$meta </td>
-                                <td></td>
+                                <td><p>The meta array</p></td>
                             </tr>
                                             </table>
                 
                 
-                            </article>
+                                    <h4>Returns</h4>
+                    <a href="../classes/ValidFormBuilder.Area.html">\ValidFormBuilder\Area</a>
+                                                </article>
         </div>
         <aside class="span4 detailsbar">
             <h1><i class="icon-arrow-down"></i></h1>
@@ -2411,26 +2456,77 @@ For example, you can add a custom class property to the button like this:</p>
             <article class="method">
                 <h3 class="public ">addMultiField()</h3>
                 <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
-                <pre class="signature" style="margin-right: 54px;">addMultiField( <span class="argument">$label</span>,  <span class="argument">$meta</span>)</pre>
-                <p><em></em></p>
-                
+                <pre class="signature" style="margin-right: 54px;">addMultiField(string <span class="argument">$label</span>, array <span class="argument">$meta</span>) : \ValidFormBuilder\MultiField</pre>
+                <p><em>Create a Multifield element</em></p>
+                <p>Multifield elements allow you to combine multiple fields horizontally with one label.
+For example, create a first name + last name field with label "Full name"</p>
+<pre><code class="language-php">$objMulti = $objForm-&gt;addMultifield("Full name");
+// Note: when using addField on a multifield, we don't set a label!
+$objMulti-&gt;addField(
+    "first-name",
+    ValidForm::VFORM_STRING,
+    array(),
+    array(),
+    // Keep it short, this is just a first name field
+    array("style" =&gt; "width: 50px")
+);
+$objMulti-&gt;addField("last-name", ValidForm::VFORM_STRING);</code></pre>
+<p>You can also combine select elements to create a date picker:</p>
+<pre><code class="language-php">$objMulti = $objForm-&gt;addMultiField("Birthdate");
+$objMulti-&gt;addField(
+    "year",
+    ValidForm::VFORM_SELECT_LIST,
+    array(),
+    array(),
+    array(
+        "start" =&gt; 1920,
+        "end" =&gt; 2014,
+        // 'fieldstyle' gets applied on the &lt;select&gt;
+        // regular 'style' applies on the wrapping &lt;div&gt;
+        "fieldstyle" =&gt; "width: 75px"
+    )
+);
+$objMulti-&gt;addField(
+    "month",
+    ValidForm::VFORM_SELECT_LIST,
+    array(),
+    array(),
+    array(
+        "start" =&gt; 01,
+        "end" =&gt; 12,
+        "fieldstyle" =&gt; "width: 75px"
+    )
+);
+$objMulti-&gt;addField(
+    "day",
+    ValidForm::VFORM_SELECT_LIST,
+    array(),
+    array(),
+    array(
+        "start" =&gt; 1,
+        "end" =&gt; 31,
+        "fieldstyle" =&gt; "width: 75px"
+    )
+);</code></pre>
 
                                     <h4>Parameters</h4>
                     <table class="table table-condensed table-hover">
                                                     <tr>
-                                <td></td>
+                                <td>string</td>
                                 <td>$label </td>
                                 <td></td>
                             </tr>
                                                     <tr>
-                                <td></td>
+                                <td>array</td>
                                 <td>$meta </td>
-                                <td></td>
+                                <td><p>The meta array</p></td>
                             </tr>
                                             </table>
                 
                 
-                            </article>
+                                    <h4>Returns</h4>
+                    \ValidFormBuilder\MultiField
+                                                </article>
         </div>
         <aside class="span4 detailsbar">
             <h1><i class="icon-arrow-down"></i></h1>
@@ -3584,7 +3680,7 @@ an expensive getFields() call and looping through all elements</em></p>
                 <section class="span10 offset1">
                     <hr />
                     Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor </a> and authored
-                    on June 22nd, 2014 at 02:57.
+                    on June 22nd, 2014 at 04:09.
                 </section>
             </section>
         </section>

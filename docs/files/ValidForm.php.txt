@@ -532,6 +532,23 @@ class ValidForm extends ClassDynamic
     /**
      * Add a new element to the internal elements collection
      *
+     * *Example; add a text field*:
+     * ```
+     * $objForm->addField(
+     *     "first-name",
+     *     "First name",
+     *     ValidForm::VFORM_STRING,
+     *     array(
+     *         // Make this field required
+     *         "required" => true
+     *     ),
+     *     array(
+     *         // Show this error to indicate this is an required field if no value is submitted
+     *         "required" => "This field is required"
+     *     )
+     * );
+     * ```
+     *
      * @param string $name The element's name
      * @param string $label The element's label
      * @param number $type The element's validation type
@@ -638,6 +655,52 @@ class ValidForm extends ClassDynamic
         return $objButton;
     }
 
+    /**
+     * Add an area to the internal elements collection.
+     *
+     * An area is about the same as a fieldset but an Area has more interactive options like the 'active'
+     * property or even the 'dynamic' meta. Using the 'active' property, the area gets a label and checkbox
+     * which activates or disables all the fields inside this area.
+     *
+     * *Example 1: Active area*
+     * ```
+     * $objArea = $objForm->addArea("Disable fields", true, "fields-disabled");
+     * $objArea->addField(
+     *     "first-name",
+     *     "First name",
+     *     ValidForm::VFORM_STRING,
+     *     array(
+     *         // Make this field required
+     *         "required" => true
+     *     ),
+     *     array(
+     *         // Show this error to indicate this is an required field if no value is submitted
+     *         "required" => "This field is required"
+     *     )
+     * );
+     * $objArea->addField(
+     *     "last-name",
+     *     "Last name",
+     *     ValidForm::VFORM_STRING,
+     *     array(
+     *         // Make this field required
+     *         "required" => true
+     *     ),
+     *     array(
+     *         // Show this error to indicate this is an required field if no value is submitted
+     *         "required" => "This field is required"
+     *     )
+     * );
+     * ```
+     *
+     * @param string $label The title of this area
+     * @param string $active If true, the title has a checkbox which can enable or disable all child elements
+     * @param string $name The ID of this area
+     * @param string $checked Use in combination with $active; if true, the checkbox will be checked by default
+     * @param array $meta The meta array
+     *
+     * @return \ValidFormBuilder\Area
+     */
     public function addArea($label = null, $active = false, $name = null, $checked = false, $meta = array())
     {
         $objArea = new Area($label, $active, $name, $checked, $meta);
@@ -647,6 +710,7 @@ class ValidForm extends ClassDynamic
         // *** Fieldset already defined?
         $objFieldset = $this->__elements->getLast("ValidFormBuilder\\Fieldset");
         if ($this->__elements->count() == 0 || ! is_object($objFieldset)) {
+            // No fieldset found in the elements collection, add a fieldset.
             $objFieldset = $this->addFieldset();
         }
 
@@ -658,6 +722,71 @@ class ValidForm extends ClassDynamic
         return $objArea;
     }
 
+    /**
+     * Create a Multifield element
+     *
+     * Multifield elements allow you to combine multiple fields horizontally with one label.
+     * For example, create a first name + last name field with label "Full name"
+     *
+     * ```php
+     * $objMulti = $objForm->addMultifield("Full name");
+     * // Note: when using addField on a multifield, we don't set a label!
+     * $objMulti->addField(
+     *     "first-name",
+     *     ValidForm::VFORM_STRING,
+     *     array(),
+     *     array(),
+     *     // Keep it short, this is just a first name field
+     *     array("style" => "width: 50px")
+     * );
+     * $objMulti->addField("last-name", ValidForm::VFORM_STRING);
+     * ```
+     *
+     * You can also combine select elements to create a date picker:
+     *
+     * ```php
+     * $objMulti = $objForm->addMultiField("Birthdate");
+     * $objMulti->addField(
+     *     "year",
+     *     ValidForm::VFORM_SELECT_LIST,
+     *     array(),
+     *     array(),
+     *     array(
+     *         "start" => 1920,
+     *         "end" => 2014,
+     *         // 'fieldstyle' gets applied on the <select>
+     *         // regular 'style' applies on the wrapping <div>
+     *         "fieldstyle" => "width: 75px"
+     *     )
+     * );
+     * $objMulti->addField(
+     *     "month",
+     *     ValidForm::VFORM_SELECT_LIST,
+     *     array(),
+     *     array(),
+     *     array(
+     *         "start" => 01,
+     *         "end" => 12,
+     *         "fieldstyle" => "width: 75px"
+     *     )
+     * );
+     * $objMulti->addField(
+     *     "day",
+     *     ValidForm::VFORM_SELECT_LIST,
+     *     array(),
+     *     array(),
+     *     array(
+     *         "start" => 1,
+     *         "end" => 31,
+     *         "fieldstyle" => "width: 75px"
+     *     )
+     * );
+     * ```
+     *
+     * @param string $label
+     * @param array $meta The meta array
+     * @return \ValidFormBuilder\MultiField
+     */
     public function addMultiField($label = null, $meta = array())
     {
         $objField = new MultiField($label, $meta);
