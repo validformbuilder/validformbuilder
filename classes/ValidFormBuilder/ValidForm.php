@@ -369,7 +369,11 @@ class ValidForm extends ClassDynamic
         if (is_array($arrDefaults)) {
             $this->__defaults = $arrDefaults;
         } else {
-            throw new \InvalidArgumentException("Invalid argument passed in to ValidForm->setDefaults(). Expected array got " . gettype($arrDefaults), E_ERROR);
+            throw new \InvalidArgumentException(
+                "Invalid argument passed in to ValidForm->setDefaults(). Expected array got " .
+                gettype($arrDefaults),
+                E_ERROR
+            );
         }
     }
 
@@ -406,16 +410,17 @@ class ValidForm extends ClassDynamic
      * Example:
      * ```
      * <?php
-     * $objForm->addFieldset("
+     * $objForm->addFieldset("Header for fieldset", "Note", "Cool fields contained by fieldset.");
      * ?>
      * ```
-     * @param string $label
-     * @param string $noteHeader
-     * @param string $noteBody
-     * @param unknown $meta
+     * @param string $header The header for this fieldset
+     * @param string $noteHeader An optional header for the 'note' block on the side of this fieldset
+     * @param string $noteBody The optional body for the 'note block on the side of this fieldset
+     * @param array $meta The meta array
+     *
      * @return \ValidFormBuilder\Fieldset
      */
-    public function addFieldset($label = null, $noteHeader = null, $noteBody = null, $meta = array())
+    public function addFieldset($header = null, $noteHeader = null, $noteBody = null, $meta = array())
     {
         $objFieldSet = new Fieldset($label, $noteHeader, $noteBody, $meta);
         $this->__elements->addObject($objFieldSet);
@@ -425,6 +430,10 @@ class ValidForm extends ClassDynamic
 
     /**
      * Add a hidden input field to the form collection.
+     *
+     * Hidden fields can be used for example to inject custom values in your post data and still have
+     * them validated using ValidForm Builder.
+     *
      * @param string $name The hidden field's `name` attribute
      * @param string $type Define a validation type using one of the ValidForm::VFORM_ constants. This does **not**
      * influence the fact that you're creating a hidden field. This is only used for validation of the hidden field's
@@ -591,6 +600,26 @@ class ValidForm extends ClassDynamic
         return $objParagraph;
     }
 
+    /**
+     * Adds a <button> element to the internal fields collection.
+     *
+     * This generates a <button> element. You can customize this button using the meta array.
+     * For example, you can add a custom class property to the button like this:
+     *
+     * ```
+     * $objForm->addButton(
+     *     "Button label",
+     *     array(
+     *         // Set for example a Twitter Bootstrap class on this button
+     *         "fieldclass" => "btn btn-large"
+     *     )
+     * );
+     * ```
+     *
+     * @param string $strLabel The button's label
+     * @param array $arrMeta The meta array
+     * @return \ValidFormBuilder\Button
+     */
     public function addButton($strLabel, $arrMeta = array())
     {
         $objButton = new Button($strLabel, $arrMeta);
