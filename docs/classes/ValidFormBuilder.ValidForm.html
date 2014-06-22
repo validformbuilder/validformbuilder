@@ -114,7 +114,7 @@
                         <ul class="dropdown-menu">
                             <li>
                                 <a href="../reports/errors.html">
-                                                                                                                                                                                                                                                                    <i class="icon-list-alt"></i>&#160;Errors <span class="label label-info pull-right">61</span>
+                                                                                                                                                                                                                                                                    <i class="icon-list-alt"></i>&#160;Errors <span class="label label-info pull-right">57</span>
                                 </a>
                             </li>
                             <li>
@@ -144,19 +144,19 @@
                                 <div class="accordion" style="margin-bottom: 0">
         <div class="accordion-group">
             <div class="accordion-heading">
-                                    <a class="accordion-toggle " data-toggle="collapse" data-target="#namespace-1728479928"></a>
+                                    <a class="accordion-toggle " data-toggle="collapse" data-target="#namespace-1358735201"></a>
                                 <a href="../namespaces/default.html" style="margin-left: 30px; padding-left: 0">\</a>
             </div>
-            <div id="namespace-1728479928" class="accordion-body collapse in">
+            <div id="namespace-1358735201" class="accordion-body collapse in">
                 <div class="accordion-inner">
 
                                                     <div class="accordion" style="margin-bottom: 0">
         <div class="accordion-group">
             <div class="accordion-heading">
-                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-2053221628"></a>
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-729913179"></a>
                                 <a href="../namespaces/ValidFormBuilder.html" style="margin-left: 30px; padding-left: 0">ValidFormBuilder</a>
             </div>
-            <div id="namespace-2053221628" class="accordion-body collapse ">
+            <div id="namespace-729913179" class="accordion-body collapse ">
                 <div class="accordion-inner">
 
                     
@@ -1982,34 +1982,34 @@ the submit button. This method is optional for customization purposes -- navigat
             <article class="method">
                 <h3 class="public ">addFieldset()</h3>
                 <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
-                <pre class="signature" style="margin-right: 54px;">addFieldset(string <span class="argument">$label</span>, string <span class="argument">$noteHeader</span>, string <span class="argument">$noteBody</span>, \ValidFormBuilder\unknown <span class="argument">$meta</span>) : \ValidFormBuilder\Fieldset</pre>
+                <pre class="signature" style="margin-right: 54px;">addFieldset(string <span class="argument">$header</span>, string <span class="argument">$noteHeader</span>, string <span class="argument">$noteBody</span>, array <span class="argument">$meta</span>) : \ValidFormBuilder\Fieldset</pre>
                 <p><em>Add a fieldset to the form field collection</em></p>
                 <p>Example:</p>
 <pre><code>&lt;?php
-$objForm-&gt;addFieldset("
+$objForm-&gt;addFieldset("Header for fieldset", "Note", "Cool fields contained by fieldset.");
 ?&gt;</code></pre>
 
                                     <h4>Parameters</h4>
                     <table class="table table-condensed table-hover">
                                                     <tr>
                                 <td>string</td>
-                                <td>$label </td>
-                                <td></td>
+                                <td>$header </td>
+                                <td><p>The header for this fieldset</p></td>
                             </tr>
                                                     <tr>
                                 <td>string</td>
                                 <td>$noteHeader </td>
-                                <td></td>
+                                <td><p>An optional header for the 'note' block on the side of this fieldset</p></td>
                             </tr>
                                                     <tr>
                                 <td>string</td>
                                 <td>$noteBody </td>
-                                <td></td>
+                                <td><p>The optional body for the 'note block on the side of this fieldset</p></td>
                             </tr>
                                                     <tr>
-                                <td>\ValidFormBuilder\unknown</td>
+                                <td>array</td>
                                 <td>$meta </td>
-                                <td></td>
+                                <td><p>The meta array</p></td>
                             </tr>
                                             </table>
                 
@@ -2043,7 +2043,8 @@ $objForm-&gt;addFieldset("
                 <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
                 <pre class="signature" style="margin-right: 54px;">addHiddenField(string <span class="argument">$name</span>, string <span class="argument">$type</span>, array <span class="argument">$meta</span>, boolean <span class="argument">$blnJustRender</span>) : \ValidFormBuilder\Hidden</pre>
                 <p><em>Add a hidden input field to the form collection.</em></p>
-                
+                <p>Hidden fields can be used for example to inject custom values in your post data and still have
+them validated using ValidForm Builder.</p>
 
                                     <h4>Parameters</h4>
                     <table class="table table-condensed table-hover">
@@ -2297,26 +2298,36 @@ $objForm-&gt;addField("last-name", "Last Name", ValidForm::VFORM_STRING);</code>
             <article class="method">
                 <h3 class="public ">addButton()</h3>
                 <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
-                <pre class="signature" style="margin-right: 54px;">addButton( <span class="argument">$strLabel</span>,  <span class="argument">$arrMeta</span>)</pre>
-                <p><em></em></p>
-                
+                <pre class="signature" style="margin-right: 54px;">addButton(string <span class="argument">$strLabel</span>, array <span class="argument">$arrMeta</span>) : \ValidFormBuilder\Button</pre>
+                <p><em>Adds a &lt;button&gt; element to the internal fields collection.</em></p>
+                <p>This generates a <button> element. You can customize this button using the meta array.
+For example, you can add a custom class property to the button like this:</p>
+<pre><code>$objForm-&gt;addButton(
+    "Button label",
+    array(
+        // Set for example a Twitter Bootstrap class on this button
+        "fieldclass" =&gt; "btn btn-large"
+    )
+);</code></pre>
 
                                     <h4>Parameters</h4>
                     <table class="table table-condensed table-hover">
                                                     <tr>
-                                <td></td>
+                                <td>string</td>
                                 <td>$strLabel </td>
-                                <td></td>
+                                <td><p>The button's label</p></td>
                             </tr>
                                                     <tr>
-                                <td></td>
+                                <td>array</td>
                                 <td>$arrMeta </td>
-                                <td></td>
+                                <td><p>The meta array</p></td>
                             </tr>
                                             </table>
                 
                 
-                            </article>
+                                    <h4>Returns</h4>
+                    \ValidFormBuilder\Button
+                                                </article>
         </div>
         <aside class="span4 detailsbar">
             <h1><i class="icon-arrow-down"></i></h1>
@@ -3573,7 +3584,7 @@ an expensive getFields() call and looping through all elements</em></p>
                 <section class="span10 offset1">
                     <hr />
                     Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor </a> and authored
-                    on June 18th, 2014 at 12:36.
+                    on June 22nd, 2014 at 02:56.
                 </section>
             </section>
         </section>
