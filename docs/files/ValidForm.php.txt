@@ -26,7 +26,32 @@ namespace ValidFormBuilder;
  *
  * Short class description with some example code
  * ```php
- * $objForm = new ValidForm('test_example');
+ * $objForm = new ValidForm("cool_new_form", "Please fill out my cool form", "/awesome-submits");
+ * ```
+ * If the ValidForm class is extended, it will try to initialize a custom javascript class with the same name as well
+ * If that javascript class is not available / does not exist, it will gracefully fallback on initializing
+ * the standard ValidForm javascript class.
+ *
+ * This enables high flexibility when extending ValidForm with custom functionality. Non real world example:
+ *
+ * ```php
+ * // On the server side
+ * class FancyForm extends ValidForm
+ * {
+ *     public function __construct()
+ *     {
+ *         return parent::__construct("fancyform");
+ *     }
+ * }
+ * ```
+ *
+ * ```js
+ * // On the client side
+ * function FancyForm () {
+ *     alert('New fancyform');
+ *
+ *     return new ValidForm('fancyform', 'Fancy main alert');
+ * }
  * ```
  *
  * @package ValidForm
