@@ -24,10 +24,15 @@ namespace ValidFormBuilder;
 /**
  * ValidForm Builder main class - all the magic starts here.
  *
+ * Short class description with some example code
+ * ```php
+ * $objForm = new ValidForm('test_example');
+ * ```
+ *
  * @package ValidForm
  * @author Felix Langfeldt <felix@neverwoods.com>
  * @author Robin van Baalen <robin@neverwoods.com>
- * @version 3.0.0
+ * @version Release: 3.0.0
  *
  * @method string getDescription() getDescription() Returns the value of `$__description`
  * @method void setDescription() setDescription($strDescription) Overwrites the value of `$__description`
