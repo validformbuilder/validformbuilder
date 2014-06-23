@@ -1388,6 +1388,11 @@ class ValidForm extends ClassDynamic
         return $strReturn;
     }
 
+    /**
+     * Generate a unique ID
+     * @param number $intLength ID length
+     * @return string Generated ID
+     */
     public function generateId($intLength = 8)
     {
         $strChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -1404,6 +1409,10 @@ class ValidForm extends ClassDynamic
         return $strReturn;
     }
 
+    /**
+     * Returns the auto-generated unique ID of this form instance.
+     * @return string
+     */
     public function getUniqueId()
     {
         return $this->__uniqueid;
@@ -1414,6 +1423,13 @@ class ValidForm extends ClassDynamic
         $this->__uniqueid = (empty($strId)) ? $this->generateId() : $strId;
     }
 
+    /**
+     * Read parameters from the `$_REQUEST` array with an optional fallback value
+     *
+     * @param string $param The parameter to read
+     * @param string $replaceEmpty Optional replace value when parameter is not available or empty
+     * @return Ambigous <string, array>
+     */
     public static function get($param, $replaceEmpty = "")
     {
         $strReturn = (isset($_REQUEST[$param])) ? $_REQUEST[$param] : "";
