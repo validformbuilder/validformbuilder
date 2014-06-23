@@ -114,7 +114,7 @@
                         <ul class="dropdown-menu">
                             <li>
                                 <a href="../reports/errors.html">
-                                                                                                                                                                                                                                                                    <i class="icon-list-alt"></i>&#160;Errors <span class="label label-info pull-right">42</span>
+                                                                                                                                                                                                                                                                    <i class="icon-list-alt"></i>&#160;Errors <span class="label label-info pull-right">40</span>
                                 </a>
                             </li>
                             <li>
@@ -144,19 +144,19 @@
                                 <div class="accordion" style="margin-bottom: 0">
         <div class="accordion-group">
             <div class="accordion-heading">
-                                    <a class="accordion-toggle " data-toggle="collapse" data-target="#namespace-1682145328"></a>
+                                    <a class="accordion-toggle " data-toggle="collapse" data-target="#namespace-997129817"></a>
                                 <a href="../namespaces/default.html" style="margin-left: 30px; padding-left: 0">\</a>
             </div>
-            <div id="namespace-1682145328" class="accordion-body collapse in">
+            <div id="namespace-997129817" class="accordion-body collapse in">
                 <div class="accordion-inner">
 
                                                     <div class="accordion" style="margin-bottom: 0">
         <div class="accordion-group">
             <div class="accordion-heading">
-                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-894207673"></a>
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-71900856"></a>
                                 <a href="../namespaces/ValidFormBuilder.html" style="margin-left: 30px; padding-left: 0">ValidFormBuilder</a>
             </div>
-            <div id="namespace-894207673" class="accordion-body collapse ">
+            <div id="namespace-71900856" class="accordion-body collapse ">
                 <div class="accordion-inner">
 
                     
@@ -191,7 +191,7 @@
                     <h1><small>\ValidFormBuilder</small>ValidForm</h1>
                     <p><em>ValidForm Builder</em></p>
                     <p>Create a new ValidForm Builder instance like this:</p>
-<pre><code>$objForm = new ValidForm("cool_new_form", "Please fill out my cool form", "/awesome-submits");</code></pre>
+<pre><code class="language-php">$objForm = new ValidForm("cool_new_form", "Please fill out my cool form", "/awesome-submits");</code></pre>
 
                     <section id="summary">
                         <h2>Summary</h2>
@@ -1644,7 +1644,7 @@
                 <pre class="signature">$__requiredstyle : string</pre>
                 <p><em>Define the field required style. Note: **This value will be passed to `sprintf`** so be sure to throw in an %s.</em></p>
                 <p>Example:</p>
-<pre><code>$objForm-&gt;setRequiredStyle("%s *");
+<pre><code class="language-php">$objForm-&gt;setRequiredStyle("%s *");
 
 //*** Now when a required field is parsed, it's output will be 'Label *' where the * is the 'required style'.</code></pre>
 
@@ -1836,18 +1836,15 @@ example an area or fieldset don&#039;t contain any submitted values.</em></p>
                 <p>The array's keys should be the form name to set the default value of, the value is the actual value
 or values to set.</p>
 <p>Example 1 - Basic defaults:</p>
-<pre><code>&lt;?php
-//*** The form
+<pre><code class="language-php">//*** The form
 $objCheck = $objForm-&gt;addField("cool", "Coolest PHP Library", ValidForm::VFORM_STRING);
 
 //*** Set field 'cool' default value to "ValidForm Builder"
 $objForm-&gt;setDefaults([
     "cool" =&gt; "ValidForm Builder"
-]);
-?&gt;</code></pre>
+]);</code></pre>
 <p>Example 2 - An array of defaults:</p>
-<pre><code>&lt;?php
-//*** The form
+<pre><code class="language-php">//*** The form
 $objCheck = $objForm-&gt;addField("cool", "Cool checklist", ValidForm::VFORM_CHECK_LIST);
 $objCheck-&gt;addField("Option 1", "option1");
 $objCheck-&gt;addField("Option 2", "option2");
@@ -1856,8 +1853,7 @@ $objCheck-&gt;addField("Option 3", "option3");
 //*** Check options 2 and 3 by default using setDefaults()
 $objForm-&gt;setDefaults([
     "cool" =&gt; ["option2", "option3"]
-]);
-?&gt;</code></pre>
+]);</code></pre>
 
                                     <h4>Parameters</h4>
                     <table class="table table-condensed table-hover">
@@ -1985,9 +1981,7 @@ the submit button. This method is optional for customization purposes -- navigat
                 <pre class="signature" style="margin-right: 54px;">addFieldset(string <span class="argument">$header</span>, string <span class="argument">$noteHeader</span>, string <span class="argument">$noteBody</span>, array <span class="argument">$meta</span>) : \ValidFormBuilder\Fieldset</pre>
                 <p><em>Add a fieldset to the form field collection</em></p>
                 <p>Example:</p>
-<pre><code>&lt;?php
-$objForm-&gt;addFieldset("Header for fieldset", "Note", "Cool fields contained by fieldset.");
-?&gt;</code></pre>
+<pre><code class="language-php">$objForm-&gt;addFieldset("Header for fieldset", "Note", "Cool fields contained by fieldset.");</code></pre>
 
                                     <h4>Parameters</h4>
                     <table class="table table-condensed table-hover">
@@ -2173,7 +2167,7 @@ parsed when <code>toHtml()</code> is called.</p></td>
                 <pre class="signature" style="margin-right: 54px;">addField(string <span class="argument">$name</span>, string <span class="argument">$label</span>, \ValidFormBuilder\number <span class="argument">$type</span>, array <span class="argument">$validationRules</span>, array <span class="argument">$errorHandlers</span>, array <span class="argument">$meta</span>, boolean <span class="argument">$blnJustRender</span>) : \ValidFormBuilder\Element</pre>
                 <p><em>Add a new element to the internal elements collection</em></p>
                 <p><em>Example; add a text field</em>:</p>
-<pre><code>$objForm-&gt;addField(
+<pre><code class="language-php">$objForm-&gt;addField(
     "first-name",
     "First name",
     ValidForm::VFORM_STRING,
@@ -2260,7 +2254,7 @@ parsed when <code>toHtml()</code> is called.</p></td>
                 <p><em>Adds a \ValidFormBuilder\Paragraph object to the internal elements collection.</em></p>
                 <p>This renders a paragraph inside the form. Formfields can be added before and after the paragraph.
 <strong>Example:</strong></p>
-<pre><code>$objForm-&gt;addField("name", "Your Name", ValidForm::VFORM_STRING);
+<pre><code class="language-php">$objForm-&gt;addField("name", "Your Name", ValidForm::VFORM_STRING);
 $objForm-&gt;addParagraph("Next, you should enter your last name.", "Enter your name!");
 $objForm-&gt;addField("last-name", "Last Name", ValidForm::VFORM_STRING);</code></pre>
 
@@ -2315,7 +2309,7 @@ $objForm-&gt;addField("last-name", "Last Name", ValidForm::VFORM_STRING);</code>
                 <p><em>Adds a &lt;button&gt; element to the internal fields collection.</em></p>
                 <p>This generates a <button> element. You can customize this button using the meta array.
 For example, you can add a custom class property to the button like this:</p>
-<pre><code>$objForm-&gt;addButton(
+<pre><code class="language-php">$objForm-&gt;addButton(
     "Button label",
     array(
         // Set for example a Twitter Bootstrap class on this button
@@ -2371,7 +2365,7 @@ For example, you can add a custom class property to the button like this:</p>
 property or even the 'dynamic' meta. Using the 'active' property, the area gets a label and checkbox
 which activates or disables all the fields inside this area.</p>
 <p><em>Example 1: Active area</em></p>
-<pre><code>$objArea = $objForm-&gt;addArea("Disable fields", true, "fields-disabled");
+<pre><code class="language-php">$objArea = $objForm-&gt;addArea("Disable fields", true, "fields-disabled");
 $objArea-&gt;addField(
     "first-name",
     "First name",
@@ -2715,21 +2709,25 @@ like the form tag, description element and form error message.</p>
             <article class="method">
                 <h3 class="public ">toJs()</h3>
                 <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
-                <pre class="signature" style="margin-right: 54px;">toJs( <span class="argument">$strCustomJs</span>)</pre>
-                <p><em></em></p>
-                
+                <pre class="signature" style="margin-right: 54px;">toJs(string <span class="argument">$strCustomJs</span>) : string</pre>
+                <p><em>Generate the Javascript output only.</em></p>
+                <p>This is particulary useful when using ValidForm Builder in combination with AJAX form handling. In that
+case you don't want to output the HTML together with the javascript.</p>
 
                                     <h4>Parameters</h4>
                     <table class="table table-condensed table-hover">
                                                     <tr>
-                                <td></td>
+                                <td>string</td>
                                 <td>$strCustomJs </td>
-                                <td></td>
+                                <td><p>Inject custom javascript to be executed while
+initializing ValidForm Builder client-side.</p></td>
                             </tr>
                                             </table>
                 
                 
-                            </article>
+                                    <h4>Returns</h4>
+                    string
+                                                </article>
         </div>
         <aside class="span4 detailsbar">
             <h1><i class="icon-arrow-down"></i></h1>
@@ -3704,7 +3702,7 @@ an expensive getFields() call and looping through all elements</em></p>
                 <section class="span10 offset1">
                     <hr />
                     Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor </a> and authored
-                    on June 23rd, 2014 at 12:24.
+                    on June 23rd, 2014 at 12:26.
                 </section>
             </section>
         </section>
