@@ -1,23 +1,4 @@
 <?php
-/**
- * ValidForm Builder - build valid and secure web forms quickly
- *
- * Copyright (c) 2009-2014 Neverwoods Internet Technology - http://neverwoods.com
- *
- * Felix Langfeldt <felix@neverwoods.com>
- * Robin van Baalen <robin@neverwoods.com>
- *
- * All rights reserved.
- *
- * This software is released under the GNU GPL v2 License <http://www.gnu.org/licenses/old-licenses/gpl-2.0.html>
- *
- * @package ValidForm
- * @author Felix Langfeldt <felix@neverwoods.com>, Robin van Baalen <robin@neverwoods.com>
- * @copyright 2009-2014 Neverwoods Internet Technology - http://neverwoods.com
- * @license http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU GPL v2
- * @link http://validformbuilder.org
- * @version 3.0.0
- */
 
 namespace ValidFormBuilder;
 
@@ -62,6 +43,7 @@ namespace ValidFormBuilder;
  *
  * @method string getDescription() getDescription() Returns the value of `$__description`
  * @method void setDescription() setDescription($strDescription = "") Sets the value of `$__description`
+ *
  */
 class ValidForm extends ClassDynamic
 {
