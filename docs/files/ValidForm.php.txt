@@ -60,6 +60,9 @@ namespace ValidFormBuilder;
  * @author Robin van Baalen <robin@neverwoods.com>
  * @version 3.0.0
  *
+ * @method string getDescription() getDescription() Returns the value of `$__description`
+ * @method void setDescription() setDescription($strDescription = "") Sets the value of `$__description`
+ *
  */
 class ValidForm extends ClassDynamic
 {
