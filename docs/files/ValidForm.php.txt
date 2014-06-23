@@ -1418,6 +1418,14 @@ class ValidForm extends ClassDynamic
         return $this->__uniqueid;
     }
 
+    /**
+     * Use this to set a (custom) unqiue ID for the form.
+     *
+     * This sets the internal $__uniqueid parameter. Used internally.
+     *
+     * @param string $strId Optional unique ID. If not set, a unique ID will be
+     * generated with {@link ValidForm::generateId()}
+     */
     protected function __setUniqueId($strId = "")
     {
         $this->__uniqueid = (empty($strId)) ? $this->generateId() : $strId;
