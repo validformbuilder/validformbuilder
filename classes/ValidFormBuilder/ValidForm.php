@@ -16,6 +16,7 @@
  * @copyright 2009-2014 Neverwoods Internet Technology - http://neverwoods.com
  * @license http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU GPL v2
  * @link http://validformbuilder.org
+ * @version 3.0.0
  */
 
 namespace ValidFormBuilder;
@@ -23,45 +24,13 @@ namespace ValidFormBuilder;
 /**
  * ValidForm Builder main class - all the magic starts here.
  *
- * Create a new ValidForm Builder instance like this:
- *
- * ```php
- * $objForm = new ValidForm("cool_new_form", "Please fill out my cool form", "/awesome-submits");
- * ```
- *
- * If the ValidForm class is extended, it will try to initialize a custom javascript class with the same name as well
- * If that javascript class is not available / does not exist, it will gracefully fallback on initializing
- * the standard ValidForm javascript class.
- *
- * This enables high flexibility when extending ValidForm with custom functionality. Non real world example:
- *
- * ```php
- * // On the server side
- * class FancyForm extends ValidForm
- * {
- *     public function __construct()
- *     {
- *         return parent::__construct("fancyform");
- *     }
- * }
- * ```
- *
- * ```js
- * // On the client side
- * function FancyForm () {
- *     alert('New fancyform');
- *
- *     return new ValidForm('fancyform', 'Fancy main alert');
- * }
- * ```
- *
  * @package ValidForm
  * @author Felix Langfeldt <felix@neverwoods.com>
  * @author Robin van Baalen <robin@neverwoods.com>
  * @version 3.0.0
  *
  * @method string getDescription() getDescription() Returns the value of `$__description`
- * @method void setDescription() setDescription($strDescription = "") Sets the value of `$__description`
+ * @method void setDescription() setDescription($strDescription = "") Sets the value of `$__description` *
  */
 class ValidForm extends ClassDynamic
 {
