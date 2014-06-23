@@ -57,7 +57,7 @@ namespace ValidFormBuilder;
  * @package ValidForm
  * @author Felix Langfeldt <felix@neverwoods.com>
  * @author Robin van Baalen <robin@neverwoods.com>
- * @version Release: 3.0.0
+ * @version 3.0.0
  *
  * @method string getDescription() getDescription() Returns the value of `$__description`
  * @method void setDescription() setDescription($strDescription) Overwrites the value of `$__description`
