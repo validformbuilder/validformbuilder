@@ -114,7 +114,7 @@
                         <ul class="dropdown-menu">
                             <li>
                                 <a href="../reports/errors.html">
-                                                                                                                                                                                                                                                                    <i class="icon-list-alt"></i>&#160;Errors <span class="label label-info pull-right">48</span>
+                                                                                                                                                                                                                                                                    <i class="icon-list-alt"></i>&#160;Errors <span class="label label-info pull-right">42</span>
                                 </a>
                             </li>
                             <li>
@@ -144,19 +144,19 @@
                                 <div class="accordion" style="margin-bottom: 0">
         <div class="accordion-group">
             <div class="accordion-heading">
-                                    <a class="accordion-toggle " data-toggle="collapse" data-target="#namespace-225930310"></a>
+                                    <a class="accordion-toggle " data-toggle="collapse" data-target="#namespace-1492354629"></a>
                                 <a href="../namespaces/default.html" style="margin-left: 30px; padding-left: 0">\</a>
             </div>
-            <div id="namespace-225930310" class="accordion-body collapse in">
+            <div id="namespace-1492354629" class="accordion-body collapse in">
                 <div class="accordion-inner">
 
                                                     <div class="accordion" style="margin-bottom: 0">
         <div class="accordion-group">
             <div class="accordion-heading">
-                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-118814389"></a>
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-168602778"></a>
                                 <a href="../namespaces/ValidFormBuilder.html" style="margin-left: 30px; padding-left: 0">ValidFormBuilder</a>
             </div>
-            <div id="namespace-118814389" class="accordion-body collapse ">
+            <div id="namespace-168602778" class="accordion-body collapse ">
                 <div class="accordion-inner">
 
                     
@@ -2551,21 +2551,39 @@ $objMulti-&gt;addField(
             <article class="method">
                 <h3 class="public ">addJSEvent()</h3>
                 <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
-                <pre class="signature" style="margin-right: 54px;">addJSEvent( <span class="argument">$strEvent</span>,  <span class="argument">$strMethod</span>)</pre>
-                <p><em></em></p>
-                
+                <pre class="signature" style="margin-right: 54px;">addJSEvent(string <span class="argument">$strEvent</span>, string <span class="argument">$strMethod</span>)</pre>
+                <p><em>Add a custom javascript event with corresponding callback function</em></p>
+                <p>With this method you can either register a custom callback function on one of the predefined custom events
+or you can register the callback function on a jQuery bindable event (e.g. jQuery().bind(eventName, callback)).</p>
+<p>These are predefined event hooks in the ValidForm Builder client-side library:</p>
+<ul>
+<li>beforeSubmit</li>
+<li>beforeNextPage</li>
+<li>afterNextPage</li>
+<li>beforePreviousPage</li>
+<li>afterPreviousPage</li>
+<li>beforeAddPreviousButton</li>
+<li>afterAddPreviousButton</li>
+<li>beforeShowPage</li>
+<li>afterShowPage</li>
+<li>beforeAddPageNavigation</li>
+<li>afterAddPageNavigation</li>
+<li>beforeDynamicChange</li>
+<li>afterDynamicChange</li>
+<li>afterValidate</li>
+</ul>
 
                                     <h4>Parameters</h4>
                     <table class="table table-condensed table-hover">
                                                     <tr>
-                                <td></td>
+                                <td>string</td>
                                 <td>$strEvent </td>
-                                <td></td>
+                                <td><p>The event name</p></td>
                             </tr>
                                                     <tr>
-                                <td></td>
+                                <td>string</td>
                                 <td>$strMethod </td>
-                                <td></td>
+                                <td><p>The name of the callback function</p></td>
                             </tr>
                                             </table>
                 
@@ -2604,17 +2622,18 @@ $objMulti-&gt;addField(
                                                     <tr>
                                 <td>string</td>
                                 <td>$blnClientSide </td>
-                                <td></td>
+                                <td><p>Render javascript code or not, defaults to true</p></td>
                             </tr>
                                                     <tr>
                                 <td>string</td>
                                 <td>$blnForceSubmitted </td>
-                                <td></td>
+                                <td><p>This forces the form rendering as if the fields are submitted</p></td>
                             </tr>
                                                     <tr>
                                 <td>string</td>
                                 <td>$strCustomJs </td>
-                                <td></td>
+                                <td><p>Inject custom javascript to be executed while
+initializing ValidForm Builder client-side.</p></td>
                             </tr>
                                             </table>
                 
@@ -2647,26 +2666,31 @@ $objMulti-&gt;addField(
             <article class="method">
                 <h3 class="public ">fieldsToHtml()</h3>
                 <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
-                <pre class="signature" style="margin-right: 54px;">fieldsToHtml( <span class="argument">$blnForceSubmitted</span>,  <span class="argument">$blnNavigation</span>)</pre>
-                <p><em></em></p>
-                
+                <pre class="signature" style="margin-right: 54px;">fieldsToHtml(string <span class="argument">$blnForceSubmitted</span>, string <span class="argument">$blnNavigation</span>) : string</pre>
+                <p><em>This method generates HTML output for the current internal elements collection.</em></p>
+                <p>This method is mostly used internally in the library and it's therefore not recommended to use this except
+for these rare occasions when you only want the rendered fields an not all the meta surrounding the fields
+like the form tag, description element and form error message.</p>
 
                                     <h4>Parameters</h4>
                     <table class="table table-condensed table-hover">
                                                     <tr>
-                                <td></td>
+                                <td>string</td>
                                 <td>$blnForceSubmitted </td>
-                                <td></td>
+                                <td><p>This forces the form rendering as if the fields are submitted</p></td>
                             </tr>
                                                     <tr>
-                                <td></td>
+                                <td>string</td>
                                 <td>$blnNavigation </td>
-                                <td></td>
+                                <td><p>This is a reference returning true if the form contains a navigation element</p></td>
                             </tr>
                                             </table>
                 
                 
-                            </article>
+                                    <h4>Returns</h4>
+                    string
+                                            &mdash; <p>Generated HTML output</p>
+                                                </article>
         </div>
         <aside class="span4 detailsbar">
             <h1><i class="icon-arrow-down"></i></h1>
@@ -3680,7 +3704,7 @@ an expensive getFields() call and looping through all elements</em></p>
                 <section class="span10 offset1">
                     <hr />
                     Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor </a> and authored
-                    on June 22nd, 2014 at 04:11.
+                    on June 23rd, 2014 at 12:24.
                 </section>
             </section>
         </section>
