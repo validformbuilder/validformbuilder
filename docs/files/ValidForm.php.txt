@@ -22,7 +22,7 @@
 namespace ValidFormBuilder;
 
 /**
- * ValidForm Builder
+ * ValidForm Builder main class - all the magic starts here.
  *
  * Create a new ValidForm Builder instance like this:
  * ```php
@@ -62,7 +62,6 @@ namespace ValidFormBuilder;
  *
  * @method string getDescription() getDescription() Returns the value of `$__description`
  * @method void setDescription() setDescription($strDescription = "") Sets the value of `$__description`
- *
  */
 class ValidForm extends ClassDynamic
 {
