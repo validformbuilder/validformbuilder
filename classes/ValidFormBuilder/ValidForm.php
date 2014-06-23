@@ -807,6 +807,33 @@ class ValidForm extends ClassDynamic
         return $objField;
     }
 
+    /**
+     * Add a custom javascript event with corresponding callback function
+     *
+     * With this method you can either register a custom callback function on one of the predefined custom events
+     * or you can register the callback function on a jQuery bindable event (e.g. jQuery().bind(eventName, callback)).
+     *
+     * These are predefined event hooks in the ValidForm Builder client-side library:
+     *
+     *  - beforeSubmit
+     *  - beforeNextPage
+     *  - afterNextPage
+     *  - beforePreviousPage
+     *  - afterPreviousPage
+     *  - beforeAddPreviousButton
+     *  - afterAddPreviousButton
+     *  - beforeShowPage
+     *  - afterShowPage
+     *  - beforeAddPageNavigation
+     *  - afterAddPageNavigation
+     *  - beforeDynamicChange
+     *  - afterDynamicChange
+     *  - afterValidate
+     *
+     *
+     * @param string $strEvent The event name
+     * @param string $strMethod The name of the callback function
+     */
     public function addJSEvent($strEvent, $strMethod)
     {
         $this->__jsevents[$strEvent] = $strMethod;
@@ -815,9 +842,10 @@ class ValidForm extends ClassDynamic
     /**
      * Generate HTML output - build form
      *
-     * @param string $blnClientSide
-     * @param string $blnForceSubmitted
-     * @param string $strCustomJs
+     * @param string $blnClientSide Render javascript code or not, defaults to true
+     * @param string $blnForceSubmitted This forces the form rendering as if the fields are submitted
+     * @param string $strCustomJs Inject custom javascript to be executed while
+     * initializing ValidForm Builder client-side.
      *
      * @return string Generated HTML output
      */
@@ -863,6 +891,17 @@ class ValidForm extends ClassDynamic
         return $strOutput;
     }
 
+    /**
+     * This method generates HTML output for the current internal elements collection.
+     *
+     * This method is mostly used internally in the library and it's therefore not recommended to use this except
+     * for these rare occasions when you only want the rendered fields an not all the meta surrounding the fields
+     * like the form tag, description element and form error message.
+     *
+     * @param string $blnForceSubmitted This forces the form rendering as if the fields are submitted
+     * @param string $blnNavigation This is a reference returning true if the form contains a navigation element
+     * @return string Generated HTML output
+     */
     public function fieldsToHtml($blnForceSubmitted = false, &$blnNavigation = false)
     {
         $strReturn = "";
