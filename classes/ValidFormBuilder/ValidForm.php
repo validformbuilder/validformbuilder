@@ -24,7 +24,7 @@ namespace ValidFormBuilder;
  * ValidForm Builder
  *
  * Create a new ValidForm Builder instance like this:
- * ```
+ * ```php
  * $objForm = new ValidForm("cool_new_form", "Please fill out my cool form", "/awesome-submits");
  * ```
  *
@@ -273,7 +273,7 @@ class ValidForm extends ClassDynamic
      * Define the field required style. Note: **This value will be passed to `sprintf`** so be sure to throw in an %s.
      *
      * Example:
-     * ```
+     * ```php
      * $objForm->setRequiredStyle("%s *");
      *
      * //*** Now when a required field is parsed, it's output will be 'Label *' where the * is the 'required style'.
@@ -333,8 +333,7 @@ class ValidForm extends ClassDynamic
      * or values to set.
      *
      * Example 1 - Basic defaults:
-     * ```
-     * <?php
+     * ```php
      * //*** The form
      * $objCheck = $objForm->addField("cool", "Coolest PHP Library", ValidForm::VFORM_STRING);
      *
@@ -342,12 +341,10 @@ class ValidForm extends ClassDynamic
      * $objForm->setDefaults([
      *     "cool" => "ValidForm Builder"
      * ]);
-     * ?>
      * ```
      *
      * Example 2 - An array of defaults:
-     * ```
-     * <?php
+     * ```php
      * //*** The form
      * $objCheck = $objForm->addField("cool", "Cool checklist", ValidForm::VFORM_CHECK_LIST);
      * $objCheck->addField("Option 1", "option1");
@@ -358,7 +355,6 @@ class ValidForm extends ClassDynamic
      * $objForm->setDefaults([
      *     "cool" => ["option2", "option3"]
      * ]);
-     * ?>
      * ```
      *
      * @param array $arrDefaults The array of default values. Keys are field names, values strings or arrays
@@ -408,10 +404,8 @@ class ValidForm extends ClassDynamic
      * Add a fieldset to the form field collection
      *
      * Example:
-     * ```
-     * <?php
+     * ```php
      * $objForm->addFieldset("Header for fieldset", "Note", "Cool fields contained by fieldset.");
-     * ?>
      * ```
      * @param string $header The header for this fieldset
      * @param string $noteHeader An optional header for the 'note' block on the side of this fieldset
@@ -533,7 +527,7 @@ class ValidForm extends ClassDynamic
      * Add a new element to the internal elements collection
      *
      * *Example; add a text field*:
-     * ```
+     * ```php
      * $objForm->addField(
      *     "first-name",
      *     "First name",
@@ -588,7 +582,7 @@ class ValidForm extends ClassDynamic
      * This renders a paragraph inside the form. Formfields can be added before and after the paragraph.
      * **Example:**
      *
-     * ```
+     * ```php
      * $objForm->addField("name", "Your Name", ValidForm::VFORM_STRING);
      * $objForm->addParagraph("Next, you should enter your last name.", "Enter your name!");
      * $objForm->addField("last-name", "Last Name", ValidForm::VFORM_STRING);
@@ -623,7 +617,7 @@ class ValidForm extends ClassDynamic
      * This generates a <button> element. You can customize this button using the meta array.
      * For example, you can add a custom class property to the button like this:
      *
-     * ```
+     * ```php
      * $objForm->addButton(
      *     "Button label",
      *     array(
@@ -663,7 +657,7 @@ class ValidForm extends ClassDynamic
      * which activates or disables all the fields inside this area.
      *
      * *Example 1: Active area*
-     * ```
+     * ```php
      * $objArea = $objForm->addArea("Disable fields", true, "fields-disabled");
      * $objArea->addField(
      *     "first-name",
@@ -947,6 +941,16 @@ class ValidForm extends ClassDynamic
         return $strReturn;
     }
 
+    /**
+     * Generate the Javascript output only.
+     *
+     * This is particulary useful when using ValidForm Builder in combination with AJAX form handling. In that
+     * case you don't want to output the HTML together with the javascript.
+     *
+     * @param string $strCustomJs Inject custom javascript to be executed while
+     * initializing ValidForm Builder client-side.
+     * @return string
+     */
     public function toJs($strCustomJs = "")
     {
         return $this->__toJS($strCustomJs, array(), true);
