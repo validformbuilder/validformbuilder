@@ -16,6 +16,7 @@
  * @copyright 2009-2014 Neverwoods Internet Technology - http://neverwoods.com
  * @license http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU GPL v2
  * @link http://validformbuilder.org
+ * @version 3.0.0
  */
 
 namespace ValidFormBuilder;
@@ -26,6 +27,32 @@ namespace ValidFormBuilder;
  * Create a new ValidForm Builder instance like this:
  * ```php
  * $objForm = new ValidForm("cool_new_form", "Please fill out my cool form", "/awesome-submits");
+ * ```
+ *
+ * If the ValidForm class is extended, it will try to initialize a custom javascript class with the same name as well
+ * If that javascript class is not available / does not exist, it will gracefully fallback on initializing
+ * the standard ValidForm javascript class.
+ *
+ * This enables high flexibility when extending ValidForm with custom functionality. Non real world example:
+ *
+ * ```php
+ * // On the server side
+ * class FancyForm extends ValidForm
+ * {
+ *     publicÊfunction __construct()
+ *     {
+ *         return parent::__construct("fancyform");
+ *     }
+ * }
+ * ```
+ *
+ * ```js
+ * // On the client side
+ * function FancyForm () {
+ *     alert('New fancyform');
+ *
+ *     return new ValidForm('fancyform', 'Fancy main alert');
+ * }
  * ```
  *
  * @package ValidForm
@@ -321,7 +348,10 @@ class ValidForm extends ClassDynamic
         $this->__elements = new Collection();
 
         if (is_null($action)) {
-            $this->__action = (isset($_SERVER['REQUEST_URI'])) ? parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) : $_SERVER['PHP_SELF'];
+            $this->__action = $_SERVER["PHP_SELF"];
+            if (isset($_SERVER["REQUEST_URI"])) {
+                $this->__action = parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH);
+            }
         } else {
             $this->__action = $action;
         }
@@ -416,7 +446,7 @@ class ValidForm extends ClassDynamic
      */
     public function addFieldset($header = null, $noteHeader = null, $noteBody = null, $meta = array())
     {
-        $objFieldSet = new Fieldset($label, $noteHeader, $noteBody, $meta);
+        $objFieldSet = new Fieldset($header, $noteHeader, $noteBody, $meta);
         $this->__elements->addObject($objFieldSet);
 
         return $objFieldSet;
@@ -554,8 +584,15 @@ class ValidForm extends ClassDynamic
      *
      * @return \ValidFormBuilder\Element Returns null when no valid type is defined
      */
-    public function addField($name, $label, $type, $validationRules = array(), $errorHandlers = array(), $meta = array(), $blnJustRender = false)
-    {
+    public function addField(
+        $name,
+        $label,
+        $type,
+        $validationRules = array(),
+        $errorHandlers = array(),
+        $meta = array(),
+        $blnJustRender = false
+    ) {
         $objField = static::renderField($name, $label, $type, $validationRules, $errorHandlers, $meta);
 
         $objField->setRequiredStyle($this->__requiredstyle);
@@ -859,7 +896,12 @@ class ValidForm extends ClassDynamic
             }
         }
 
-        $strOutput .= "<form id=\"{$this->__name}\" method=\"post\" enctype=\"multipart/form-data\" action=\"{$this->__action}\" class=\"{$strClass}\"{$this->__metaToData()}>\n";
+        $strOutput .= "<form " .
+        $strOutput .= "id=\"{$this->__name}\" " .
+        $strOutput .= "method=\"post\" " .
+        $strOutput .= "enctype=\"multipart/form-data\" " .
+        $strOutput .= "action=\"{$this->__action}\" " .
+        $strOutput .= "class=\"{$strClass}\"{$this->__metaToData()}>\n";
 
         // *** Main error.
         if ($this->isSubmitted() && ! empty($this->__mainalert)) {
@@ -916,7 +958,10 @@ class ValidForm extends ClassDynamic
                         }
                     }
 
-                    if (is_array($varValue) && ! array_key_exists($strName . "_dynamic", $this->__defaults) && $blnDynamic) {
+                    if (is_array($varValue)
+                        && !array_key_exists($strName . "_dynamic", $this->__defaults)
+                        && $blnDynamic
+                    ) {
                         $intDynamicCount = 0;
                         if (count($varValue) > 0) {
                             $intDynamicCount = count($varValue) - 1; // convert to zero-based
@@ -1033,7 +1078,9 @@ class ValidForm extends ClassDynamic
                             foreach ($objField->getFields() as $objSubField) {
                                 if (is_object($objSubField)) {
                                     if ($objSubField->hasFields()) {
-                                        if (get_class($objSubField) == "ValidFormBuilder\\Area" && $objSubField->isActive()) {
+                                        if (get_class($objSubField) == "ValidFormBuilder\\Area"
+                                            && $objSubField->isActive()
+                                        ) {
                                             $objFields->addObject($objSubField);
                                         }
 
@@ -1135,7 +1182,11 @@ class ValidForm extends ClassDynamic
 
         foreach ($objFieldset->getFields() as $objField) {
             if (is_object($objField) && get_class($objField) !== "ValidFormBuilder\\Hidden") {
-                $strValue = (is_array($objField->getValue())) ? implode(", ", $objField->getValue()) : $objField->getValue();
+                //*** Get the string value. If it's an array, implode with ','
+                $strValue = $objField->getValue();
+                if (is_array($strValue)) {
+                    $strValue = implode(", ", $strValue);
+                }
 
                 if ((! empty($strValue) && $hideEmpty) || (! $hideEmpty && ! is_null($strValue))) {
                     if ($objField->hasFields()) {
@@ -1227,7 +1278,9 @@ class ValidForm extends ClassDynamic
 
             if (! empty($strLabel)) {
                 $strReturn = "<tr>";
-                $strReturn .= "<td colspan=\"3\" style=\"white-space:nowrap\" class=\"vf__area_header\"><h3>{$strLabel}</h3></td>\n";
+                $strReturn .= "<td colspan=\"3\" style=\"white-space:nowrap\" class=\"vf__area_header\">" .
+                $strReturn .= "<h3>{$strLabel}</h3>" .
+                $strReturn .= "</td>\n";
                 $strReturn .= "</tr>";
             }
 
@@ -1235,7 +1288,9 @@ class ValidForm extends ClassDynamic
         } else {
             if (! empty($this->__novaluesmessage) && $objField->isActive()) {
                 $strReturn = "<tr>";
-                $strReturn .= "<td colspan=\"3\" style=\"white-space:nowrap\" class=\"vf__area_header\"><h3>{$strLabel}</h3></td>\n";
+                $strReturn .= "<td colspan=\"3\" style=\"white-space:nowrap\" class=\"vf__area_header\">" .
+                $strReturn .= "<h3>{$strLabel}</h3>" .
+                $strReturn .= "</td>\n";
                 $strReturn .= "</tr>";
 
                 return $strReturn . "<tr><td colspan=\"3\">{$this->__novaluesmessage}</td></tr>";
@@ -1270,14 +1325,21 @@ class ValidForm extends ClassDynamic
                 }
 
                 $strValue = trim($strValue);
-                $strLabel = $objField->getShortLabel(); // Passing 'true' gets the short label if available.
+                $strLabel = $objField->getShortLabel();
 
                 if ((! empty($strValue) && $hideEmpty) || (! $hideEmpty && ! empty($strValue))) {
                     $strValue = nl2br($strValue);
                     $strValue = htmlspecialchars($strValue, ENT_QUOTES);
 
                     $strReturn .= "<tr class=\"vf__field_value\">";
-                    $strReturn .= "<td valign=\"top\" style=\"white-space:nowrap; padding-right: 20px\" class=\"vf__field\">{$strLabel}</td><td valign=\"top\" class=\"vf__value\"><strong>" . $strValue . "</strong></td>\n";
+                    $strReturn .= "<td valign=\"top\" " .
+                    $strReturn .= "style=\"white-space:nowrap; padding-right: 20px\" " .
+                    $strReturn .= "class=\"vf__field\">" .
+                    $strReturn .= $strLabel .
+                    $strReturn .= "</td>" .
+                    $strReturn .= "<td valign=\"top\" class=\"vf__value\">" .
+                    $strReturn .= "<strong>" . $strValue . "</strong>" .
+                    $strReturn .= "</td>\n";
                     $strReturn .= "</tr>";
                 }
             }
@@ -1312,7 +1374,12 @@ class ValidForm extends ClassDynamic
                     $strValue = htmlspecialchars($strValue, ENT_QUOTES);
 
                     $strReturn .= "<tr class=\"vf__field_value\">";
-                    $strReturn .= "<td valign=\"top\" style=\"padding-right: 20px\" class=\"vf__field\">{$strLabel}</td><td valign=\"top\" class=\"vf__value\"><strong>" . $strValue . "</strong></td>\n";
+                    $strReturn .= "<td valign=\"top\" style=\"padding-right: 20px\" class=\"vf__field\">" .
+                    $strReturn .= $strLabel .
+                    $strReturn .= "</td>" .
+                    $strReturn .= "<td valign=\"top\" class=\"vf__value\">" .
+                    $strReturn .= "<strong>" . $strValue . "</strong>" .
+                    $strReturn .= "</td>\n";
                     $strReturn .= "</tr>";
                 }
             }
@@ -1384,10 +1451,19 @@ class ValidForm extends ClassDynamic
         $strReturn .= "function {$this->__name}_init() {\n";
 
         $strCalledClass = static::getStrippedClassName(get_called_class());
-        $strArguments = (count($arrInitArguments) > 0) ? "\"{$this->__name}\", \"{$this->__mainalert}\", " . json_encode($arrInitArguments) : "\"{$this->__name}\", \"{$this->__mainalert}\"";
+        $strArguments = "\"{$this->__name}\", \"{$this->__mainalert}\"";
+        if (count($arrInitArguments) > 0) {
+            $strArguments = "\"{$this->__name}\", \"{$this->__mainalert}\", " . json_encode($arrInitArguments);
+        }
 
+        /**
+         * If the ValidForm class is extended, try to initialize a custom javascript class with the same name as well
+         * If that javascript class is not available / does not exist, continue initializing ValidForm as usual.
+         */
         if ($strCalledClass !== "ValidForm") {
-            $strReturn .= "\tvar objForm = (typeof {$strCalledClass} !== \"undefined\") ? new {$strCalledClass}({$strArguments}) : new ValidForm(\"{$this->__name}\", \"{$this->__mainalert}\");\n";
+            $strReturn .= "\tvar objForm = (typeof {$strCalledClass} !== \"undefined\") ? " .
+            $strReturn .= "new {$strCalledClass}({$strArguments}) : " .
+            $strReturn .= "new ValidForm(\"{$this->__name}\", \"{$this->__mainalert}\");\n";
         } else {
             $strReturn .= "\tvar objForm = new ValidForm(\"{$this->__name}\", \"{$this->__mainalert}\");\n";
         }
