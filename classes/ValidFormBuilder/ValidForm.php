@@ -1414,6 +1414,13 @@ class ValidForm extends ClassDynamic
         $this->__uniqueid = (empty($strId)) ? $this->generateId() : $strId;
     }
 
+    /**
+     * Read parameters from the `$_REQUEST` array with an optional fallback value
+     *
+     * @param string $param The parameter to read
+     * @param string $replaceEmpty Optional replace value when parameter is not available or empty
+     * @return Ambigous <string, array>
+     */
     public static function get($param, $replaceEmpty = "")
     {
         $strReturn = (isset($_REQUEST[$param])) ? $_REQUEST[$param] : "";
