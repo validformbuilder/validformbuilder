@@ -1388,6 +1388,11 @@ class ValidForm extends ClassDynamic
         return $strReturn;
     }
 
+    /**
+     * Generate a unique ID
+     * @param number $intLength ID length
+     * @return string Generated ID
+     */
     public function generateId($intLength = 8)
     {
         $strChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -1404,6 +1409,10 @@ class ValidForm extends ClassDynamic
         return $strReturn;
     }
 
+    /**
+     * Returns the auto-generated unique ID of this form instance.
+     * @return string
+     */
     public function getUniqueId()
     {
         return $this->__uniqueid;
