@@ -571,7 +571,7 @@ class ValidForm extends ClassDynamic
      *     )
      * );
      * ```
-     *
+     * @api
      * @param string $name The element's name
      * @param string $label The element's label
      * @param number $type The element's validation type
@@ -1263,7 +1263,7 @@ class ValidForm extends ClassDynamic
      *
      * @param boolean $hideEmpty Set to true to hide empty field values from the overview. Defaults to false.
      * @param string $collection Optional - advanced usage only; a custom Collection of elements to parse
-     * @return string Generated <table> with `label: value` pairs
+     * @return string Generated `table` with `label: value` pairs
      */
     public function valuesAsHtml($hideEmpty = false, $collection = null)
     {
@@ -1570,7 +1570,7 @@ class ValidForm extends ClassDynamic
      * This sets the internal $__uniqueid parameter. Used internally.
      *
      * @param string $strId Optional unique ID. If not set, a unique ID will be
-     * generated with {@link ValidForm::generateId()}
+     * generated with {@link ValidForm::generateId}
      */
     protected function __setUniqueId($strId = "")
     {
