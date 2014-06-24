@@ -1164,6 +1164,71 @@ class ValidForm extends ClassDynamic
         return $objReturn;
     }
 
+    /**
+     * Get an associative array of invalid field names (the array's keys) and the error message (the values)
+     *
+     * This method is very useful when using ValidForm Builder with AJAX empowered forms.
+     * Example:
+     *
+     * ```php
+     * //*** The basic form set-up
+     * $objForm = new ValidForm('ajaxForm');
+     *
+     * $objForm->addField(
+     *     'firstName',
+     *     'First name',
+     *     ValidForm::VFORM_STRING,
+     *     array(
+     *         'required' => true
+     *     ),
+     *     array(
+     *         'required' => 'This field is required'
+     *     )
+     * );
+     * $objForm->addField(
+     *     'lastName',
+     *     'Last name',
+     *     ValidForm::VFORM_STRING
+     * );
+     * $objForm->addField(
+     *     'emailAddress',
+     *     'E-mail address',
+     *     ValidForm::VFORM_EMAIL,
+     *     array(),
+     *     array(
+     *         'type' => 'Invalid e-mail address'
+     *     )
+     * );
+     *
+     * //*** Form handling
+     * if ($objForm->isSubmitted() && $objForm->isValid()) {
+     *     // Form is submitted and valid, do stuff with the validated values
+     * } elseif ($objForm->isSubmitted()) {
+     *     // Form is submitted but not valid, return the invalid fields array as a response:
+     *     $strOutput = json_encode(
+     *         $objForm->getInvalidFields()
+     *     );
+     * } else {
+     *     // Form is not even submitted, show regular parsed form
+     *     $strOutput = $objForm->toHtml();
+     * }
+     * ```
+     * Assuming we've posted the following values (and managed to bypass client-side validation):
+     * - firstName: ''
+     * - lastName: 'van Baalen'
+     * - emailAddress: 'Robin Hood'
+     *
+     * The following would be a response from `getInvalidFields()`:
+     *
+     * ```php
+     * array(
+     *     'firstName' => 'This field is required',
+     *     'emailAddress' => 'Invalid e-mail address'
+     * )
+     * ```
+     *
+     * @return array
+     */
     public function getInvalidFields()
     {
         $objFields = $this->getFields();
@@ -1180,16 +1245,31 @@ class ValidForm extends ClassDynamic
         return $arrReturn;
     }
 
+    /**
+     * As short as it is powerful: validate the submitted field values.
+     * @return boolean True if successful, false if one of the fields contains an error.
+     */
     public function isValid()
     {
         return $this->__validate();
     }
 
+    /**
+     * A utility method to parse an overview of the submitted values.
+     *
+     * This generates a table with `label: value` pairs. The output of this function is mostly used in for example
+     * e-mail bodies. When the contact form created with ValidForm Builder is submitted, you only have to e-mail
+     * the results of `valuesAsHtml()`
+     *
+     * @param boolean $hideEmpty Set to true to hide empty field values from the overview. Defaults to false.
+     * @param string $collection Optional - advanced usage only; a custom Collection of elements to parse
+     * @return string Generated <table> with `label: value` pairs
+     */
     public function valuesAsHtml($hideEmpty = false, $collection = null)
     {
         $strTable = "\t<table border=\"0\" cellspacing=\"0\" cellpadding=\"0\" class=\"validform\">\n";
         $strTableOutput = "";
-        $collection = (! is_null($collection)) ? $collection : $this->__elements;
+        $collection = (!is_null($collection)) ? $collection : $this->__elements;
 
         foreach ($collection as $objFieldset) {
             $strSet = "";
@@ -1207,6 +1287,17 @@ class ValidForm extends ClassDynamic
         }
     }
 
+    /**
+     * Generates HTML output for all fieldsets and their children elements.
+     *
+     * This method is hardly used in the public API. The only reason why this is a public method is to enable
+     * customization through class extension.
+     *
+     * @param Fieldset $objFieldset The Fieldset object to parse
+     * @param string $strSet Previously generated HTML
+     * @param boolean $hideEmpty Set to true to hide empty field values from the overview. Defaults to false.
+     * @return string Generated HTML
+     */
     public function fieldsetAsHtml($objFieldset, &$strSet, $hideEmpty = false)
     {
         $strTableOutput = "";
@@ -1276,6 +1367,14 @@ class ValidForm extends ClassDynamic
         return $strTableOutput;
     }
 
+    /**
+     * Generates HTML output for the given area object and its child elements
+     *
+     * @param Area $objField The Area object to parse
+     * @param boolean $hideEmpty Set to true to hide empty field values from the overview. Defaults to false.
+     * @param integer $intDynamicCount The dynamic counter for the current area being parsed
+     * @return string Generated HTML
+     */
     private function areaAsHtml($objField, $hideEmpty = false, $intDynamicCount = 0)
     {
         $strReturn = "";
@@ -1333,6 +1432,14 @@ class ValidForm extends ClassDynamic
         return $strReturn;
     }
 
+    /**
+     * Generates HTML output for the given MultiField object and its child elements
+     *
+     * @param MultiField $objField The Area object to parse
+     * @param boolean $hideEmpty Set to true to hide empty field values from the overview. Defaults to false.
+     * @param integer $intDynamicCount The dynamic counter for the current MultiField being parsed
+     * @return string Generated HTML
+     */
     private function multiFieldAsHtml($objField, $hideEmpty = false, $intDynamicCount = 0)
     {
         $strReturn = "";
@@ -1379,6 +1486,14 @@ class ValidForm extends ClassDynamic
         return $strReturn;
     }
 
+    /**
+     * Generates HTML output for the given field object and its child elements
+     *
+     * @param Element $objField The Element class-based object to parse
+     * @param boolean $hideEmpty Set to true to hide empty field values from the overview. Defaults to false.
+     * @param integer $intDynamicCount The dynamic counter for the current Element being parsed
+     * @return string Generated HTML
+     */
     private function fieldAsHtml($objField, $hideEmpty = false, $intDynamicCount = 0)
     {
         $strReturn = "";
@@ -1480,6 +1595,20 @@ class ValidForm extends ClassDynamic
         return $strReturn;
     }
 
+    /**
+     * Generate javascript initialization code.
+     *
+     * This generates the javascript used to create a client-side ValidForm Builder instance.
+     *
+     * @param string $strCustomJs Optional custom javascript code to be executed at the same
+     * time the form is initialized
+     * @param array $arrInitArguments Only use this when initializing a custom client-side object. This is a flat array
+     * of arguments being passed to the custom client-side object.
+     * @param string $blnRawJs If set to true, the generated javascript will not be wrapped in a <script> element. This
+     * is particulary useful when generating javascript to be returned to an AJAX response.
+     *
+     * @return string Generated javascript code
+     */
     protected function __toJS($strCustomJs = "", $arrInitArguments = array(), $blnRawJs = false)
     {
         $strReturn = "";
@@ -1568,6 +1697,10 @@ class ValidForm extends ClassDynamic
         return rand(10000000, 90000000);
     }
 
+    /**
+     * Loops trough all internal elements in the collection and validates each element.
+     * @return boolean True if all elements are valid, false if not.
+     */
     private function __validate()
     {
         $blnReturn = true;
@@ -1582,6 +1715,10 @@ class ValidForm extends ClassDynamic
         return $blnReturn;
     }
 
+    /**
+     * This method converts all key-value pairs in the `$__meta['data']` array to "data-{key}='{value}' attributes
+     * @return string
+     */
     private function __metaToData()
     {
         $strReturn = "";
@@ -1595,6 +1732,11 @@ class ValidForm extends ClassDynamic
         return $strReturn;
     }
 
+    /**
+     * Returns the class name and strips off the namespace.
+     * @param string $classname The classname with optional namespace reference
+     * @return string Only the classname without the namespace.
+     */
     public static function getStrippedClassName($classname)
     {
         $pos = strrpos($classname, '\\');
