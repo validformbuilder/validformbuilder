@@ -32,23 +32,6 @@ namespace ValidFormBuilder;
  * If that javascript class is not available / does not exist, it will gracefully fallback on initializing
  * the standard ValidForm javascript class. This enables high flexibility when extending ValidForm with custom
  * functionality. Non real world example:
- * ```php
- * // On the server side
- * class FancyForm extends ValidForm
- * {
- *     public function __construct()
- *     {
- *         return parent::__construct("fancyform");
- *     }
- * }
- *
- * // On the client side
- * function FancyForm () {
- *     alert('New fancyform');
- *
- *     return new ValidForm('fancyform', 'Fancy main alert');
- * }
- * ```
  *
  * @package ValidForm
  * @author Felix Langfeldt <felix@neverwoods.com>
