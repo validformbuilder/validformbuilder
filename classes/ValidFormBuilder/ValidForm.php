@@ -1061,6 +1061,14 @@ class ValidForm extends ClassDynamic
         return $objReturn;
     }
 
+    /**
+     * Get a flat Collection of all internal elements.
+     *
+     * This loops through all elements and adds each element and their children to a new Collection which will be
+     * returned. This results in a flat Collection filled with ValidForm Builder elements.
+     *
+     * @return \ValidFormBuilder\Collection
+     */
     public function getFields()
     {
         $objFields = new Collection();
@@ -1108,6 +1116,30 @@ class ValidForm extends ClassDynamic
         return $objFields;
     }
 
+    /**
+     * Get a valid field object.
+     *
+     * This is about the most important method of ValidForm Builder. Use this to get a valid field after validation
+     * to fetch it's validated value.
+     *
+     * Example:
+     * ```php
+     * $objForm = new ValidForm('example');
+     *
+     * $objForm->addField('test', 'Test field', ValidForm::VFORM_STRING);
+     *
+     * if ($objForm->isSubmitted() && $objForm->isValid()) {
+     *     $strTest = $objForm->getValidField("test")->getValue();
+     *     // $strTest now contains the validated value of the 'test' field which is safe for database storage etc.
+     *
+     *     $strOutput = "Test value is: " . $strTest;
+     * } else {
+     *     $strOutput = $objForm->toHtml();
+     * }
+     * ```
+     * @param string $id
+     * @return Ambigous <NULL, Base>
+     */
     public function getValidField($id)
     {
         $objReturn = null;
