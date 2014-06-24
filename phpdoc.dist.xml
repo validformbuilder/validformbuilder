@@ -14,8 +14,7 @@
         <visibility></visibility>
     </parser>
     <files>
-        <file>classes/ValidFormBuilder/Area.php</file>
-        <file>classes/ValidFormBuilder/ValidForm.php</file>
+        <file>classes/ValidFormBuilder/*.*</file>
         <ignore-hidden>on</ignore-hidden>
         <ignore-symlinks>on</ignore-symlinks>
     </files>
