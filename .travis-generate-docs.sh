@@ -24,6 +24,9 @@ cp -Rf $TRAVIS_BUILD_DIR/docs/* ./docs
 
 rm docs/placeholder #docs is filled, no need for placeholder anymore
 
+# Add custom stylesheet
+cat ./stylesheets/docs.css >> ./docs/css/template.css
+
 git add --all
 git commit -F- <<EOF
 Latest docs on successful travis build $TRAVIS_BUILD_NUMBER
