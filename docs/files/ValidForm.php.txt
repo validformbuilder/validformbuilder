@@ -34,7 +34,7 @@ namespace ValidFormBuilder;
  * the standard ValidForm javascript class.
  * This enables high flexibility when extending ValidForm with custom functionality. Non real world example:
  *
- * ```php
+ * ```
  * // On the server side
  * class FancyForm extends ValidForm
  * {
@@ -46,7 +46,7 @@ namespace ValidFormBuilder;
  * ```
  *
  * Corresponding client-side example
- * ```js
+ * ```
  * // On the client side
  * function FancyForm () {
  *     alert('New fancyform');
