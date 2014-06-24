@@ -1,3 +1,4 @@
+[![Latest Stable Version](https://poser.pugx.org/neverwoods/validformbuilder/v/stable.png)](https://packagist.org/packages/neverwoods/validformbuilder)
 [![Build Status](https://travis-ci.org/neverwoods/validformbuilder.svg?branch=wip-new-documentation)](https://travis-ci.org/neverwoods/validformbuilder)
 
 ValidForm Builder
