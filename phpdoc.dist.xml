@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <phpdocumentor>
+    <title>ValidForm Builder API Documentation</title>
     <parser>
-        <default-package-name>ValidForm Builder PHPDocumentor</default-package-name>
+        <default-package-name>Validform</default-package-name>
         <encoding>utf-8</encoding>
         <target>docs/build</target>
         <markers>
