@@ -1,6 +1,4 @@
 <?php
-namespace ValidFormBuilder;
-
 /**
  * ValidForm Builder - build valid and secure web forms quickly
  *
@@ -20,44 +18,99 @@ namespace ValidFormBuilder;
  * @link http://validformbuilder.org
  */
 
+namespace ValidFormBuilder;
+
 /**
- * ValidForm Base class.
- * All ValidForm classes share this base logic.
+ * Base class is the parent class for all ValidForm objects
+ *
+ * All ValidForm classes share this base class' logic.
+ *
+ * @package ValidForm
+ * @author Robin van Baalen <robin@neverwoods.com>
+ * @version 3.0.0
+ *
  */
 class Base extends ClassDynamic
 {
-
+    /**
+     * The ID for this instance
+     * @var string
+     */
     protected $__id;
 
+    /**
+     * The name for this object
+     * @var string
+     */
     protected $__name;
 
+    /**
+     * A reference to the parent object
+     * @var Base
+     */
     protected $__parent;
 
+    /**
+     * An array of Condition objects if conditions are added
+     * @var array
+     */
     protected $__conditions = array();
 
+    /**
+     * The meta array
+     * @var array
+     */
     protected $__meta = array();
 
+    /**
+     * Field specific meta array
+     * @var array
+     */
     protected $__fieldmeta = array();
 
+    /**
+     * Label specific meta array
+     * @var array
+     */
     protected $__labelmeta = array();
 
+    /**
+     * Predefiend magic meta prefixes
+     * @var array
+     */
     protected $__magicmeta = array(
         "label",
         "field"
     );
 
+    /**
+     * Reserved meta keys
+     * @var array
+     */
     protected $__magicreservedmeta = array(
         "labelRange"
     );
 
+    /**
+     * Reserved field meta keys
+     * @var unknown
+     */
     protected $__reservedfieldmeta = array(
         "multiple",
         "rows",
         "cols"
     );
 
+    /**
+     * Reserved label meta keys
+     * @var array
+     */
     protected $__reservedlabelmeta = array();
 
+    /**
+     * Reserved general meta keys
+     * @var array
+     */
     protected $__reservedmeta = array(
         "parent",
         "data",
@@ -108,7 +161,6 @@ class Base extends ClassDynamic
     }
 
     /**
-     * Add a new condition to the current field
      *
      * @param [type] $strType
      *            [description]
@@ -118,6 +170,20 @@ class Base extends ClassDynamic
      *            [description]
      * @param [type] $intComparisonType
      *            [description]
+     */
+
+    /**
+     * Add a new condition to the current field
+     *
+     * @param string $strType Define the condition type. This can be either 'required', 'visibile' or 'disabled'
+     * @param boolean $blnValue Define whether this condition activates if the comparison(s) are true or false.
+     * @param array $arrComparisons An array of Comparison objects
+     * @param integer $intComparisonType The comparison type.
+     * Either ValidForm::VFORM_MATCH_ANY or ValidForm::VFORM_MATCH_ALL. With VFORM_MATCH_ANY, as soon as one of the
+     * comparisons validates the condition, the condition is enforced. With ValidForm::VFORM_MATCH_ALL, all of the
+     * comparisons must validate before the condition will be enforced.
+     * @throws \Exception if Condition could not be set
+     * @throws \InvalidArgumentException If invalid arguments are supplied
      */
     public function addCondition($strType, $blnValue, $arrComparisons, $intComparisonType = ValidForm::VFORM_MATCH_ANY)
     {
@@ -150,8 +216,7 @@ class Base extends ClassDynamic
     }
 
     /**
-     * Define getter method - no need to use ClassDynamic for that.
-     *
+     * Get the conditions collection
      * @return array:
      */
     public function getConditions()
@@ -164,9 +229,8 @@ class Base extends ClassDynamic
      * Note: When chaining methods, always use hasCondition() first before chaining
      * for example 'getCondition()->isMet()'.
      *
-     * @param String $strType
-     *            Condition type e.g. 'required', 'visibile' and 'disabled'
-     * @return Condition null found condition or null if no condition is found.
+     * @param string $strType Condition type e.g. 'required', 'visibile' and 'disabled'
+     * @return Condition|null Found condition or null if no condition is found.
      */
     public function getCondition($strProperty)
     {
@@ -188,6 +252,12 @@ class Base extends ClassDynamic
         return $objReturn;
     }
 
+    /**
+     * Only get a condition of a given type if that condition is met. If the condition is not met, this returns null
+     * @param string $strProperty Condition type e.g. 'required', 'visibile' and 'disabled'
+     *
+     * @return NULL
+     */
     public function getMetCondition($strProperty)
     {
         $objReturn = null;
@@ -211,10 +281,9 @@ class Base extends ClassDynamic
     }
 
     /**
-     * Check if the current fields contains a condition object
+     * Check if the current field contains a condition object of a specific type
      *
-     * @param String $strProperty
-     *            Condition type (e.g. 'required', 'disabled', 'visible' etc.)
+     * @param string $strProperty Condition type e.g. 'required', 'visibile' and 'disabled'
      * @return boolean True if element has condition object set, false if not
      */
     public function hasCondition($strProperty)
@@ -231,6 +300,10 @@ class Base extends ClassDynamic
         return $blnReturn;
     }
 
+    /**
+     * Check if the current object contains any conditions at all.
+     * @return boolean True if it contains conditions, false if not.
+     */
     public function hasConditions()
     {
         return (count($this->__conditions) > 0);
@@ -240,7 +313,7 @@ class Base extends ClassDynamic
      * This gets the condition of a given property, just like getCondition().
      * When no condition is found on the current element, the method searches for a condition in it's parent element.
      *
-     * @param string $strProperty
+     * @param string $strProperty Condition type e.g. 'required', 'visibile' and 'disabled'
      * @param Element $objContext
      * @return Ambigous <NULL, Condition>
      */
@@ -292,6 +365,9 @@ class Base extends ClassDynamic
         return $strReturn;
     }
 
+    /**
+     * Based on which conditions are met, corresponding metadata is set on the object.
+     */
     public function setConditionalMeta()
     {
         foreach ($this->__conditions as $objCondition) {
@@ -372,23 +448,55 @@ class Base extends ClassDynamic
     /**
      * Set meta property.
      *
-     * @param string $property
-     *            Property name.
-     * @param mixed $value
-     *            Property value.
-     * @param boolean $blnOverwrite
-     *            Overwrite previous property value.
+     * @param string $property Property name.
+     * @param mixed $value Property value.
+     * @param boolean $blnOverwrite Optionally use this boolean to force an overwrite of previous property value.
      */
     public function setMeta($property, $value, $blnOverwrite = false)
     {
         return $this->__setMeta($property, $value, $blnOverwrite);
     }
 
+    /**
+     * Set field specific meta data
+     * @param string $property Property name.
+     * @param mixed $value Property value.
+     * @param boolean $blnOverwrite Optionally use this boolean to force an overwrite of previous property value.
+     * @return mixed The newly set value
+     */
     public function setFieldMeta($property, $value, $blnOverwrite = false)
     {
         return $this->__setMeta("field" . $property, $value, $blnOverwrite);
     }
 
+    /**
+     * Get field meta property.
+     *
+     * @param string $property Property to get from internal field meta array.
+     * @return string Property value or empty string of none is set.
+     */
+    public function getFieldMeta($property = null, $fallbackValue = "")
+    {
+        if (is_null($property)) {
+            $varReturn = $this->__fieldmeta;
+        } elseif (isset($this->__fieldmeta[$property])
+            && !is_null($this->__fieldmeta[$property])
+        ) {
+            $varReturn = $this->__fieldmeta[$property];
+        } else {
+            $varReturn = $fallbackValue;
+        }
+
+        return $varReturn;
+    }
+
+    /**
+     * Set label specific meta data
+     * @param string $property Property name.
+     * @param mixed $value Property value.
+     * @param boolean $blnOverwrite Optionally use this boolean to force an overwrite of previous property value.
+     * @return mixed The newly set value
+     */
     public function setLabelMeta($property, $value, $blnOverwrite = false)
     {
         return $this->__setMeta("label" . $property, $value, $blnOverwrite);
@@ -397,57 +505,53 @@ class Base extends ClassDynamic
     /**
      * Get meta property.
      *
-     * @param string $property
-     *            Property to get from internal meta array.
+     * @param string $property Property to get from internal meta array.
      * @return string Property value or empty string of none is set.
      */
     public function getMeta($property = null, $fallbackValue = "")
     {
         if (is_null($property)) {
-            return $this->__meta;
+            $varReturn = $this->__meta;
+        } elseif (isset($this->__meta[$property])
+            && !is_null($this->__meta[$property])
+        ) {
+            $varReturn = $this->__meta[$property];
         } else {
-            return (isset($this->__meta[$property]) && ! is_null($this->__meta[$property])) ? $this->__meta[$property] : $fallbackValue;
+            $varReturn = $fallbackValue;
         }
-    }
 
-    /**
-     * Get field meta property.
-     *
-     * @param string $property
-     *            Property to get from internal field meta array.
-     * @return string Property value or empty string of none is set.
-     */
-    public function getFieldMeta($property = null, $fallbackValue = "")
-    {
-        if (is_null($property)) {
-            return $this->__fieldmeta;
-        } else {
-            return (isset($this->__fieldmeta[$property]) && ! is_null($this->__fieldmeta[$property])) ? $this->__fieldmeta[$property] : $fallbackValue;
-        }
+        return $varReturn;
     }
 
     /**
      * Get label meta property.
      *
-     * @param string $property
-     *            Property to get from internal label meta array.
+     * @param string $property Property to get from internal label meta array.
      * @return string Property value or empty string of none is set.
      */
     public function getLabelMeta($property = null, $fallbackValue = "")
     {
         if (is_null($property)) {
-            return $this->__labelmeta;
+            $varReturn = $this->__labelmeta;
+        } elseif (isset($this->__labelmeta[$property])
+            && !is_null($this->__labelmeta[$property])
+        ) {
+            $varReturn = $this->__labelmeta[$property];
         } else {
-            return (isset($this->__labelmeta[$property]) && ! is_null($this->__labelmeta[$property])) ? $this->__labelmeta[$property] : $fallbackValue;
+            $varReturn = $fallbackValue;
         }
+
+        return $varReturn;
     }
 
 	/**
-	 * Return the (original) name of the current field. Use getDynamicName() to get the field name + dynamic count
+	 * Return the (original) name of the current field.
+	 *
+	 * Use getDynamicName() to get the field name + dynamic count
 	 *
 	 * @return string The original field name
 	 */
-	public function getName() 
+	public function getName()
 	{
 		$strName = parent::getName();
 		if (empty($strName)) {
@@ -459,12 +563,13 @@ class Base extends ClassDynamic
 
 	/**
 	 * Same as getName() except getDynamicName adds the current dynamic count to the fieldname as a suffix (_1, _2 etc)
+	 *
 	 * When the dynamic count === 0, the return value equals the output of getName()
 	 *
 	 * @param number $intCount The dynamic count
 	 * @return string The field name
 	 */
-	public function getDynamicName($intCount = 0) 
+	public function getDynamicName($intCount = 0)
 	{
 	    $strName = $this->getName();
 
@@ -494,11 +599,24 @@ class Base extends ClassDynamic
         return $strReturn;
     }
 
+    /**
+     * Default placeholder method
+     *
+     * Should be extended by child classes.
+     *
+     * @param number $intDynamicPosition Dynamic position
+     * @return string
+     */
     public function toJS($intDynamicPosition = 0)
     {
         return "";
     }
 
+    /**
+     * Generates needed javascript initialization code for client-side conditional logic
+     * @param number $intDynamicPosition Dynamic position
+     * @return string Generated javascript code
+     */
     protected function conditionsToJs($intDynamicPosition = 0)
     {
         $strReturn = "";
