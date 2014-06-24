@@ -114,7 +114,7 @@
                         <ul class="dropdown-menu">
                             <li>
                                 <a href="../reports/errors.html">
-                                                                                                                                                                                                                                                                    <i class="icon-list-alt"></i>&#160;Errors <span class="label label-info pull-right">29</span>
+                                                                                                                                                                                                                                                                    <i class="icon-list-alt"></i>&#160;Errors <span class="label label-info pull-right">0</span>
                                 </a>
                             </li>
                             <li>
@@ -144,19 +144,19 @@
                                 <div class="accordion" style="margin-bottom: 0">
         <div class="accordion-group">
             <div class="accordion-heading">
-                                    <a class="accordion-toggle " data-toggle="collapse" data-target="#namespace-1903082184"></a>
+                                    <a class="accordion-toggle " data-toggle="collapse" data-target="#namespace-327158051"></a>
                                 <a href="../namespaces/default.html" style="margin-left: 30px; padding-left: 0">\</a>
             </div>
-            <div id="namespace-1903082184" class="accordion-body collapse in">
+            <div id="namespace-327158051" class="accordion-body collapse in">
                 <div class="accordion-inner">
 
                                                     <div class="accordion" style="margin-bottom: 0">
         <div class="accordion-group">
             <div class="accordion-heading">
-                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-1345238665"></a>
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-650727572"></a>
                                 <a href="../namespaces/ValidFormBuilder.html" style="margin-left: 30px; padding-left: 0">ValidFormBuilder</a>
             </div>
-            <div id="namespace-1345238665" class="accordion-body collapse ">
+            <div id="namespace-650727572" class="accordion-body collapse ">
                 <div class="accordion-inner">
 
                     
@@ -3026,13 +3026,68 @@ if ($objForm-&gt;isSubmitted() &amp;&amp; $objForm-&gt;isValid()) {
             <article class="method">
                 <h3 class="public ">getInvalidFields()</h3>
                 <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
-                <pre class="signature" style="margin-right: 54px;">getInvalidFields()</pre>
-                <p><em></em></p>
-                
+                <pre class="signature" style="margin-right: 54px;">getInvalidFields() : array</pre>
+                <p><em>Get an associative array of invalid field names (the array&#039;s keys) and the error message (the values)</em></p>
+                <p>This method is very useful when using ValidForm Builder with AJAX empowered forms.
+Example:</p>
+<pre><code class="language-php">//*** The basic form set-up
+$objForm = new ValidForm('ajaxForm');
+
+$objForm-&gt;addField(
+    'firstName',
+    'First name',
+    ValidForm::VFORM_STRING,
+    array(
+        'required' =&gt; true
+    ),
+    array(
+        'required' =&gt; 'This field is required'
+    )
+);
+$objForm-&gt;addField(
+    'lastName',
+    'Last name',
+    ValidForm::VFORM_STRING
+);
+$objForm-&gt;addField(
+    'emailAddress',
+    'E-mail address',
+    ValidForm::VFORM_EMAIL,
+    array(),
+    array(
+        'type' =&gt; 'Invalid e-mail address'
+    )
+);
+
+//*** Form handling
+if ($objForm-&gt;isSubmitted() &amp;&amp; $objForm-&gt;isValid()) {
+    // Form is submitted and valid, do stuff with the validated values
+} elseif ($objForm-&gt;isSubmitted()) {
+    // Form is submitted but not valid, return the invalid fields array as a response:
+    $strOutput = json_encode(
+        $objForm-&gt;getInvalidFields()
+    );
+} else {
+    // Form is not even submitted, show regular parsed form
+    $strOutput = $objForm-&gt;toHtml();
+}</code></pre>
+<p>Assuming we've posted the following values (and managed to bypass client-side validation):</p>
+<ul>
+<li>firstName: ''</li>
+<li>lastName: 'van Baalen'</li>
+<li>emailAddress: 'Robin Hood'</li>
+</ul>
+<p>The following would be a response from <code>getInvalidFields()</code>:</p>
+<pre><code class="language-php">array(
+    'firstName' =&gt; 'This field is required',
+    'emailAddress' =&gt; 'Invalid e-mail address'
+)</code></pre>
 
                 
                 
-                            </article>
+                                    <h4>Returns</h4>
+                    array
+                                                </article>
         </div>
         <aside class="span4 detailsbar">
             <h1><i class="icon-arrow-down"></i></h1>
@@ -3057,13 +3112,16 @@ if ($objForm-&gt;isSubmitted() &amp;&amp; $objForm-&gt;isValid()) {
             <article class="method">
                 <h3 class="public ">isValid()</h3>
                 <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
-                <pre class="signature" style="margin-right: 54px;">isValid()</pre>
-                <p><em></em></p>
+                <pre class="signature" style="margin-right: 54px;">isValid() : boolean</pre>
+                <p><em>As short as it is powerful: validate the submitted field values.</em></p>
                 
 
                 
                 
-                            </article>
+                                    <h4>Returns</h4>
+                    boolean
+                                            &mdash; <p>True if successful, false if one of the fields contains an error.</p>
+                                                </article>
         </div>
         <aside class="span4 detailsbar">
             <h1><i class="icon-arrow-down"></i></h1>
@@ -3088,26 +3146,31 @@ if ($objForm-&gt;isSubmitted() &amp;&amp; $objForm-&gt;isValid()) {
             <article class="method">
                 <h3 class="public ">valuesAsHtml()</h3>
                 <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
-                <pre class="signature" style="margin-right: 54px;">valuesAsHtml( <span class="argument">$hideEmpty</span>,  <span class="argument">$collection</span>)</pre>
-                <p><em></em></p>
-                
+                <pre class="signature" style="margin-right: 54px;">valuesAsHtml(boolean <span class="argument">$hideEmpty</span>, string <span class="argument">$collection</span>) : string</pre>
+                <p><em>A utility method to parse an overview of the submitted values.</em></p>
+                <p>This generates a table with <code>label: value</code> pairs. The output of this function is mostly used in for example
+e-mail bodies. When the contact form created with ValidForm Builder is submitted, you only have to e-mail
+the results of <code>valuesAsHtml()</code></p>
 
                                     <h4>Parameters</h4>
                     <table class="table table-condensed table-hover">
                                                     <tr>
-                                <td></td>
+                                <td>boolean</td>
                                 <td>$hideEmpty </td>
-                                <td></td>
+                                <td><p>Set to true to hide empty field values from the overview. Defaults to false.</p></td>
                             </tr>
                                                     <tr>
-                                <td></td>
+                                <td>string</td>
                                 <td>$collection </td>
-                                <td></td>
+                                <td><p>Optional - advanced usage only; a custom Collection of elements to parse</p></td>
                             </tr>
                                             </table>
                 
                 
-                            </article>
+                                    <h4>Returns</h4>
+                    string
+                                            &mdash; <p>Generated <table> with <code>label: value</code> pairs</p>
+                                                </article>
         </div>
         <aside class="span4 detailsbar">
             <h1><i class="icon-arrow-down"></i></h1>
@@ -3132,31 +3195,35 @@ if ($objForm-&gt;isSubmitted() &amp;&amp; $objForm-&gt;isValid()) {
             <article class="method">
                 <h3 class="public ">fieldsetAsHtml()</h3>
                 <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
-                <pre class="signature" style="margin-right: 54px;">fieldsetAsHtml( <span class="argument">$objFieldset</span>,  <span class="argument">$strSet</span>,  <span class="argument">$hideEmpty</span>)</pre>
-                <p><em></em></p>
-                
+                <pre class="signature" style="margin-right: 54px;">fieldsetAsHtml(\ValidFormBuilder\Fieldset <span class="argument">$objFieldset</span>, string <span class="argument">$strSet</span>, boolean <span class="argument">$hideEmpty</span>) : string</pre>
+                <p><em>Generates HTML output for all fieldsets and their children elements.</em></p>
+                <p>This method is hardly used in the public API. The only reason why this is a public method is to enable
+customization through class extension.</p>
 
                                     <h4>Parameters</h4>
                     <table class="table table-condensed table-hover">
                                                     <tr>
-                                <td></td>
+                                <td>\ValidFormBuilder\Fieldset</td>
                                 <td>$objFieldset </td>
-                                <td></td>
+                                <td><p>The Fieldset object to parse</p></td>
                             </tr>
                                                     <tr>
-                                <td></td>
+                                <td>string</td>
                                 <td>$strSet </td>
-                                <td></td>
+                                <td><p>Previously generated HTML</p></td>
                             </tr>
                                                     <tr>
-                                <td></td>
+                                <td>boolean</td>
                                 <td>$hideEmpty </td>
-                                <td></td>
+                                <td><p>Set to true to hide empty field values from the overview. Defaults to false.</p></td>
                             </tr>
                                             </table>
                 
                 
-                            </article>
+                                    <h4>Returns</h4>
+                    string
+                                            &mdash; <p>Generated HTML</p>
+                                                </article>
         </div>
         <aside class="span4 detailsbar">
             <h1><i class="icon-arrow-down"></i></h1>
@@ -3304,21 +3371,24 @@ if ($objForm-&gt;isSubmitted() &amp;&amp; $objForm-&gt;isValid()) {
             <article class="method">
                 <h3 class="public ">getStrippedClassName()</h3>
                 <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
-                <pre class="signature" style="margin-right: 54px;">getStrippedClassName( <span class="argument">$classname</span>)</pre>
-                <p><em></em></p>
+                <pre class="signature" style="margin-right: 54px;">getStrippedClassName(string <span class="argument">$classname</span>) : string</pre>
+                <p><em>Returns the class name and strips off the namespace.</em></p>
                 
 
                                     <h4>Parameters</h4>
                     <table class="table table-condensed table-hover">
                                                     <tr>
-                                <td></td>
+                                <td>string</td>
                                 <td>$classname </td>
-                                <td></td>
+                                <td><p>The classname with optional namespace reference</p></td>
                             </tr>
                                             </table>
                 
                 
-                            </article>
+                                    <h4>Returns</h4>
+                    string
+                                            &mdash; <p>Only the classname without the namespace.</p>
+                                                </article>
         </div>
         <aside class="span4 detailsbar">
             <h1><i class="icon-arrow-down"></i></h1>
@@ -4079,31 +4149,37 @@ generated with {@link ValidForm::generateId()}</p></td>
             <article class="method">
                 <h3 class="protected ">__toJS()</h3>
                 <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
-                <pre class="signature" style="margin-right: 54px;">__toJS( <span class="argument">$strCustomJs</span>,  <span class="argument">$arrInitArguments</span>,  <span class="argument">$blnRawJs</span>)</pre>
-                <p><em></em></p>
-                
+                <pre class="signature" style="margin-right: 54px;">__toJS(string <span class="argument">$strCustomJs</span>, array <span class="argument">$arrInitArguments</span>, string <span class="argument">$blnRawJs</span>) : string</pre>
+                <p><em>Generate javascript initialization code.</em></p>
+                <p>This generates the javascript used to create a client-side ValidForm Builder instance.</p>
 
                                     <h4>Parameters</h4>
                     <table class="table table-condensed table-hover">
                                                     <tr>
-                                <td></td>
+                                <td>string</td>
                                 <td>$strCustomJs </td>
-                                <td></td>
+                                <td><p>Optional custom javascript code to be executed at the same
+time the form is initialized</p></td>
                             </tr>
                                                     <tr>
-                                <td></td>
+                                <td>array</td>
                                 <td>$arrInitArguments </td>
-                                <td></td>
+                                <td><p>Only use this when initializing a custom client-side object. This is a flat array
+of arguments being passed to the custom client-side object.</p></td>
                             </tr>
                                                     <tr>
-                                <td></td>
+                                <td>string</td>
                                 <td>$blnRawJs </td>
-                                <td></td>
+                                <td><p>If set to true, the generated javascript will not be wrapped in a <script> element. This
+is particulary useful when generating javascript to be returned to an AJAX response.</p></td>
                             </tr>
                                             </table>
                 
                 
-                            </article>
+                                    <h4>Returns</h4>
+                    string
+                                            &mdash; <p>Generated javascript code</p>
+                                                </article>
         </div>
         <aside class="span4 detailsbar">
             <h1><i class="icon-arrow-down"></i></h1>
@@ -4162,31 +4238,34 @@ generated with {@link ValidForm::generateId()}</p></td>
             <article class="method">
                 <h3 class="private ">areaAsHtml()</h3>
                 <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
-                <pre class="signature" style="margin-right: 54px;">areaAsHtml( <span class="argument">$objField</span>,  <span class="argument">$hideEmpty</span>,  <span class="argument">$intDynamicCount</span>)</pre>
-                <p><em></em></p>
+                <pre class="signature" style="margin-right: 54px;">areaAsHtml(\ValidFormBuilder\Area <span class="argument">$objField</span>, boolean <span class="argument">$hideEmpty</span>, integer <span class="argument">$intDynamicCount</span>) : string</pre>
+                <p><em>Generates HTML output for the given area object and its child elements</em></p>
                 
 
                                     <h4>Parameters</h4>
                     <table class="table table-condensed table-hover">
                                                     <tr>
-                                <td></td>
+                                <td><a href="../classes/ValidFormBuilder.Area.html">\ValidFormBuilder\Area</a></td>
                                 <td>$objField </td>
-                                <td></td>
+                                <td><p>The Area object to parse</p></td>
                             </tr>
                                                     <tr>
-                                <td></td>
+                                <td>boolean</td>
                                 <td>$hideEmpty </td>
-                                <td></td>
+                                <td><p>Set to true to hide empty field values from the overview. Defaults to false.</p></td>
                             </tr>
                                                     <tr>
-                                <td></td>
+                                <td>integer</td>
                                 <td>$intDynamicCount </td>
-                                <td></td>
+                                <td><p>The dynamic counter for the current area being parsed</p></td>
                             </tr>
                                             </table>
                 
                 
-                            </article>
+                                    <h4>Returns</h4>
+                    string
+                                            &mdash; <p>Generated HTML</p>
+                                                </article>
         </div>
         <aside class="span4 detailsbar">
             <h1><i class="icon-arrow-down"></i></h1>
@@ -4211,31 +4290,34 @@ generated with {@link ValidForm::generateId()}</p></td>
             <article class="method">
                 <h3 class="private ">multiFieldAsHtml()</h3>
                 <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
-                <pre class="signature" style="margin-right: 54px;">multiFieldAsHtml( <span class="argument">$objField</span>,  <span class="argument">$hideEmpty</span>,  <span class="argument">$intDynamicCount</span>)</pre>
-                <p><em></em></p>
+                <pre class="signature" style="margin-right: 54px;">multiFieldAsHtml(\ValidFormBuilder\MultiField <span class="argument">$objField</span>, boolean <span class="argument">$hideEmpty</span>, integer <span class="argument">$intDynamicCount</span>) : string</pre>
+                <p><em>Generates HTML output for the given MultiField object and its child elements</em></p>
                 
 
                                     <h4>Parameters</h4>
                     <table class="table table-condensed table-hover">
                                                     <tr>
-                                <td></td>
+                                <td>\ValidFormBuilder\MultiField</td>
                                 <td>$objField </td>
-                                <td></td>
+                                <td><p>The Area object to parse</p></td>
                             </tr>
                                                     <tr>
-                                <td></td>
+                                <td>boolean</td>
                                 <td>$hideEmpty </td>
-                                <td></td>
+                                <td><p>Set to true to hide empty field values from the overview. Defaults to false.</p></td>
                             </tr>
                                                     <tr>
-                                <td></td>
+                                <td>integer</td>
                                 <td>$intDynamicCount </td>
-                                <td></td>
+                                <td><p>The dynamic counter for the current MultiField being parsed</p></td>
                             </tr>
                                             </table>
                 
                 
-                            </article>
+                                    <h4>Returns</h4>
+                    string
+                                            &mdash; <p>Generated HTML</p>
+                                                </article>
         </div>
         <aside class="span4 detailsbar">
             <h1><i class="icon-arrow-down"></i></h1>
@@ -4260,31 +4342,34 @@ generated with {@link ValidForm::generateId()}</p></td>
             <article class="method">
                 <h3 class="private ">fieldAsHtml()</h3>
                 <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
-                <pre class="signature" style="margin-right: 54px;">fieldAsHtml( <span class="argument">$objField</span>,  <span class="argument">$hideEmpty</span>,  <span class="argument">$intDynamicCount</span>)</pre>
-                <p><em></em></p>
+                <pre class="signature" style="margin-right: 54px;">fieldAsHtml(\ValidFormBuilder\Element <span class="argument">$objField</span>, boolean <span class="argument">$hideEmpty</span>, integer <span class="argument">$intDynamicCount</span>) : string</pre>
+                <p><em>Generates HTML output for the given field object and its child elements</em></p>
                 
 
                                     <h4>Parameters</h4>
                     <table class="table table-condensed table-hover">
                                                     <tr>
-                                <td></td>
+                                <td>\ValidFormBuilder\Element</td>
                                 <td>$objField </td>
-                                <td></td>
+                                <td><p>The Element class-based object to parse</p></td>
                             </tr>
                                                     <tr>
-                                <td></td>
+                                <td>boolean</td>
                                 <td>$hideEmpty </td>
-                                <td></td>
+                                <td><p>Set to true to hide empty field values from the overview. Defaults to false.</p></td>
                             </tr>
                                                     <tr>
-                                <td></td>
+                                <td>integer</td>
                                 <td>$intDynamicCount </td>
-                                <td></td>
+                                <td><p>The dynamic counter for the current Element being parsed</p></td>
                             </tr>
                                             </table>
                 
                 
-                            </article>
+                                    <h4>Returns</h4>
+                    string
+                                            &mdash; <p>Generated HTML</p>
+                                                </article>
         </div>
         <aside class="span4 detailsbar">
             <h1><i class="icon-arrow-down"></i></h1>
@@ -4343,13 +4428,16 @@ generated with {@link ValidForm::generateId()}</p></td>
             <article class="method">
                 <h3 class="private ">__validate()</h3>
                 <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
-                <pre class="signature" style="margin-right: 54px;">__validate()</pre>
-                <p><em></em></p>
+                <pre class="signature" style="margin-right: 54px;">__validate() : boolean</pre>
+                <p><em>Loops trough all internal elements in the collection and validates each element.</em></p>
                 
 
                 
                 
-                            </article>
+                                    <h4>Returns</h4>
+                    boolean
+                                            &mdash; <p>True if all elements are valid, false if not.</p>
+                                                </article>
         </div>
         <aside class="span4 detailsbar">
             <h1><i class="icon-arrow-down"></i></h1>
@@ -4374,13 +4462,15 @@ generated with {@link ValidForm::generateId()}</p></td>
             <article class="method">
                 <h3 class="private ">__metaToData()</h3>
                 <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
-                <pre class="signature" style="margin-right: 54px;">__metaToData()</pre>
-                <p><em></em></p>
+                <pre class="signature" style="margin-right: 54px;">__metaToData() : string</pre>
+                <p><em>This method converts all key-value pairs in the `$__meta[&#039;data&#039;]` array to &quot;data-{key}=&#039;{value}&#039; attributes</em></p>
                 
 
                 
                 
-                            </article>
+                                    <h4>Returns</h4>
+                    string
+                                                </article>
         </div>
         <aside class="span4 detailsbar">
             <h1><i class="icon-arrow-down"></i></h1>
@@ -4449,7 +4539,7 @@ generated with {@link ValidForm::generateId()}</p></td>
                 <section class="span10 offset1">
                     <hr />
                     Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor </a> and authored
-                    on June 24th, 2014 at 04:15.
+                    on June 24th, 2014 at 04:44.
                 </section>
             </section>
         </section>
