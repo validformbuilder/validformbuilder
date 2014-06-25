@@ -428,3 +428,7 @@ body .modal {
 .row-fluid.private {
   display: none;
 }
+
+.collapse {
+  height: auto !important; /* Don't do that weird collapsing side menu, always open it. */
+}
