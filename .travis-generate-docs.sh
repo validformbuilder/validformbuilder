@@ -1,7 +1,7 @@
 #!/bin/bash
 
 echo "Generating docs with PHPDocumentor..."
-php phpDocumentor.phar
+phpdoc # Since we've added vendor/bin to the PATH variable, we can just execute phpdoc now.
 
 echo "Going home $HOME"
 cd ~
