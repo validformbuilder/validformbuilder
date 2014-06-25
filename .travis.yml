@@ -5,7 +5,7 @@ php:
 
 before_script:
 - php composer.phar install
-- export PATH=~/.composer/vendor/bin/:$PATH
+- export PATH=./vendor/bin/:$PATH
 - git config --global credential.helper "store --file=.git/credentials"
 - echo "https://${GH_TOKEN}:@github.com" > .git/credentials
 script:
