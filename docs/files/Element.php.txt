@@ -139,6 +139,7 @@ class Element extends Base
 
     /**
      * Checks if this element is a dynamic counter for another element
+     * @internal
      * @return boolean `True` if it is, `false` if not. Default `false`.
      */
     public function isDynamicCounter()
