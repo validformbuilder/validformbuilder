@@ -30,8 +30,9 @@ namespace ValidFormBuilder;
  * ```
  *
  * @package ValidForm
+ * @author Felix Langfeldt <felix@neverwoods.com>
  * @author Robin van Baalen <robin@neverwoods.com>
- * @version 3.0.0
+ * @version Release: 3.0.0
  */
 class Checkbox extends Element
 {
