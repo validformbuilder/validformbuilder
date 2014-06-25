@@ -23,6 +23,12 @@ namespace ValidFormBuilder;
 /**
  * Create checkboxes (boolean fields)
  *
+ * Example:
+ * ```php
+ * // The following code adds a \ValidFormBuilder\Checkbox element to the forms elements collection.
+ * $objForm->addField("agree", "I agree to the terms and conditions.", ValidForm::VFORM_BOOLEAN);
+ * ```
+ *
  * @package ValidForm
  * @author Robin van Baalen <robin@neverwoods.com>
  * @version 3.0.0
@@ -31,7 +37,9 @@ class Checkbox extends Element
 {
 
     /**
-     * @see \ValidFormBuilder\Element::toHtml()
+     * Generate HTML output
+     *
+     * @see \ValidFormBuilder\Element::toHtml() Element::toHtml() for a full description of this method
      */
     public function toHtml($submitted = false, $blnSimpleLayout = false, $blnLabel = true, $blnDisplayErrors = true)
     {
@@ -53,7 +61,7 @@ class Checkbox extends Element
                 $this->setMeta("class", "vf__nolabel");
             }
 
-                // Call this right before __getMetaString();
+            // Call this right before __getMetaString();
             $this->setConditionalMeta();
 
             $strOutput = "<div{$this->__getMetaString()}>\n";
@@ -108,6 +116,11 @@ class Checkbox extends Element
         return $strOutput;
     }
 
+    /**
+     * Generate Javascript
+     *
+     * @see \ValidFormBuilder\Element::toJS() Element::toJS() for a full description of this method
+     */
     public function toJS($intDynamicPosition = 0)
     {
         $strOutput = "";
