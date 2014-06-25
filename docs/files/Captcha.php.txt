@@ -19,6 +19,9 @@ namespace ValidFormBuilder;
 /**
  * Captcha Class
  *
+ * Won't be adding documentation for this class since it's deprecated and **not** recommended to use.
+ *
+ * @deprecated
  * @package ValidForm
  * @author Felix Langfeldt
  * @version Release: 0.2.3
