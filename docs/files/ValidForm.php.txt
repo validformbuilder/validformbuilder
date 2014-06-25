@@ -32,7 +32,7 @@ namespace ValidFormBuilder;
  * @package ValidForm
  * @author Felix Langfeldt <felix@neverwoods.com>
  * @author Robin van Baalen <robin@neverwoods.com>
- * @version 3.0.0
+ * @version Release: 3.0.0
  *
  * @method string getDescription() getDescription() Returns the value of `$__description`
  * @method void setDescription() setDescription(string $strDescription) Overwrites the value of `$__description`
@@ -477,9 +477,9 @@ class ValidForm extends ClassDynamic
      * influence the fact that you're creating a hidden field. This is only used for validation of the hidden field's
      * content.
      * @param array $meta Optional meta array
-     * @param boolean $blnJustRender If true, only create a `\ValidFormBuilder\Hidden` instance and return it. When
-     * false, this `\ValidFormBuilder\Hidden` instance is added to the internal `elements` collection and will be
-     * parsed when `toHtml()` is called.
+     * @param boolean $blnJustRender If true, only create a {@link \ValidFormBuilder\Hidden} instance and return it.
+     * When false, this {@link \ValidFormBuilder\Hidden} instance is added to the internal `elements` collection
+     * and will be parsed when `toHtml()` is called.
      *
      * @return \ValidFormBuilder\Hidden
      */
@@ -507,6 +507,7 @@ class ValidForm extends ClassDynamic
      * Use this utility method to only render \ValidFormBuilder\Element instances of the defined types.
      *
      * Elements rendered with this method aren't added to the internal elements collection.
+     *
      * @param string $name The element's name
      * @param string $label The element's label
      * @param number $type The element's validation type
