@@ -8,3 +8,7 @@
 .collapse {
   height: auto !important; /* Don't do that weird collapsing side menu, always open it. */
 }
+
+footer.row-fluid {
+  display: none; /* Hide footer */
+}
