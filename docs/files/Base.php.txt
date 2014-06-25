@@ -341,6 +341,8 @@ class Base extends ClassDynamic
     /**
      * This method determines wheter or not to show the 'add extra field' dynamic button
      * based on it's parent's condition state.
+     *
+     * @internal
      */
     public function getDynamicButtonMeta()
     {
@@ -367,6 +369,8 @@ class Base extends ClassDynamic
 
     /**
      * Based on which conditions are met, corresponding metadata is set on the object.
+     *
+     * @internal
      */
     public function setConditionalMeta()
     {

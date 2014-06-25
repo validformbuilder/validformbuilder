@@ -352,6 +352,7 @@ class Element extends Base
     /**
      * Check if the current field is a dynamic field.
      *
+     * @internal
      * @return boolean True if dynamic, false if not.
      */
     public function isDynamic()
@@ -361,7 +362,7 @@ class Element extends Base
 
     /**
      * Get the number of dynamic fields from the dynamic counter field.
-     *
+     * @internal
      * @return integer The dynamic count of this field
      */
     public function getDynamicCount($blnParentIsDynamic = false)
