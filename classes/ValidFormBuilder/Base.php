@@ -34,48 +34,56 @@ class Base extends ClassDynamic
 {
     /**
      * The ID for this instance
+     * @internal
      * @var string
      */
     protected $__id;
 
     /**
      * The name for this object
+     * @internal
      * @var string
      */
     protected $__name;
 
     /**
      * A reference to the parent object
+     * @internal
      * @var Base
      */
     protected $__parent;
 
     /**
      * An array of Condition objects if conditions are added
+     * @internal
      * @var array
      */
     protected $__conditions = array();
 
     /**
      * The meta array
+     * @internal
      * @var array
      */
     protected $__meta = array();
 
     /**
      * Field specific meta array
+     * @internal
      * @var array
      */
     protected $__fieldmeta = array();
 
     /**
      * Label specific meta array
+     * @internal
      * @var array
      */
     protected $__labelmeta = array();
 
     /**
      * Predefiend magic meta prefixes
+     * @internal
      * @var array
      */
     protected $__magicmeta = array(
@@ -85,6 +93,7 @@ class Base extends ClassDynamic
 
     /**
      * Reserved meta keys
+     * @internal
      * @var array
      */
     protected $__magicreservedmeta = array(
@@ -93,7 +102,8 @@ class Base extends ClassDynamic
 
     /**
      * Reserved field meta keys
-     * @var unknown
+     * @internal
+     * @var array
      */
     protected $__reservedfieldmeta = array(
         "multiple",
@@ -103,12 +113,14 @@ class Base extends ClassDynamic
 
     /**
      * Reserved label meta keys
+     * @internal
      * @var array
      */
     protected $__reservedlabelmeta = array();
 
     /**
      * Reserved general meta keys
+     * @internal
      * @var array
      */
     protected $__reservedmeta = array(
@@ -136,7 +148,7 @@ class Base extends ClassDynamic
 
     /**
      * Get a collection of fields and look for dynamic counters recursively
-     *
+     * @internal
      * @param Collection $objFields
      * @param Collection $objCollection
      * @return Collection
@@ -159,18 +171,6 @@ class Base extends ClassDynamic
 
         return $objCollection;
     }
-
-    /**
-     *
-     * @param [type] $strType
-     *            [description]
-     * @param [type] $blnValue
-     *            [description]
-     * @param [type] $arrComparisons
-     *            [description]
-     * @param [type] $intComparisonType
-     *            [description]
-     */
 
     /**
      * Add a new condition to the current field
@@ -217,7 +217,7 @@ class Base extends ClassDynamic
 
     /**
      * Get the conditions collection
-     * @return array:
+     * @return array
      */
     public function getConditions()
     {
@@ -227,9 +227,9 @@ class Base extends ClassDynamic
     /**
      * Get element's Condition object
      * Note: When chaining methods, always use hasCondition() first before chaining
-     * for example 'getCondition()->isMet()'.
+     * for example `getCondition()->isMet()`.
      *
-     * @param string $strType Condition type e.g. 'required', 'visibile' and 'disabled'
+     * @param string $strProperty Condition type e.g. 'required', 'visibile' and 'disabled'
      * @return Condition|null Found condition or null if no condition is found.
      */
     public function getCondition($strProperty)
@@ -315,7 +315,7 @@ class Base extends ClassDynamic
      *
      * @param string $strProperty Condition type e.g. 'required', 'visibile' and 'disabled'
      * @param Element $objContext
-     * @return Ambigous <NULL, Condition>
+     * @return Condition|null
      */
     public function getConditionRecursive($strProperty, $objContext = null)
     {
@@ -473,7 +473,8 @@ class Base extends ClassDynamic
      * Get field meta property.
      *
      * @param string $property Property to get from internal field meta array.
-     * @return string Property value or empty string of none is set.
+     * @param string $fallbackValue Optional fallback value if no value is found for requested property
+     * @return mixed
      */
     public function getFieldMeta($property = null, $fallbackValue = "")
     {
@@ -503,10 +504,16 @@ class Base extends ClassDynamic
     }
 
     /**
+     *
+     * @return string Property value or empty string of none is set.
+     */
+
+    /**
      * Get meta property.
      *
      * @param string $property Property to get from internal meta array.
-     * @return string Property value or empty string of none is set.
+     * @param string $fallbackValue Optional fallback value if requested property has no value
+     * @return mixed
      */
     public function getMeta($property = null, $fallbackValue = "")
     {
@@ -527,6 +534,7 @@ class Base extends ClassDynamic
      * Get label meta property.
      *
      * @param string $property Property to get from internal label meta array.
+     * @param string $fallbackValue Optional fallback value if requested property has no value
      * @return string Property value or empty string of none is set.
      */
     public function getLabelMeta($property = null, $fallbackValue = "")
@@ -566,7 +574,7 @@ class Base extends ClassDynamic
 	 *
 	 * When the dynamic count === 0, the return value equals the output of getName()
 	 *
-	 * @param number $intCount The dynamic count
+	 * @param integer $intCount The dynamic count
 	 * @return string The field name
 	 */
 	public function getDynamicName($intCount = 0)
@@ -585,7 +593,7 @@ class Base extends ClassDynamic
      * Use the 'long' (regular)
      * label as a fallback return value.
      *
-     * @return String The short or regular element label
+     * @return string The short or regular element label
      */
     public function getShortLabel()
     {
@@ -604,7 +612,7 @@ class Base extends ClassDynamic
      *
      * Should be extended by child classes.
      *
-     * @param number $intDynamicPosition Dynamic position
+     * @param integer $intDynamicPosition Dynamic position
      * @return string
      */
     public function toJS($intDynamicPosition = 0)
@@ -614,7 +622,8 @@ class Base extends ClassDynamic
 
     /**
      * Generates needed javascript initialization code for client-side conditional logic
-     * @param number $intDynamicPosition Dynamic position
+     * @internal
+     * @param integer $intDynamicPosition Dynamic position
      * @return string Generated javascript code
      */
     protected function conditionsToJs($intDynamicPosition = 0)
@@ -630,6 +639,12 @@ class Base extends ClassDynamic
         return $strReturn;
     }
 
+    /**
+     * Generate matchWith javascript code
+     * @internal
+     * @param integer $intDynamicPosition
+     * @return string Generated javascript
+     */
     protected function matchWithToJs($intDynamicPosition = 0)
     {
         $strReturn = "";
@@ -651,11 +666,9 @@ class Base extends ClassDynamic
      * data from your CMS or an other library in a field object, for later use.
      * Note: Using this method will overwrite any previously set data with the same key!
      *
-     * @param [string] $strKey
-     *            The key for this storage
-     * @param [mixed] $varValue
-     *            The value to store
-     * @return [boolean] True if set successful, false if not.
+     * @param string $strKey The key for this storage
+     * @param mixed $varValue The value to store
+     * @return boolean True if set successful, false if not.
      */
     public function setData($strKey = null, $varValue = null)
     {
@@ -675,9 +688,8 @@ class Base extends ClassDynamic
     /**
      * Get a value from the internal data array.
      *
-     * @param [string] $key
-     *            The key of the data attribute to return
-     * @return [mixed]
+     * @param string $strKey The key of the data attribute to return
+     * @return mixed
      */
     public function getData($strKey = null)
     {
@@ -697,11 +709,21 @@ class Base extends ClassDynamic
         return $varReturn;
     }
 
+    /**
+     * Generate unique name based on class name
+     * @internal
+     * @return string
+     */
     protected function __generateName()
     {
         return strtolower(ValidForm::getStrippedClassName(get_class($this))) . "_" . mt_rand();
     }
 
+    /**
+     * Convert meta array to html attributes+values
+     * @internal
+     * @return string
+     */
     protected function __getMetaString()
     {
         $strOutput = "";
@@ -715,6 +737,11 @@ class Base extends ClassDynamic
         return $strOutput;
     }
 
+    /**
+     * Convert fieldmeta array to html attributes+values
+     * @internal
+     * @return string
+     */
     protected function __getFieldMetaString()
     {
         $strOutput = "";
@@ -730,6 +757,11 @@ class Base extends ClassDynamic
         return $strOutput;
     }
 
+    /**
+     * Convert labelmeta array to html attributes+values
+     * @internal
+     * @return string
+     */
     protected function __getLabelMetaString()
     {
         $strOutput = "";
@@ -748,13 +780,12 @@ class Base extends ClassDynamic
     /**
      * Filter out special field or label specific meta tags from the main
      * meta array and add them to the designated meta arrays __fieldmeta or __labelmeta.
-     * Example: $meta["labelstyle"] = "width: 20px"; will become $__fieldmeta["style"] = "width: 20px;";
+     * Example: `$meta["labelstyle"] = "width: 20px";` will become `$__fieldmeta["style"] = "width: 20px;"`
      * Any meta key that starts with 'label' or 'field' will be assigned to it's
      * corresponding internal meta array.
      *
-     * @return
-     *
-     *
+     * @internal
+     * @return void
      */
     protected function __initializeMeta()
     {
@@ -777,6 +808,14 @@ class Base extends ClassDynamic
         }
     }
 
+    /**
+     * Helper method to set meta data
+     * @internal
+     * @param string $property The key to set in the meta array
+     * @param string $value The corresponding value
+     * @param string $blnOverwrite If true, overwrite pre-existing key-value pair
+     * @return array
+     */
     protected function __setMeta($property, $value, $blnOverwrite = false)
     {
         $internalMetaArray = &$this->__meta;
@@ -837,6 +876,13 @@ class Base extends ClassDynamic
         }
     }
 
+    /**
+     * Helper method. Replaces meta data.
+     * @internal
+     * @param string $property
+     * @param string $originalValue
+     * @param string $replacement
+     */
     protected function __replaceMeta($property, $originalValue, $replacement = null)
     {
         $internalMetaArray = &$this->__meta;
