@@ -252,46 +252,55 @@ class ValidForm extends ClassDynamic
 
     /**
      * The form's description paragraph content
+     * @internal
      * @var string
      */
     protected $__description;
     /**
      * Form's custom meta like style, classes etc.
+     * @internal
      * @var array
      */
     protected $__meta;
     /**
      * Default values array
+     * @internal
      * @var array
      */
     protected $__defaults = array();
     /**
      * The HTML <form>-tag's 'action' attribute value
+     * @internal
      * @var string
      */
     protected $__action;
     /**
      * The submit button's label
+     * @internal
      * @var string
      */
     protected $__submitlabel;
     /**
      * An array of custom javascript events to include in javascript parsing
-     * @var unknown
+     * @internal
+     * @var array
      */
     protected $__jsevents = array();
     /**
      * The main elements Collection
+     * @internal
      * @var \ValidFormBuilder\Collection
      */
     protected $__elements;
     /**
      * The form's name
+     * @internal
      * @var string
      */
     protected $__name;
     /**
      * The main alert to be shown when any alert has happened after trying to submit.
+     * @internal
      * @var string
      */
     protected $__mainalert;
@@ -304,22 +313,26 @@ class ValidForm extends ClassDynamic
      *
      * //*** Now when a required field is parsed, it's output will be 'Label *' where the * is the 'required style'.
      * ```
+     * @internal
      * @var string
      */
     protected $__requiredstyle;
     /**
      * This message is shown in `valuesAsHtml()` output when for
      * example an area or fieldset don't contain any submitted values.
+     * @internal
      * @var string
      */
     protected $__novaluesmessage;
     /**
      * The collection of cached fields.
+     * @internal
      * @var \ValidFormBuilder\Collection
      */
     private $__cachedfields = null;
     /**
      * A uniquely generated string to identify the form with.
+     * @internal
      * @var string
      */
     private $__uniqueid;
@@ -1370,6 +1383,7 @@ class ValidForm extends ClassDynamic
     /**
      * Generates HTML output for the given area object and its child elements
      *
+     * @internal
      * @param Area $objField The Area object to parse
      * @param boolean $hideEmpty Set to true to hide empty field values from the overview. Defaults to false.
      * @param integer $intDynamicCount The dynamic counter for the current area being parsed
@@ -1435,6 +1449,7 @@ class ValidForm extends ClassDynamic
     /**
      * Generates HTML output for the given MultiField object and its child elements
      *
+     * @internal
      * @param MultiField $objField The Area object to parse
      * @param boolean $hideEmpty Set to true to hide empty field values from the overview. Defaults to false.
      * @param integer $intDynamicCount The dynamic counter for the current MultiField being parsed
@@ -1489,6 +1504,7 @@ class ValidForm extends ClassDynamic
     /**
      * Generates HTML output for the given field object and its child elements
      *
+     * @internal
      * @param Element $objField The Element class-based object to parse
      * @param boolean $hideEmpty Set to true to hide empty field values from the overview. Defaults to false.
      * @param integer $intDynamicCount The dynamic counter for the current Element being parsed
@@ -1569,6 +1585,7 @@ class ValidForm extends ClassDynamic
      *
      * This sets the internal $__uniqueid parameter. Used internally.
      *
+     * @internal
      * @param string $strId Optional unique ID. If not set, a unique ID will be
      * generated with {@link ValidForm::generateId}
      */
@@ -1607,6 +1624,7 @@ class ValidForm extends ClassDynamic
      * @param string $blnRawJs If set to true, the generated javascript will not be wrapped in a <script> element. This
      * is particulary useful when generating javascript to be returned to an AJAX response.
      *
+     * @internal
      * @return string Generated javascript code
      */
     protected function __toJS($strCustomJs = "", $arrInitArguments = array(), $blnRawJs = false)
@@ -1680,6 +1698,7 @@ class ValidForm extends ClassDynamic
     /**
      * Generate a random name for the form.
      *
+     * @internal
      * @return string the random name
      */
     protected function __generateName()
@@ -1690,6 +1709,7 @@ class ValidForm extends ClassDynamic
     /**
      * Generate a random number between 10000000 and 90000000.
      *
+     * @internal
      * @return int the generated random number
      */
     private function __random()
@@ -1699,6 +1719,7 @@ class ValidForm extends ClassDynamic
 
     /**
      * Loops trough all internal elements in the collection and validates each element.
+     * @internal
      * @return boolean True if all elements are valid, false if not.
      */
     private function __validate()
@@ -1717,6 +1738,7 @@ class ValidForm extends ClassDynamic
 
     /**
      * This method converts all key-value pairs in the `$__meta['data']` array to "data-{key}='{value}' attributes
+     * @internal
      * @return string
      */
     private function __metaToData()
