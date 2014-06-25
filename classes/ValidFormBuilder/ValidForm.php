@@ -35,30 +35,32 @@ namespace ValidFormBuilder;
  * @version 3.0.0
  *
  * @method string getDescription() getDescription() Returns the value of `$__description`
- * @method void setDescription() setDescription($strDescription) Overwrites the value of `$__description`
+ * @method void setDescription() setDescription(string $strDescription) Overwrites the value of `$__description`
  * @method array getMeta() getMeta() Returns the value of `$__meta`
- * @method void setMeta() setMeta($arrMeta) Overwrites the value of `$__meta`
+ * @method void setMeta() setMeta(array $arrMeta) Overwrites the value of `$__meta`
  * @method array getDefaults() getDefaults() Returns the value of `$__defaults`
  * @method string getAction() getAction() Returns the value of `$__action`
- * @method void setAction() setAction($strFormAction) Overwrites the value of `$__action`
+ * @method void setAction() setAction(string $strFormAction) Overwrites the value of `$__action`
  * @method string getSubmitLabel() getSubmitLabel() Returns the value of `$__submitlabel`
- * @method void setSubmitLabel() setSubmitLabel($strSubmitLabel) Overwrites the value of `$__submitlabel`
+ * @method void setSubmitLabel() setSubmitLabel(string $strSubmitLabel) Overwrites the value of `$__submitlabel`
  * @method array getJsEvents() getJsEvents() Returns the value of `$__jsevents`
- * @method void setJsEvents() setJsEvents($arrJsEvents) Overwrites the value of `$__jsevents`.
- *     **Not recommended** use {@link ValidForm::addJsEvent()} instead.
+ * @method void setJsEvents() setJsEvents(array $arrJsEvents) Overwrites the value of `$__jsevents`.
+ * **Not recommended** use {@link ValidForm::addJsEvent()} instead.
  * @method \ValidFormBuilder\Collection getElements() getElements() Returns the internal elements collection
  * @method void setElements() setElements(Collection $objCollection) Overwrites the internal elements collection.
  * @method string getName() getName() Returns the name of this ValidForm instance
- * @method void setName() setName($strName) Overwrites the name of this ValidForm instance
+ * @method void setName() setName(string $strName) Overwrites the name of this ValidForm instance
  * @method string getMainAlert() getMainAlert() Returns the main alertof this ValidForm instance
- * @method void setMainAlert() setMainAlert($strMainAlert) Overwrites the main alert of this ValidForm instance
+ * @method void setMainAlert() setMainAlert(string $strMainAlert) Overwrites the main alert of this ValidForm instance
  * @method string getRequiredStyle() getRequiredStyle() Returns the value of `$__requiredstyle`
- * @method void setRequiredStyle() setRequiredStyle($strName) Overwrites the value of `$__requiredstyle`.
+ * @method void setRequiredStyle() setRequiredStyle(string $strRequiredStyle) Overwrites the
+ * value of `$__requiredstyle`.
  * @method string getNoValuesMessage() getNoValuesMessage() Returns the value of `$__novaluesmessage`
- * @method void setNoValuesMessage() setNoValuesMessage($strName) Overwrites the value of `$__novaluesmessage`.
+ * @method void setNoValuesMessage() setNoValuesMessage(string $strNoValuesMessage) Overwrites
+ * the value of `$__novaluesmessage`.
  * @method void setCachedFields() setCachedFields(Collection $objCollection) Overwrites the value of `$__cachedfields`.
  *     **Not recommended for API use**
- * @method void setUniqueId() setUniqueId($strName) Overwrites the value of `$__uniqueid`.
+ * @method void setUniqueId() setUniqueId(string $strUniqueId) Overwrites the value of `$__uniqueid`.
  */
 class ValidForm extends ClassDynamic
 {
