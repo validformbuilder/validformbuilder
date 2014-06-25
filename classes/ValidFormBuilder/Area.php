@@ -27,14 +27,16 @@ namespace ValidFormBuilder;
  * on all it's child form fields using the auto-generated checkbox in the Area's legend.
  *
  * @package ValidForm
- * @author Felix Langfeldt
- * @version 3.0
+ * @author Felix Langfeldt <felix@neverwoods.com>
+ * @author Robin van Baalen <robin@neverwoods.com>
+ * @version 3.0.0
  *
  */
 class Area extends Base
 {
     /**
      * The Area's label, presented as a 'legend' header above the area
+     * @internal
      * @var string
      */
     protected $__label;
@@ -42,24 +44,28 @@ class Area extends Base
     /**
      * Make this an active area with __active set on true. When active, the entire area
      * can be enabled and disabled with a checkbox.
+     * @internal
      * @var boolean
      */
     protected $__active;
 
     /**
      * Use in combination with 'active'; defines if the active area is checked by default or not
+     * @internal
      * @var boolean
      */
     protected $__checked;
 
     /**
      * Defines if this area is dynamic
+     * @internal
      * @var boolean
      */
     protected $__dynamic;
 
     /**
      * The label used by __addDynamicHtml() which a user can click to clone this dynamic area
+     * @internal
      * @var string
      */
     protected $__dynamicLabel;
@@ -67,12 +73,14 @@ class Area extends Base
     /**
      * Using the dynamic 'setRequiredStyle()', you can add for instance an asterix to each required field like so:
      * $this->setRequiredStyle('%s *'); // First show the label, %s, then show an asterix after the label.
-     * @var unknown
+     * @internal
+     * @var string
      */
     protected $__requiredstyle;
 
     /**
      * The child fields collection
+     * @internal
      * @var \ValidFormBuilder\Collection
      */
     protected $__fields;
@@ -280,6 +288,7 @@ class Area extends Base
 
     /**
      * Same as toHtml() but with dynamic counter as extra parameter
+     * @internal
      * @param boolean $submitted Define if the area has been submitted and propagate that flag to the child fields
      * @param boolean $blnSimpleLayout Only render in simple layout mode
      * @param boolean $blnLabel
@@ -346,6 +355,7 @@ class Area extends Base
 
     /**
      * Generate extra HTML output to facilitate the dynamic duplication logic
+     * @internal
      * @return string
      */
     protected function __addDynamicHtml()
@@ -525,6 +535,7 @@ class Area extends Base
     /**
      * Validate this Area and it's children's submitted values
      *
+     * @internal
      * @param string $intCount The dynamic counter
      * @return boolean True if Area and children are valid, false if not.
      */
