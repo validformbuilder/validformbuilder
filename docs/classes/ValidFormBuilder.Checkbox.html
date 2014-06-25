@@ -114,7 +114,7 @@
                         <ul class="dropdown-menu">
                             <li>
                                 <a href="../reports/errors.html">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <i class="icon-list-alt"></i>&#160;Errors <span class="label label-info pull-right">522</span>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <i class="icon-list-alt"></i>&#160;Errors <span class="label label-info pull-right">520</span>
                                 </a>
                             </li>
                             <li>
@@ -144,19 +144,19 @@
                                 <div class="accordion" style="margin-bottom: 0">
         <div class="accordion-group">
             <div class="accordion-heading">
-                                    <a class="accordion-toggle " data-toggle="collapse" data-target="#namespace-846212774"></a>
+                                    <a class="accordion-toggle " data-toggle="collapse" data-target="#namespace-2091105530"></a>
                                 <a href="../namespaces/default.html" style="margin-left: 30px; padding-left: 0">\</a>
             </div>
-            <div id="namespace-846212774" class="accordion-body collapse in">
+            <div id="namespace-2091105530" class="accordion-body collapse in">
                 <div class="accordion-inner">
 
                                                     <div class="accordion" style="margin-bottom: 0">
         <div class="accordion-group">
             <div class="accordion-heading">
-                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-557597292"></a>
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-77422103"></a>
                                 <a href="../namespaces/ValidFormBuilder.html" style="margin-left: 30px; padding-left: 0">ValidFormBuilder</a>
             </div>
-            <div id="namespace-557597292" class="accordion-body collapse ">
+            <div id="namespace-77422103" class="accordion-body collapse ">
                 <div class="accordion-inner">
 
                     
@@ -219,7 +219,9 @@
 
                     <h1><small>\ValidFormBuilder</small>Checkbox</h1>
                     <p><em>Create checkboxes (boolean fields)</em></p>
-                    <p>The base class for most form elements</p>
+                    <p>Example:</p>
+<pre><code class="language-php">// The following code adds a \ValidFormBuilder\Checkbox element to the forms elements collection.
+$objForm-&gt;addField("agree", "I agree to the terms and conditions.", ValidForm::VFORM_BOOLEAN);</code></pre>
 
                     <section id="summary">
                         <h2>Summary</h2>
@@ -437,7 +439,7 @@
                 <h3 class="public ">toJS()</h3>
                 <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
                 <pre class="signature" style="margin-right: 54px;">toJS( <span class="argument">$intDynamicPosition</span>) : string</pre>
-                <p><em>Default placeholder method</em></p>
+                <p><em>Generate Javascript</em></p>
                 <p>Should be extended by child classes.</p>
 
                                     <h4>Parameters</h4>
@@ -457,7 +459,9 @@
         <aside class="span4 detailsbar">
             <h1><i class="icon-arrow-down"></i></h1>
                                                             <dl>
-                                                                            </dl>
+                                                                                            <dt>See also</dt>
+                                                                <dd><a href="../classes/ValidFormBuilder.Element.html#method_toJS"><span class="namespace-wrapper">Element::toJS() for a full description of this method</span></a></dd>
+                                                                </dl>
             <h2>Tags</h2>
             <table class="table table-condensed">
                                     <tr><td colspan="2"><em>None found</em></td></tr>
@@ -1382,7 +1386,7 @@ Note: Using this method will overwrite any previously set data with the same key
                 <h3 class="public ">toHtml()</h3>
                 <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
                 <pre class="signature" style="margin-right: 54px;">toHtml( <span class="argument">$submitted</span>,  <span class="argument">$blnSimpleLayout</span>,  <span class="argument">$blnLabel</span>,  <span class="argument">$blnDisplayErrors</span>)</pre>
-                <p><em></em></p>
+                <p><em>Generate HTML output</em></p>
                 
 
                                     <h4>Parameters</h4>
@@ -1416,7 +1420,7 @@ Note: Using this method will overwrite any previously set data with the same key
             <h1><i class="icon-arrow-down"></i></h1>
                                                             <dl>
                                                                                             <dt>See also</dt>
-                                                                <dd><a href=""><span class="namespace-wrapper"></span></a></dd>
+                                                                <dd><a href=""><span class="namespace-wrapper">Element::toHtml() for a full description of this method</span></a></dd>
                                                                 </dl>
             <h2>Tags</h2>
             <table class="table table-condensed">
@@ -1475,7 +1479,7 @@ Note: Using this method will overwrite any previously set data with the same key
                 <section class="span10 offset1">
                     <hr />
                     Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor </a> and authored
-                    on June 25th, 2014 at 05:11.
+                    on June 25th, 2014 at 05:16.
                 </section>
             </section>
         </section>

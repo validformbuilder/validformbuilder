@@ -612,7 +612,7 @@ class Base extends ClassDynamic
     }
 
     /**
-     * Default placeholder method
+     * Generate corresponding javascript code for this element
      *
      * Should be extended by child classes.
      *
