@@ -1,6 +1,4 @@
 <?php
-namespace ValidFormBuilder;
-
 /**
  * ValidForm Builder - build valid and secure web forms quickly
  *
@@ -20,16 +18,21 @@ namespace ValidFormBuilder;
  * @link http://validformbuilder.org
  */
 
+namespace ValidFormBuilder;
+
 /**
- * Checkbox Class
+ * Create checkboxes (boolean fields)
  *
  * @package ValidForm
- * @author Felix Langfeldt
- * @version Release: 0.2.4
+ * @author Robin van Baalen <robin@neverwoods.com>
+ * @version 3.0.0
  */
 class Checkbox extends Element
 {
 
+    /**
+     * @see \ValidFormBuilder\Element::toHtml()
+     */
     public function toHtml($submitted = false, $blnSimpleLayout = false, $blnLabel = true, $blnDisplayErrors = true)
     {
         $blnError = ($submitted && ! $this->__validator->validate() && $blnDisplayErrors) ? true : false;

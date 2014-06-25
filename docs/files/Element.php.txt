@@ -236,10 +236,10 @@ class Element extends Base
      * Generate HTML output
      *
      * @internal
-     * @param boolean $submitted
-     * @param boolean $blnSimpleLayout
-     * @param boolean $blnLabel
-     * @param boolean $blnDisplayErrors
+     * @param boolean $submitted Force if this field should behave like a submitted field or not (e.g. validate etc.)
+     * @param boolean $blnSimpleLayout Force 'simple layout' output -- no labels and wrapping divs.
+     * @param boolean $blnLabel Show label. Don't show if false.
+     * @param boolean $blnDisplayErrors Show errors (default true). Don't show errors if false.
      * @return string
      */
     public function toHtml($submitted = false, $blnSimpleLayout = false, $blnLabel = true, $blnDisplayErrors = true)
