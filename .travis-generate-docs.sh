@@ -25,6 +25,9 @@ cp -Rf $TRAVIS_BUILD_DIR/docs/* ./docs
 rm docs/placeholder #docs is filled, no need for placeholder anymore
 
 # Add custom stylesheet
+
+echo "Append custom stylesheet ./stylesheets/docs.css to default stylesheet ./docs/css/template.css"
+ls -l
 cat ./stylesheets/docs.css >> ./docs/css/template.css
 
 git add --all
