@@ -24,7 +24,7 @@ namespace ValidFormBuilder;
 /**
  * Captcha Class
  *
- * # Warning
+ * ## Warning -- Don't use Captcha!
  * Won't be adding documentation for this class since it's deprecated and **not** recommended to use.
  *
  * @deprecated
