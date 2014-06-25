@@ -48,16 +48,19 @@ class Button extends Base
 
     /**
      * Button ID
+     * @internal
      * @var string
      */
     protected $__id;
     /**
      * Button label
+     * @internal
      * @var string
      */
     protected $__label;
     /**
      * Button type - either 'submit' or 'button'
+     * @internal
      * @var string
      */
     protected $__type;
@@ -135,6 +138,7 @@ class Button extends Base
 
     /**
      * Generate a unique ID based on the class name and a random integer.
+     * @internal
      * @return string The generted Unique ID
      */
     private function __generateId()
