@@ -422,3 +422,9 @@ body .modal {
         width: 16.5%;
     }
 }
+.row-fluid.protected {
+  display: none;
+}
+.row-fluid.private {
+  display: none;
+}
