@@ -176,13 +176,46 @@ class Base extends ClassDynamic
     /**
      * Add a new condition to the current field
      *
-     * @param string $strType Define the condition type. This can be either 'required', 'visibile' or 'disabled'
+     * Example; hide the 'last name' field if first name is Robin
+     * ```php
+     * $objFirstName = $objForm->addField('firstname', 'First name', ValidForm::VFORM_STRING);
+     * $objLastName = $objForm->addField('lastname', 'Last name', ValidForm::VFORM_STRING);
+     * $objLastName->addCondition(
+     *     'visible', // Last name will become
+     *     false, // 'not visible' (visible -> false)
+     *     array(
+     *         // When field $objFirstName 'is equal to' Robin
+     *         new \ValidFormBuilder\Comparison($objFirstName, ValidForm::VFORM_COMPARISON_EQUAL, 'Robin')
+     *     )
+     * );
+     * ```
+     *
+     * Example 2; Don't change first name as soon as you've entered your last name
+     * ```php
+     * $objFirstName = $objForm->addField('firstname', 'First name', ValidForm::VFORM_STRING);
+     * $objLastName = $objForm->addField('lastname', 'Last name', ValidForm::VFORM_STRING);
+     * $objFirstName->addCondition(
+     *     'enabled', // First Name will be
+     *     false, // 'disabled' (enabled -> false)
+     *     array(
+     *         // When field $objLastName 'is not empty'
+     *         // (note that we cal leave out the third 'value' parameter in this case)
+     *         new \ValidFormBuilder\Comparison($objLastName, ValidForm::VFORM_COMPARISON_NOT_EMPTY)
+     *     )
+     * );
+     * ```
+     *
+     * **Note** The form even validates when first name is 'Robin' and 'last name' is a required field. Due to the
+     * nature of conditions, they propagate gracefully: when a field is hidden, it can't be required either.
+     *
+     * @param string $strType Define the condition type. This can be either `required`, `visibile` or `enabled`
      * @param boolean $blnValue Define whether this condition activates if the comparison(s) are true or false.
      * @param array $arrComparisons An array of Comparison objects
      * @param integer $intComparisonType The comparison type.
-     * Either ValidForm::VFORM_MATCH_ANY or ValidForm::VFORM_MATCH_ALL. With VFORM_MATCH_ANY, as soon as one of the
-     * comparisons validates the condition, the condition is enforced. With ValidForm::VFORM_MATCH_ALL, all of the
-     * comparisons must validate before the condition will be enforced.
+     * Either `ValidForm::VFORM_MATCH_ANY` or `ValidForm::VFORM_MATCH_ALL`. With `VFORM_MATCH_ANY`,
+     * as soon as one of the comparisons validates the condition, the condition is enforced.
+     * With `ValidForm::VFORM_MATCH_ALL`, all of the comparisons must validate before the condition will be enforced.
+     *
      * @throws \Exception if Condition could not be set
      * @throws \InvalidArgumentException If invalid arguments are supplied
      */
