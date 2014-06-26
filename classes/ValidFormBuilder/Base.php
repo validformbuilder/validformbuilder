@@ -260,10 +260,11 @@ class Base extends ClassDynamic
 
     /**
      * Get element's Condition object
+     *
      * Note: When chaining methods, always use hasCondition() first before chaining
      * for example `getCondition()->isMet()`.
      *
-     * @param string $strProperty Condition type e.g. 'required', 'visibile' and 'disabled'
+     * @param string $strProperty Condition type e.g. 'required', 'visibile' and 'enabled'
      * @return Condition|null Found condition or null if no condition is found.
      */
     public function getCondition($strProperty)
@@ -288,7 +289,7 @@ class Base extends ClassDynamic
 
     /**
      * Only get a condition of a given type if that condition is met. If the condition is not met, this returns null
-     * @param string $strProperty Condition type e.g. 'required', 'visibile' and 'disabled'
+     * @param string $strProperty Condition type e.g. 'required', 'visibile' and 'enabled'
      *
      * @return NULL
      */
@@ -317,7 +318,7 @@ class Base extends ClassDynamic
     /**
      * Check if the current field contains a condition object of a specific type
      *
-     * @param string $strProperty Condition type e.g. 'required', 'visibile' and 'disabled'
+     * @param string $strProperty Condition type e.g. 'required', 'visibile' and 'enabled'
      * @return boolean True if element has condition object set, false if not
      */
     public function hasCondition($strProperty)
@@ -347,7 +348,7 @@ class Base extends ClassDynamic
      * This gets the condition of a given property, just like getCondition().
      * When no condition is found on the current element, the method searches for a condition in it's parent element.
      *
-     * @param string $strProperty Condition type e.g. 'required', 'visibile' and 'disabled'
+     * @param string $strProperty Condition type e.g. 'required', 'visibile' and 'enabled'
      * @param Element $objContext
      * @return Condition|null
      */
