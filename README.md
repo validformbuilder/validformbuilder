@@ -2,7 +2,7 @@ Quick links:
 
 - [About](#validform-builder)
 - [Installation](#installation)
-- [Documentation](#documentation)
+- [Documentation](#user-content-documentation)
 
 
 ValidForm Builder
