@@ -1,6 +1,13 @@
 [![Latest Stable Version](https://poser.pugx.org/neverwoods/validformbuilder/v/stable.png)](https://packagist.org/packages/neverwoods/validformbuilder)
 [![Build Status](https://travis-ci.org/neverwoods/validformbuilder.svg?branch=wip-new-documentation)](https://travis-ci.org/neverwoods/validformbuilder)
 
+Quick links:
+------------
+
+- [About](#validform-builder)
+- [Installation](#installation)
+- [Documentation](#user-content-documentation)
+
 ValidForm Builder
 ================
 
@@ -39,7 +46,6 @@ By [using the tilde](https://getcomposer.org/doc/01-basic-usage.md#package-versi
 
 Documentation
 =============
-
 [The documentation](https://github.com/neverwoods/validformbuilder/blob/master/docs/documentation.md) still isn't as complete as we'd like it to be but it should enable you to get started with the essential basics of ValidForm Builder.
 
 > We are currently working on extensive new documentation. If you want to track our progress, be sure to take a look at the `wip-new-documentation` branch or join the discussion in [this pull request](https://github.com/neverwoods/validformbuilder/pull/9)
