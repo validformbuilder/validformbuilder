@@ -28,8 +28,6 @@ namespace ValidFormBuilder;
  * @package ValidForm
  * @author Robin van Baalen <robin@neverwoods.com>
  * @version 3.0.0
- *
- * @internal
  */
 class Base extends ClassDynamic
 {
