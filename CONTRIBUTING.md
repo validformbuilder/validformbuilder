@@ -1,6 +1,6 @@
 ### Creating an Issue
 
-If you have a question on how something works, or its expected functionality, you might want to visit [StackOverflow.com](http://stackoverflow.com/questions/tagged/validform) first.
+If you have a question on how something works, or its expected functionality, you might want to visit [stackoverflow](http://stackoverflow.com/questions/tagged/validform) first.
 
 If you think you have found a bug, or have a new feature idea, please start by making sure it hasn't already been [reported](https://github.com/neverwoods/validformbuilder/issues?state=open). You can search through existing issues to see if someone's reported one similar to yours.
 
