@@ -144,19 +144,19 @@
                                 <div class="accordion" style="margin-bottom: 0">
         <div class="accordion-group">
             <div class="accordion-heading">
-                                    <a class="accordion-toggle " data-toggle="collapse" data-target="#namespace-1881839701"></a>
+                                    <a class="accordion-toggle " data-toggle="collapse" data-target="#namespace-749311961"></a>
                                 <a href="../namespaces/default.html" style="margin-left: 30px; padding-left: 0">\</a>
             </div>
-            <div id="namespace-1881839701" class="accordion-body collapse in">
+            <div id="namespace-749311961" class="accordion-body collapse in">
                 <div class="accordion-inner">
 
                                                     <div class="accordion" style="margin-bottom: 0">
         <div class="accordion-group">
             <div class="accordion-heading">
-                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-881914280"></a>
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-980441136"></a>
                                 <a href="../namespaces/ValidFormBuilder.html" style="margin-left: 30px; padding-left: 0">ValidFormBuilder</a>
             </div>
-            <div id="namespace-881914280" class="accordion-body collapse ">
+            <div id="namespace-980441136" class="accordion-body collapse ">
                 <div class="accordion-inner">
 
                     
@@ -235,9 +235,6 @@
                         <section class="row-fluid public">
                             <section class="span4">
                                                                     <a href="../classes/ValidFormBuilder.Base.html#method_addCondition" class="">addCondition()</a><br />
-                                                                    <a href="../classes/ValidFormBuilder.Base.html#method_getConditions" class="">getConditions()</a><br />
-                                                                    <a href="../classes/ValidFormBuilder.Base.html#method_getCondition" class="">getCondition()</a><br />
-                                                                    <a href="../classes/ValidFormBuilder.Base.html#method_getMetCondition" class="">getMetCondition()</a><br />
                                                                     <a href="../classes/ValidFormBuilder.Base.html#method_hasCondition" class="">hasCondition()</a><br />
                                                                     <a href="../classes/ValidFormBuilder.Base.html#method_hasConditions" class="">hasConditions()</a><br />
                                                                     <a href="../classes/ValidFormBuilder.Base.html#method_getConditionRecursive" class="">getConditionRecursive()</a><br />
@@ -248,8 +245,6 @@
                                                                     <a href="../classes/ValidFormBuilder.Base.html#method_getMeta" class="">getMeta()</a><br />
                                                                     <a href="../classes/ValidFormBuilder.Base.html#method_getLabelMeta" class="">getLabelMeta()</a><br />
                                                                     <a href="../classes/ValidFormBuilder.String.html#method_getName" class="">getName()</a><br />
-                                                                    <a href="../classes/ValidFormBuilder.Base.html#method_getDynamicName" class="">getDynamicName()</a><br />
-                                                                    <a href="../classes/ValidFormBuilder.Base.html#method_getShortLabel" class="">getShortLabel()</a><br />
                                                                     <a href="../classes/ValidFormBuilder.String.html#method_toJS" class="">toJS()</a><br />
                                                                     <a href="../classes/ValidFormBuilder.Base.html#method_setData" class="">setData()</a><br />
                                                                     <a href="../classes/ValidFormBuilder.String.html#method_getData" class="">getData()</a><br />
@@ -491,111 +486,6 @@ With <code>ValidForm::VFORM_MATCH_ALL</code>, all of the comparisons must valida
                                                                     </dl>
                 
                             </article>
-        </div>
-        <aside class="span4 detailsbar">
-            <h1><i class="icon-arrow-down"></i></h1>
-                                                            <dl>
-                                                    <dt>Inherited from</dt>
-                    <dd><a href="../classes/ValidFormBuilder.Base.html"><div class="path-wrapper">\ValidFormBuilder\Base</div></a></dd>
-                                                            </dl>
-            <h2>Tags</h2>
-            <table class="table table-condensed">
-                                    <tr><td colspan="2"><em>None found</em></td></tr>
-                            </table>
-        </aside>
-    </div>
-
-                                    <div class="row-fluid">
-        <div class="span8 content class">
-            <a id="method_getConditions" name="method_getConditions" class="anchor"></a>
-            <article class="method">
-                <h3 class="public ">getConditions()</h3>
-                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
-                <pre class="signature" style="margin-right: 54px;">getConditions() : array</pre>
-                <p><em>Get the conditions collection</em></p>
-                
-
-                
-                
-                                    <h4>Returns</h4>
-                    array
-                                                </article>
-        </div>
-        <aside class="span4 detailsbar">
-            <h1><i class="icon-arrow-down"></i></h1>
-                                                            <dl>
-                                                    <dt>Inherited from</dt>
-                    <dd><a href="../classes/ValidFormBuilder.Base.html"><div class="path-wrapper">\ValidFormBuilder\Base</div></a></dd>
-                                                            </dl>
-            <h2>Tags</h2>
-            <table class="table table-condensed">
-                                    <tr><td colspan="2"><em>None found</em></td></tr>
-                            </table>
-        </aside>
-    </div>
-
-                                    <div class="row-fluid">
-        <div class="span8 content class">
-            <a id="method_getCondition" name="method_getCondition" class="anchor"></a>
-            <article class="method">
-                <h3 class="public ">getCondition()</h3>
-                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
-                <pre class="signature" style="margin-right: 54px;">getCondition(string <span class="argument">$strProperty</span>) : \ValidFormBuilder\Condition|null</pre>
-                <p><em>Get element&#039;s Condition object</em></p>
-                <p>Note: When chaining methods, always use hasCondition() first before chaining
-for example <code>getCondition()-&gt;isMet()</code>.</p>
-
-                                    <h4>Parameters</h4>
-                    <table class="table table-condensed table-hover">
-                                                    <tr>
-                                <td>string</td>
-                                <td>$strProperty </td>
-                                <td><p>Condition type e.g. 'required', 'visibile' and 'enabled'</p></td>
-                            </tr>
-                                            </table>
-                
-                
-                                    <h4>Returns</h4>
-                    \ValidFormBuilder\Condition|null
-                                            &mdash; <p>Found condition or null if no condition is found.</p>
-                                                </article>
-        </div>
-        <aside class="span4 detailsbar">
-            <h1><i class="icon-arrow-down"></i></h1>
-                                                            <dl>
-                                                    <dt>Inherited from</dt>
-                    <dd><a href="../classes/ValidFormBuilder.Base.html"><div class="path-wrapper">\ValidFormBuilder\Base</div></a></dd>
-                                                            </dl>
-            <h2>Tags</h2>
-            <table class="table table-condensed">
-                                    <tr><td colspan="2"><em>None found</em></td></tr>
-                            </table>
-        </aside>
-    </div>
-
-                                    <div class="row-fluid">
-        <div class="span8 content class">
-            <a id="method_getMetCondition" name="method_getMetCondition" class="anchor"></a>
-            <article class="method">
-                <h3 class="public ">getMetCondition()</h3>
-                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
-                <pre class="signature" style="margin-right: 54px;">getMetCondition(string <span class="argument">$strProperty</span>) : NULL</pre>
-                <p><em>Only get a condition of a given type if that condition is met. If the condition is not met, this returns null</em></p>
-                
-
-                                    <h4>Parameters</h4>
-                    <table class="table table-condensed table-hover">
-                                                    <tr>
-                                <td>string</td>
-                                <td>$strProperty </td>
-                                <td><p>Condition type e.g. 'required', 'visibile' and 'enabled'</p></td>
-                            </tr>
-                                            </table>
-                
-                
-                                    <h4>Returns</h4>
-                    NULL
-                                                </article>
         </div>
         <aside class="span4 detailsbar">
             <h1><i class="icon-arrow-down"></i></h1>
@@ -1009,75 +899,6 @@ for example <code>getCondition()-&gt;isMet()</code>.</p>
             <h1><i class="icon-arrow-down"></i></h1>
                                                             <dl>
                                                                             </dl>
-            <h2>Tags</h2>
-            <table class="table table-condensed">
-                                    <tr><td colspan="2"><em>None found</em></td></tr>
-                            </table>
-        </aside>
-    </div>
-
-                                    <div class="row-fluid">
-        <div class="span8 content class">
-            <a id="method_getDynamicName" name="method_getDynamicName" class="anchor"></a>
-            <article class="method">
-                <h3 class="public ">getDynamicName()</h3>
-                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
-                <pre class="signature" style="margin-right: 54px;">getDynamicName(integer <span class="argument">$intCount</span>) : string</pre>
-                <p><em>Same as getName() except getDynamicName adds the current dynamic count to the fieldname as a suffix (_1, _2 etc)</em></p>
-                <p>When the dynamic count === 0, the return value equals the output of getName()</p>
-
-                                    <h4>Parameters</h4>
-                    <table class="table table-condensed table-hover">
-                                                    <tr>
-                                <td>integer</td>
-                                <td>$intCount </td>
-                                <td><p>The dynamic count</p></td>
-                            </tr>
-                                            </table>
-                
-                
-                                    <h4>Returns</h4>
-                    string
-                                            &mdash; <p>The field name</p>
-                                                </article>
-        </div>
-        <aside class="span4 detailsbar">
-            <h1><i class="icon-arrow-down"></i></h1>
-                                                            <dl>
-                                                    <dt>Inherited from</dt>
-                    <dd><a href="../classes/ValidFormBuilder.Base.html"><div class="path-wrapper">\ValidFormBuilder\Base</div></a></dd>
-                                                            </dl>
-            <h2>Tags</h2>
-            <table class="table table-condensed">
-                                    <tr><td colspan="2"><em>None found</em></td></tr>
-                            </table>
-        </aside>
-    </div>
-
-                                    <div class="row-fluid">
-        <div class="span8 content class">
-            <a id="method_getShortLabel" name="method_getShortLabel" class="anchor"></a>
-            <article class="method">
-                <h3 class="public ">getShortLabel()</h3>
-                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
-                <pre class="signature" style="margin-right: 54px;">getShortLabel() : string</pre>
-                <p><em>Get the short label (meta &#039;summaryLabel&#039;) if available.</em></p>
-                <p>Use the 'long' (regular)
-label as a fallback return value.</p>
-
-                
-                
-                                    <h4>Returns</h4>
-                    string
-                                            &mdash; <p>The short or regular element label</p>
-                                                </article>
-        </div>
-        <aside class="span4 detailsbar">
-            <h1><i class="icon-arrow-down"></i></h1>
-                                                            <dl>
-                                                    <dt>Inherited from</dt>
-                    <dd><a href="../classes/ValidFormBuilder.Base.html"><div class="path-wrapper">\ValidFormBuilder\Base</div></a></dd>
-                                                            </dl>
             <h2>Tags</h2>
             <table class="table table-condensed">
                                     <tr><td colspan="2"><em>None found</em></td></tr>
