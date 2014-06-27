@@ -1,28 +1,38 @@
 <?php
-namespace ValidFormBuilder;
-
 /**
  * ValidForm Builder - build valid and secure web forms quickly
  *
- * Copyright (c) 2009-2013 Neverwoods Internet Technology
+ * Copyright (c) 2009-2013 Neverwoods Internet Technology - http://neverwoods.com
+ *
+ * Felix Langfeldt <felix@neverwoods.com>
+ * Robin van Baalen <robin@neverwoods.com>
+ *
  * All rights reserved.
  *
  * This software is released under the GNU GPL v2 License <http://www.gnu.org/licenses/old-licenses/gpl-2.0.html>
  *
  * @package ValidForm
- * @author Felix Langfeldt <felix@neverwoods.com>, Robin van Baalen <robin@neverwoods.com>
- * @copyright 2009-2013 Neverwoods Internet Technology
+ * @author Felix Langfeldt <felix@neverwoods.com>
+ * @author Robin van Baalen <robin@neverwoods.com>
+ * @copyright 2009-2013 Neverwoods Internet Technology - http://neverwoods.com
  * @license http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU GPL v2
- * @link http://code.google.com/p/validformbuilder/
- *
+ * @link http://validformbuilder.org
  */
+
+namespace ValidFormBuilder;
 
 /**
  * Condition class
- * A condition object is a set of one or more comparisons.
+ *
+ * A condition object is a set of one or more comparisons. Don't use the Condition object as a standalone, rather
+ * use the element's {@link \ValidFormBuilder\Base::addCondition()} method.
  *
  * @package ValidForm
+ * @author Felix Langfeldt <felix@neverwoods.com>
  * @author Robin van Baalen <robin@neverwoods.com>
+ * @version Release: 3.0.0
+ *
+ * @internal
  */
 class Condition extends ClassDynamic
 {
@@ -37,6 +47,10 @@ class Condition extends ClassDynamic
 
     protected $__comparisontype;
 
+    /**
+     * Predefined condition properties
+     * @var array
+     */
     private $__conditionProperties = array(
         "visible",
         "enabled",
@@ -62,28 +76,45 @@ class Condition extends ClassDynamic
     }
 
     /**
-     * Define getters - no need to use the ClassDynamic for that.
+     * Get subject value
+     * @return Base Subject (field)element
      */
     public function getSubject()
     {
         return $this->__subject;
     }
 
+    /**
+     * Get Property
+     * @return string
+     */
     public function getProperty()
     {
         return $this->__property;
     }
 
+    /**
+     * Get value
+     * @return boolean
+     */
     public function getValue()
     {
         return $this->__value;
     }
 
+    /**
+     * Get comparisons collection
+     * @return array
+     */
     public function getComparisons()
     {
         return $this->__comparisons;
     }
 
+    /**
+     * Get comparison type
+     * @return
+     */
     public function getComparisonType()
     {
         return $this->__comparisontype;
@@ -92,17 +123,23 @@ class Condition extends ClassDynamic
     /**
      * Add new comparison to Condition
      *
-     * @param Comparison|Array $varComparison
-     *            Comparison array or Comparison object
+     * @param Comparison|array $varComparison Comparison array or Comparison object
+     * @throws \Exception if Reflection couldn't initialize new Comparison object
+     * @throws \InvalidArgumentException if no valid Comparison data is supplied
      */
     public function addComparison($varComparison)
     {
         $objComparison = null;
 
         if (is_array($varComparison)) {
-            $varArguments = (isset($varComparison["subject"])) ? array_values($varComparison) : array_keys($varComparison);
+            $varArguments = array_keys($varComparison);
+            if (isset($varComparison["subject"])) {
+                // Apparently, this is an associative array
+                $varArguments = array_values($varComparison);
+            }
 
             try {
+                // @todo Replace Reflection with call_user_func_array()
                 $objReflection = new \ReflectionClass("Comparison");
                 $objComparison = $objReflection->newInstanceArgs($varArguments);
             } catch (\Exception $e) {
@@ -121,6 +158,12 @@ class Condition extends ClassDynamic
         }
     }
 
+    /**
+     * Verify if the condition is met
+     *
+     * @param number $intDynamicPosition Dynamic position of the field to verify
+     * @return boolean True if it is met, false if not
+     */
     public function isMet($intDynamicPosition = 0)
     {
         $blnResult = false;
@@ -140,14 +183,15 @@ class Condition extends ClassDynamic
 
             case ValidForm::VFORM_MATCH_ALL:
                 $blnFailed = false;
+				/* @var $objComparison Comparison */
                 foreach ($this->__comparisons as $objComparison) {
-                    if (! $objComparison->check($intDynamicPosition)) {
+                    if (!$objComparison->check($intDynamicPosition)) {
                         $blnFailed = true;
                         break;
                     }
                 }
 
-                $blnResult = ! $blnFailed;
+                $blnResult = !$blnFailed;
 
                 break;
         }
@@ -168,7 +212,8 @@ class Condition extends ClassDynamic
     public function jsonSerialize($intDynamicPosition = null)
     {
         if (get_class($this->__subject) == "ValidFormBuilder\\GroupField"
-                || get_class($this->__subject) == "ValidFormBuilder\\Area") {
+            || get_class($this->__subject) == "ValidFormBuilder\\Area"
+        ) {
             $identifier = $this->__subject->getId();
         } elseif (get_class($this->__subject) == "ValidFormBuilder\\String") {
             $identifier = $this->__subject->getMeta("id");

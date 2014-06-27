@@ -473,7 +473,7 @@ class ValidForm extends ClassDynamic
      * them validated using ValidForm Builder.
      *
      * @param string $name The hidden field's `name` attribute
-     * @param string $type Define a validation type using one of the ValidForm::VFORM_ constants. This does **not**
+     * @param string $type Define a validation type using one of the `ValidForm::VFORM_` constants. This does **not**
      * influence the fact that you're creating a hidden field. This is only used for validation of the hidden field's
      * content.
      * @param array $meta Optional meta array
