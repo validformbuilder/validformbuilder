@@ -1,3 +1,10 @@
+Quick links:
+
+- [About](#validform-builder)
+- [Installation](#installation)
+- [Documentation](#documentation)
+
+
 ValidForm Builder
 ================
 
