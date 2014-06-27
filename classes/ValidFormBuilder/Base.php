@@ -249,6 +249,7 @@ class Base extends ClassDynamic
 
     /**
      * Get the conditions collection
+     * @internal
      * @return array
      */
     public function getConditions()
@@ -262,6 +263,7 @@ class Base extends ClassDynamic
      * Note: When chaining methods, always use hasCondition() first before chaining
      * for example `getCondition()->isMet()`.
      *
+     * @internal
      * @param string $strProperty Condition type e.g. 'required', 'visibile' and 'enabled'
      * @return Condition|null Found condition or null if no condition is found.
      */
@@ -289,7 +291,8 @@ class Base extends ClassDynamic
      * Only get a condition of a given type if that condition is met. If the condition is not met, this returns null
      * @param string $strProperty Condition type e.g. 'required', 'visibile' and 'enabled'
      *
-     * @return NULL
+     * @internal
+     * @return null|Condition
      */
     public function getMetCondition($strProperty)
     {
@@ -611,6 +614,7 @@ class Base extends ClassDynamic
 	 *
 	 * When the dynamic count === 0, the return value equals the output of getName()
 	 *
+     * @internal
 	 * @param integer $intCount The dynamic count
 	 * @return string The field name
 	 */
@@ -630,6 +634,7 @@ class Base extends ClassDynamic
      * Use the 'long' (regular)
      * label as a fallback return value.
      *
+     * @internal
      * @return string The short or regular element label
      */
     public function getShortLabel()
