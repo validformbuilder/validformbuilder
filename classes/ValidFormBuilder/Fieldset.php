@@ -1,38 +1,74 @@
 <?php
-namespace ValidFormBuilder;
-
 /**
  * ValidForm Builder - build valid and secure web forms quickly
  *
- * Copyright (c) 2009-2012, Felix Langfeldt <flangfeldt@felix-it.com>.
+ * Copyright (c) 2009-2014 Neverwoods Internet Technology - http://neverwoods.com
+ *
+ * Felix Langfeldt <felix@neverwoods.com>
+ * Robin van Baalen <robin@neverwoods.com>
+ *
  * All rights reserved.
  *
  * This software is released under the GNU GPL v2 License <http://www.gnu.org/licenses/old-licenses/gpl-2.0.html>
  *
  * @package ValidForm
- * @author Felix Langfeldt <flangfeldt@felix-it.com>
- * @copyright 2009-2012 Felix Langfeldt <flangfeldt@felix-it.com>
+ * @author Felix Langfeldt <felix@neverwoods.com>, Robin van Baalen <robin@neverwoods.com>
+ * @copyright 2009-2014 Neverwoods Internet Technology - http://neverwoods.com
  * @license http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU GPL v2
- * @link http://code.google.com/p/validformbuilder/
+ * @link http://validformbuilder.org
+ * @version 3.0.0
  */
+
+namespace ValidFormBuilder;
 
 /**
  * Fieldset Class
  *
- * @package ValidForm
- * @author Felix Langfeldt
- * @version Release: 0.2.2
+ * Create a new fieldset to the form like this:
+ * ```php
+ * $objForm->addFieldset(
+ *     'Great title for the fieldset',
+ *     'We need a small note as well',
+ *     'Note:'
+ * );
+ * ```
  *
+ * @package ValidForm
+ * @author Felix Langfeldt <felix@neverwoods.com>
+ * @author Robin van Baalen <robin@neverwoods.com>
+ * @version 3.0.0
  */
 class Fieldset extends Base
 {
 
+    /**
+     * Note header
+     * @internal
+     * @var string
+     */
     protected $__header;
 
+    /**
+     * Note body
+     * @internal
+     * @var string
+     */
     protected $__note;
 
+    /**
+     * Internal fields collection
+     * @internal
+     * @var Collection
+     */
     protected $__fields;
 
+    /**
+     * Create a new fieldset
+     * @param string $header Optional fieldset title
+     * @param string $noteHeader Optional fieldset note block header
+     * @param string $noteBody Optional fieldset note block body
+     * @param array $meta The meta array
+     */
     public function __construct($header = null, $noteHeader = null, $noteBody = null, $meta = array())
     {
         $this->__header = $header;
