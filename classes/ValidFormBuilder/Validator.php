@@ -40,7 +40,6 @@ class Validator
         ValidForm::VFORM_URL => '/^(http(s)?:\/\/)*[a-z0-9-]+(.[a-z0-9-]+)*(:[0-9]+)?(\/.*)?$/i',
         ValidForm::VFORM_FILE => '/^[-a-zàáâãäåæçèéêëìíîïðñòóôõöøùúûüýß0-9.\':"\\\\_\/ ]*$/i',
         ValidForm::VFORM_BOOLEAN => '/^[on]*$/i',
-        ValidForm::VFORM_CAPTCHA => '/^[-a-z]*$/i',
         ValidForm::VFORM_RADIO_LIST => '',
         ValidForm::VFORM_CHECK_LIST => '',
         ValidForm::VFORM_SELECT_LIST => '',
@@ -58,28 +57,20 @@ class Validator
             if (empty(self::$checks[$checkType])) {
                 $blnReturn = true;
             } else {
-                switch ($checkType) {
-                    case ValidForm::VFORM_CAPTCHA:
-                        // FIXME: Disabled PhpCaptcha until we find a better solution.
-                        // $blnReturn = PhpCaptcha::Validate(ValidForm::get($value));
-
-                        break;
-                    default:
-                        if (is_array($value)) {
-                            $arrValues = $value;
-                            $blnSub = true;
-                            foreach ($arrValues as $value) {
-                                $blnSub = preg_match(self::$checks[$checkType], $value);
-                                if (! $blnSub) {
-                                    // *** At least 1 value is not valid, skip the rest and return false;
-                                    exit();
-                                }
-                            }
-
-                            $blnReturn = $blnSub;
-                        } else {
-                            $blnReturn = preg_match(self::$checks[$checkType], $value);
+                if (is_array($value)) {
+                    $arrValues = $value;
+                    $blnSub = true;
+                    foreach ($arrValues as $value) {
+                        $blnSub = preg_match(self::$checks[$checkType], $value);
+                        if (! $blnSub) {
+                            // *** At least 1 value is not valid, skip the rest and return false;
+                            exit();
                         }
+                    }
+
+                    $blnReturn = $blnSub;
+                } else {
+                    $blnReturn = preg_match(self::$checks[$checkType], $value);
                 }
             }
         } else {

@@ -14,37 +14,32 @@ Internet Explorer >= 8, Firefox >= 4, Opera >= 9, Safari >= 4 are officially sup
 
 ## Installing ValidForm Builder in your project
 1. Download the latest version of the ValidForm Builder package
-2. Extract the archive to the root folder of your website. 
+2. Extract the archive to the root folder of your website.
 
     The package should consist of the following files and folders:
-    
+
     * **css [folder]**
         *Contains the default CSS file for the form design*
-        
-    * **libraries [folder]** 
+
+    * **libraries [folder]**
         *Holds the library files*
-        
-        * **ValidForm [folder]** 
+
+        * **ValidForm [folder]**
             *The PHP files for the library*
-        
-        * **jquery.js [file]** 
+
+        * **jquery.js [file]**
             *Latest version of jQuery*
-        
-        * **validform.js [file]** 
+
+        * **validform.js [file]**
             *Javascript part of the library*
-        
-    * **vf_captcha.php [file]** 
-        *PHP file for the CAPTCHA type field.**
-        
-\* *At this point, Captcha fields are not fully supported and tested since the incorporated Captcha PHP library is outdated. We're working on that!*
 
 <a name="minimal-setup"></a>
-### Minimal setup 
+### Minimal setup
 #### PHP
 For the implementation in PHP the only thing you need to do is include the `class.validform.php` file using the either the [include()](http://php.net/include), [include_once()](http://php.net/include_once), [require()](http://php.net/require) or [require_once()](http://php.net/require_once) function.
 
     require_once("libraries/ValidForm/class.validform.php");
-    
+
 #### HTML
 The (output) HTML of the page you're using ValidForm Builder in, needs to have three files included:
 
@@ -72,36 +67,36 @@ The second parameter is the form's optional description. This description will b
 This is where the fun starts. Once we've got our form object in place, we can start adding all the fancy features ValidForm Builder has to offer. Let's start with the most used method of all; `addField()`.
 
     $objForm->addField(string $name, string $label, integer $type [, array $validationRules [, array $errorHandlers [, array $meta [, bool $justRender = false ]]]]);
-    
+
 *Interface of the addField() method*
-    
+
 ### Let's break it down
 * **name**
     This will be the name and ID of the form field as a string
 
-* **label** 
+* **label**
     The label of the form field as a string
 
-* **type** 
+* **type**
     The field type; define a field type with one of the predefined constants as explained in the [field types section](#field-types) of this documentation.
 
-* **validation rules** (optional) 
+* **validation rules** (optional)
     An array of custom validation rules
 
-* **validation rules** (optional) 
+* **validation rules** (optional)
     An array of error handlers, corresponding with the validation rules array
 
-* **meta** (optional) 
+* **meta** (optional)
     Custom field meta
 
-* **just render** (optional) 
+* **just render** (optional)
     Legacy boolean to indicate whether or not to add the field to the internal collection (and thus parse it to the screen) or just render a field object for custom use. It's recommended to use the `ValidForm::renderField()` method instead.
 
 #### Example
 Now we can add a new 'name' (string) field to our form like this:
 
     $objForm->addField("firstName", "First name", VFORM_STRING);
-    
+
 *A basic example of `addField()`*
 
 <a name="field-types"></a>
@@ -156,12 +151,12 @@ We currently have 21 predefined field types in ValidForm Builder.
 ##### Example - Creating a field with a predefined validation field type.
 
     $objForm->addField(
-        "birthday", 
-        "Birthday", 
-        VFORM_DATE, 
+        "birthday",
+        "Birthday",
+        VFORM_DATE,
         array(
             "required" => true
-        ), 
+        ),
         array(
             "required" => "Please select your birthday."
         )
@@ -170,7 +165,7 @@ We currently have 21 predefined field types in ValidForm Builder.
 
 #### List-style field types
 * `VFORM_RADIO_LIST`
-    This generates a list of radio input fields    
+    This generates a list of radio input fields
 
 * `VFORM_CHECK_LIST`
     This generates a list of checkbox input fields
@@ -181,22 +176,22 @@ We currently have 21 predefined field types in ValidForm Builder.
 ##### Example - Creating a list-style field.
 
     $objList = $objForm->addField(
-        "rating", 
-        "Please rate this documentation", 
+        "rating",
+        "Please rate this documentation",
         VFORM_RADIO_LIST
     );
     $objList->addField("Awesome", "awesome");
     $objList->addField("Great", "great");
     $objList->addField("Good", "good");
-    
+
 ##### Example 2 - Creating a select list with options and option groups
 
     $objList = $objForm->addField(
-        "rating", 
-        "Please rate this documentation", 
+        "rating",
+        "Please rate this documentation",
         VFORM_SELECT_LIST
     );
-    
+
     // Adding an option group with the addGroup method
     $objGroup = $objList->addGroup("Good ratings");
         // Add sub items to the group object with addField
@@ -211,17 +206,17 @@ We currently have 21 predefined field types in ValidForm Builder.
 <a name="custom-field-type"></a>
 #### Custom field types
 * `VFORM_CUSTOM`
-    This generates a text input field with a custom validation regular expression 
+    This generates a text input field with a custom validation regular expression
 
 * `VFORM_CUSTOM_TEXT`
     This generates a textarea input field with a custom validation regular expression
 
 ##### Example - Validating a social security number
     $objSocialSecurity = $objForm->addField(
-        "socialsecurity", 
+        "socialsecurity",
         "Your social security number",
         VFORM_CUSTOM,
-        array( 
+        array(
             "validation" => "/^\d{3}-\d{2}-\d{4}$/"
         ),
         array(
@@ -230,9 +225,6 @@ We currently have 21 predefined field types in ValidForm Builder.
     );
 
 #### Special field types
-* `VFORM_CAPTCHA`
-    
-At this point, the Captcha type field is not fully supported in the 2.0 version of ValidForm Builder.
 
 ### Validation Rules
 
@@ -291,7 +283,7 @@ For each error that occures on a field, you can set a custom error message. Use 
 *   `hint`
     It's not allowed to post a hint value as an input value. Therefore, we trigger an error when that happens. This error message will be shown.
     Default value: `The value is the hint value. Enter your own value.`
-    
+
 
 ### Meta
 

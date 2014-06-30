@@ -126,9 +126,6 @@ class Element extends Base
                 $this->setFieldMeta("class", "vf__password");
                 $this->setFieldMeta("class", "vf__text");
                 break;
-            case ValidForm::VFORM_CAPTCHA:
-                $this->setFieldMeta("class", "vf__text_small");
-                break;
             case ValidForm::VFORM_HTML:
                 $this->setFieldMeta("class", "vf__html");
                 $this->setFieldMeta("class", "vf__text");

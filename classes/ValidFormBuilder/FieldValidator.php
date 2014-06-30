@@ -353,7 +353,7 @@ class FieldValidator extends ClassDynamic
                     $blnValidType = Validator::validate($this->__validation, $value);
                     break;
                 default:
-                    $blnValidType = Validator::validate($this->__field->getType(), ($this->__field->getType() == ValidForm::VFORM_CAPTCHA) ? $this->__fieldname : $value);
+                    $blnValidType = Validator::validate($this->__field->getType(), $value);
             }
 
             if (! $blnValidType) {

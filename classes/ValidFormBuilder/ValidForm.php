@@ -41,7 +41,6 @@ class ValidForm extends ClassDynamic
     const VFORM_SIMPLEURL = 8;
     const VFORM_FILE = 9;
     const VFORM_BOOLEAN = 10;
-    const VFORM_CAPTCHA = 11;
     const VFORM_RADIO_LIST = 12;
     const VFORM_CHECK_LIST = 13;
     const VFORM_SELECT_LIST = 14;
@@ -216,9 +215,6 @@ class ValidForm extends ClassDynamic
                 break;
             case static::VFORM_PASSWORD:
                 $objField = new Password($name, $type, $label, $validationRules, $errorHandlers, $meta);
-                break;
-            case static::VFORM_CAPTCHA:
-                $objField = new Captcha($name, $type, $label, $validationRules, $errorHandlers, $meta);
                 break;
             case static::VFORM_HTML:
             case static::VFORM_CUSTOM_TEXT:
@@ -882,7 +878,7 @@ class ValidForm extends ClassDynamic
 
         $strCalledClass = static::getStrippedClassName(get_called_class());
         $strArguments = (count($arrInitArguments) > 0) ? "\"{$this->__name}\", \"{$this->__mainalert}\", " . json_encode($arrInitArguments) : "\"{$this->__name}\", \"{$this->__mainalert}\"";
-        
+
         if ($strCalledClass !== "ValidForm") {
             $strReturn .= "\tvar objForm = (typeof {$strCalledClass} !== \"undefined\") ? new {$strCalledClass}({$strArguments}) : new ValidForm(\"{$this->__name}\", \"{$this->__mainalert}\");\n";
         } else {
