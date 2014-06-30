@@ -1,32 +1,40 @@
 <?php
-namespace ValidFormBuilder;
-
 /**
  * ValidForm Builder - build valid and secure web forms quickly
  *
- * Copyright (c) 2009-2012, Felix Langfeldt <flangfeldt@felix-it.com>.
+ * Copyright (c) 2009-2013 Neverwoods Internet Technology - http://neverwoods.com
+ *
+ * Felix Langfeldt <felix@neverwoods.com>
+ * Robin van Baalen <robin@neverwoods.com>
+ *
  * All rights reserved.
  *
  * This software is released under the GNU GPL v2 License <http://www.gnu.org/licenses/old-licenses/gpl-2.0.html>
  *
  * @package ValidForm
- * @author Felix Langfeldt <flangfeldt@felix-it.com>
- * @copyright 2009-2012 Felix Langfeldt <flangfeldt@felix-it.com>
+ * @author Felix Langfeldt <felix@neverwoods.com>, Robin van Baalen <robin@neverwoods.com>
+ * @copyright 2009-2013 Neverwoods Internet Technology - http://neverwoods.com
  * @license http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU GPL v2
- * @link http://code.google.com/p/validformbuilder/
+ * @link http://validformbuilder.org
  */
+namespace ValidFormBuilder;
 
 /**
- * Text Class
+ * Text Class is the most used.
+ *
+ * Text objects are used to create input[type='text'] fields.
  *
  * @package ValidForm
- * @author Felix Langfeldt
- * @version Release: 0.2.2
- *
+ * @author Felix Langfeldt <felix@neverwoods.com>
+ * @author Robin van Baalen <robin@neverwoods.com>
+ * @version Release: 3.0.0
  */
 class Text extends Element
 {
 
+    /**
+     * @see \ValidFormBuilder\Element::toHtml()
+     */
     public function toHtml($submitted = false, $blnSimpleLayout = false, $blnLabel = true, $blnDisplayErrors = true)
     {
         $strOutput = "";
@@ -43,6 +51,9 @@ class Text extends Element
         return $strOutput;
     }
 
+    /**
+     * @see \ValidFormBuilder\Element::__toHtml()
+     */
     public function __toHtml($submitted = false, $blnSimpleLayout = false, $blnLabel = true, $blnDisplayErrors = true, $intCount = 0)
     {
         $strOutput = "";
@@ -129,6 +140,9 @@ class Text extends Element
         return $strOutput;
     }
 
+    /**
+     * @see \ValidFormBuilder\Element::toJS()
+     */
     public function toJS($intDynamicPosition = false)
     {
         $strOutput = "";
