@@ -1,7 +1,7 @@
 #!/bin/bash
 
 echo "Generating docs with PHPDocumentor..."
-phpdoc --visibility=public # Since we've added vendor/bin to the PATH variable, we can just execute phpdoc now.
+phpdoc -c phpdoc.xml --visibility=public # Since we've added vendor/bin to the PATH variable, we can just execute phpdoc now.
 
 echo "Going home $HOME"
 cd ~

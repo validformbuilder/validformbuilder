@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<phpdocumentor>
+<phpdoc>
     <title>ValidForm Builder API Documentation</title>
     <parser>
         <default-package-name>Validform</default-package-name>
@@ -15,9 +15,9 @@
         <visibility></visibility>
     </parser>
     <files>
-        <file>classes/ValidFormBuilder/*.*</file>
-        <ignore-hidden>on</ignore-hidden>
-        <ignore-symlinks>on</ignore-symlinks>
+        <directory>./classes/ValidFormBuilder</directory>
+        <ignore-hidden>true</ignore-hidden>
+        <ignore-symlinks>true</ignore-symlinks>
     </files>
     <transformer>
         <target>docs</target>
@@ -28,4 +28,4 @@
     <transformations>
         <template name="clean"/>
     </transformations>
-</phpdocumentor>
+</phpdoc>
