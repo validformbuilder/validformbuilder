@@ -188,7 +188,7 @@ class Base extends ClassDynamic
      * );
      * ```
      *
-     * Example 2; Don't change first name as soon as you've entered your last name
+     * Example 2; Don't change first name as long as you've entered your last name
      * ```php
      * $objFirstName = $objForm->addField('firstname', 'First name', ValidForm::VFORM_STRING);
      * $objLastName = $objForm->addField('lastname', 'Last name', ValidForm::VFORM_STRING);
@@ -197,13 +197,13 @@ class Base extends ClassDynamic
      *     false, // 'disabled' (enabled -> false)
      *     array(
      *         // When field $objLastName 'is not empty'
-     *         // (note that we cal leave out the third 'value' parameter in this case)
+     *         // (note that we can leave out the third 'value' parameter in this case)
      *         new \ValidFormBuilder\Comparison($objLastName, ValidForm::VFORM_COMPARISON_NOT_EMPTY)
      *     )
      * );
      * ```
      *
-     * **Note** The form even validates when first name is 'Robin' and 'last name' is a required field. Due to the
+     * **Note**: The form even validates when first name is 'Robin' and 'last name' is a required field. Due to the
      * nature of conditions, they propagate gracefully: when a field is hidden, it can't be required either.
      *
      * @param string $strType Define the condition type. This can be either `required`, `visibile` or `enabled`
