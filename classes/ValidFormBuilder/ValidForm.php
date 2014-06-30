@@ -102,7 +102,7 @@ class ValidForm extends ClassDynamic
      *
      * Create an instance of the ValidForm Builder
      *
-     * @param string|null $name
+     * @param string $name
      *            The name and id of the form in the HTML DOM and JavaScript.
      * @param string|null $description
      *            Desriptive text which is displayed above the form.
@@ -112,9 +112,9 @@ class ValidForm extends ClassDynamic
      *            Array with meta data. The array gets directly parsed into the form tag with the keys as
      *            attribute names and the values as values.
      */
-    public function __construct($name = null, $description = null, $action = null, $meta = array())
+    public function __construct($name, $description = null, $action = null, $meta = array())
     {
-        $this->__name = (is_null($name)) ? $this->__generateName() : $name;
+        $this->__name = $name;
         $this->__description = $description;
         $this->__submitlabel = "Submit";
         $this->__meta = $meta;
@@ -874,7 +874,8 @@ class ValidForm extends ClassDynamic
             $strReturn .= "// <![CDATA[\n";
         }
 
-        $strReturn .= "function {$this->__name}_init() {\n";
+        $strName = str_replace("-", "_", $this->__name);
+        $strReturn .= "function {$strName}_init() {\n";
 
         $strCalledClass = static::getStrippedClassName(get_called_class());
         $strArguments = (count($arrInitArguments) > 0) ? "\"{$this->__name}\", \"{$this->__mainalert}\", " . json_encode($arrInitArguments) : "\"{$this->__name}\", \"{$this->__mainalert}\"";
@@ -908,16 +909,6 @@ class ValidForm extends ClassDynamic
         }
 
         return $strReturn;
-    }
-
-    /**
-     * Generate a random name for the form.
-     *
-     * @return string the random name
-     */
-    protected function __generateName()
-    {
-        return strtolower(static::getStrippedClassName(get_class($this))) . "_" . mt_rand();
     }
 
     /**

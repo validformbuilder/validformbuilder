@@ -57,7 +57,7 @@ class ValidWizard extends ValidForm
      *            Array with meta data. The array gets directly parsed into the form tag with the keys as
      *            attribute names and the values as values.
      */
-    public function __construct($name = null, $description = null, $action = null, $meta = array())
+    public function __construct($name, $description = null, $action = null, $meta = array())
     {
         parent::__construct($name, $description, $action, $meta);
 
