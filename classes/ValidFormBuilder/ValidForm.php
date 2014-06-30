@@ -115,12 +115,6 @@ class ValidForm extends ClassDynamic
      */
     const VFORM_BOOLEAN = 10;
     /**
-     * Input type[text] with numeric validation
-     * @deprecated Don't use VFORM_CAPTCHA. Captcha support is deprecated
-     * @var number
-     */
-    const VFORM_CAPTCHA = 11;
-    /**
      * Group element. Each added element is an input[type=radio]
      * @var number
      */
@@ -348,12 +342,10 @@ class ValidForm extends ClassDynamic
      * @param string $description Optional. A descriptive text shown above the form fields.
      * @param string $action The generated form element's `action` attribute.
      * @param array $meta Custom form meta array
-     *
-     * @return \ValidFormBuilder\ValidForm
      */
-    public function __construct($name = null, $description = null, $action = null, $meta = array())
+    public function __construct($name, $description = null, $action = null, $meta = array())
     {
-        $this->__name = (is_null($name)) ? $this->__generateName() : $name;
+        $this->__name = $name;
         $this->__description = $description;
         $this->__submitlabel = "Submit";
         $this->__meta = $meta;
@@ -535,9 +527,6 @@ class ValidForm extends ClassDynamic
                 break;
             case static::VFORM_PASSWORD:
                 $objField = new Password($name, $type, $label, $validationRules, $errorHandlers, $meta);
-                break;
-            case static::VFORM_CAPTCHA:
-                $objField = new Captcha($name, $type, $label, $validationRules, $errorHandlers, $meta);
                 break;
             case static::VFORM_HTML:
             case static::VFORM_CUSTOM_TEXT:
@@ -1653,7 +1642,8 @@ class ValidForm extends ClassDynamic
             $strReturn .= "// <![CDATA[\n";
         }
 
-        $strReturn .= "function {$this->__name}_init() {\n";
+        $strName = str_replace("-", "_", $this->__name);
+        $strReturn .= "function {$strName}_init() {\n";
 
         $strCalledClass = static::getStrippedClassName(get_called_class());
         $strArguments = "\"{$this->__name}\", \"{$this->__mainalert}\"";
@@ -1696,17 +1686,6 @@ class ValidForm extends ClassDynamic
         }
 
         return $strReturn;
-    }
-
-    /**
-     * Generate a random name for the form.
-     *
-     * @internal
-     * @return string the random name
-     */
-    protected function __generateName()
-    {
-        return strtolower(static::getStrippedClassName(get_class($this))) . "_" . mt_rand();
     }
 
     /**
