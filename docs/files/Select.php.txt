@@ -25,7 +25,7 @@ namespace ValidFormBuilder;
  * ValidForm Builder select elements support both &lt;option&gt; and &lt;optgroup&gt; elements by
  * using respectively `addField()` and `addGroup()`.
  *
- * Example 1; Standard way of creating a select element
+ * #### Example 1; Standard way of creating a select element
  * ```php
  * $objSelect = $objForm->addField(
  *     "rating",
@@ -39,7 +39,7 @@ namespace ValidFormBuilder;
  * $objSelect->addField("Best thing ever happened", 5);
  * ```
  *
- * Example 2; Creating options by using `labelRange` and `valueRange` options
+ * #### Example 2; Creating options by using `labelRange` and `valueRange` options
  * ```php
  * $objForm->addField(
  *     "rating",
@@ -62,7 +62,7 @@ namespace ValidFormBuilder;
  * );
  * ```
  *
- * Example 3; Creating options by using `start` and `end` meta
+ * #### Example 3; Creating options by using `start` and `end` meta
  * ```php
  * $objForm->addField("rating", "Rate ValidForm Builder", ValidForm::VFORM_SELECT_LIST, array(), array(), array(
  * 	"start" => 1,
@@ -70,7 +70,7 @@ namespace ValidFormBuilder;
  * ));
  * ```
  *
- * Example 4; Adding optgroups to the select element
+ * #### Example 4; Adding optgroups to the select element
  * ```php
  * $objSelect = $objForm->addField("rating", "Rate ValidForm Builder", ValidForm::VFORM_SELECT_LIST);
  * $objSelect->addGroup("Preferred rating");

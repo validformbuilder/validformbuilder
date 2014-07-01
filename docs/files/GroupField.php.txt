@@ -1,6 +1,4 @@
 <?php
-namespace ValidFormBuilder;
-
 /**
  * ValidForm Builder - build valid and secure web forms quickly
  *
@@ -19,22 +17,51 @@ namespace ValidFormBuilder;
  * @license http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU GPL v2
  * @link http://validformbuilder.org
  */
+namespace ValidFormBuilder;
 
 /**
- * GroupField Class
+ * Adds a Checkbox or Radio button to Group element
+ *
+ * See {@link \ValidFormBuilder\Group} for examples and usage.
  *
  * @package ValidForm
- * @author Felix Langfeldt
+ * @author Felix Langfeldt <felix@neverwoods.com>
+ * @author Robin van Baalen <robin@neverwoods.com>
+ * @version Release: 3.0.0
  */
 class GroupField extends Element
 {
 
+    /**
+     * The label
+     * @internal
+     * @var string
+     */
     protected $__label;
-
+    /**
+     * The value
+     * @internal
+     * @var string
+     */
     protected $__value;
-
+    /**
+     * Selected state
+     * @internal
+     * @var boolean
+     */
     protected $__checked;
 
+    /**
+     * Construct new element
+     * @internal
+     * @param string $id
+     * @param string $name
+     * @param integer $type
+     * @param string $label
+     * @param string $value
+     * @param boolean $checked
+     * @param array $meta
+     */
     public function __construct($id, $name, $type, $label, $value, $checked = false, $meta = array())
     {
         parent::__construct($name, $type, $label, array(), array(), $meta);
@@ -44,6 +71,14 @@ class GroupField extends Element
         $this->__checked = $checked;
     }
 
+    /**
+     * Generate HTML output
+     *
+     * See {@link \ValidFormBuilder\Element::toHtml()}
+     *
+     * @internal
+     * @see \ValidFormBuilder\Element::toHtml()
+     */
     public function toHtml($value = null, $submitted = false, $intCount = 0)
     {
         $strChecked = "";
@@ -103,6 +138,12 @@ class GroupField extends Element
         return $strOutput;
     }
 
+    /**
+     * Get the value of this specific checkbox / radio button
+     *
+     * @internal
+     * @return string The value
+     */
     public function __getValue($submitted = false, $intCount = 0)
     {
         $varReturn = parent::__getValue($submitted, $intCount);
