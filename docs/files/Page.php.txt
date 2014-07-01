@@ -1,6 +1,4 @@
 <?php
-namespace ValidFormBuilder;
-
 /**
  * ValidForm Builder - build valid and secure web forms quickly
  *
@@ -13,34 +11,71 @@ namespace ValidFormBuilder;
  *
  * This software is released under the GNU GPL v2 License <http://www.gnu.org/licenses/old-licenses/gpl-2.0.html>
  *
- * @package ValidForm
+ * @package ValidWizard
  * @author Felix Langfeldt <felix@neverwoods.com>, Robin van Baalen <robin@neverwoods.com>
  * @copyright 2009-2013 Neverwoods Internet Technology - http://neverwoods.com
  * @license http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU GPL v2
  * @link http://validformbuilder.org
  */
 
+namespace ValidFormBuilder;
+
 /**
  * Page Class
  *
- * @package ValidForm
- * @author Robin van Baalen
+ * @internal
+ * @package ValidWizard
+ * @author Felix Langfeldt <felix@neverwoods.com>
+ * @author Robin van Baalen <robin@neverwoods.com>
+ * @version 3.0.0
  */
 class Page extends Base
 {
 
+    /**
+     * Page HTML class attribute
+     * @internal
+     * @var string
+     */
     protected $__class;
-
+    /**
+     * Page HTML style attribute
+     * @internal
+     * @var string
+     */
     protected $__style;
-
+    /**
+     * Page elements collection
+     * @internal
+     * @var \ValidFormBuilder\Collection
+     */
     protected $__elements;
-
+    /**
+     * Page HTML header
+     * @internal
+     * @var string
+     */
     protected $__header;
-
+    /**
+     * Page HTML ID attribute
+     * @internal
+     * @var string
+     */
     protected $__id;
-
+    /**
+     * Flag if current page is overview page
+     * @internal
+     * @var boolean
+     */
     protected $__isOverview;
 
+    /**
+     * Create new Page instance
+     * @internal
+     * @param string $id Page iD
+     * @param string $header Page header
+     * @param array $meta The meta array
+     */
     public function __construct($id = "", $header = "", $meta = array())
     {
         $this->__header = $header;
@@ -52,6 +87,14 @@ class Page extends Base
         $this->__elements = new Collection();
     }
 
+    /**
+     * Generate HTML
+     *
+     * See {@link \ValidFormBuilder\ValidForm::toHtml()}
+     *
+     * @internal
+     * @return string
+     */
     public function toHtml($submitted = false, $blnSimpleLayout = false, $blnLabel = true, $blnDisplayError = true)
     {
         $strClass = (! empty($this->__class)) ? " class=\"{$this->__class} vf__page\"" : "class=\"vf__page\"";
@@ -73,6 +116,13 @@ class Page extends Base
         return $strOutput;
     }
 
+    /**
+     * Add a field object
+     *
+     * See {@link \ValidFormBuilder\Fieldset::addField()}
+     *
+     * @param \ValidFormBuilder\Base $objField
+     */
     public function addField($objField)
     {
         if (get_class($objField) == "ValidFormBuilder\\Fieldset") {
@@ -103,6 +153,13 @@ class Page extends Base
         }
     }
 
+    /**
+     * Generate javascript
+     *
+     * See {@link \ValidFormBuilder\Base::toJS()}
+     * @internal
+     * @see \ValidFormBuilder\Base::toJS()
+     */
     public function toJS($intDynamicPosition = 0)
     {
         $strReturn = "objForm.addPage('" . $this->getId() . "');\n";
@@ -114,21 +171,41 @@ class Page extends Base
         return $strReturn;
     }
 
+    /**
+     * Check if page is valid
+     * @internal
+     * @return boolean
+     */
     public function isValid()
     {
         return $this->__validate();
     }
 
+    /**
+     * Check if page is dynamic
+     * @internal
+     * @return boolean
+     */
     public function isDynamic()
     {
         return false;
     }
 
+    /**
+     * Check if page has fields
+     * @internal
+     * @return boolean
+     */
     public function hasFields()
     {
         return ($this->__elements->count() > 0) ? true : false;
     }
 
+    /**
+     * Return the internal elements collection
+     * @internal
+     * @return \ValidFormBuilder\Collection
+     */
     public function getFields()
     {
         return $this->__elements;
@@ -153,6 +230,13 @@ class Page extends Base
         return $strReturn;
     }
 
+    /**
+     * Generate a random page ID
+     *
+     * @internal
+     * @param string $name The name to prefix this ID with
+     * @return string
+     */
     public function getRandomId($name)
     {
         $strReturn = $name;
@@ -166,6 +250,12 @@ class Page extends Base
         return $strReturn;
     }
 
+    /**
+     * Internal validate method
+     *
+     * @internal
+     * @return boolean
+     */
     private function __validate()
     {
         $blnReturn = true;
