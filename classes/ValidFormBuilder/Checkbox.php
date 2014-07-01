@@ -23,7 +23,7 @@ namespace ValidFormBuilder;
 /**
  * Create checkboxes (boolean fields)
  *
- * Example:
+ * #### Example
  * ```php
  * // The following code adds a \ValidFormBuilder\Checkbox element to the forms elements collection.
  * $objForm->addField("agree", "I agree to the terms and conditions.", ValidForm::VFORM_BOOLEAN);
