@@ -1,8 +1,5 @@
 <?php
-namespace ValidFormBuilder;
-
 /**
- * *************************
  * ValidForm Builder - build valid and secure web forms quickly
  *
  * Copyright (c) 2009-2013 Neverwoods Internet Technology - http://neverwoods.com
@@ -19,23 +16,43 @@ namespace ValidFormBuilder;
  * @copyright 2009-2013 Neverwoods Internet Technology - http://neverwoods.com
  * @license http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU GPL v2
  * @link http://validformbuilder.org
- *       *************************
  */
+
+namespace ValidFormBuilder;
 
 /**
  * Hidden Class
  *
+ * @internal
  * @package ValidForm
- * @author Felix Langfeldt
+ * @author Felix Langfeldt <felix@neverwoods.com>
+ * @author Robin van Baalen <robin@neverwoods.com>
+ * @version 3.0.0
  */
 class Hidden extends Element
 {
 
+    /**
+     * Create new instance
+     *
+     * @internal
+     * @param string $name The field's name
+     * @param integer $type The type is used to validate the hidden field's value
+     * @param array $meta The meta array
+     */
     public function __construct($name, $type, $meta = array())
     {
         parent::__construct($name, $type, "", array(), array(), $meta);
     }
 
+    /**
+     * Generate HTML
+     *
+     * See {@link \ValidFormBuilder\Element::toHtml()}
+     *
+     * @internal
+     * @see \ValidFormBuilder\Element::toHtml()
+     */
     public function toHtml($submitted = false, $blnSimpleLayout = false, $blnLabel = true, $blnDisplayError = true)
     {
         $strOutput = "";
@@ -50,6 +67,14 @@ class Hidden extends Element
         return $strOutput;
     }
 
+    /**
+     * Generate Javascript
+     *
+     * See {@link \ValidFormBuilder\Element::toJS()}
+     *
+     * @internal
+     * @see \ValidFormBuilder\Element::toJS()
+     */
     public function toJS($intDynamicPosition = 0)
     {
         $strOutput = "";
@@ -60,16 +85,39 @@ class Hidden extends Element
         return $strOutput;
     }
 
+    /**
+     * Check if field contains child elements
+     *
+     * Always retuns false for Hidden objects
+     * See {@link \ValidFormBuilder\Element::hasFields()}
+     * @internal
+     * @see \ValidFormBuilder\Element::hasFields()
+     */
     public function hasFields()
     {
         return false;
     }
 
+    /**
+     * Check if this hidden field is a dynamic counter
+     *
+     * See {@link \ValidFormBuilder\Element::isDynamicCounter()}
+     * @internal
+     * @see \ValidFormBuilder\Element::isDynamicCounter()
+     */
     public function isDynamicCounter()
     {
         return $this->__dynamiccounter;
     }
 
+    /**
+     * Validate this field
+     *
+     * See {@link \ValidFormBuilder\Element::isValid()}
+     *
+     * @internal
+     * @see \ValidFormBuilder\Element::isValid()
+     */
     public function isValid($intCount = null)
     {
         $blnReturn = false;
