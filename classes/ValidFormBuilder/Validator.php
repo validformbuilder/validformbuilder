@@ -1,32 +1,38 @@
 <?php
-namespace ValidFormBuilder;
-
 /**
  * ValidForm Builder - build valid and secure web forms quickly
  *
- * Copyright (c) 2009-2012, Felix Langfeldt <flangfeldt@felix-it.com>.
+ * Copyright (c) 2009-2013 Neverwoods Internet Technology - http://neverwoods.com
+ *
+ * Felix Langfeldt <felix@neverwoods.com>
+ * Robin van Baalen <robin@neverwoods.com>
+ *
  * All rights reserved.
  *
  * This software is released under the GNU GPL v2 License <http://www.gnu.org/licenses/old-licenses/gpl-2.0.html>
  *
  * @package ValidForm
- * @author Felix Langfeldt <flangfeldt@felix-it.com>
- * @copyright 2009-2012 Felix Langfeldt <flangfeldt@felix-it.com>
+ * @author Felix Langfeldt <felix@neverwoods.com>, Robin van Baalen <robin@neverwoods.com>
+ * @copyright 2009-2013 Neverwoods Internet Technology - http://neverwoods.com
  * @license http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU GPL v2
- * @link http://code.google.com/p/validformbuilder/
+ * @link http://validformbuilder.org
  */
+namespace ValidFormBuilder;
 
 /**
  * Validator Class
  *
  * @package ValidForm
- * @author Felix Langfeldt
- * @version Release: 0.3.3
- *
+ * @author Felix Langfeldt <felix@neverwoods.com>
+ * @author Robin van Baalen <robin@neverwoods.com>
+ * @version Release: 3.0.0
  */
 class Validator
 {
-
+    /**
+     * Static array of validation types
+     * @var array
+     */
     public static $checks = array(
         ValidForm::VFORM_STRING => '/^[-a-zàáâãäåæçèéêëìíîïðñòóôõöøùúûüýß€0-9%\s*.\'+\/",_!?#:;()|& ]*$/i',
         ValidForm::VFORM_TEXT => '/^[-a-zàáâãäåæçèéêëìíîïðñòóôõöøùúûüý€ß0-9%\s*.\'+\’\/"_,?#@:;^*!&() ]*$/i',
@@ -49,6 +55,14 @@ class Validator
         ValidForm::VFORM_DATE => '/^(\d{2}[-|\/|\\\\|\.]\d{2}[-|\/|\\\\|\.]\d{4})$/i'
     );
 
+    /**
+     * Validate input against regular expression
+     *
+     * @internal
+     * @param integer $checkType The type to check for
+     * @param string $value The value to validate
+     * @return boolean True if valid, false if not.
+     */
     public static function validate($checkType, $value)
     {
         $blnReturn = false;
@@ -84,6 +98,11 @@ class Validator
         return $blnReturn;
     }
 
+    /**
+     * Get the regular expression that is used by the given field type
+     * @param integer $checkType Field type
+     * @return string The matching regular expression
+     */
     public static function getCheck($checkType)
     {
         $strReturn = "";
