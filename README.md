@@ -20,17 +20,13 @@ The ValidForm Builder is a PHP and JavaScript library that simplifies the often 
 - Client side validation displays inline to improve user satisfaction. No more annoying popups that don't really tell you anything.
 - Creation of complex form structures.
 - Uses the popular jQuery Javascript library for DOM manipulation.
-- Completely customizable using CSS rules.
-- Automatic creation of field summaries for form mailers in HTML and plain text.
-
-Why use ValidForm Builder?
-----
-
+- **Completely customizable** using CSS rules.
+- Automatic creation of field summaries for form mailers.
 - Super fast web form creation.
 - Get rid of SQL injection problems.
-- Create standards based CSS forms. No tables inside.
+- Create standards based CSS forms. **No tables inside.**
 - Make form entry fun for the user. More feedback from your website.
-- Write client- and server-side validation at the same time
+- **Write client- and server-side validation at the same time**
 
 Installation
 ------------
