@@ -20,7 +20,7 @@
 namespace ValidFormBuilder;
 
 /**
- * Adds a SelectGroup (&lt;optgroup&gt;) to Select object
+ * Adds a SelectGroup (<optgroup>) to Select object
  *
  * See {@link \ValidFormBuilder\Select} for examples and usage.
  *
@@ -88,106 +88,5 @@ class SelectGroup extends Base
         $this->__options->addObject($objOption);
 
         return $objOption;
-    }
-
-    /**
-     * Can't add conditions to SelectGroup elements
-     *
-     * @internal
-     * @return null
-     */
-    public function addCondition()
-    {
-    	return null;
-    }
-
-    /**
-     * @internal
-     * @return null
-     */
-    public function setMeta()
-    {
-        return null;
-    }
-
-    /**
-     * @internal
-     * @return null
-     */
-    public function setFieldMeta()
-    {
-        return null;
-    }
-
-    /**
-     * @internal
-     * @return null
-     */
-    public function getFieldMeta()
-    {
-        return null;
-    }
-
-    /**
-     * @internal
-     * @return null
-     */
-    public function setLabelMeta()
-    {
-        return null;
-    }
-
-    /**
-     * @internal
-     * @return null
-     */
-    public function getMeta()
-    {
-        return null;
-    }
-
-    /**
-     * @internal
-     * @return null
-     */
-    public function getLabelMeta()
-    {
-        return null;
-    }
-
-    /**
-     * @internal
-     * @return null
-     */
-    public function getName()
-    {
-        return null;
-    }
-
-    /**
-     * @internal
-     * @return null
-     */
-    public function toJS()
-    {
-        return null;
-    }
-
-    /**
-     * @internal
-     * @return null
-     */
-    public function setData()
-    {
-        return null;
-    }
-
-    /**
-     * @internal
-     * @return null
-     */
-    public function getData()
-    {
-        return null;
     }
 }
