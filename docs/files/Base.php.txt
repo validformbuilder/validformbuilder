@@ -174,37 +174,7 @@ class Base extends ClassDynamic
     /**
      * Add a new condition to the current field
      *
-     * Example; hide the 'last name' field if first name is Robin
-     * ```php
-     * $objFirstName = $objForm->addField('firstname', 'First name', ValidForm::VFORM_STRING);
-     * $objLastName = $objForm->addField('lastname', 'Last name', ValidForm::VFORM_STRING);
-     * $objLastName->addCondition(
-     *     'visible', // Last name will become
-     *     false, // 'not visible' (visible -> false)
-     *     array(
-     *         // When field $objFirstName 'is equal to' Robin
-     *         new \ValidFormBuilder\Comparison($objFirstName, ValidForm::VFORM_COMPARISON_EQUAL, 'Robin')
-     *     )
-     * );
-     * ```
-     *
-     * Example 2; Don't change first name as long as you've entered your last name
-     * ```php
-     * $objFirstName = $objForm->addField('firstname', 'First name', ValidForm::VFORM_STRING);
-     * $objLastName = $objForm->addField('lastname', 'Last name', ValidForm::VFORM_STRING);
-     * $objFirstName->addCondition(
-     *     'enabled', // First Name will be
-     *     false, // 'disabled' (enabled -> false)
-     *     array(
-     *         // When field $objLastName 'is not empty'
-     *         // (note that we can leave out the third 'value' parameter in this case)
-     *         new \ValidFormBuilder\Comparison($objLastName, ValidForm::VFORM_COMPARISON_NOT_EMPTY)
-     *     )
-     * );
-     * ```
-     *
-     * **Note**: The form even validates when first name is 'Robin' and 'last name' is a required field. Due to the
-     * nature of conditions, they propagate gracefully: when a field is hidden, it can't be required either.
+     * For examples, check {@link \ValidFormBuilder\Condition}
      *
      * @param string $strType Define the condition type. This can be either `required`, `visibile` or `enabled`
      * @param boolean $blnValue Define whether this condition activates if the comparison(s) are true or false.
@@ -319,7 +289,8 @@ class Base extends ClassDynamic
     /**
      * Check if the current field contains a condition object of a specific type
      *
-     * @param string $strProperty Condition type e.g. 'required', 'visibile' and 'enabled'
+     * @internal
+     * @param string $strProperty Condition type e.g. `required`, `visibile` and `enabled`
      * @return boolean True if element has condition object set, false if not
      */
     public function hasCondition($strProperty)
@@ -338,6 +309,7 @@ class Base extends ClassDynamic
 
     /**
      * Check if the current object contains any conditions at all.
+     * @internal
      * @return boolean True if it contains conditions, false if not.
      */
     public function hasConditions()
@@ -346,12 +318,13 @@ class Base extends ClassDynamic
     }
 
     /**
-     * This gets the condition of a given property, just like getCondition().
+     * This gets the condition of a given property, just like {@link \ValidFormBuilder\Base::getCondition()}.
      * When no condition is found on the current element, the method searches for a condition in it's parent element.
      *
-     * @param string $strProperty Condition type e.g. 'required', 'visibile' and 'enabled'
-     * @param Element $objContext
-     * @return Condition|null
+     * @internal
+     * @param string $strProperty Condition type e.g. `required`, `visibile` and `enabled`
+     * @param \ValidFormBuilder\Element $objContext
+     * @return \ValidFormBuilder\Condition|null
      */
     public function getConditionRecursive($strProperty, $objContext = null)
     {
@@ -703,10 +676,11 @@ class Base extends ClassDynamic
 
     /**
      * Store data in the current object.
-     * This data will not be visibile in any output
-     * and will only be used for internal purposes. For example, you can store some custom
-     * data from your CMS or an other library in a field object, for later use.
-     * Note: Using this method will overwrite any previously set data with the same key!
+     *
+     * This data will not be visibile in any output and will only be used for internal purposes. For example, you
+     * can store some custom data from your CMS or an other library in a field object, for later use.
+     *
+     * **Note: Using this method will overwrite any previously set data with the same key!**
      *
      * @param string $strKey The key for this storage
      * @param mixed $varValue The value to store

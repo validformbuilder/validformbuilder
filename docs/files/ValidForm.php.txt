@@ -24,9 +24,49 @@ namespace ValidFormBuilder;
 /**
  * ValidForm Builder main class - all the magic starts here.
  *
- * Create a new ValidForm Builder instance like this:
+ * Check out some of the following examples to get started
+ *
+ * #### Example; Create a ValidForm Builder instance
  * ```php
  * $objForm = new ValidForm("cool_new_form", "Please fill out my cool form", "/awesome-submits");
+ * ```
+ *
+ * #### Example 2; Add a field
+ * *Check out the constants section starting with {@link \ValidFormBuilder\ValidForm::VFORM_BOOLEAN} for more
+ * field types*
+ * ```php
+ * $objForm->addField(
+ *     "first-name",
+ *     "First name",
+ *     ValidForm::VFORM_STRING,
+ *     array(
+ *         // Make this field required
+ *         "required" => true
+ *     ),
+ *     array(
+ *         // Show this error to indicate this is an required field if no value is submitted
+ *         "required" => "This field is required"
+ *     )
+ * );
+ * ```
+ *
+ * #### Example 3; Using {@link \ValidFormBuilder\ValidForm::setDefaults()} to set default values on form fields
+ * ```php
+ * //*** Add a checklist
+ * $objCheck = $objForm->addField("cool", "Cool checklist", ValidForm::VFORM_CHECK_LIST);
+ * $objCheck->addField("Option 1", "option1");
+ * $objCheck->addField("Option 2", "option2");
+ * $objCheck->addField("Option 3", "option3");
+ *
+ * // Add a standard string field
+ * $objCheck = $objForm->addField("cool-text", "Coolest PHP Library", ValidForm::VFORM_STRING);
+ *
+ * $objForm->setDefaults([
+ *     // Set value of field 'cool text' to 'ValidForm Builder'
+ *     "cool-text" => "ValidForm Builder",
+ *     // Check options 2 and 3
+ *     "cool" => ["option2", "option3"]
+ * ]);
  * ```
  *
  * @package ValidForm
@@ -387,8 +427,11 @@ class ValidForm extends ClassDynamic
      * $objCheck->addField("Option 2", "option2");
      * $objCheck->addField("Option 3", "option3");
      *
+     * $objCheck = $objForm->addField("cool-text", "Coolest PHP Library", ValidForm::VFORM_STRING);
+     *
      * //*** Check options 2 and 3 by default using setDefaults()
      * $objForm->setDefaults([
+     *     "cool-text" => "ValidForm Builder",
      *     "cool" => ["option2", "option3"]
      * ]);
      * ```
@@ -410,8 +453,17 @@ class ValidForm extends ClassDynamic
     }
 
     /**
-     * Use addHtml to inject custom HTML code in the form.
-     * @param string $html The HTML code to inject
+     * Injects a string in the form.
+     *
+     * Use this to add an extra string in the form. For instance, you can create an input field like this:
+     *
+     * ```
+     * Enter the amount:   $ _____
+     * ```
+     *
+     * In this example, we used String to inject the dollar sign before our input field.
+     *
+     * @param string $html The string or HTML code to inject
      * @return \ValidFormBuilder\String
      */
     public function addHtml($html)
@@ -502,7 +554,7 @@ class ValidForm extends ClassDynamic
      *
      * @param string $name The element's name
      * @param string $label The element's label
-     * @param number $type The element's validation type
+     * @param integer $type The element's validation type
      * @param array $validationRules Optional.Custom validation rules array
      * @param array $errorHandlers Custom error handling array
      * @param array $meta Optional. Meta data array
@@ -579,7 +631,7 @@ class ValidForm extends ClassDynamic
      * @api
      * @param string $name The element's name
      * @param string $label The element's label
-     * @param number $type The element's validation type
+     * @param integer $type The element's validation type
      * @param array $validationRules Optional.Custom validation rules array
      * @param array $errorHandlers Custom error handling array
      * @param array $meta Optional. Meta data array
@@ -655,18 +707,7 @@ class ValidForm extends ClassDynamic
     /**
      * Adds a <button> element to the internal fields collection.
      *
-     * This generates a <button> element. You can customize this button using the meta array.
-     * For example, you can add a custom class property to the button like this:
-     *
-     * ```php
-     * $objForm->addButton(
-     *     "Button label",
-     *     array(
-     *         // Set for example a Twitter Bootstrap class on this button
-     *         "fieldclass" => "btn btn-large"
-     *     )
-     * );
-     * ```
+     * For an example; see {@link \ValidFormBuilder\Button}
      *
      * @param string $strLabel The button's label
      * @param array $arrMeta The meta array
@@ -693,45 +734,12 @@ class ValidForm extends ClassDynamic
     /**
      * Add an area to the internal elements collection.
      *
-     * An area is about the same as a fieldset but an Area has more interactive options like the 'active'
-     * property or even the 'dynamic' meta. Using the 'active' property, the area gets a label and checkbox
-     * which activates or disables all the fields inside this area.
-     *
-     * *Example 1: Active area*
-     * ```php
-     * $objArea = $objForm->addArea("Disable fields", true, "fields-disabled");
-     * $objArea->addField(
-     *     "first-name",
-     *     "First name",
-     *     ValidForm::VFORM_STRING,
-     *     array(
-     *         // Make this field required
-     *         "required" => true
-     *     ),
-     *     array(
-     *         // Show this error to indicate this is an required field if no value is submitted
-     *         "required" => "This field is required"
-     *     )
-     * );
-     * $objArea->addField(
-     *     "last-name",
-     *     "Last name",
-     *     ValidForm::VFORM_STRING,
-     *     array(
-     *         // Make this field required
-     *         "required" => true
-     *     ),
-     *     array(
-     *         // Show this error to indicate this is an required field if no value is submitted
-     *         "required" => "This field is required"
-     *     )
-     * );
-     * ```
+     * See {@link \ValidFormBuilder\Area} for examples
      *
      * @param string $label The title of this area
-     * @param string $active If true, the title has a checkbox which can enable or disable all child elements
+     * @param string $active If `true`, the title has a checkbox which can enable or disable all child elements
      * @param string $name The ID of this area
-     * @param string $checked Use in combination with $active; if true, the checkbox will be checked by default
+     * @param string $checked Use in combination with `$active`; if `true`, the checkbox will be checked by default
      * @param array $meta The meta array
      *
      * @return \ValidFormBuilder\Area
@@ -1544,7 +1552,7 @@ class ValidForm extends ClassDynamic
 
     /**
      * Generate a unique ID
-     * @param number $intLength ID length
+     * @param integer $intLength ID length
      * @return string Generated ID
      */
     public function generateId($intLength = 8)

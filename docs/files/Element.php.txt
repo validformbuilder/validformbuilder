@@ -106,12 +106,12 @@ class Element extends Base
      * Create new element
      *
      * @internal
-     * @param string $name
-     * @param integer $type
-     * @param string $label
-     * @param array $validationRules
-     * @param array $errorHandlers
-     * @param array $meta
+     * @param string $name Field name
+     * @param integer $type Field type
+     * @param string $label Field label
+     * @param array $validationRules Validation rules
+     * @param array $errorHandlers Error rules
+     * @param array $meta The meta array
      */
     public function __construct($name, $type, $label = "", $validationRules = array(), $errorHandlers = array(), $meta = array())
     {

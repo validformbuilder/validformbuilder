@@ -24,9 +24,17 @@ namespace ValidFormBuilder;
 /**
  * Button Class
  *
- * Create a new button element in your form like this:
+ * This generates a &lt;button&gt; element. You can customize this button using the meta array.
+ * For example, you can add a custom class property to the button like this:
+ *
  * ```php
- * $objForm->addButon('Button label', array('fieldid' => 'custom-button-id'));
+ * $objForm->addButton(
+ *     "Button label",
+ *     array(
+ *         // Set for example a Twitter Bootstrap class on this button
+ *         "fieldclass" => "btn btn-large"
+ *     )
+ * );
  * ```
  *
  * @package ValidForm

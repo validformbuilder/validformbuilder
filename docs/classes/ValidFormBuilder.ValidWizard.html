@@ -114,7 +114,7 @@
                         <ul class="dropdown-menu">
                             <li>
                                 <a href="../reports/errors.html">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <i class="icon-list-alt"></i>&#160;Errors <span class="label label-info pull-right">152</span>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <i class="icon-list-alt"></i>&#160;Errors <span class="label label-info pull-right">110</span>
                                 </a>
                             </li>
                             <li>
@@ -144,19 +144,19 @@
                                 <div class="accordion" style="margin-bottom: 0">
         <div class="accordion-group">
             <div class="accordion-heading">
-                                    <a class="accordion-toggle " data-toggle="collapse" data-target="#namespace-256595559"></a>
+                                    <a class="accordion-toggle " data-toggle="collapse" data-target="#namespace-162159762"></a>
                                 <a href="../namespaces/default.html" style="margin-left: 30px; padding-left: 0">\</a>
             </div>
-            <div id="namespace-256595559" class="accordion-body collapse in">
+            <div id="namespace-162159762" class="accordion-body collapse in">
                 <div class="accordion-inner">
 
                                                     <div class="accordion" style="margin-bottom: 0">
         <div class="accordion-group">
             <div class="accordion-heading">
-                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-1987848974"></a>
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-1556424900"></a>
                                 <a href="../namespaces/ValidFormBuilder.html" style="margin-left: 30px; padding-left: 0">ValidFormBuilder</a>
             </div>
-            <div id="namespace-1987848974" class="accordion-body collapse ">
+            <div id="namespace-1556424900" class="accordion-body collapse ">
                 <div class="accordion-inner">
 
                     
@@ -167,7 +167,7 @@
                                                     <li class="class"><a href="../classes/ValidFormBuilder.Checkbox.html">Checkbox</a></li>
                                                     <li class="class"><a href="../classes/ValidFormBuilder.ClassDynamic.html">ClassDynamic</a></li>
                                                     <li class="class"><a href="../classes/ValidFormBuilder.Collection.html">Collection</a></li>
-                                                    <li class="class"><a href="../classes/ValidFormBuilder.Comparison.html">Comparison</a></li>
+                                                    <li class="class"><a href="../classes/ValidFormBuilder.Condition.html">Condition</a></li>
                                                     <li class="class"><a href="../classes/ValidFormBuilder.Fieldset.html">Fieldset</a></li>
                                                     <li class="class"><a href="../classes/ValidFormBuilder.FieldValidator.html">FieldValidator</a></li>
                                                     <li class="class"><a href="../classes/ValidFormBuilder.File.html">File</a></li>
@@ -183,7 +183,6 @@
                                                     <li class="class"><a href="../classes/ValidFormBuilder.Select.html">Select</a></li>
                                                     <li class="class"><a href="../classes/ValidFormBuilder.SelectGroup.html">SelectGroup</a></li>
                                                     <li class="class"><a href="../classes/ValidFormBuilder.SelectOption.html">SelectOption</a></li>
-                                                    <li class="class"><a href="../classes/ValidFormBuilder.String.html">String</a></li>
                                                     <li class="class"><a href="../classes/ValidFormBuilder.Text.html">Text</a></li>
                                                     <li class="class"><a href="../classes/ValidFormBuilder.Textarea.html">Textarea</a></li>
                                                     <li class="class"><a href="../classes/ValidFormBuilder.Validator.html">Validator</a></li>
@@ -216,8 +215,41 @@
 
                     <h1><small>\ValidFormBuilder</small>ValidWizard</h1>
                     <p><em>ValidWizard Builder base class</em></p>
-                    <p>Create a new ValidForm Builder instance like this:</p>
+                    <p>Check out some of the following examples to get started</p>
+<h4>Example; Create a ValidForm Builder instance</h4>
 <pre><code class="language-php">$objForm = new ValidForm("cool_new_form", "Please fill out my cool form", "/awesome-submits");</code></pre>
+<h4>Example 2; Add a field</h4>
+<p><em>Check out the constants section starting with <a href="/classes/ValidFormBuilder.ValidForm.html#constant_VFORM_BOOLEAN">\ValidFormBuilder\ValidForm::VFORM_BOOLEAN</a> for more
+field types</em></p>
+<pre><code class="language-php">$objForm-&gt;addField(
+    "first-name",
+    "First name",
+    ValidForm::VFORM_STRING,
+    array(
+        // Make this field required
+        "required" =&gt; true
+    ),
+    array(
+        // Show this error to indicate this is an required field if no value is submitted
+        "required" =&gt; "This field is required"
+    )
+);</code></pre>
+<h4>Example 3; Using <a href="/classes/ValidFormBuilder.ValidForm.html#method_setDefaults">\ValidFormBuilder\ValidForm::setDefaults()</a> to set default values on form fields</h4>
+<pre><code class="language-php">//*** Add a checklist
+$objCheck = $objForm-&gt;addField("cool", "Cool checklist", ValidForm::VFORM_CHECK_LIST);
+$objCheck-&gt;addField("Option 1", "option1");
+$objCheck-&gt;addField("Option 2", "option2");
+$objCheck-&gt;addField("Option 3", "option3");
+
+// Add a standard string field
+$objCheck = $objForm-&gt;addField("cool-text", "Coolest PHP Library", ValidForm::VFORM_STRING);
+
+$objForm-&gt;setDefaults([
+    // Set value of field 'cool text' to 'ValidForm Builder'
+    "cool-text" =&gt; "ValidForm Builder",
+    // Check options 2 and 3
+    "cool" =&gt; ["option2", "option3"]
+]);</code></pre>
                     
                                         
                     <section id="summary">
@@ -1333,8 +1365,11 @@ $objCheck-&gt;addField("Option 1", "option1");
 $objCheck-&gt;addField("Option 2", "option2");
 $objCheck-&gt;addField("Option 3", "option3");
 
+$objCheck = $objForm-&gt;addField("cool-text", "Coolest PHP Library", ValidForm::VFORM_STRING);
+
 //*** Check options 2 and 3 by default using setDefaults()
 $objForm-&gt;setDefaults([
+    "cool-text" =&gt; "ValidForm Builder",
     "cool" =&gt; ["option2", "option3"]
 ]);</code></pre>
 
@@ -1376,21 +1411,23 @@ $objForm-&gt;setDefaults([
                 <h3 class="public ">addHtml()</h3>
                 <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
                 <pre class="signature" style="margin-right: 54px;">addHtml(string  <span class="argument">$html</span>) : \ValidFormBuilder\String</pre>
-                <p><em>Use addHtml to inject custom HTML code in the form.</em></p>
-                
+                <p><em>Injects a string in the form.</em></p>
+                <p>Use this to add an extra string in the form. For instance, you can create an input field like this:</p>
+<pre><code>Enter the amount:   $ _____</code></pre>
+<p>In this example, we used String to inject the dollar sign before our input field.</p>
 
                                     <h4>Parameters</h4>
                     <table class="table table-condensed table-hover">
                                                     <tr>
                                 <td>string</td>
                                 <td>$html </td>
-                                <td><p>The HTML code to inject</p></td>
+                                <td><p>The string or HTML code to inject</p></td>
                             </tr>
                                             </table>
                 
                 
                                     <h4>Returns</h4>
-                    <a href="../classes/ValidFormBuilder.String.html">\ValidFormBuilder\String</a>
+                    \ValidFormBuilder\String
                                     				
                             </article>
         </div>
@@ -1562,7 +1599,7 @@ and will be parsed when <code>toHtml()</code> is called.</p></td>
             <article class="method">
                 <h3 class="public ">renderField()</h3>
                 <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
-                <pre class="signature" style="margin-right: 54px;">renderField(string  <span class="argument">$name</span>, string  <span class="argument">$label</span>, \ValidFormBuilder\number  <span class="argument">$type</span>, array  <span class="argument">$validationRules</span>, array  <span class="argument">$errorHandlers</span>, array  <span class="argument">$meta</span>) : \ValidFormBuilder\Element</pre>
+                <pre class="signature" style="margin-right: 54px;">renderField(string  <span class="argument">$name</span>, string  <span class="argument">$label</span>, integer  <span class="argument">$type</span>, array  <span class="argument">$validationRules</span>, array  <span class="argument">$errorHandlers</span>, array  <span class="argument">$meta</span>) : \ValidFormBuilder\Element</pre>
                 <p><em>Use this utility method to only render \ValidFormBuilder\Element instances of the defined types.</em></p>
                 <p>Elements rendered with this method aren't added to the internal elements collection.</p>
 
@@ -1579,7 +1616,7 @@ and will be parsed when <code>toHtml()</code> is called.</p></td>
                                 <td><p>The element's label</p></td>
                             </tr>
                                                     <tr>
-                                <td>\ValidFormBuilder\number</td>
+                                <td>integer</td>
                                 <td>$type </td>
                                 <td><p>The element's validation type</p></td>
                             </tr>
@@ -1761,15 +1798,7 @@ $objForm-&gt;addField("last-name", "Last Name", ValidForm::VFORM_STRING);</code>
                 <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
                 <pre class="signature" style="margin-right: 54px;">addButton(string  <span class="argument">$strLabel</span>, array  <span class="argument">$arrMeta = array()</span>) : \ValidFormBuilder\Button</pre>
                 <p><em>Adds a &lt;button&gt; element to the internal fields collection.</em></p>
-                <p>This generates a <button> element. You can customize this button using the meta array.
-For example, you can add a custom class property to the button like this:</p>
-<pre><code class="language-php">$objForm-&gt;addButton(
-    "Button label",
-    array(
-        // Set for example a Twitter Bootstrap class on this button
-        "fieldclass" =&gt; "btn btn-large"
-    )
-);</code></pre>
+                <p>For an example; see <a href="/classes/ValidFormBuilder.Button.html">\ValidFormBuilder\Button</a></p>
 
                                     <h4>Parameters</h4>
                     <table class="table table-condensed table-hover">
@@ -1812,37 +1841,7 @@ For example, you can add a custom class property to the button like this:</p>
                 <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
                 <pre class="signature" style="margin-right: 54px;">addArea(string  <span class="argument">$label = null</span>, string  <span class="argument">$active = false</span>, string  <span class="argument">$name = null</span>, string  <span class="argument">$checked = false</span>, array  <span class="argument">$meta = array()</span>) : \ValidFormBuilder\Area</pre>
                 <p><em>Add an area to the internal elements collection.</em></p>
-                <p>An area is about the same as a fieldset but an Area has more interactive options like the 'active'
-property or even the 'dynamic' meta. Using the 'active' property, the area gets a label and checkbox
-which activates or disables all the fields inside this area.</p>
-<p><em>Example 1: Active area</em></p>
-<pre><code class="language-php">$objArea = $objForm-&gt;addArea("Disable fields", true, "fields-disabled");
-$objArea-&gt;addField(
-    "first-name",
-    "First name",
-    ValidForm::VFORM_STRING,
-    array(
-        // Make this field required
-        "required" =&gt; true
-    ),
-    array(
-        // Show this error to indicate this is an required field if no value is submitted
-        "required" =&gt; "This field is required"
-    )
-);
-$objArea-&gt;addField(
-    "last-name",
-    "Last name",
-    ValidForm::VFORM_STRING,
-    array(
-        // Make this field required
-        "required" =&gt; true
-    ),
-    array(
-        // Show this error to indicate this is an required field if no value is submitted
-        "required" =&gt; "This field is required"
-    )
-);</code></pre>
+                <p>See <a href="/classes/ValidFormBuilder.Area.html">\ValidFormBuilder\Area</a> for examples</p>
 
                                     <h4>Parameters</h4>
                     <table class="table table-condensed table-hover">
@@ -1854,7 +1853,7 @@ $objArea-&gt;addField(
                                                     <tr>
                                 <td>string</td>
                                 <td>$active </td>
-                                <td><p>If true, the title has a checkbox which can enable or disable all child elements</p></td>
+                                <td><p>If <code>true</code>, the title has a checkbox which can enable or disable all child elements</p></td>
                             </tr>
                                                     <tr>
                                 <td>string</td>
@@ -1864,7 +1863,7 @@ $objArea-&gt;addField(
                                                     <tr>
                                 <td>string</td>
                                 <td>$checked </td>
-                                <td><p>Use in combination with $active; if true, the checkbox will be checked by default</p></td>
+                                <td><p>Use in combination with <code>$active</code>; if <code>true</code>, the checkbox will be checked by default</p></td>
                             </tr>
                                                     <tr>
                                 <td>array</td>
@@ -2581,14 +2580,14 @@ customization through class extension.</p>
             <article class="method">
                 <h3 class="public ">generateId()</h3>
                 <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
-                <pre class="signature" style="margin-right: 54px;">generateId(\ValidFormBuilder\number  <span class="argument">$intLength = 8</span>) : string</pre>
+                <pre class="signature" style="margin-right: 54px;">generateId(integer  <span class="argument">$intLength = 8</span>) : string</pre>
                 <p><em>Generate a unique ID</em></p>
                 
 
                                     <h4>Parameters</h4>
                     <table class="table table-condensed table-hover">
                                                     <tr>
-                                <td>\ValidFormBuilder\number</td>
+                                <td>integer</td>
                                 <td>$intLength </td>
                                 <td><p>ID length</p></td>
                             </tr>
@@ -3775,7 +3774,7 @@ the value of <code>$__novaluesmessage</code>.</p>
                 <section class="span10 offset1">
                     <hr />
                     Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor </a> and authored
-                    on June 30th, 2014 at 05:31.
+                    on July 1st, 2014 at 00:27.
                 </section>
             </section>
         </section>

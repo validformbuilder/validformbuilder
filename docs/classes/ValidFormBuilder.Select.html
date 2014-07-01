@@ -114,7 +114,7 @@
                         <ul class="dropdown-menu">
                             <li>
                                 <a href="../reports/errors.html">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <i class="icon-list-alt"></i>&#160;Errors <span class="label label-info pull-right">152</span>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <i class="icon-list-alt"></i>&#160;Errors <span class="label label-info pull-right">110</span>
                                 </a>
                             </li>
                             <li>
@@ -144,19 +144,19 @@
                                 <div class="accordion" style="margin-bottom: 0">
         <div class="accordion-group">
             <div class="accordion-heading">
-                                    <a class="accordion-toggle " data-toggle="collapse" data-target="#namespace-1904841129"></a>
+                                    <a class="accordion-toggle " data-toggle="collapse" data-target="#namespace-449226717"></a>
                                 <a href="../namespaces/default.html" style="margin-left: 30px; padding-left: 0">\</a>
             </div>
-            <div id="namespace-1904841129" class="accordion-body collapse in">
+            <div id="namespace-449226717" class="accordion-body collapse in">
                 <div class="accordion-inner">
 
                                                     <div class="accordion" style="margin-bottom: 0">
         <div class="accordion-group">
             <div class="accordion-heading">
-                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-302408343"></a>
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-1001696011"></a>
                                 <a href="../namespaces/ValidFormBuilder.html" style="margin-left: 30px; padding-left: 0">ValidFormBuilder</a>
             </div>
-            <div id="namespace-302408343" class="accordion-body collapse ">
+            <div id="namespace-1001696011" class="accordion-body collapse ">
                 <div class="accordion-inner">
 
                     
@@ -167,7 +167,7 @@
                                                     <li class="class"><a href="../classes/ValidFormBuilder.Checkbox.html">Checkbox</a></li>
                                                     <li class="class"><a href="../classes/ValidFormBuilder.ClassDynamic.html">ClassDynamic</a></li>
                                                     <li class="class"><a href="../classes/ValidFormBuilder.Collection.html">Collection</a></li>
-                                                    <li class="class"><a href="../classes/ValidFormBuilder.Comparison.html">Comparison</a></li>
+                                                    <li class="class"><a href="../classes/ValidFormBuilder.Condition.html">Condition</a></li>
                                                     <li class="class"><a href="../classes/ValidFormBuilder.Fieldset.html">Fieldset</a></li>
                                                     <li class="class"><a href="../classes/ValidFormBuilder.FieldValidator.html">FieldValidator</a></li>
                                                     <li class="class"><a href="../classes/ValidFormBuilder.File.html">File</a></li>
@@ -183,7 +183,6 @@
                                                     <li class="class"><a href="../classes/ValidFormBuilder.Select.html">Select</a></li>
                                                     <li class="class"><a href="../classes/ValidFormBuilder.SelectGroup.html">SelectGroup</a></li>
                                                     <li class="class"><a href="../classes/ValidFormBuilder.SelectOption.html">SelectOption</a></li>
-                                                    <li class="class"><a href="../classes/ValidFormBuilder.String.html">String</a></li>
                                                     <li class="class"><a href="../classes/ValidFormBuilder.Text.html">Text</a></li>
                                                     <li class="class"><a href="../classes/ValidFormBuilder.Textarea.html">Textarea</a></li>
                                                     <li class="class"><a href="../classes/ValidFormBuilder.Validator.html">Validator</a></li>
@@ -215,8 +214,54 @@
                     <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal"><i class="icon-code"></i></a>
 
                     <h1><small>\ValidFormBuilder</small>Select</h1>
-                    <p><em>Select Class</em></p>
-                    
+                    <p><em>Create a select element</em></p>
+                    <p>ValidForm Builder select elements support both &lt;option&gt; and &lt;optgroup&gt; elements by
+using respectively <code>addField()</code> and <code>addGroup()</code>.</p>
+<p>Example 1; Standard way of creating a select element</p>
+<pre><code class="language-php">$objSelect = $objForm-&gt;addField(
+    "rating",
+    "Rate ValidForm Builder",
+    ValidForm::VFORM_SELECT_LIST
+);
+$objSelect-&gt;addField("Awesome", 1);
+$objSelect-&gt;addField("Great", 2);
+$objSelect-&gt;addField("Super Cool", 3, true); // This item is selected by default
+$objSelect-&gt;addField("Splendid", 4);
+$objSelect-&gt;addField("Best thing ever happened", 5);</code></pre>
+<p>Example 2; Creating options by using <code>labelRange</code> and <code>valueRange</code> options</p>
+<pre><code class="language-php">$objForm-&gt;addField(
+    "rating",
+    "Rate ValidForm Builder",
+    ValidForm::VFORM_SELECT_LIST,
+    array(),
+    array(),
+    array(
+        // An array of &lt;option&gt; labels
+        "labelRange" =&gt; array(
+            "Awesome",
+            "Great",
+            "Super Cool",
+            "Splendid",
+            "Best thing ever happened"
+        ),
+        // An array of corresponding &lt;option&gt; values
+        "valueRange" =&gt; array(1, 2, 3, 4, 5)
+    )
+);</code></pre>
+<p>Example 3; Creating options by using <code>start</code> and <code>end</code> meta</p>
+<pre><code class="language-php">$objForm-&gt;addField("rating", "Rate ValidForm Builder", ValidForm::VFORM_SELECT_LIST, array(), array(), array(
+    "start" =&gt; 1,
+    "end" =&gt; 5
+));</code></pre>
+<p>Example 4; Adding optgroups to the select element</p>
+<pre><code class="language-php">$objSelect = $objForm-&gt;addField("rating", "Rate ValidForm Builder", ValidForm::VFORM_SELECT_LIST);
+$objSelect-&gt;addGroup("Preferred rating");
+$objSelect-&gt;addField("Awesome", 1);
+$objSelect-&gt;addGroup("Other ratings");
+$objSelect-&gt;addField("Great", 2);
+$objSelect-&gt;addField("Super Cool", 3, true); // This item is selected by default
+$objSelect-&gt;addField("Splendid", 4);
+$objSelect-&gt;addField("Best thing ever happened", 5);</code></pre>
                     
                                         
                     <section id="summary">
@@ -234,10 +279,6 @@
                         </section>
                         <section class="row-fluid public">
                             <section class="span4">
-                                                                    <a href="../classes/ValidFormBuilder.Select.html#method___construct" class="">__construct()</a><br />
-                                                                    <a href="../classes/ValidFormBuilder.Select.html#method_toHtml" class="">toHtml()</a><br />
-                                                                    <a href="../classes/ValidFormBuilder.Select.html#method___toHtml" class="">__toHtml()</a><br />
-                                                                    <a href="../classes/ValidFormBuilder.Select.html#method_toJS" class="">toJS()</a><br />
                                                                     <a href="../classes/ValidFormBuilder.Select.html#method_addField" class="">addField()</a><br />
                                                                     <a href="../classes/ValidFormBuilder.Select.html#method_addGroup" class="">addGroup()</a><br />
                                                             </section>
@@ -299,7 +340,16 @@
                                 author
                             </th>
                             <td>
-                                                                    <p>Felix Langfeldt</p>
+                                                                    <p>Felix Langfeldt <a href="mailto:felix@neverwoods.com">felix@neverwoods.com</a></p>
+                                                                    <p>Robin van Baalen <a href="mailto:robin@neverwoods.com">robin@neverwoods.com</a></p>
+                                                            </td>
+                        </tr>
+                                            <tr>
+                            <th>
+                                version
+                            </th>
+                            <td>
+                                                                    <p>Release: 3.0.0</p>
                                                             </td>
                         </tr>
                                         </table>
@@ -316,236 +366,42 @@
 
                                     <div class="row-fluid">
         <div class="span8 content class">
-            <a id="method___construct" name="method___construct" class="anchor"></a>
-            <article class="method">
-                <h3 class="public ">__construct()</h3>
-                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
-                <pre class="signature" style="margin-right: 54px;">__construct(  <span class="argument">$name</span>,   <span class="argument">$type</span>,   <span class="argument">$label = &quot;&quot;</span>,   <span class="argument">$validationRules = array()</span>,   <span class="argument">$errorHandlers = array()</span>,   <span class="argument">$meta = array()</span>) </pre>
-                <p><em></em></p>
-                
-
-                                    <h4>Parameters</h4>
-                    <table class="table table-condensed table-hover">
-                                                    <tr>
-                                <td></td>
-                                <td>$name </td>
-                                <td></td>
-                            </tr>
-                                                    <tr>
-                                <td></td>
-                                <td>$type </td>
-                                <td></td>
-                            </tr>
-                                                    <tr>
-                                <td></td>
-                                <td>$label </td>
-                                <td></td>
-                            </tr>
-                                                    <tr>
-                                <td></td>
-                                <td>$validationRules </td>
-                                <td></td>
-                            </tr>
-                                                    <tr>
-                                <td></td>
-                                <td>$errorHandlers </td>
-                                <td></td>
-                            </tr>
-                                                    <tr>
-                                <td></td>
-                                <td>$meta </td>
-                                <td></td>
-                            </tr>
-                                            </table>
-                
-                
-                				
-                            </article>
-        </div>
-        <aside class="span4 detailsbar">
-            <h1><i class="icon-arrow-down"></i></h1>
-                                                            <dl>
-                                                                            </dl>
-            <h2>Tags</h2>
-            <table class="table table-condensed">
-                                    <tr><td colspan="2"><em>None found</em></td></tr>
-                            </table>
-        </aside>
-    </div>
-
-                                    <div class="row-fluid">
-        <div class="span8 content class">
-            <a id="method_toHtml" name="method_toHtml" class="anchor"></a>
-            <article class="method">
-                <h3 class="public ">toHtml()</h3>
-                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
-                <pre class="signature" style="margin-right: 54px;">toHtml(  <span class="argument">$submitted = false</span>,   <span class="argument">$blnSimpleLayout = false</span>,   <span class="argument">$blnLabel = true</span>,   <span class="argument">$blnDisplayErrors = true</span>) </pre>
-                <p><em></em></p>
-                
-
-                                    <h4>Parameters</h4>
-                    <table class="table table-condensed table-hover">
-                                                    <tr>
-                                <td></td>
-                                <td>$submitted </td>
-                                <td></td>
-                            </tr>
-                                                    <tr>
-                                <td></td>
-                                <td>$blnSimpleLayout </td>
-                                <td></td>
-                            </tr>
-                                                    <tr>
-                                <td></td>
-                                <td>$blnLabel </td>
-                                <td></td>
-                            </tr>
-                                                    <tr>
-                                <td></td>
-                                <td>$blnDisplayErrors </td>
-                                <td></td>
-                            </tr>
-                                            </table>
-                
-                
-                				
-                            </article>
-        </div>
-        <aside class="span4 detailsbar">
-            <h1><i class="icon-arrow-down"></i></h1>
-                                                            <dl>
-                                                                            </dl>
-            <h2>Tags</h2>
-            <table class="table table-condensed">
-                                    <tr><td colspan="2"><em>None found</em></td></tr>
-                            </table>
-        </aside>
-    </div>
-
-                                    <div class="row-fluid">
-        <div class="span8 content class">
-            <a id="method___toHtml" name="method___toHtml" class="anchor"></a>
-            <article class="method">
-                <h3 class="public ">__toHtml()</h3>
-                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
-                <pre class="signature" style="margin-right: 54px;">__toHtml(  <span class="argument">$submitted = false</span>,   <span class="argument">$blnSimpleLayout = false</span>,   <span class="argument">$blnLabel = true</span>,   <span class="argument">$blnDisplayErrors = true</span>,   <span class="argument">$intCount</span>) </pre>
-                <p><em></em></p>
-                
-
-                                    <h4>Parameters</h4>
-                    <table class="table table-condensed table-hover">
-                                                    <tr>
-                                <td></td>
-                                <td>$submitted </td>
-                                <td></td>
-                            </tr>
-                                                    <tr>
-                                <td></td>
-                                <td>$blnSimpleLayout </td>
-                                <td></td>
-                            </tr>
-                                                    <tr>
-                                <td></td>
-                                <td>$blnLabel </td>
-                                <td></td>
-                            </tr>
-                                                    <tr>
-                                <td></td>
-                                <td>$blnDisplayErrors </td>
-                                <td></td>
-                            </tr>
-                                                    <tr>
-                                <td></td>
-                                <td>$intCount </td>
-                                <td></td>
-                            </tr>
-                                            </table>
-                
-                
-                				
-                            </article>
-        </div>
-        <aside class="span4 detailsbar">
-            <h1><i class="icon-arrow-down"></i></h1>
-                                                            <dl>
-                                                                            </dl>
-            <h2>Tags</h2>
-            <table class="table table-condensed">
-                                    <tr><td colspan="2"><em>None found</em></td></tr>
-                            </table>
-        </aside>
-    </div>
-
-                                    <div class="row-fluid">
-        <div class="span8 content class">
-            <a id="method_toJS" name="method_toJS" class="anchor"></a>
-            <article class="method">
-                <h3 class="public ">toJS()</h3>
-                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
-                <pre class="signature" style="margin-right: 54px;">toJS(  <span class="argument">$intDynamicPosition</span>) </pre>
-                <p><em></em></p>
-                
-
-                                    <h4>Parameters</h4>
-                    <table class="table table-condensed table-hover">
-                                                    <tr>
-                                <td></td>
-                                <td>$intDynamicPosition </td>
-                                <td></td>
-                            </tr>
-                                            </table>
-                
-                
-                				
-                            </article>
-        </div>
-        <aside class="span4 detailsbar">
-            <h1><i class="icon-arrow-down"></i></h1>
-                                                            <dl>
-                                                                            </dl>
-            <h2>Tags</h2>
-            <table class="table table-condensed">
-                                    <tr><td colspan="2"><em>None found</em></td></tr>
-                            </table>
-        </aside>
-    </div>
-
-                                    <div class="row-fluid">
-        <div class="span8 content class">
             <a id="method_addField" name="method_addField" class="anchor"></a>
             <article class="method">
                 <h3 class="public ">addField()</h3>
                 <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
-                <pre class="signature" style="margin-right: 54px;">addField(  <span class="argument">$value</span>,   <span class="argument">$label</span>,   <span class="argument">$selected = false</span>,   <span class="argument">$meta = array()</span>) </pre>
-                <p><em></em></p>
+                <pre class="signature" style="margin-right: 54px;">addField(string  <span class="argument">$label</span>,   <span class="argument">$value</span>, boolean  <span class="argument">$selected = false</span>, array  <span class="argument">$meta = array()</span>) : \ValidFormBuilder\SelectOption</pre>
+                <p><em>Add option element</em></p>
                 
 
                                     <h4>Parameters</h4>
                     <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>string</td>
+                                <td>$label </td>
+                                <td><p>The option elements value</p></td>
+                            </tr>
                                                     <tr>
                                 <td></td>
                                 <td>$value </td>
                                 <td></td>
                             </tr>
                                                     <tr>
-                                <td></td>
-                                <td>$label </td>
-                                <td></td>
-                            </tr>
-                                                    <tr>
-                                <td></td>
+                                <td>boolean</td>
                                 <td>$selected </td>
-                                <td></td>
+                                <td><p>True if this option should be selected by default</p></td>
                             </tr>
                                                     <tr>
-                                <td></td>
+                                <td>array</td>
                                 <td>$meta </td>
-                                <td></td>
+                                <td><p>The meta array</p></td>
                             </tr>
                                             </table>
                 
                 
-                				
+                                    <h4>Returns</h4>
+                    <a href="../classes/ValidFormBuilder.SelectOption.html">\ValidFormBuilder\SelectOption</a>
+                                    				
                             </article>
         </div>
         <aside class="span4 detailsbar">
@@ -565,21 +421,23 @@
             <article class="method">
                 <h3 class="public ">addGroup()</h3>
                 <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
-                <pre class="signature" style="margin-right: 54px;">addGroup(  <span class="argument">$label</span>) </pre>
-                <p><em></em></p>
+                <pre class="signature" style="margin-right: 54px;">addGroup(string  <span class="argument">$label</span>) : \ValidFormBuilder\SelectGroup</pre>
+                <p><em>Add optgroup element</em></p>
                 
 
                                     <h4>Parameters</h4>
                     <table class="table table-condensed table-hover">
                                                     <tr>
-                                <td></td>
+                                <td>string</td>
                                 <td>$label </td>
-                                <td></td>
+                                <td><p>The optgroup's label</p></td>
                             </tr>
                                             </table>
                 
                 
-                				
+                                    <h4>Returns</h4>
+                    <a href="../classes/ValidFormBuilder.SelectGroup.html">\ValidFormBuilder\SelectGroup</a>
+                                    				
                             </article>
         </div>
         <aside class="span4 detailsbar">
@@ -643,7 +501,7 @@
                 <section class="span10 offset1">
                     <hr />
                     Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor </a> and authored
-                    on June 30th, 2014 at 05:31.
+                    on July 1st, 2014 at 00:27.
                 </section>
             </section>
         </section>
