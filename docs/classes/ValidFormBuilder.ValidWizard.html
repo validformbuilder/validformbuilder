@@ -114,7 +114,7 @@
                         <ul class="dropdown-menu">
                             <li>
                                 <a href="../reports/errors.html">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <i class="icon-list-alt"></i>&#160;Errors <span class="label label-info pull-right">42</span>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <i class="icon-list-alt"></i>&#160;Errors <span class="label label-info pull-right">30</span>
                                 </a>
                             </li>
                             <li>
@@ -144,19 +144,19 @@
                                 <div class="accordion" style="margin-bottom: 0">
         <div class="accordion-group">
             <div class="accordion-heading">
-                                    <a class="accordion-toggle " data-toggle="collapse" data-target="#namespace-1141655797"></a>
+                                    <a class="accordion-toggle " data-toggle="collapse" data-target="#namespace-665776434"></a>
                                 <a href="../namespaces/default.html" style="margin-left: 30px; padding-left: 0">\</a>
             </div>
-            <div id="namespace-1141655797" class="accordion-body collapse in">
+            <div id="namespace-665776434" class="accordion-body collapse in">
                 <div class="accordion-inner">
 
                                                     <div class="accordion" style="margin-bottom: 0">
         <div class="accordion-group">
             <div class="accordion-heading">
-                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-472944671"></a>
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-788974671"></a>
                                 <a href="../namespaces/ValidFormBuilder.html" style="margin-left: 30px; padding-left: 0">ValidFormBuilder</a>
             </div>
-            <div id="namespace-472944671" class="accordion-body collapse ">
+            <div id="namespace-788974671" class="accordion-body collapse ">
                 <div class="accordion-inner">
 
                     
@@ -211,42 +211,29 @@
                     <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal"><i class="icon-code"></i></a>
 
                     <h1><small>\ValidFormBuilder</small>ValidWizard</h1>
-                    <p><em>ValidWizard Builder base class</em></p>
-                    <p>Check out some of the following examples to get started</p>
-<h4>Example; Create a ValidForm Builder instance</h4>
-<pre><code class="language-php">$objForm = new ValidForm("cool_new_form", "Please fill out my cool form", "/awesome-submits");</code></pre>
-<h4>Example 2; Add a field</h4>
-<p><em>Check out the constants section starting with <a href="/classes/ValidFormBuilder.ValidForm.html#constant_VFORM_BOOLEAN">\ValidFormBuilder\ValidForm::VFORM_BOOLEAN</a> for more
-field types</em></p>
-<pre><code class="language-php">$objForm-&gt;addField(
-    "first-name",
-    "First name",
-    ValidForm::VFORM_STRING,
+                    <p><em>ValidWizard class - Create multiple pages with formfields and next - previous buttons</em></p>
+                    <p><strong>Note</strong>: Make sure you also include <code>validwizard.js</code> when using ValidWizard. This javascript library is not
+required when you're not using ValidWizard.</p>
+<h4>Example; Create a ValidWizard instance</h4>
+<pre><code class="language-php">// The signature is exactly the same as with ValidForm
+$objForm = new ValidWizard(
+    "awesome-wizard",
+    "Please fill out my cool wizard",
+    "/stuff",
     array(
-        // Make this field required
-        "required" =&gt; true
-    ),
-    array(
-        // Show this error to indicate this is an required field if no value is submitted
-        "required" =&gt; "This field is required"
+        // When no 'nextLabel' meta is set, defaults to 'Next &amp;rarr;'
+        "nextLabel" =&gt; "Move on &amp;rarr;",
+        // When no 'previousLabel' meta is set, defaults to '&amp;larr; Previous'
+        "previousLabel" =&gt; "Retreat!"
     )
 );</code></pre>
-<h4>Example 3; Using <a href="/classes/ValidFormBuilder.ValidForm.html#method_setDefaults">\ValidFormBuilder\ValidForm::setDefaults()</a> to set default values on form fields</h4>
-<pre><code class="language-php">//*** Add a checklist
-$objCheck = $objForm-&gt;addField("cool", "Cool checklist", ValidForm::VFORM_CHECK_LIST);
-$objCheck-&gt;addField("Option 1", "option1");
-$objCheck-&gt;addField("Option 2", "option2");
-$objCheck-&gt;addField("Option 3", "option3");
-
-// Add a standard string field
-$objCheck = $objForm-&gt;addField("cool-text", "Coolest PHP Library", ValidForm::VFORM_STRING);
-
-$objForm-&gt;setDefaults([
-    // Set value of field 'cool text' to 'ValidForm Builder'
-    "cool-text" =&gt; "ValidForm Builder",
-    // Check options 2 and 3
-    "cool" =&gt; ["option2", "option3"]
-]);</code></pre>
+<h4>Example 2; Add a page</h4>
+<p><em>Check out the constants section starting with <a href="/classes/ValidFormBuilder.ValidForm.html#constant_VFORM_BOOLEAN">\ValidFormBuilder\ValidForm::VFORM_BOOLEAN</a> for more
+field types</em></p>
+<pre><code class="language-php">$objForm-&gt;addPage(
+    "personal-details",
+    "Personal Details"
+);</code></pre>
                     
                                         
                     <section id="summary">
@@ -284,7 +271,7 @@ $objForm-&gt;setDefaults([
                                                                     <a href="../classes/ValidFormBuilder.ValidWizard.html#method_unserialize" class="">unserialize()</a><br />
                                                                     <a href="../classes/ValidFormBuilder.ValidWizard.html#method_isSubmitted" class="">isSubmitted()</a><br />
                                                                     <a href="../classes/ValidFormBuilder.ValidForm.html#method_getCachedFields" class="">getCachedFields()</a><br />
-                                                                    <a href="../classes/ValidFormBuilder.ValidWizard.html#method_getFields" class="">getFields()</a><br />
+                                                                    <a href="../classes/ValidFormBuilder.ValidForm.html#method_getFields" class="">getFields()</a><br />
                                                                     <a href="../classes/ValidFormBuilder.ValidForm.html#method_getValidField" class="">getValidField()</a><br />
                                                                     <a href="../classes/ValidFormBuilder.ValidForm.html#method_getInvalidFields" class="">getInvalidFields()</a><br />
                                                                     <a href="../classes/ValidFormBuilder.ValidWizard.html#method_isValid" class="">isValid()</a><br />
@@ -301,6 +288,12 @@ $objForm-&gt;setDefaults([
                                                                     <a href="../classes/ValidFormBuilder.ValidWizard.html#method_hasConfirmPage" class="">hasConfirmPage()</a><br />
                                                                     <a href="../classes/ValidFormBuilder.ValidWizard.html#method_isValidUntil" class="">isValidUntil()</a><br />
                                                                     <a href="../classes/ValidFormBuilder.ValidWizard.html#method_getInvalidFieldsUntil" class="">getInvalidFieldsUntil()</a><br />
+                                                                    <a href="../classes/ValidFormBuilder.ValidWizard.html#method_getPageCount" class="">getPageCount()</a><br />
+                                                                    <a href="../classes/ValidFormBuilder.ValidWizard.html#method_getCurrentPage" class="">getCurrentPage()</a><br />
+                                                                    <a href="../classes/ValidFormBuilder.ValidWizard.html#method_getPreviousLabel" class="">getPreviousLabel()</a><br />
+                                                                    <a href="../classes/ValidFormBuilder.ValidWizard.html#method_setPreviousLabel" class="">setPreviousLabel()</a><br />
+                                                                    <a href="../classes/ValidFormBuilder.ValidWizard.html#method_getNextLabel" class="">getNextLabel()</a><br />
+                                                                    <a href="../classes/ValidFormBuilder.ValidWizard.html#method_setNextLabel" class="">setNextLabel()</a><br />
                                                                     <a href="../classes/ValidFormBuilder.ValidForm.html#method_getDescription" class="">getDescription()</a><br />
                                                                     <a href="../classes/ValidFormBuilder.ValidForm.html#method_setDescription" class="">setDescription()</a><br />
                                                                     <a href="../classes/ValidFormBuilder.ValidForm.html#method_getMeta" class="">getMeta()</a><br />
@@ -326,7 +319,7 @@ $objForm-&gt;setDefaults([
                                                                     <a href="../classes/ValidFormBuilder.ValidForm.html#method_setUniqueId" class="">setUniqueId()</a><br />
                                                             </section>
                             <section class="span4">
-                                                                    <a href="../classes/ValidFormBuilder.ValidWizard.html#property___pagecount" class="">$__pagecount</a><br />
+                                                                    <em>No public properties found</em>
                                                             </section>
                             <section class="span4">
                                                                     <a href="../classes/ValidFormBuilder.ValidForm.html#constant_VFORM_STRING" class="">VFORM_STRING</a><br />
@@ -397,7 +390,7 @@ $objForm-&gt;setDefaults([
                         <dt>File</dt>
                             <dd><a href="../files/ValidWizard.html"><div class="path-wrapper">ValidWizard.php</div></a></dd>
                                                 <dt>Package</dt>
-                            <dd><div class="namespace-wrapper">ValidForm</div></dd>
+                            <dd><div class="namespace-wrapper">ValidWizard</div></dd>
                                                 <dt>Class hierarchy</dt>
                             <dd class="hierarchy">
                                                                                                                                                                                                                                                                                                                                                                                                                                                             
@@ -419,7 +412,8 @@ $objForm-&gt;setDefaults([
                                 author
                             </th>
                             <td>
-                                                                    <p>Robin van Baalen <a href="mailto:rvanbaalen@felix-it.com">rvanbaalen@felix-it.com</a></p>
+                                                                    <p>Felix Langfeldt <a href="mailto:felix@neverwoods.com">felix@neverwoods.com</a></p>
+                                                                    <p>Robin van Baalen <a href="mailto:robin@neverwoods.com">robin@neverwoods.com</a></p>
                                                             </td>
                         </tr>
                                             <tr>
@@ -427,7 +421,7 @@ $objForm-&gt;setDefaults([
                                 version
                             </th>
                             <td>
-                                                                    
+                                                                    <p>Release: 3.0.0</p>
                                                             </td>
                         </tr>
                                         </table>
@@ -1248,39 +1242,7 @@ $objForm-&gt;setDefaults([
     </div>
 
                             
-                                    <a id="properties" name="properties"></a>
-            <div class="row-fluid">
-                <div class="span8 content class">
-                    <h2>Properties</h2>
-                </div>
-                <aside class="span4 detailsbar"></aside>
-            </div>
-
-                                    <div class="row-fluid">
-        <div class="span8 content class">
-            <a id="property___pagecount" name="property___pagecount" class="anchor"></a>
-            <article class="property">
-                <h3 class="public ">$__pagecount</h3>
-                <pre class="signature">$__pagecount : </pre>
-                <p><em></em></p>
-                
-
-                                <h4>Type</h4>
-                
-                                            </article>
-        </div>
-        <aside class="span4 detailsbar">
-            <h1><i class="icon-arrow-down"></i></h1>
-                        <dl>
-                                                            </dl>
-            <h2>Tags</h2>
-            <table class="table table-condensed">
-                                    <tr><td colspan="2"><em>None found</em></td></tr>
-                            </table>
-        </aside>
-    </div>
-
-                                                            
+                        
                                     <a id="methods" name="methods"></a>
             <div class="row-fluid">
                 <div class="span8 content class"><h2>Methods</h2></div>
@@ -1293,32 +1255,31 @@ $objForm-&gt;setDefaults([
             <article class="method">
                 <h3 class="public ">__construct()</h3>
                 <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
-                <pre class="signature" style="margin-right: 54px;">__construct(string|null  <span class="argument">$name</span>, string|null  <span class="argument">$description = null</span>, string|null  <span class="argument">$action = null</span>, array  <span class="argument">$meta = array()</span>) </pre>
+                <pre class="signature" style="margin-right: 54px;">__construct(string  <span class="argument">$name</span>, string  <span class="argument">$description = null</span>, string|null  <span class="argument">$action = null</span>, array  <span class="argument">$meta = array()</span>) </pre>
                 <p><em>Create an instance of the ValidForm Builder</em></p>
                 
 
                                     <h4>Parameters</h4>
                     <table class="table table-condensed table-hover">
                                                     <tr>
-                                <td>string|null</td>
+                                <td>string</td>
                                 <td>$name </td>
                                 <td><p>The name and id of the form in the HTML DOM and JavaScript.</p></td>
                             </tr>
                                                     <tr>
-                                <td>string|null</td>
+                                <td>string</td>
                                 <td>$description </td>
-                                <td><p>Desriptive text which is displayed above the form.</p></td>
+                                <td><p>Desriptive text which is displayed above the form. Default <code>null</code></p></td>
                             </tr>
                                                     <tr>
                                 <td>string|null</td>
                                 <td>$action </td>
-                                <td><p>Form action. If left empty the form will post to itself.</p></td>
+                                <td><p>Form action. If left empty the form will post to itself. Default <code>null</code></p></td>
                             </tr>
                                                     <tr>
                                 <td>array</td>
                                 <td>$meta </td>
-                                <td><p>Array with meta data. The array gets directly parsed into the form tag with the keys as</p>
-<pre><code>       attribute names and the values as values.</code></pre></td>
+                                <td><p>The meta array</p></td>
                             </tr>
                                             </table>
                 
@@ -1487,9 +1448,8 @@ the submit button. This method is optional for customization purposes -- navigat
                 <h3 class="public ">addFieldset()</h3>
                 <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
                 <pre class="signature" style="margin-right: 54px;">addFieldset(  <span class="argument">$label = null</span>,   <span class="argument">$noteHeader = null</span>,   <span class="argument">$noteBody = null</span>,   <span class="argument">$options = array()</span>) : \ValidFormBuilder\Fieldset</pre>
-                <p><em>Add a fieldset to the form field collection</em></p>
-                <p>Example:</p>
-<pre><code class="language-php">$objForm-&gt;addFieldset("Header for fieldset", "Note", "Cool fields contained by fieldset.");</code></pre>
+                <p><em>Add a fieldset</em></p>
+                <p>See <a href="/classes/ValidFormBuilder.ValidForm.html#method_addFieldset">\ValidFormBuilder\ValidForm::addFieldset()</a></p>
 
                                     <h4>Parameters</h4>
                     <table class="table table-condensed table-hover">
@@ -1524,7 +1484,9 @@ the submit button. This method is optional for customization purposes -- navigat
         <aside class="span4 detailsbar">
             <h1><i class="icon-arrow-down"></i></h1>
                                                             <dl>
-                                                                            </dl>
+                                                                                            <dt>See also</dt>
+                                                                <dd><a href="../classes/ValidFormBuilder.ValidForm.html#method_addFieldset"><span class="namespace-wrapper"></span></a></dd>
+                                                                </dl>
             <h2>Tags</h2>
             <table class="table table-condensed">
                                     <tr><td colspan="2"><em>None found</em></td></tr>
@@ -1662,21 +1624,8 @@ and will be parsed when <code>toHtml()</code> is called.</p></td>
                 <h3 class="public ">addField()</h3>
                 <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
                 <pre class="signature" style="margin-right: 54px;">addField(  <span class="argument">$name</span>,   <span class="argument">$label</span>,   <span class="argument">$type</span>,   <span class="argument">$validationRules = array()</span>,   <span class="argument">$errorHandlers = array()</span>,   <span class="argument">$meta = array()</span>,   <span class="argument">$blnJustRender = false</span>) : \ValidFormBuilder\Element</pre>
-                <p><em>Add a new element to the internal elements collection</em></p>
-                <p><em>Example; add a text field</em>:</p>
-<pre><code class="language-php">$objForm-&gt;addField(
-    "first-name",
-    "First name",
-    ValidForm::VFORM_STRING,
-    array(
-        // Make this field required
-        "required" =&gt; true
-    ),
-    array(
-        // Show this error to indicate this is an required field if no value is submitted
-        "required" =&gt; "This field is required"
-    )
-);</code></pre>
+                <p><em>Add a field</em></p>
+                <p>See <a href="/classes/ValidFormBuilder.ValidForm.html#method_addField">\ValidFormBuilder\ValidForm::addField()</a></p>
 
                                     <h4>Parameters</h4>
                     <table class="table table-condensed table-hover">
@@ -1727,7 +1676,9 @@ and will be parsed when <code>toHtml()</code> is called.</p></td>
         <aside class="span4 detailsbar">
             <h1><i class="icon-arrow-down"></i></h1>
                                                             <dl>
-                                                                            </dl>
+                                                                                            <dt>See also</dt>
+                                                                <dd><a href="../classes/ValidFormBuilder.ValidForm.html#method_addField"><span class="namespace-wrapper"></span></a></dd>
+                                                                </dl>
             <h2>Tags</h2>
             <table class="table table-condensed">
                                     <tr><td colspan="2"><em>None found</em></td></tr>
@@ -1894,21 +1845,21 @@ $objForm-&gt;addField("last-name", "Last Name", ValidForm::VFORM_STRING);</code>
             <article class="method">
                 <h3 class="public ">addMultiField()</h3>
                 <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
-                <pre class="signature" style="margin-right: 54px;">addMultiField(\ValidFormBuilder\[type]  <span class="argument">$label = null</span>, array  <span class="argument">$meta = array()</span>) : \ValidFormBuilder\MultiField</pre>
-                <p><em>Exactly the same as ValidForm-&gt;addMultiField.</em></p>
-                <p>Only this time it's executed from the context of ValidWizard.</p>
+                <pre class="signature" style="margin-right: 54px;">addMultiField(  <span class="argument">$label = null</span>,   <span class="argument">$meta = array()</span>) : \ValidFormBuilder\MultiField</pre>
+                <p><em>Add multifield</em></p>
+                <p>See <a href="/classes/ValidFormBuilder.ValidForm.html#method_addMultiField">\ValidFormBuilder\ValidForm::addMultiField()</a></p>
 
                                     <h4>Parameters</h4>
                     <table class="table table-condensed table-hover">
                                                     <tr>
-                                <td>\ValidFormBuilder\[type]</td>
+                                <td></td>
                                 <td>$label </td>
-                                <td><p>[description]</p></td>
+                                <td></td>
                             </tr>
                                                     <tr>
-                                <td>array</td>
+                                <td></td>
                                 <td>$meta </td>
-                                <td><p>[description]</p></td>
+                                <td></td>
                             </tr>
                                             </table>
                 
@@ -1921,7 +1872,9 @@ $objForm-&gt;addField("last-name", "Last Name", ValidForm::VFORM_STRING);</code>
         <aside class="span4 detailsbar">
             <h1><i class="icon-arrow-down"></i></h1>
                                                             <dl>
-                                                                            </dl>
+                                                                                            <dt>See also</dt>
+                                                                <dd><a href="../classes/ValidFormBuilder.ValidForm.html#method_addMultiField"><span class="namespace-wrapper"></span></a></dd>
+                                                                </dl>
             <h2>Tags</h2>
             <table class="table table-condensed">
                                     <tr><td colspan="2"><em>None found</em></td></tr>
@@ -1995,8 +1948,8 @@ or you can register the callback function on a jQuery bindable event (e.g. jQuer
                 <h3 class="public ">toHtml()</h3>
                 <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
                 <pre class="signature" style="margin-right: 54px;">toHtml(  <span class="argument">$blnClientSide = true</span>,   <span class="argument">$blnForceSubmitted = false</span>,   <span class="argument">$strJs = &quot;&quot;</span>) : string</pre>
-                <p><em>Generate HTML output - build form</em></p>
-                
+                <p><em>Generate Wizard HTML output</em></p>
+                <p>See <a href="/classes/ValidFormBuilder.ValidForm.html#method_toHtml">\ValidFormBuilder\ValidForm::toHtml()</a></p>
 
                                     <h4>Parameters</h4>
                     <table class="table table-condensed table-hover">
@@ -2020,7 +1973,7 @@ or you can register the callback function on a jQuery bindable event (e.g. jQuer
                 
                                     <h4>Returns</h4>
                     string
-                                            &mdash; <p>Generated HTML output</p>
+                                            &mdash; <p>Generated HTML</p>
                                     				
                             </article>
         </div>
@@ -2166,27 +2119,28 @@ initializing ValidForm Builder client-side.</p></td>
             <article class="method">
                 <h3 class="public ">unserialize()</h3>
                 <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
-                <pre class="signature" style="margin-right: 54px;">unserialize(  <span class="argument">$strSerialized</span>,   <span class="argument">$strUniqueId = &quot;&quot;</span>) : \ValidFormBuilder\ValidForm</pre>
-                <p><em>Unserialize previously serialized ValidForm object</em></p>
+                <pre class="signature" style="margin-right: 54px;">unserialize(string  <span class="argument">$strSerialized</span>, string  <span class="argument">$strUniqueId = &quot;&quot;</span>) : \ValidFormBuilder\ValidForm</pre>
+                <p><em>Unserialize a previously serialized ValidWizard object</em></p>
                 
 
                                     <h4>Parameters</h4>
                     <table class="table table-condensed table-hover">
                                                     <tr>
-                                <td></td>
+                                <td>string</td>
                                 <td>$strSerialized </td>
-                                <td></td>
+                                <td><p>Serialized ValidWizard object</p></td>
                             </tr>
                                                     <tr>
-                                <td></td>
+                                <td>string</td>
                                 <td>$strUniqueId </td>
-                                <td></td>
+                                <td><p>Use this to overwrite the deserialized wizard's unique ID</p></td>
                             </tr>
                                             </table>
                 
                 
                                     <h4>Returns</h4>
                     <a href="../classes/ValidFormBuilder.ValidForm.html">\ValidFormBuilder\ValidForm</a>
+                                            &mdash; <p>A ValidForm instance (this can either be a ValidForm or ValidWizard object)</p>
                                     				
                             </article>
         </div>
@@ -2208,24 +2162,22 @@ initializing ValidForm Builder client-side.</p></td>
             <article class="method">
                 <h3 class="public ">isSubmitted()</h3>
                 <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
-                <pre class="signature" style="margin-right: 54px;">isSubmitted(boolean  <span class="argument">$blnForce = false</span>) : boolean</pre>
-                <p><em>Check if the form is submitted by validating the value of the hidden
-vf__dispatch field.</em></p>
-                
+                <pre class="signature" style="margin-right: 54px;">isSubmitted(  <span class="argument">$blnForce = false</span>) : boolean</pre>
+                <p><em>Check if the wizard is submitted</em></p>
+                <p>See <a href="/classes/ValidFormBuilder.ValidForm.html#method_isSubmitted">\ValidFormBuilder\ValidForm::isSubmitted()</a></p>
 
                                     <h4>Parameters</h4>
                     <table class="table table-condensed table-hover">
                                                     <tr>
-                                <td>boolean</td>
+                                <td></td>
                                 <td>$blnForce </td>
-                                <td><p>Fake isSubmitted to true to force field values.</p></td>
+                                <td></td>
                             </tr>
                                             </table>
                 
                 
                                     <h4>Returns</h4>
                     boolean
-                                            &mdash; <p>[description]</p>
                                     				
                             </article>
         </div>
@@ -2277,31 +2229,24 @@ an expensive getFields() call and looping through all elements</em></p>
             <article class="method">
                 <h3 class="public ">getFields()</h3>
                 <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
-                <pre class="signature" style="margin-right: 54px;">getFields(boolean  <span class="argument">$blnIncludeMultiFields = false</span>) : \ValidFormBuilder\Collection</pre>
-                <p><em>getFields creates a flat collection of all form fields.</em></p>
+                <pre class="signature" style="margin-right: 54px;">getFields() : \ValidFormBuilder\Collection</pre>
+                <p><em>Get a flat Collection of all internal elements.</em></p>
                 <p>This loops through all elements and adds each element and their children to a new Collection which will be
 returned. This results in a flat Collection filled with ValidForm Builder elements.</p>
 
-                                    <h4>Parameters</h4>
-                    <table class="table table-condensed table-hover">
-                                                    <tr>
-                                <td>boolean</td>
-                                <td>$blnIncludeMultiFields </td>
-                                <td><p>Set this to true if you want to include MultiFields in the collection</p></td>
-                            </tr>
-                                            </table>
                 
                 
                                     <h4>Returns</h4>
                     <a href="../classes/ValidFormBuilder.Collection.html">\ValidFormBuilder\Collection</a>
-                                            &mdash; <p>The collection of fields.</p>
                                     				
                             </article>
         </div>
         <aside class="span4 detailsbar">
             <h1><i class="icon-arrow-down"></i></h1>
                                                             <dl>
-                                                                            </dl>
+                                                    <dt>Inherited from</dt>
+                    <dd><a href="../classes/ValidFormBuilder.ValidForm.html"><div class="path-wrapper">\ValidFormBuilder\ValidForm</div></a></dd>
+                                                            </dl>
             <h2>Tags</h2>
             <table class="table table-condensed">
                                     <tr><td colspan="2"><em>None found</em></td></tr>
@@ -2452,7 +2397,7 @@ if ($objForm-&gt;isSubmitted() &amp;&amp; $objForm-&gt;isValid()) {
                 <h3 class="public ">isValid()</h3>
                 <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
                 <pre class="signature" style="margin-right: 54px;">isValid(  <span class="argument">$strPageId = null</span>) : boolean</pre>
-                <p><em>As short as it is powerful: validate the submitted field values.</em></p>
+                <p><em>See {@link \ValidFormBuilder\ValidForm::isValid()}</em></p>
                 
 
                                     <h4>Parameters</h4>
@@ -2474,7 +2419,9 @@ if ($objForm-&gt;isSubmitted() &amp;&amp; $objForm-&gt;isValid()) {
         <aside class="span4 detailsbar">
             <h1><i class="icon-arrow-down"></i></h1>
                                                             <dl>
-                                                                            </dl>
+                                                                                            <dt>See also</dt>
+                                                                <dd><a href="../classes/ValidFormBuilder.ValidForm.html#method_isValid"><span class="namespace-wrapper"></span></a></dd>
+                                                                </dl>
             <h2>Tags</h2>
             <table class="table table-condensed">
                                     <tr><td colspan="2"><em>None found</em></td></tr>
@@ -2489,10 +2436,8 @@ if ($objForm-&gt;isSubmitted() &amp;&amp; $objForm-&gt;isValid()) {
                 <h3 class="public ">valuesAsHtml()</h3>
                 <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
                 <pre class="signature" style="margin-right: 54px;">valuesAsHtml(  <span class="argument">$hideEmpty = false</span>) : string</pre>
-                <p><em>A utility method to parse an overview of the submitted values.</em></p>
-                <p>This generates a table with <code>label: value</code> pairs. The output of this function is mostly used in for example
-e-mail bodies. When the contact form created with ValidForm Builder is submitted, you only have to e-mail
-the results of <code>valuesAsHtml()</code></p>
+                <p><em>Generate valuesAsHtml overview</em></p>
+                <p>See <a href="/classes/ValidFormBuilder.ValidForm.html#method_valuesAsHtml">\ValidFormBuilder\ValidForm::valuesAsHtml()</a></p>
 
                                     <h4>Parameters</h4>
                     <table class="table table-condensed table-hover">
@@ -2513,7 +2458,9 @@ the results of <code>valuesAsHtml()</code></p>
         <aside class="span4 detailsbar">
             <h1><i class="icon-arrow-down"></i></h1>
                                                             <dl>
-                                                                            </dl>
+                                                                                            <dt>See also</dt>
+                                                                <dd><a href="../classes/ValidFormBuilder.ValidForm.html#method_valuesAsHtml"><span class="namespace-wrapper"></span></a></dd>
+                                                                </dl>
             <h2>Tags</h2>
             <table class="table table-condensed">
                                     <tr><td colspan="2"><em>None found</em></td></tr>
@@ -2768,31 +2715,33 @@ customization through class extension.</p>
             <article class="method">
                 <h3 class="public ">addPage()</h3>
                 <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
-                <pre class="signature" style="margin-right: 54px;">addPage(  <span class="argument">$id = &quot;&quot;</span>,   <span class="argument">$header = &quot;&quot;</span>,   <span class="argument">$meta = array()</span>) </pre>
-                <p><em></em></p>
-                
+                <pre class="signature" style="margin-right: 54px;">addPage(string  <span class="argument">$id = &quot;&quot;</span>, string  <span class="argument">$header = &quot;&quot;</span>, array  <span class="argument">$meta = array()</span>) : \ValidFormBuilder\Page</pre>
+                <p><em>Add a page to the wizard</em></p>
+                <p>See <a href="/classes/ValidFormBuilder.Page.html">\ValidFormBuilder\Page</a></p>
 
                                     <h4>Parameters</h4>
                     <table class="table table-condensed table-hover">
                                                     <tr>
-                                <td></td>
+                                <td>string</td>
                                 <td>$id </td>
-                                <td></td>
+                                <td><p>Page ID</p></td>
                             </tr>
                                                     <tr>
-                                <td></td>
+                                <td>string</td>
                                 <td>$header </td>
-                                <td></td>
+                                <td><p>Page title</p></td>
                             </tr>
                                                     <tr>
-                                <td></td>
+                                <td>array</td>
                                 <td>$meta </td>
-                                <td></td>
+                                <td><p>Meta array</p></td>
                             </tr>
                                             </table>
                 
                 
-                				
+                                    <h4>Returns</h4>
+                    <a href="../classes/ValidFormBuilder.Page.html">\ValidFormBuilder\Page</a>
+                                    				
                             </article>
         </div>
         <aside class="span4 detailsbar">
@@ -2813,8 +2762,8 @@ customization through class extension.</p>
                 <h3 class="public ">addConfirmPage()</h3>
                 <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
                 <pre class="signature" style="margin-right: 54px;">addConfirmPage() </pre>
-                <p><em>Wrapper method for setting the $__hasconfirmpage property</em></p>
-                
+                <p><em>Set confirmpage flag to true.</em></p>
+                <p>This allows for client-side confirmation page injection. More details on this will follow.</p>
 
                 
                 
@@ -2839,7 +2788,7 @@ customization through class extension.</p>
                 <h3 class="public ">removeConfirmPage()</h3>
                 <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
                 <pre class="signature" style="margin-right: 54px;">removeConfirmPage() </pre>
-                <p><em></em></p>
+                <p><em>Reset the confirm page flag back to false</em></p>
                 
 
                 
@@ -2864,13 +2813,15 @@ customization through class extension.</p>
             <article class="method">
                 <h3 class="public ">hasConfirmPage()</h3>
                 <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
-                <pre class="signature" style="margin-right: 54px;">hasConfirmPage() </pre>
-                <p><em></em></p>
+                <pre class="signature" style="margin-right: 54px;">hasConfirmPage() : boolean</pre>
+                <p><em>Check if this Wizard has a confirm page flag set.</em></p>
                 
 
                 
                 
-                				
+                                    <h4>Returns</h4>
+                    boolean
+                                    				
                             </article>
         </div>
         <aside class="span4 detailsbar">
@@ -2892,7 +2843,7 @@ customization through class extension.</p>
                 <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
                 <pre class="signature" style="margin-right: 54px;">isValidUntil(string  <span class="argument">$strPageId</span>) : boolean</pre>
                 <p><em>Validate all form fields EXCLUDING the fields in the given page object and beyond.</em></p>
-                
+                <p>This is useful when partially validating the wizard</p>
 
                                     <h4>Parameters</h4>
                     <table class="table table-condensed table-hover">
@@ -2927,15 +2878,198 @@ customization through class extension.</p>
             <article class="method">
                 <h3 class="public ">getInvalidFieldsUntil()</h3>
                 <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
-                <pre class="signature" style="margin-right: 54px;">getInvalidFieldsUntil(  <span class="argument">$strPageId</span>) </pre>
-                <p><em></em></p>
+                <pre class="signature" style="margin-right: 54px;">getInvalidFieldsUntil(string  <span class="argument">$strPageId</span>) : array</pre>
+                <p><em>Validate all form fields EXCLUDING the fields in the given page object and beyond.</em></p>
                 
 
                                     <h4>Parameters</h4>
                     <table class="table table-condensed table-hover">
                                                     <tr>
-                                <td></td>
+                                <td>string</td>
                                 <td>$strPageId </td>
+                                <td></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    array
+                                            &mdash; <p>Array of invalid fields</p>
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_getPageCount" name="method_getPageCount" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">getPageCount()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">getPageCount() : integer</pre>
+                <p><em></em></p>
+                <p>Returns the number of pages in the wizard</p>
+
+                
+                
+                                    <h4>Returns</h4>
+                    integer
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_getCurrentPage" name="method_getCurrentPage" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">getCurrentPage()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">getCurrentPage() : integer</pre>
+                <p><em></em></p>
+                <p>Returns the current page counter</p>
+
+                
+                
+                                    <h4>Returns</h4>
+                    integer
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_getPreviousLabel" name="method_getPreviousLabel" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">getPreviousLabel()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">getPreviousLabel() : string</pre>
+                <p><em></em></p>
+                <p>Returns the label of the previous button</p>
+
+                
+                
+                                    <h4>Returns</h4>
+                    string
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_setPreviousLabel" name="method_setPreviousLabel" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">setPreviousLabel()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">setPreviousLabel(mixed  <span class="argument">$strLabel</span>) : void</pre>
+                <p><em></em></p>
+                <p>Sets the label of the previous button</p>
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>mixed</td>
+                                <td>$strLabel </td>
+                                <td></td>
+                            </tr>
+                                            </table>
+                
+                
+                				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_getNextLabel" name="method_getNextLabel" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">getNextLabel()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">getNextLabel() : string</pre>
+                <p><em></em></p>
+                <p>Returns the label of the next button</p>
+
+                
+                
+                                    <h4>Returns</h4>
+                    string
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_setNextLabel" name="method_setNextLabel" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">setNextLabel()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">setNextLabel(mixed  <span class="argument">$strLabel</span>) : void</pre>
+                <p><em></em></p>
+                <p>Sets the label of the next button</p>
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>mixed</td>
+                                <td>$strLabel </td>
                                 <td></td>
                             </tr>
                                             </table>
@@ -3771,7 +3905,7 @@ the value of <code>$__novaluesmessage</code>.</p>
                 <section class="span10 offset1">
                     <hr />
                     Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor </a> and authored
-                    on July 1st, 2014 at 02:44.
+                    on July 1st, 2014 at 03:09.
                 </section>
             </section>
         </section>
