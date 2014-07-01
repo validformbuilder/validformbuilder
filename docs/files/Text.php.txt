@@ -48,10 +48,14 @@ namespace ValidFormBuilder;
  *     ),
  *     array(
  *         // Add a custom class to the input element
- *         // This results in something like <input type='text' class='vf__text custom-class'>
+ *         // This results in something like
+ *         // <input type='text' class='vf__text custom-class'>
  *         "fieldclass" => "custom-class",
  *         // Add a custom class to the field container
- *         // This results in <div class='vf__required container-class'><input type='text'></div>
+ *         // This results in
+ *         // <div class='vf__required container-class'>
+ *         //     <input type='text'>
+ *         // </div>
  *         "class" => "container-class"
  *
  *     )
