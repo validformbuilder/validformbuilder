@@ -23,6 +23,8 @@ namespace ValidFormBuilder;
 /**
  * Hidden Class
  *
+ * See {@link \ValidFormBuilder\ValidForm::addHiddenField()}
+ *
  * #### Example; Add a hidden field to the form
  * ```php
  * $objForm->addHiddenField("secret-stuff", ValidForm::VFORM_STRING);
