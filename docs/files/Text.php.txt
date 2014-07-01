@@ -24,7 +24,7 @@ namespace ValidFormBuilder;
  *
  * Text objects are used to create input[type='text'] fields.
  *
- * #### Example; Add a basic text field to the form.
+ * #### Example; Add a text field with some validation and custom classes to the form.
  * ```php
  * $objForm->addField(
  *     "first-name",

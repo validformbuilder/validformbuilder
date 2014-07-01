@@ -24,6 +24,27 @@ namespace ValidFormBuilder;
  *
  * TextArea objects are used to create textarea html elements.
  *
+ * #### Example; Add a basic textarea
+ * ```php
+ * $objForm->addField(
+ *     "message",
+ *     "Your Message",
+ *     ValidForm::VFORM_TEXT,
+ *     array(
+ *         // Make this field required
+ *         "required" => true
+ *     ),
+ *     array(
+ *         // Error message when required state isn't met
+ *         "required" => "This is a required field"
+ *     ),
+ *     array(
+ *         "cols" => 20,
+ *         "rows" => 10
+ *     )
+ * );
+ * ```
+ *
  * @package ValidForm
  * @author Felix Langfeldt <felix@neverwoods.com>
  * @author Robin van Baalen <robin@neverwoods.com>

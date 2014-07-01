@@ -144,19 +144,19 @@
                                 <div class="accordion" style="margin-bottom: 0">
         <div class="accordion-group">
             <div class="accordion-heading">
-                                    <a class="accordion-toggle " data-toggle="collapse" data-target="#namespace-1983199807"></a>
+                                    <a class="accordion-toggle " data-toggle="collapse" data-target="#namespace-1817684204"></a>
                                 <a href="../namespaces/default.html" style="margin-left: 30px; padding-left: 0">\</a>
             </div>
-            <div id="namespace-1983199807" class="accordion-body collapse in">
+            <div id="namespace-1817684204" class="accordion-body collapse in">
                 <div class="accordion-inner">
 
                                                     <div class="accordion" style="margin-bottom: 0">
         <div class="accordion-group">
             <div class="accordion-heading">
-                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-49441263"></a>
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-478956013"></a>
                                 <a href="../namespaces/ValidFormBuilder.html" style="margin-left: 30px; padding-left: 0">ValidFormBuilder</a>
             </div>
-            <div id="namespace-49441263" class="accordion-body collapse ">
+            <div id="namespace-478956013" class="accordion-body collapse ">
                 <div class="accordion-inner">
 
                     
@@ -213,6 +213,24 @@
                     <h1><small>\ValidFormBuilder</small>Textarea</h1>
                     <p><em>Create textarea html elements</em></p>
                     <p>TextArea objects are used to create textarea html elements.</p>
+<h4>Example; Add a basic textarea</h4>
+<pre><code class="language-php">$objForm-&gt;addField(
+    "message",
+    "Your Message",
+    ValidForm::VFORM_TEXT,
+    array(
+        // Make this field required
+        "required" =&gt; true
+    ),
+    array(
+        // Error message when required state isn't met
+        "required" =&gt; "This is a required field"
+    ),
+    array(
+        "cols" =&gt; 20,
+        "rows" =&gt; 10
+    )
+);</code></pre>
                     
                                         
                     <section id="summary">
@@ -358,7 +376,7 @@
                 <section class="span10 offset1">
                     <hr />
                     Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor </a> and authored
-                    on July 1st, 2014 at 01:40.
+                    on July 1st, 2014 at 01:45.
                 </section>
             </section>
         </section>
