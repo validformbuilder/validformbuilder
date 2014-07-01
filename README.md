@@ -7,6 +7,7 @@ Quick links:
 - [About](#validform-builder)
 - [Installation](#installation)
 - [Documentation](#user-content-documentation)
+- [Examples](https://github.com/neverwoods/validformbuilder/tree/master/examples)
 
 ValidForm Builder
 ================
@@ -19,17 +20,13 @@ The ValidForm Builder is a PHP and JavaScript library that simplifies the often 
 - Client side validation displays inline to improve user satisfaction. No more annoying popups that don't really tell you anything.
 - Creation of complex form structures.
 - Uses the popular jQuery Javascript library for DOM manipulation.
-- Completely customizable using CSS rules.
-- Automatic creation of field summaries for form mailers in HTML and plain text.
-
-Why use ValidForm Builder?
-----
-
+- **Completely customizable** using CSS rules.
+- Automatic creation of field summaries for form mailers.
 - Super fast web form creation.
 - Get rid of SQL injection problems.
-- Create standards based CSS forms. No tables inside.
+- Create standards based CSS forms. **No tables inside.**
 - Make form entry fun for the user. More feedback from your website.
-- Write client- and server-side validation at the same time
+- **Write client- and server-side validation at the same time**
 
 Installation
 ------------
@@ -37,7 +34,7 @@ You're free to download the source and [get started](https://github.com/neverwoo
 ```
 {
     "require": {
-        "neverwoods/validformbuilder": "~3.0"
+        "neverwoods/validformbuilder": "~3.2"
     }
 }
 ```
@@ -59,6 +56,11 @@ Here are some documentation quick links:
 - [Match two password fields client & server-side](http://validformbuilder.org/docs/classes/ValidFormBuilder.Password.html)
 
 If you have any questions, please ask them on [stackoverflow](http://stackoverflow.com) and be sure to tag your question with the `validform` tag. We regulary monitor these questions and try to answer them as soon as we can :)
+
+Examples
+========
+Check out [the examples folder](https://github.com/neverwoods/validformbuilder/tree/master/examples) for many real-live use cases for ValidForm Buider. Each snippet is ready to copy-paste into your project!
+
 
 Happy coding!
 ------
