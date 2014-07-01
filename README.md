@@ -7,6 +7,7 @@ Quick links:
 - [About](#validform-builder)
 - [Installation](#installation)
 - [Documentation](#user-content-documentation)
+- [Examples](https://github.com/neverwoods/validformbuilder/tree/master/examples)
 
 ValidForm Builder
 ================
@@ -59,6 +60,11 @@ Here are some documentation quick links:
 - [Match two password fields client & server-side](http://validformbuilder.org/docs/classes/ValidFormBuilder.Password.html)
 
 If you have any questions, please ask them on [stackoverflow](http://stackoverflow.com) and be sure to tag your question with the `validform` tag. We regulary monitor these questions and try to answer them as soon as we can :)
+
+Examples
+========
+Check out [the examples folder](https://github.com/neverwoods/validformbuilder/tree/master/examples) for many real-live use cases for ValidForm Buider. Each snippet is ready to copy-paste into your project!
+
 
 Happy coding!
 ------
