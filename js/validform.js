@@ -1,7 +1,7 @@
 /***************************
  * ValidForm Builder - build valid and secure web forms quickly
  *
- * Copyright (c) 2009-2013 Neverwoods.
+ * Copyright (c) 2009-2014 Neverwoods.
  * All rights reserved.
  *
  * This software is released under the GNU GPL v2 License <http://www.gnu.org/licenses/old-licenses/gpl-2.0.html>
