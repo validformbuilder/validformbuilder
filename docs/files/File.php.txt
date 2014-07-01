@@ -1,6 +1,4 @@
 <?php
-namespace ValidFormBuilder;
-
 /**
  * ValidForm Builder - build valid and secure web forms quickly
  *
@@ -19,16 +17,47 @@ namespace ValidFormBuilder;
  * @license http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU GPL v2
  * @link http://validformbuilder.org
  */
+namespace ValidFormBuilder;
 
 /**
- * File Class
+ * Create a file upload field
+ *
+ * #### Example; Create a basic upload field
+ * ```php
+ * $objForm->addField("logo", "Upload logo", ValidForm::VFORM_FILE);
+ * ```
+ *
+ * #### Example 2; Add a custom class to the upload field to, for instance, initialise third party plugins
+ * ```php
+ * $objForm->addField(
+ *     "logo",
+ *     "Upload logo",
+ *     ValidForm::VFORM_FILE,
+ *     array(),
+ *     array(),
+ *     array(
+ *         // This results in
+ *         // <input type="file" value="" name="logo[]" id="logo" class="vf__file validform-logo">
+ *         "fieldclass" => "validform-logo"
+ *     )
+ * );
+ * ```
  *
  * @package ValidForm
- * @author Felix Langfeldt
+ * @author Felix Langfeldt <felix@neverwoods.com>
+ * @author Robin van Baalen <robin@neverwoods.com>
+ * @version Release: 3.0.0
  */
 class File extends Element
 {
-
+    /**
+     * Generate HTML
+     *
+     * See {@link \ValidFormBuilder\Element::toHtml()}
+     *
+     * @internal
+     * @see \ValidFormBuilder\Element::toHtml()
+     */
     public function toHtml($submitted = false, $blnSimpleLayout = false, $blnLabel = true, $blnDisplayErrors = true)
     {
         $strOutput = "";
@@ -45,6 +74,14 @@ class File extends Element
         return $strOutput;
     }
 
+    /**
+     * Generate HTML
+     *
+     * See {@link \ValidFormBuilder\Element::__toHtml()}
+     *
+     * @internal
+     * @see \ValidFormBuilder\Element::__toHtml()
+     */
     public function __toHtml($submitted = false, $blnSimpleLayout = false, $blnLabel = true, $blnDisplayErrors = true, $intCount = 0)
     {
         $strOutput = "";
@@ -117,6 +154,14 @@ class File extends Element
         return $strOutput;
     }
 
+    /**
+     * Generate Javascript
+     *
+     * See {@link \ValidFormBuilder\Element::toJS()}
+     *
+     * @internal
+     * @see \ValidFormBuilder\Element::toJS()
+     */
     public function toJS($intDynamicPosition = 0)
     {
         $strCheck = $this->__validator->getCheck();
@@ -153,6 +198,13 @@ class File extends Element
         return $strOutput;
     }
 
+    /**
+     * Convert file size to bytes
+     *
+     * @internal
+     * @param string $strSize File size to convert
+     * @return string
+     */
     private function convertToBytes($strSize)
     {
         switch (strtolower(substr($strSize, - 1))) {
