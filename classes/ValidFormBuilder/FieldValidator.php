@@ -516,7 +516,7 @@ class FieldValidator extends ClassDynamic
             $this->__errors[$intDynamicPosition] = $this->__overrideerrors[$intDynamicPosition];
         }
 
-        return (! isset($this->__validvalues[$intDynamicPosition])) ? false : true;
+        return (!isset($this->__validvalues[$intDynamicPosition])) ? false : true;
     }
 
     /**
