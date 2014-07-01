@@ -1,7 +1,7 @@
 /***************************
  * ValidForm Builder - build valid and secure web forms quickly
  *
- * Copyright (c) 2009-2013 Neverwoods.
+ * Copyright (c) 2009-2014 Neverwoods.
  * All rights reserved.
  *
  * This software is released under the GNU GPL v2 License <http://www.gnu.org/licenses/old-licenses/gpl-2.0.html>
@@ -1675,8 +1675,7 @@ ValidFormFieldValidator.prototype.validate = function(value) {
 				}
 
 				//*** Check specific types using the type array.
-                // FIXME: This block throws errors on checkboxes in a list field.
-				/*
+                // TODO: Validate that the code block below is still needed and working
                 if (typeof this.check === "object") {
 					for (var intCount = 0; intCount < objValidElements.length; intCount++) {
 						if (!ValidForm.inArray(this.check, objValidElements.get(intCount))) {
@@ -1685,7 +1684,6 @@ ValidFormFieldValidator.prototype.validate = function(value) {
 						}
 					}
 				}
-				*/
 
 				return true;
 			} else {

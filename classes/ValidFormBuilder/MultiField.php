@@ -1,44 +1,140 @@
 <?php
-namespace ValidFormBuilder;
-
 /**
  * ValidForm Builder - build valid and secure web forms quickly
  *
- * Copyright (c) 2009-2012, Felix Langfeldt <flangfeldt@felix-it.com>.
+ * Copyright (c) 2009-2014 Neverwoods Internet Technology - http://neverwoods.com
+ *
+ * Felix Langfeldt <felix@neverwoods.com>
+ * Robin van Baalen <robin@neverwoods.com>
+ *
  * All rights reserved.
  *
  * This software is released under the GNU GPL v2 License <http://www.gnu.org/licenses/old-licenses/gpl-2.0.html>
  *
  * @package ValidForm
- * @author Felix Langfeldt <flangfeldt@felix-it.com>
- * @copyright 2009-2012 Felix Langfeldt <flangfeldt@felix-it.com>
+ * @author Felix Langfeldt <felix@neverwoods.com>, Robin van Baalen <robin@neverwoods.com>
+ * @copyright 2009-2014 Neverwoods Internet Technology - http://neverwoods.com
  * @license http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU GPL v2
- * @link http://code.google.com/p/validformbuilder/
+ * @link http://validformbuilder.org
+ * @version 3.0.0
  */
 
+namespace ValidFormBuilder;
+
 /**
+ * Create a Multifield element
  *
+ * Multifield elements allow you to combine multiple fields horizontally with one label.
+ * For example, create a first name + last name field with label "Full name"
  *
- * MultiField Class
+ * ```php
+ * $objMulti = $objForm->addMultifield("Full name");
+ * // Note: when using addField on a multifield, we don't set a label!
+ * $objMulti->addField(
+ *     "first-name",
+ *     ValidForm::VFORM_STRING,
+ *     array(),
+ *     array(),
+ *     // Keep it short, this is just a first name field
+ *     array("style" => "width: 50px")
+ * );
+ * $objMulti->addField("last-name", ValidForm::VFORM_STRING);
+ * ```
+ *
+ * You can also combine select elements to create a date picker:
+ *
+ * ```php
+ * $objMulti = $objForm->addMultiField("Birthdate");
+ * $objMulti->addField(
+ *     "year",
+ *     ValidForm::VFORM_SELECT_LIST,
+ *     array(),
+ *     array(),
+ *     array(
+ *         "start" => 1920,
+ *         "end" => 2014,
+ *         // 'fieldstyle' gets applied on the <select>
+ *         // regular 'style' applies on the wrapping <div>
+ *         "fieldstyle" => "width: 75px"
+ *     )
+ * );
+ * $objMulti->addField(
+ *     "month",
+ *     ValidForm::VFORM_SELECT_LIST,
+ *     array(),
+ *     array(),
+ *     array(
+ *         "start" => 01,
+ *         "end" => 12,
+ *         "fieldstyle" => "width: 75px"
+ *     )
+ * );
+ * $objMulti->addField(
+ *     "day",
+ *     ValidForm::VFORM_SELECT_LIST,
+ *     array(),
+ *     array(),
+ *     array(
+ *         "start" => 1,
+ *         "end" => 31,
+ *         "fieldstyle" => "width: 75px"
+ *     )
+ * );
+ * ```
  *
  * @package ValidForm
- * @author Felix Langfeldt
- * @version Release: 0.2.2
+ * @author Felix Langfeldt <felix@neverwoods.com>
+ * @author Robin van Baalen <robin@neverwoods.com>
+ * @version 3.0.0
  *
  */
 class MultiField extends Base
 {
 
+    /**
+     * Field label
+     * @internal
+     * @var string
+     */
     protected $__label;
 
+    /**
+     * Dynamic flag
+     * @internal
+     * @var boolean
+     */
     protected $__dynamic;
 
+    /**
+     * Dynamic label
+     * @internal
+     * @var string
+     */
     protected $__dynamicLabel;
 
+    /**
+     * Required style
+     * @internal
+     * @var string
+     */
     protected $__requiredstyle;
 
+    /**
+     * Fields collection
+     * @internal
+     * @var \ValidFormBuilder\Collection
+     */
     protected $__fields;
 
+    /**
+     * Create a new MultiField instance
+     *
+     * See {@link \ValidFormBuilder\MultiField top of this page} for examples
+     *
+     * @internal
+     * @param string $label The multifield's label
+     * @param array $meta The meta array
+     */
     public function __construct($label, $meta = array())
     {
         $this->__label = $label;
@@ -53,6 +149,19 @@ class MultiField extends Base
         $this->__dynamicLabel = $this->getMeta("dynamicLabel", $this->__dynamicLabel);
     }
 
+    /**
+     * Add a field to the MultiField collection.
+     *
+     * Same as {@link \ValidFormBuilder\ValidForm::addField()} with the only difference that the `MultiField::addField()`
+     * does not take a field label since that's already set when initialising the `MultiField`.
+     *
+     * @param string $name Field name
+     * @param integer $type Field type
+     * @param array $validationRules Validation rules array
+     * @param array $errorHandlers Error handling array
+     * @param array $meta The meta array
+     * @return \ValidFormBuilder\Element
+     */
     public function addField($name, $type, $validationRules = array(), $errorHandlers = array(), $meta = array())
     {
         // Creating dynamic fields inside a multifield is not supported.
@@ -88,6 +197,15 @@ class MultiField extends Base
         return $objField;
     }
 
+    /**
+     * Add text to the multifield.
+     *
+     * Same as {@link \ValidFormBuilder\ValidForm::addText()}
+     *
+     * @param string $strText The text to add (can be HTML as well)
+     * @param array $meta The meta array
+     * @return \ValidFormBuilder\String
+     */
     public function addText($strText, $meta = array())
     {
         $objString = new String($strText, $meta);
@@ -98,6 +216,16 @@ class MultiField extends Base
         return $objString;
     }
 
+    /**
+     * See {@link \ValidFormBuilder\Base::toHtml()}
+     *
+     * @internal
+     * @param boolean $submitted
+     * @param boolean $blnSimpleLayout
+     * @param boolean $blnLabel
+     * @param boolean $blnDisplayError
+     * @return string Generated HTML
+     */
     public function toHtml($submitted = false, $blnSimpleLayout = false, $blnLabel = true, $blnDisplayError = true)
     {
         $strOutput = "";
@@ -114,6 +242,17 @@ class MultiField extends Base
         return $strOutput;
     }
 
+    /**
+     * See {@link \ValidFormBuilder\Base::__toHtml()}
+     *
+     * @internal
+     * @param boolean $submitted
+     * @param boolean $blnSimpleLayout
+     * @param boolean $blnLabel
+     * @param boolean $blnDisplayError
+     * @param integer $intCount
+     * @return string Generated HTML
+     */
     public function __toHtml($submitted = false, $blnSimpleLayout = false, $blnLabel = true, $blnDisplayError = true, $intCount = 0)
     {
         // *** Conditional meta should be set before all other meta. Otherwise the set meta is being reset.
@@ -197,6 +336,11 @@ class MultiField extends Base
         return $strOutput;
     }
 
+    /**
+     * Generate dynamic HTML for client-side field duplication
+     * @internal
+     * @return string
+     */
     protected function __addDynamicHtml()
     {
         $strReturn = "";
@@ -220,6 +364,13 @@ class MultiField extends Base
         return $strReturn;
     }
 
+    /**
+     * Generate Javascript
+     * See {@\ValidFormBuilder\Base::toJS()}
+     *
+     * @internal
+     * @see \ValidFormBuilder\Base::toJS()
+     */
     public function toJS($intDynamicPosition = 0)
     {
         $strOutput = "";
@@ -243,6 +394,11 @@ class MultiField extends Base
         return $strOutput;
     }
 
+    /**
+     * Validate internal fields
+     * @internal
+     * @return boolean
+     */
     public function isValid()
     {
         $intDynamicCount = $this->getDynamicCount();
@@ -258,11 +414,21 @@ class MultiField extends Base
         return $blnReturn;
     }
 
+    /**
+     * Check if multifield is dynamic
+     * @internal
+     * @return boolean
+     */
     public function isDynamic()
     {
         return ($this->__dynamic) ? true : false;
     }
 
+    /**
+     * Get the dynamic count of this multifield
+     * @internal
+     * @return integer
+     */
     public function getDynamicCount()
     {
         $intReturn = 0;
@@ -288,33 +454,51 @@ class MultiField extends Base
         return $intReturn;
     }
 
+    /**
+     * Get Fields collection
+     * @internal
+     * @return \ValidFormBuilder\Collection
+     */
     public function getFields()
     {
         return $this->__fields;
     }
 
+    /**
+     * Get value - placeholder
+     * @internal
+     * @return boolean
+     */
     public function getValue()
     {
         return true;
     }
 
+    /**
+     * Get MultiField ID
+     * @internal
+     * @return string
+     */
     public function getId()
     {
         return $this->getName();
     }
 
+    /**
+     * Get field type - placeholder to overwrite default logic
+     * @internal
+     * @return integer
+     */
     public function getType()
     {
         return 0;
     }
 
     /**
-     * Loop through all child fields and check their values.
-     * If one value is not empty,
-     * the MultiField has content.
+     * Loop through all child fields and check their values. If one value is not empty, the MultiField has content.
      *
-     * @param integer $intCount
-     *            The current dynamic count.
+     * @internal
+     * @param integer $intCount The current dynamic count.
      * @return boolean True if multifield has content, false if not.
      */
     public function hasContent($intCount = 0)
@@ -339,6 +523,11 @@ class MultiField extends Base
         return $blnReturn;
     }
 
+    /**
+     * Check if MultiField has internal fields in it's collection
+     * @internal
+     * @return boolean
+     */
     public function hasFields()
     {
         return ($this->__fields->count() > 0) ? true : false;
@@ -346,16 +535,12 @@ class MultiField extends Base
 
     /**
      * Store data in the current object.
-     * This data will not be visibile in any output
-     * and will only be used for internal purposes. For example, you can store some custom
-     * data from your CMS or an other library in a field object, for later use.
-     * Note: Using this method will overwrite any previously set data with the same key!
      *
-     * @param [string] $strKey
-     *            The key for this storage
-     * @param [mixed] $varValue
-     *            The value to store
-     * @return [boolean] True if set successful, false if not.
+     * See {@link \ValidFormBuilder\Base::setData()} for a full description
+     *
+     * @param string $strKey The key for this storage
+     * @param mixed $varValue The value to store
+     * @return boolean True if set successful, false if not.
      */
     public function setData($strKey = null, $varValue = null)
     {
@@ -374,11 +559,11 @@ class MultiField extends Base
     /**
      * Get a value from the internal data array.
      *
-     * @param [string] $key
-     *            The key of the data attribute to return
-     * @return [mixed] If a key is provided, return it's value. If no key
-     *         provided, return the whole data array. If anything
-     *         is not set or incorrect, return false.
+     * See {@link \ValidFormBuilder\Base::getData()} for a full description
+     *
+     * @param string $key The key of the data attribute to return
+     * @return mixed If a key is provided, return it's value. If no key provided, return the whole data array.
+     * If anything is not set or incorrect, return false.
      */
     public function getData($key = null)
     {
@@ -397,6 +582,12 @@ class MultiField extends Base
         return $varReturn;
     }
 
+    /**
+     * Validate the fields in the collection
+     * @internal
+     * @param integer $intCount Dynamic counter
+     * @return boolean True if all fields are valid, false if not.
+     */
     private function __validate($intCount = null)
     {
         $blnReturn = true;

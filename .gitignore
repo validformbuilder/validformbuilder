@@ -12,3 +12,24 @@
 .settings/org.eclipse.php.ui.prefs
 
 .settings/org.phpsrc.eclipse.pti.tools.codesniffer.prefs
+
+/vendor/
+
+/composer.lock
+
+/.settings/
+
+/phpDocumentor.phar
+
+/docs/build/
+/docs/classes/
+/docs/css/
+/docs/files/
+/docs/graphs/
+/docs/images/
+/docs/index.html
+/docs/js/
+/docs/namespaces/
+/docs/reports/
+
+/docs/.htaccess
