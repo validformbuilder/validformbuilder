@@ -24,13 +24,13 @@ namespace ValidFormBuilder;
  *
  * This class creates a magic get, set and call method. It is extended by all ValidForm Builder classes.
  *
+ * @internal
  * @package ValidForm
  * @author Felix Langfeldt <felix@neverwoods.com>
  * @author Robin van Baalen <robin@neverwoods.com>
  * @version 3.0.0
  *
  * ## CHANGELOG ##
- * - Renamed ClassDynamic to ClassDynamic
  * - Removed all 'echo'-s and replaced them with throw new BadMethodCallException
  */
 class ClassDynamic
