@@ -20,7 +20,7 @@
 namespace ValidFormBuilder;
 
 /**
- * Adds a SelectOption (&lt;option&gt;) to Select object
+ * Adds a SelectOption (<option>) to Select object
  *
  * See {@link \ValidFormBuilder\Select} for examples and usage.
  *

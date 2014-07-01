@@ -441,3 +441,10 @@ body .modal {
 footer.row-fluid {
   display: none; /* Hide footer */
 }
+
+/* Remove 'public method' icon */
+.class #summary section.public .span4:first-of-type:before, 
+.class #summary section.public .span6:first-of-type:before, 
+h3.public:before {
+  display: none;
+}
