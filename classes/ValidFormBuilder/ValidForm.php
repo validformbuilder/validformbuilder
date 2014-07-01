@@ -909,11 +909,11 @@ class ValidForm extends ClassDynamic
         }
 
         $strOutput .= "<form " .
-        $strOutput .= "id=\"{$this->__name}\" " .
-        $strOutput .= "method=\"post\" " .
-        $strOutput .= "enctype=\"multipart/form-data\" " .
-        $strOutput .= "action=\"{$this->__action}\" " .
-        $strOutput .= "class=\"{$strClass}\"{$this->__metaToData()}>\n";
+            "id=\"{$this->__name}\" " .
+            "method=\"post\" " .
+            "enctype=\"multipart/form-data\" " .
+            "action=\"{$this->__action}\" " .
+            "class=\"{$strClass}\"{$this->__metaToData()}>\n";
 
         // *** Main error.
         if ($this->isSubmitted() && ! empty($this->__mainalert)) {
