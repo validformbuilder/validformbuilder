@@ -24,6 +24,40 @@ namespace ValidFormBuilder;
  *
  * Text objects are used to create input[type='text'] fields.
  *
+ * #### Example; Add a basic text field to the form.
+ * ```php
+ * $objForm->addField(
+ *     "first-name",
+ *     "First name",
+ *     ValidForm::VFORM_STRING,
+ *     array(
+ *         // Make this field required
+ *         "required" => true,
+ *         // It should have a maximum of 10 characters
+ *         "maxLength" => 10,
+ *         // It should have a minimum of 3 characters
+ *         "minLength" => 3
+ *     ),
+ *     array(
+ *         // Error message when required state isn't met
+ *         "required" => "This is a required field",
+ *         // Error message when input length is larger than 10 characters
+ *         "maxLength" => "Maximum of %s characters allowed.",
+ *         // Error message when input length is shorter than 3 characters
+ *         "minLength" => "Minimum of %s characters required."
+ *     ),
+ *     array(
+ *         // Add a custom class to the input element
+ *         // This results in something like <input type='text' class='vf__text custom-class'>
+ *         "fieldclass" => "custom-class",
+ *         // Add a custom class to the field container
+ *         // This results in <div class='vf__required container-class'><input type='text'></div>
+ *         "class" => "container-class"
+ *
+ *     )
+ * );
+ * ```
+ *
  * @package ValidForm
  * @author Felix Langfeldt <felix@neverwoods.com>
  * @author Robin van Baalen <robin@neverwoods.com>
@@ -33,6 +67,7 @@ class Text extends Element
 {
 
     /**
+     * @internal
      * @see \ValidFormBuilder\Element::toHtml()
      */
     public function toHtml($submitted = false, $blnSimpleLayout = false, $blnLabel = true, $blnDisplayErrors = true)
@@ -52,6 +87,7 @@ class Text extends Element
     }
 
     /**
+     * @internal
      * @see \ValidFormBuilder\Element::__toHtml()
      */
     public function __toHtml($submitted = false, $blnSimpleLayout = false, $blnLabel = true, $blnDisplayErrors = true, $intCount = 0)
@@ -141,6 +177,7 @@ class Text extends Element
     }
 
     /**
+     * @internal
      * @see \ValidFormBuilder\Element::toJS()
      */
     public function toJS($intDynamicPosition = false)
