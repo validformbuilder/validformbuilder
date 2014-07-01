@@ -40,6 +40,7 @@ class Checkbox extends Element
     /**
      * Generate HTML output
      *
+     * @internal
      * @see \ValidFormBuilder\Element::toHtml() Element::toHtml() for a full description of this method
      */
     public function toHtml($submitted = false, $blnSimpleLayout = false, $blnLabel = true, $blnDisplayErrors = true)
@@ -119,7 +120,7 @@ class Checkbox extends Element
 
     /**
      * Generate Javascript
-     *
+     * @internal
      * @see \ValidFormBuilder\Element::toJS() Element::toJS() for a full description of this method
      */
     public function toJS($intDynamicPosition = 0)
@@ -141,12 +142,27 @@ class Checkbox extends Element
         return $strOutput;
     }
 
+    /**
+     * Get checkbox value
+     *
+     * See {@link \ValidFormBuilder\Element::getValue()}
+     *
+     * @internal
+     * @see \ValidFormBuilder\Element::getValue()
+     */
     public function getValue($intDynamicPosition = 0)
     {
         $varValue = parent::getValue($intDynamicPosition);
         return (strlen($varValue) > 0 && $varValue !== 0) ? true : false;
     }
 
+    /**
+     * Get default value
+     * See {@link \ValidFormBuilder\Element::getDefault()}
+     *
+     * @internal
+     * @see \ValidFormBuilder\Element::getDefault()
+     */
     public function getDefault($intDynamicPosition = 0)
     {
         return (strlen($this->__default) > 0 && $this->getValue($intDynamicPosition)) ? "on" : null;
