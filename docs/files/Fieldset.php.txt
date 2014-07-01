@@ -64,6 +64,7 @@ class Fieldset extends Base
 
     /**
      * Create a new fieldset
+     * @internal
      * @param string $header Optional fieldset title
      * @param string $noteHeader Optional fieldset note block header
      * @param string $noteBody Optional fieldset note block body

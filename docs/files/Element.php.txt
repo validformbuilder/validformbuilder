@@ -1,6 +1,4 @@
 <?php
-namespace ValidFormBuilder;
-
 /**
  * ValidForm Builder - build valid and secure web forms quickly
  *
@@ -19,6 +17,7 @@ namespace ValidFormBuilder;
  * @license http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU GPL v2
  * @link http://validformbuilder.org
  */
+namespace ValidFormBuilder;
 
 /**
  * Element Class
