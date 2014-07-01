@@ -1,10 +1,8 @@
 <?php
-namespace ValidFormBuilder;
-
 /**
  * ValidForm Builder - build valid and secure web forms quickly
  *
- * Copyright (c) 2009-2013 Neverwoods Internet Technology - http://neverwoods.com
+ * Copyright (c) 2009-2014 Neverwoods Internet Technology - http://neverwoods.com
  *
  * Felix Langfeldt <felix@neverwoods.com>
  * Robin van Baalen <robin@neverwoods.com>
@@ -13,49 +11,104 @@ namespace ValidFormBuilder;
  *
  * This software is released under the GNU GPL v2 License <http://www.gnu.org/licenses/old-licenses/gpl-2.0.html>
  *
- * @package ValidForm
+ * @package ValidWizard
  * @author Felix Langfeldt <felix@neverwoods.com>, Robin van Baalen <robin@neverwoods.com>
- * @copyright 2009-2013 Neverwoods Internet Technology - http://neverwoods.com
+ * @copyright 2009-2014 Neverwoods Internet Technology - http://neverwoods.com
  * @license http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU GPL v2
  * @link http://validformbuilder.org
+ * @version 3.0.0
  */
 
+namespace ValidFormBuilder;
+
 /**
- * ValidWizard Builder base class
+ * ValidWizard class - Create multiple pages with formfields and next - previous buttons
  *
- * @package ValidForm
- * @author Robin van Baalen <rvanbaalen@felix-it.com>
- * @version 1.0
+ * **Note**: Make sure you also include `validwizard.js` when using ValidWizard. This javascript library is not
+ * required when you're not using ValidWizard.
  *
+ * #### Example; Create a ValidWizard instance
+ * ```php
+ * // The signature is exactly the same as with ValidForm
+ * $objForm = new ValidWizard(
+ *     "awesome-wizard",
+ *     "Please fill out my cool wizard",
+ *     "/stuff",
+ *     array(
+ *         // When no 'nextLabel' meta is set, defaults to 'Next &rarr;'
+ *         "nextLabel" => "Move on &rarr;",
+ *         // When no 'previousLabel' meta is set, defaults to '&larr; Previous'
+ *         "previousLabel" => "Retreat!"
+ *     )
+ * );
+ * ```
+ *
+ * #### Example 2; Add a page
+ * *Check out the constants section starting with {@link \ValidFormBuilder\ValidForm::VFORM_BOOLEAN} for more
+ * field types*
+ * ```php
+ * $objForm->addPage(
+ *     "personal-details",
+ *     "Personal Details"
+ * );
+ * ```
+ *
+ * @package ValidWizard
+ * @author Felix Langfeldt <felix@neverwoods.com>
+ * @author Robin van Baalen <robin@neverwoods.com>
+ * @version Release: 3.0.0
+ *
+ * @method integer getPageCount() getPageCount() Returns the number of pages in the wizard
+ * @method integer getCurrentPage() getCurrentPage() Returns the current page counter
+ * @method string getPreviousLabel() getPreviousLabel() Returns the label of the previous button
+ * @method void setPreviousLabel() setPreviousLabel($strLabel) Sets the label of the previous button
+ * @method string getNextLabel() getNextLabel() Returns the label of the next button
+ * @method void setNextLabel() setNextLabel($strLabel) Sets the label of the next button
  */
 class ValidWizard extends ValidForm
 {
-
+    /**
+     * The total page count
+     * @internal
+     * @var integer
+     */
     public $__pagecount = 0;
 
+    /**
+     * The current page index
+     * @internal
+     * @var integer
+     */
     protected $__currentpage = 1;
 
+    /**
+     * The previous button label
+     * @internal
+     * @var string
+     */
     protected $__previouslabel;
 
+    /**
+     * The next label button
+     * @internal
+     * @var string
+     */
     protected $__nextlabel;
 
+    /**
+     * Flag if wizard has confirm page
+     * @internal
+     * @var boolean
+     */
     protected $__hasconfirmpage = false;
 
     /**
-     *
-     *
-     *
      * Create an instance of the ValidForm Builder
      *
-     * @param string|null $name
-     *            The name and id of the form in the HTML DOM and JavaScript.
-     * @param string|null $description
-     *            Desriptive text which is displayed above the form.
-     * @param string|null $action
-     *            Form action. If left empty the form will post to itself.
-     * @param array $meta
-     *            Array with meta data. The array gets directly parsed into the form tag with the keys as
-     *            attribute names and the values as values.
+     * @param string $name The name and id of the form in the HTML DOM and JavaScript.
+     * @param string $description Desriptive text which is displayed above the form. Default `null`
+     * @param string|null $action Form action. If left empty the form will post to itself. Default `null`
+     * @param array $meta The meta array
      */
     public function __construct($name, $description = null, $action = null, $meta = array())
     {
@@ -65,6 +118,13 @@ class ValidWizard extends ValidForm
         $this->__previouslabel = (isset($meta["previousLabel"])) ? $meta["previousLabel"] : "&larr; Previous";
     }
 
+    /**
+     * Generate Wizard HTML output
+     *
+     * See {@link \ValidFormBuilder\ValidForm::toHtml()}
+     *
+     * @return string Generated HTML
+     */
     public function toHtml($blnClientSide = true, $blnForceSubmitted = false, $strJs = "")
     {
         $strReturn = null;
@@ -77,12 +137,11 @@ class ValidWizard extends ValidForm
     }
 
     /**
-     * Check if the form is submitted by validating the value of the hidden
-     * vf__dispatch field.
+     * Check if the wizard is submitted
      *
-     * @param boolean $blnForce
-     *            Fake isSubmitted to true to force field values.
-     * @return boolean [description]
+     * See {@link \ValidFormBuilder\ValidForm::isSubmitted()}
+     *
+     * @return boolean
      */
     public function isSubmitted($blnForce = false)
     {
@@ -104,13 +163,11 @@ class ValidWizard extends ValidForm
     }
 
     /**
-     * Exactly the same as ValidForm->addMultiField.
-     * Only this time it's executed from the context of ValidWizard.
+     * Add multifield
      *
-     * @param [type] $label
-     *            [description]
-     * @param array $meta
-     *            [description]
+     * See {@link \ValidFormBuilder\ValidForm::addMultiField()}
+     *
+     * @see \ValidFormBuilder\ValidForm::addMultiField()
      */
     public function addMultiField($label = null, $meta = array())
     {
@@ -141,9 +198,8 @@ class ValidWizard extends ValidForm
     /**
      * Get a page from the collection based on it's zero-based position in the elements collection
      *
-     * @param Integer $intIndex
-     *            Zero-based position
-     * @return Page Page element, if found.
+     * @param Integer $intIndex Zero-based position
+     * @return \ValidFormBuilder\Page Page element, if found.
      */
     public function getPage($intIndex = 0)
     {
@@ -158,6 +214,16 @@ class ValidWizard extends ValidForm
         return $objReturn;
     }
 
+    /**
+     * Add a page to the wizard
+     *
+     * See {@link \ValidFormBuilder\Page}
+     *
+     * @param string $id Page ID
+     * @param string $header Page title
+     * @param array $meta Meta array
+     * @return \ValidFormBuilder\Page
+     */
     public function addPage($id = "", $header = "", $meta = array())
     {
         $objPage = new Page($id, $header, $meta);
@@ -176,23 +242,38 @@ class ValidWizard extends ValidForm
     }
 
     /**
-     * Wrapper method for setting the $__hasconfirmpage property
+     * Set confirmpage flag to true.
+     * This allows for client-side confirmation page injection. More details on this will follow.
      */
     public function addConfirmPage()
     {
         $this->__hasconfirmpage = true;
     }
 
+    /**
+     * Reset the confirm page flag back to false
+     */
     public function removeConfirmPage()
     {
         $this->__hasconfirmpage = false;
     }
 
+    /**
+     * Check if this Wizard has a confirm page flag set.
+     * @return boolean
+     */
     public function hasConfirmPage()
     {
         return ! ! $this->__hasconfirmpage;
     }
 
+    /**
+     * Add a field
+     *
+     * See {@link \ValidFormBuilder\ValidForm::addField()}
+     *
+     * @see \ValidFormBuilder\ValidForm::addField()
+     */
     public function addField($name, $label, $type, $validationRules = array(), $errorHandlers = array(), $meta = array(), $blnJustRender = false)
     {
         $objField = parent::renderField($name, $label, $type, $validationRules, $errorHandlers, $meta);
@@ -212,6 +293,13 @@ class ValidWizard extends ValidForm
         return $objField;
     }
 
+    /**
+     * Add a fieldset
+     *
+     * See {@link \ValidFormBuilder\ValidForm::addFieldset()}
+     *
+     * @see \ValidFormBuilder\ValidForm::addFieldset()
+     */
     public function addFieldset($label = null, $noteHeader = null, $noteBody = null, $options = array())
     {
         $objFieldSet = new Fieldset($label, $noteHeader, $noteBody, $options);
@@ -226,6 +314,13 @@ class ValidWizard extends ValidForm
         return $objFieldSet;
     }
 
+    /**
+     * Generate valuesAsHtml overview
+     *
+     * See {@link \ValidFormBuilder\ValidForm::valuesAsHtml()}
+     *
+     * @see \ValidFormBuilder\ValidForm::valuesAsHtml()
+     */
     public function valuesAsHtml($hideEmpty = false)
     {
         $strTable = "\t<table border=\"0\" cellspacing=\"0\" cellpadding=\"0\" class=\"validform\">\n";
@@ -233,7 +328,8 @@ class ValidWizard extends ValidForm
 
         foreach ($this->__elements as $objPage) {
             if (get_class($objPage) === "ValidFormBuilder\\Page") {
-                $strHeader = $objPage->getShortHeader(); // Passing 'true' will return the optional 'short header' if available.
+                // Passing 'true' will return the optional 'short header' if available.
+                $strHeader = $objPage->getShortHeader();
 
                 $strTableOutput .= "<tr><td colspan=\"3\" class=\"vf__page-header\">{$strHeader}</td></tr>";
                 foreach ($objPage->getFields() as $objFieldset) {
@@ -254,6 +350,13 @@ class ValidWizard extends ValidForm
         }
     }
 
+    /**
+     * Unserialize a previously serialized ValidWizard object
+     *
+     * @param string $strSerialized Serialized ValidWizard object
+     * @param string $strUniqueId Use this to overwrite the deserialized wizard's unique ID
+     * @return \ValidFormBuilder\ValidForm A ValidForm instance (this can either be a ValidForm or ValidWizard object)
+     */
     public static function unserialize($strSerialized, $strUniqueId = "")
     {
         $objReturn = parent::unserialize($strSerialized);
@@ -265,6 +368,16 @@ class ValidWizard extends ValidForm
         return $objReturn;
     }
 
+    /**
+     * Generate Javascript code
+     *
+     * See {@link \ValidFormBuilder\ValidForm::toJs()}
+     *
+     * @internal
+     * @param string $strCustomJs Optional custom javascript to execute when initialising the form code
+     * @param string $blnFromSession Obsolete
+     * @return string Generated javascript
+     */
     protected function __toJs($strCustomJs = "", $blnFromSession = false)
     {
         // Add extra arguments to javascript initialization method.
@@ -286,6 +399,12 @@ class ValidWizard extends ValidForm
         return parent::__toJs($strJs, $arrInitArguments);
     }
 
+    /**
+     * Add hidden fields
+     *
+     * @internal
+     * @return string
+     */
     private function __addHiddenFields()
     {
         $strOutput = "";
@@ -317,8 +436,9 @@ class ValidWizard extends ValidForm
     /**
      * Validate all form fields EXCLUDING the fields in the given page object and beyond.
      *
-     * @param string $strPageId
-     *            The page object id
+     * This is useful when partially validating the wizard
+     *
+     * @param string $strPageId The page object id
      * @return boolean True if all fields validate, false if not.
      */
     public function isValidUntil($strPageId)
@@ -338,6 +458,11 @@ class ValidWizard extends ValidForm
         return $blnReturn;
     }
 
+    /**
+     * Validate all form fields EXCLUDING the fields in the given page object and beyond.
+     * @param string $strPageId
+     * @return array Array of invalid fields
+     */
     public function getInvalidFieldsUntil($strPageId)
     {
         $arrReturn = array();
@@ -396,8 +521,8 @@ class ValidWizard extends ValidForm
     /**
      * getFields creates a flat collection of all form fields.
      *
-     * @param boolean $blnIncludeMultiFields
-     *            Set this to true if you want to include MultiFields in the collection
+     * @internal
+     * @param boolean $blnIncludeMultiFields Set this to true if you want to include MultiFields in the collection
      * @return Collection The collection of fields.
      */
     public function getFields($blnIncludeMultiFields = false)
@@ -451,6 +576,10 @@ class ValidWizard extends ValidForm
         return $objFields;
     }
 
+    /**
+     * See {@link \ValidFormBuilder\ValidForm::isValid()}
+     * @see \ValidFormBuilder\ValidForm::isValid()
+     */
     public function isValid($strPageId = null)
     {
         if (! is_null($strPageId)) {
