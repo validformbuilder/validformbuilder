@@ -44,8 +44,6 @@ namespace ValidFormBuilder;
  * ```
  *
  * #### Example 2; Add a page
- * *Check out the constants section starting with {@link \ValidFormBuilder\ValidForm::VFORM_BOOLEAN} for more
- * field types*
  * ```php
  * $objForm->addPage(
  *     "personal-details",
