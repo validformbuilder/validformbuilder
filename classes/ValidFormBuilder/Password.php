@@ -1,6 +1,4 @@
 <?php
-namespace ValidFormBuilder;
-
 /**
  * ValidForm Builder - build valid and secure web forms quickly
  *
@@ -19,16 +17,50 @@ namespace ValidFormBuilder;
  * @license http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU GPL v2
  * @link http://validformbuilder.org
  */
+namespace ValidFormBuilder;
 
 /**
  * Password Class
  *
+ * Create a password fields. Password fields can utilize a special validation rule called `matchWith`
+ * By using the `matchWith` validation, you can require that two fields (for instance 'password' and 'repeat password')
+ * have the exact same value. As with everything in ValidForm Builder, this is validated both client-side and
+ * server-side.
+ *
+ * #### Example; Match two password fields
+ * ```php
+ * $objNewPassword = $objForm->addField(
+ *     "new-password",
+ *     "New Password",
+ *     ValidForm::VFORM_PASSWORD
+ * );
+ * $objForm->addField(
+ *     "repeat-password",
+ *     "Repeat Password",
+ *     ValidForm::VFORM_PASSWORD,
+ *     array(
+ *         // Link the fieldobject to match with
+ *         "matchWith" => $objNewPassword
+ *     ),
+ *     array(
+ *         // Set an error message if the fields don't match when submitted
+ *         "matchWith" => "Password fields do not match"
+ *     )
+ * );
+ * ```
+ *
  * @package ValidForm
- * @author Felix Langfeldt
+ * @author Felix Langfeldt <felix@neverwoods.com>
+ * @author Robin van Baalen <robin@neverwoods.com>
+ * @version Release: 3.0.0
  */
 class Password extends Element
 {
 
+    /**
+     * @internal
+     * @see \ValidFormBuilder\Element::toHtml()
+     */
     public function toHtml($submitted = false, $blnSimpleLayout = false, $blnLabel = true, $blnDisplayErrors = true)
     {
         $strOutput = "";
@@ -45,6 +77,10 @@ class Password extends Element
         return $strOutput;
     }
 
+    /**
+     * @internal
+     * @see \ValidFormBuilder\Element::__toHtml()
+     */
     public function __toHtml($submitted = false, $blnSimpleLayout = false, $blnLabel = true, $blnDisplayErrors = true, $intCount = 0)
     {
         $strOutput = "";
@@ -131,6 +167,10 @@ class Password extends Element
         return $strOutput;
     }
 
+    /**
+     * @internal
+     * @see \ValidFormBuilder\Element::toJS()
+     */
     public function toJS($intDynamicPosition = 0)
     {
         $strCheck = $this->__validator->getCheck();
