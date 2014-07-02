@@ -11,7 +11,6 @@ $objForm->addField("name", "Enter your name", ValidForm::VFORM_STRING, [], ["typ
 
 //*** Generate form output
 if ($objForm->isValid() && $objForm->isSubmitted()) {
-    $strCheckboxValue = $objForm->getValidField("rating")->getValue();
     $strOutput = $objForm->valuesAsHtml();
 } else {
     $strOutput = $objForm->toHtml();
