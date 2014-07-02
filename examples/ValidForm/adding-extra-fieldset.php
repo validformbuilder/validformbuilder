@@ -8,8 +8,11 @@ $objForm = new ValidForm("test");
 
 //*** Adding an extra fieldset
 $objFieldset = $objForm->addFieldset("Test Label", "Test header", "Test Body");
-// /* @var $objCat ValidFormBuilder\Group */
-$objCat = $objFieldset->addField(
+
+// Even though we're adding a field to ValidForm instead of the newly created fieldset,
+// ValidForm will automatically lookup the newest fieldset and add the field to that fieldset.
+/* @var $objCat ValidFormBuilder\Group */
+$objCat = $objForm->addField(
     "cat",
     "Category",
     ValidForm::VFORM_RADIO_LIST,
@@ -25,7 +28,6 @@ $objCat->addField("White", 'W');
 
 //*** Generate form output
 if ($objForm->isValid() && $objForm->isSubmitted()) {
-    $strCheckboxValue = $objForm->getValidField("rating")->getValue();
     $strOutput = $objForm->valuesAsHtml();
 } else {
     $strOutput = $objForm->toHtml();
