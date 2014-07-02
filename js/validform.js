@@ -1674,7 +1674,8 @@ ValidFormFieldValidator.prototype.validate = function(value) {
 				}
 
 				//*** Check specific types using the type array.
-                // TODO: Validate that the code block below is still needed and working
+                // FIXME: This block throws errors on checkboxes in a list field.
+				/*
                 if (typeof this.check === "object") {
 					for (var intCount = 0; intCount < objValidElements.length; intCount++) {
 						if (!ValidForm.inArray(this.check, objValidElements.get(intCount))) {
@@ -1683,6 +1684,7 @@ ValidFormFieldValidator.prototype.validate = function(value) {
 						}
 					}
 				}
+				*/
 
 				return true;
 			} else {
