@@ -1,5 +1,8 @@
 <?php
-
+/**
+ * Hide field when other fields value is 'Robin'
+ * Show that field if it's not Robin anymore
+ */ 
 use ValidFormBuilder\ValidForm;
 
 require '../vendor/autoload.php';
@@ -20,7 +23,6 @@ $objLastName->addCondition(
 
 //*** Generate form output
 if ($objForm->isValid() && $objForm->isSubmitted()) {
-    $strCheckboxValue = $objForm->getValidField("rating")->getValue();
     $strOutput = $objForm->valuesAsHtml();
 } else {
     $strOutput = $objForm->toHtml();
