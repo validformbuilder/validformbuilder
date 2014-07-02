@@ -92,6 +92,13 @@ class Fieldset extends Base
      */
     public function addField($field)
     {
+        if (!$field instanceof Base) {
+            throw new \InvalidArgumentException(
+                "No valid object passed to Fieldset::addField(). Object should be an instance of \\ValidForm\\Base.",
+                E_ERROR
+            );
+        }
+
         $this->__fields->addObject($field);
 
         // Set parent element hard, overwrite if previously set.
