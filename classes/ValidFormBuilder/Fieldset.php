@@ -89,6 +89,7 @@ class Fieldset extends Base
      * Add an object to the fiedset's elements collection
      *
      * @param \ValidFormBuilder\Base $field The object to add
+     * @throws \InvalidArgumentException if property passed to `addField()` is not an instance of Base
      */
     public function addField($field)
     {
