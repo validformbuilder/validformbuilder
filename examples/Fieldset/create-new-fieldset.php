@@ -11,7 +11,6 @@ $objForm->addFieldset("Cool fieldset label", $noteHeader = null, $noteBody = nul
 
 //*** Generate form output
 if ($objForm->isValid() && $objForm->isSubmitted()) {
-    $strCheckboxValue = $objForm->getValidField("rating")->getValue();
     $strOutput = $objForm->valuesAsHtml();
 } else {
     $strOutput = $objForm->toHtml();
