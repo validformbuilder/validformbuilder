@@ -7,7 +7,7 @@ require '../vendor/autoload.php';
 $objForm = new ValidForm("test");
 
 //*** Add fieldset
-$objForm->addFieldset("Cool fieldset label", $noteHeader = null, $noteBody = null, $meta = array());
+$objForm->addFieldset("Cool fieldset label");
 
 //*** Generate form output
 if ($objForm->isValid() && $objForm->isSubmitted()) {
