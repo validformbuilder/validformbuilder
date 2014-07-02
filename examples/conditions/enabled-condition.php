@@ -1,5 +1,10 @@
 <?php
-
+/**
+ * Make field enabled when other field's value is 'yes'
+ * Field will becom disabled when other field's value is 'no'
+ * 
+ * Note: enabled/disabled is NOT the same as visible/hidden!
+ */
 use ValidFormBuilder\ValidForm;
 
 require '../vendor/autoload.php';
@@ -20,12 +25,11 @@ $objText = $objForm->addField(
     array("fielddisabled" => "disabled")
 );
 $objText->addCondition("enabled", true, array(
-	new Comparison($objYes, ValidForm::VFORM_COMPARISON_EQUAL, "yes")
+    new Comparison($objYes, ValidForm::VFORM_COMPARISON_EQUAL, "yes")
 ));
 
 //*** Generate form output
 if ($objForm->isValid() && $objForm->isSubmitted()) {
-    $strCheckboxValue = $objForm->getValidField("rating")->getValue();
     $strOutput = $objForm->valuesAsHtml();
 } else {
     $strOutput = $objForm->toHtml();
