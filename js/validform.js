@@ -1375,7 +1375,6 @@ ValidFormElement.prototype.setEnabled = function (blnValue) {
 	var $element = $("[name='" + this.name + "']");
     var $parent = $element.closest("div.vf__optional, div.vf__required, div.vf__multifielditem");
 
-	var $parent = $element.parent();
 	if ($parent.hasClass("vf__multifielditem")) {
 		// Multifield item
 		$parent = $parent.parent();
