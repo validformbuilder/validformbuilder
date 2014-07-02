@@ -1,5 +1,7 @@
 <?php
-
+/**
+ * Demonstration of the meta key 'default'
+ */
 use ValidFormBuilder\ValidForm;
 
 require '../vendor/autoload.php';
