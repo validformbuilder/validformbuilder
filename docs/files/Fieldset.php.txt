@@ -95,7 +95,8 @@ class Fieldset extends Base
     {
         if (!$field instanceof Base) {
             throw new \InvalidArgumentException(
-                "No valid object passed to Fieldset::addField(). Object should be an instance of \\ValidForm\\Base.",
+                "No valid object passed to Fieldset::addField(). " .
+                "Object should be an instance of \\ValidFormBuilder\\Base.",
                 E_ERROR
             );
         }
