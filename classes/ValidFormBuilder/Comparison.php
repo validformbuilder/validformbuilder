@@ -1,44 +1,66 @@
 <?php
-namespace ValidFormBuilder;
-
 /**
  * ValidForm Builder - build valid and secure web forms quickly
  *
- * Copyright (c) 2009-2013 Neverwoods Internet Technology - http://neverwoods.com
+ * Copyright (c) 2009-2014 Neverwoods Internet Technology - http://neverwoods.com
+ *
+ * Felix Langfeldt <felix@neverwoods.com>
+ * Robin van Baalen <robin@neverwoods.com>
+ *
  * All rights reserved.
  *
  * This software is released under the GNU GPL v2 License <http://www.gnu.org/licenses/old-licenses/gpl-2.0.html>
  *
  * @package ValidForm
  * @author Felix Langfeldt <felix@neverwoods.com>, Robin van Baalen <robin@neverwoods.com>
- * @copyright 2009-2013 Neverwoods Internet Technology - http://neverwoods.com
+ * @copyright 2009-2014 Neverwoods Internet Technology - http://neverwoods.com
  * @license http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU GPL v2
  * @link http://validformbuilder.org
- *
  */
+namespace ValidFormBuilder;
 
 /**
  * Comparison class
+ *
  * A comparison object is part of a condition and represents a single value comparison.
  *
  * @package ValidForm
+ * @author Felix Langfeldt <felix@neverwoods.com>
  * @author Robin van Baalen <robin@neverwoods.com>
+ * @version Release: 3.0.0
  */
 class Comparison extends ClassDynamic
 {
 
+    /**
+     * The comparison subject
+     * @internal
+     * @var \ValidFormBuilder\Base
+     */
     protected $__subject;
 
+    /**
+     * The actual comparison type
+     * @internal
+     * @var integer
+     */
     protected $__comparison;
 
+    /**
+     * The value to trigger this comparison on
+     * @internal
+     * @var mixed
+     */
     protected $__value;
 
-    private static $__requiredKeys = array(
-        "subject",
-        "comparison",
-        "value"
-    );
-
+    /**
+     * Create new Comparison
+     * @param \ValidFormBuilder\Base $objSubject The subject to check the value upon
+     * @param integer $varComparison The Comparison type constant
+     * @param string $varValue The value to check against
+     * @throws \InvalidArgumentException
+     * @throws \Exception
+     */
     public function __construct($objSubject, $varComparison, $varValue = null)
     {
         if (($varComparison !== ValidForm::VFORM_COMPARISON_EMPTY && $varComparison !== ValidForm::VFORM_COMPARISON_NOT_EMPTY) && is_null($varValue)) {
@@ -60,9 +82,9 @@ class Comparison extends ClassDynamic
     /**
      * Check this comparison
      *
-     * @param
-     *            Number	Dynamic position of the subject to check
-     * @return Boolean True if Comparison meets requirements, false if not.
+     * @internal
+     * @param integer Dynamic position of the subject to check
+     * @return boolean True if Comparison meets requirements, false if not.
      */
     public function check($intDynamicPosition = 0)
     {
@@ -88,11 +110,13 @@ class Comparison extends ClassDynamic
         return $blnReturn;
     }
 
-    public static function requiredKeys()
-    {
-        return self::$__requiredKeys;
-    }
-
+    /**
+     * Convert the Comparion's contents to a json string in order to validate this comparison client-side
+     *
+     * @internal
+     * @param string $intDynamicPosition
+     * @return string The generated JSON
+     */
     public function jsonSerialize($intDynamicPosition = null)
     {
         if (get_class($this->__subject) == "ValidFormBuilder\\GroupField") {
@@ -116,9 +140,9 @@ class Comparison extends ClassDynamic
     /**
      * Verify this comparison against the actual value
      *
-     * @param String $strValue
-     *            The actual value that is submitted
-     * @return Boolean True if comparison succeeded, false if not.
+     * @internal
+     * @param string $strValue The actual value that is submitted
+     * @return boolean True if comparison succeeded, false if not.
      */
     private function __verify($strValue)
     {

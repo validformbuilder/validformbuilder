@@ -1,0 +1,23 @@
+language: php
+
+php:
+- 5.4
+
+before_script:
+- php composer.phar install
+- export PATH=./vendor/bin/:$PATH
+- git config --global credential.helper "store --file=.git/credentials"
+- echo "https://${GH_TOKEN}:@github.com" > .git/credentials
+script:
+- bash .travis-generate-docs.sh
+
+notifications:
+  email:
+    recipients:
+      - robin@trainedby.ninja
+    on_success: always # default: change
+    on_failure: always # default: always
+
+env:
+  global:
+    secure: Uu5Bz73vVwNuVDcB6qiIFC5tT4al7p6shVV5cNzJ4YQag3qEO0DeaU+y+V6DNLorKXYcksHp4MnyiOnQm3UyXS4X/xTbXx7wzefzBl6usFjD9kbxiaCSGFZfNURwGQ3u4pqiD9W7t9+5dibQ8LHR7O+cAbSOw/s7rWFtkRtY5eg=

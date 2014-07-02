@@ -1,38 +1,55 @@
 <?php
-namespace ValidFormBuilder;
-
 /**
  * ValidForm Builder - build valid and secure web forms quickly
  *
- * Copyright (c) 2009-2012, Felix Langfeldt <flangfeldt@felix-it.com>.
+ * Copyright (c) 2009-2014 Neverwoods Internet Technology - http://neverwoods.com
+ *
+ * Felix Langfeldt <felix@neverwoods.com>
+ * Robin van Baalen <robin@neverwoods.com>
+ *
  * All rights reserved.
  *
  * This software is released under the GNU GPL v2 License <http://www.gnu.org/licenses/old-licenses/gpl-2.0.html>
  *
  * @package ValidForm
- * @author Felix Langfeldt <flangfeldt@felix-it.com>
- * @copyright 2009-2012 Felix Langfeldt <flangfeldt@felix-it.com>
+ * @author Felix Langfeldt <felix@neverwoods.com>
+ * @author Robin van Baalen <robin@neverwoods.com>
+ * @copyright 2009-2014 Neverwoods Internet Technology - http://neverwoods.com
  * @license http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU GPL v2
- * @link http://code.google.com/p/validformbuilder/
+ * @link http://validformbuilder.org
  */
 
+namespace ValidFormBuilder;
+
 /**
- * Collection Class
+ * Create an iterable collection
  *
  * @package ValidForm
- * @author Robin van Baalen\
+ * @author Felix Langfeldt <felix@neverwoods.com>
+ * @author Robin van Baalen <robin@neverwoods.com>
+ * @version Release: 3.0.0
  */
 class Collection implements \Iterator
 {
 
+    /**
+     * The array that contains all items
+     * @internal
+     * @var array
+     */
     protected $collection = array();
 
+    /**
+     * Seek flag
+     * @internal
+     * @var boolean
+     */
     private $isSeek = false;
 
     /**
      * Constructor method
      *
-     * @param array $initArray
+     * @param array $initArray An array of items to initialize the collection with.
      */
     public function __construct($initArray = array())
     {
@@ -44,10 +61,8 @@ class Collection implements \Iterator
     /**
      * Add object to the collection
      *
-     * @param
-     *            object The object
-     * @param
-     *            boolean Add object to beginning of array or not
+     * @param object $value The object
+     * @param boolean $blnAddToBeginning Add object to beginning of array or not
      */
     public function addObject($value, $blnAddToBeginning = false)
     {
@@ -61,10 +76,8 @@ class Collection implements \Iterator
     /**
      * Add object to the collection at a specified position
      *
-     * @param object $value
-     *            The object
-     * @param integer $intPosition
-     *            The position the object should be placed at.
+     * @param object $value The object
+     * @param integer $intPosition The position the object should be placed at.
      */
     public function addObjectAtPosition($value, $intPosition)
     {
@@ -94,10 +107,8 @@ class Collection implements \Iterator
     /**
      * Add objects to the collection
      *
-     * @param
-     *            array An array of items / collection of objects to be added
-     * @param
-     *            boolean Add objects to beginning of array or not
+     * @param array $arrObjects An array of items / collection of objects to be added
+     * @param boolean $blnAddToBeginning Add objects to beginning of array or not
      */
     public function addObjects($arrObjects, $blnAddToBeginning = false)
     {
@@ -109,7 +120,7 @@ class Collection implements \Iterator
     /**
      * Advance internal pointer to a specific index
      *
-     * @param integer $intPosition
+     * @param integer $intPosition The index to advance to
      */
     public function seek($intPosition)
     {
@@ -125,6 +136,7 @@ class Collection implements \Iterator
 
     /**
      * Pick a random child element
+     * @return mixed Randomly selected item from collection
      */
     public function random()
     {
@@ -148,6 +160,7 @@ class Collection implements \Iterator
 
     /**
      * Get the item count.
+     * @return integer The length of the collection
      */
     public function count()
     {
@@ -156,6 +169,7 @@ class Collection implements \Iterator
 
     /**
      * Get the current item from the collection.
+     * @return mixed The current item
      */
     public function current()
     {
@@ -164,6 +178,7 @@ class Collection implements \Iterator
 
     /**
      * Place the pointer one item forward and return the item.
+     * @return mixed The next item
      */
     public function next()
     {
@@ -172,6 +187,7 @@ class Collection implements \Iterator
 
     /**
      * Place the pointer one item back and return the item.
+     * @return mixed The previous item
      */
     public function previous()
     {
@@ -180,6 +196,10 @@ class Collection implements \Iterator
 
     /**
      * Get the current position of the pointer.
+     * @return mixed|null The key function simply returns the
+     * key of the array element that's currently being pointed to by the internal pointer. It does not move the
+     * pointer in any way. If the internal pointer points beyond the end of the elements list or the array is empty,
+     * key returns `null`.
      */
     public function key()
     {
@@ -188,6 +208,7 @@ class Collection implements \Iterator
 
     /**
      * Check if the pointer is at the first record.
+     * @return boolean True if current item is first item
      */
     public function isFirst()
     {
@@ -196,6 +217,7 @@ class Collection implements \Iterator
 
     /**
      * Check if the pointer is at the last record.
+     * @return boolean True if current item is last item
      */
     public function isLast()
     {
@@ -204,7 +226,6 @@ class Collection implements \Iterator
 
     /**
      * Get first element in collection
-     *
      * @return mixed Returns first element in collection, null if collection is empty
      */
     public function getFirst()
@@ -220,8 +241,8 @@ class Collection implements \Iterator
     /**
      * Get last element in collection
      *
-     * @param string $strType
-     *            Optional type to search for
+     * @param string $strType Optional type to search for. For example, you can search the Collection for the
+     * last Hidden element by doing: `$objCollection->getLast("\\ValidFormBuilder\\Hidden")`.
      * @return mixed Returns last element in collection, null if collection is empty
      */
     public function getLast($strType = "")
@@ -257,6 +278,7 @@ class Collection implements \Iterator
 
     /**
      * Test if the requested item is valid.
+     * @return boolean True if its valid, false if not.
      */
     public function valid()
     {
@@ -265,6 +287,7 @@ class Collection implements \Iterator
 
     /**
      * Reset the internal pointer of the collection to the first item.
+     * @return Collection Returns itself after the internal pointer is reset.
      */
     public function rewind()
     {
@@ -277,6 +300,7 @@ class Collection implements \Iterator
 
     /**
      * Reverse the order of the collection and return it.
+     * @return Collection Returns itself after the internal collection is reversed.
      */
     public function reverse()
     {
@@ -286,6 +310,7 @@ class Collection implements \Iterator
 
     /**
      * Set the internal pointer of the collection to the last item and return it.
+     * @return mixed The last item in the collection
      */
     public function end()
     {
@@ -303,7 +328,8 @@ class Collection implements \Iterator
     /**
      * Check if an object is in the collection
      *
-     * @param variable $varValue
+     * @param mixed $varValue Value to search for
+     * @param boolean $blnReturnKey If true, returns the position of the item if found. Default: false.
      */
     public function inCollection($varValue, $blnReturnKey = false)
     {
@@ -324,10 +350,9 @@ class Collection implements \Iterator
     /**
      * Remove an element from the collection
      *
-     * @param object $objElement
-     *            The element that will be removed
-     * @return boolean Always returns true. If it couldn't be found, its gone.
-     *                 If the element is found, it will be removed.
+     * @param object $objElement The element that will be removed
+     * @return boolean Always returns true. If it couldn't be found, its gone. If the element is found, it will
+     * be removed.
      */
     public function remove($objElement)
     {
@@ -343,6 +368,12 @@ class Collection implements \Iterator
         return true;
     }
 
+    /**
+     * Same as `remove()` but this is executed recursively.
+     *
+     * @see \ValidFormBuilder\Collection::remove()
+     * @param unknown $objElement
+     */
     public function removeRecursive($objElement)
     {
         foreach ($this->collection as $intKey => $objValue) {

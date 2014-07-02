@@ -1,10 +1,8 @@
 <?php
-namespace ValidFormBuilder;
-
 /**
  * ValidForm Builder - build valid and secure web forms quickly
  *
- * Copyright (c) 2009-2013 Neverwoods Internet Technology - http://neverwoods.com
+ * Copyright (c) 2009-2014 Neverwoods Internet Technology - http://neverwoods.com
  *
  * Felix Langfeldt <felix@neverwoods.com>
  * Robin van Baalen <robin@neverwoods.com>
@@ -15,36 +13,139 @@ namespace ValidFormBuilder;
  *
  * @package ValidForm
  * @author Felix Langfeldt <felix@neverwoods.com>, Robin van Baalen <robin@neverwoods.com>
- * @copyright 2009-2013 Neverwoods Internet Technology - http://neverwoods.com
+ * @copyright 2009-2014 Neverwoods Internet Technology - http://neverwoods.com
  * @license http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU GPL v2
  * @link http://validformbuilder.org
  */
 
+namespace ValidFormBuilder;
+
 /**
- * Area Class
+ * Group fields together in an Area
+ *
+ * An area is about the same as a fieldset but an Area has more interactive options like the 'active'
+ * property or even the 'dynamic' meta.
+ *
+ * An Area can be used to group form fields together. When an Area is active, it can toggle the disabled state
+ * on all it's child form fields using the auto-generated checkbox in the Area's legend.
+ *
+ * #### Example; Active area
+ * ```php
+ * $objArea = $objForm->addArea("Disable fields", true, "fields-disabled");
+ * $objArea->addField(
+ *     "first-name",
+ *     "First name",
+ *     ValidForm::VFORM_STRING,
+ *     array(
+ *         // Make this field required
+ *         "required" => true
+ *     ),
+ *     array(
+ *         // Show this error to indicate this is an required field if no value is submitted
+ *         "required" => "This field is required"
+ *     )
+ * );
+ * $objArea->addField(
+ *     "last-name",
+ *     "Last name",
+ *     ValidForm::VFORM_STRING,
+ *     array(
+ *         // Make this field required
+ *         "required" => true
+ *     ),
+ *     array(
+ *         // Show this error to indicate this is an required field if no value is submitted
+ *         "required" => "This field is required"
+ *     )
+ * );
+ * ```
+ *
+ * #### Example 2; Adding a string field to the area
+ * ```php
+ * $objArea = $objForm->addArea("Cool area");
+ * $objArea->addField("first-name", "First name", ValidForm::VFORM_STRING);
+ * ```
+ *
+ * #### Example 3; Addding a paragraph to the Area
+ * ```php
+ * $objArea->addParagraph(
+ *     "Cool paragraph with lots of text in it. It's an absolute must-read.",
+ *     "You must read this"
+ * );
+ * ```
  *
  * @package ValidForm
- * @author Felix Langfeldt
- * @version Release: 0.2.2
- *
+ * @author Felix Langfeldt <felix@neverwoods.com>
+ * @author Robin van Baalen <robin@neverwoods.com>
+ * @version 3.0.0
  */
 class Area extends Base
 {
-
+    /**
+     * The Area's label, presented as a 'legend' header above the area
+     * @internal
+     * @var string
+     */
     protected $__label;
 
+    /**
+     * Make this an active area with __active set on true. When active, the entire area
+     * can be enabled and disabled with a checkbox.
+     * @internal
+     * @var boolean
+     */
     protected $__active;
 
+    /**
+     * Use in combination with 'active'; defines if the active area is checked by default or not
+     * @internal
+     * @var boolean
+     */
     protected $__checked;
 
+    /**
+     * Defines if this area is dynamic
+     * @internal
+     * @var boolean
+     */
     protected $__dynamic;
 
+    /**
+     * The label used by __addDynamicHtml() which a user can click to clone this dynamic area
+     * @internal
+     * @var string
+     */
     protected $__dynamicLabel;
 
+    /**
+     * Using the dynamic 'setRequiredStyle()', you can add for instance an asterix to each required field like so:
+     * $this->setRequiredStyle('%s *'); // First show the label, %s, then show an asterix after the label.
+     * @internal
+     * @var string
+     */
     protected $__requiredstyle;
 
+    /**
+     * The child fields collection
+     * @internal
+     * @var \ValidFormBuilder\Collection
+     */
     protected $__fields;
 
+    /**
+     * Create a new Area instance
+     *
+     * The label is used as a small 'header' above the area. When setting an area to 'active', this label becomes
+     * clickable using a checkbox. This clickable header can toggle child fields to be enabled / disabled.
+     *
+     * @internal
+     * @param string $label The Area's label
+     * @param boolean $active Whether the area should be active or not.
+     * When active, a checkbox will be prefixed to the header.
+     * @param string $name The name for this area
+     * @param boolean $checked Whether or not the active area should be checked by default
+     * @param array $meta The optional meta array
+     */
     public function __construct($label, $active = false, $name = null, $checked = false, $meta = array())
     {
         $this->__label = $label;
@@ -62,6 +163,19 @@ class Area extends Base
         $this->__dynamicLabel = $this->getMeta("dynamicLabel", null);
     }
 
+    /**
+     * Add a field to the Area.
+     *
+     * See {@link \ValidFormBuilder\Area top of the page} for an example
+     *
+     * @param string $name
+     * @param string $label
+     * @param integer $type One of the ValidForm::VFORM_ field types
+     * @param array $validationRules Standard validation rules array
+     * @param array $errorHandlers Standard error handler array
+     * @param array $meta Standard meta array
+     * @return Ambigous <NULL, \ValidFormBuilder\Element> Returns an instance of the field type generated
+     */
     public function addField($name, $label, $type, $validationRules = array(), $errorHandlers = array(), $meta = array())
     {
         $objField = ValidForm::renderField($name, $label, $type, $validationRules, $errorHandlers, $meta);
@@ -86,6 +200,22 @@ class Area extends Base
         return $objField;
     }
 
+    /**
+     * Add paragraph to Area
+     *
+     * #### Example
+     * ```php
+     * $objArea->addParagraph(
+     *     "Cool paragraph with lots of text in it. It's an absolute must-read.",
+     *     "You must read this"
+     * );
+     * ```
+     *
+     * @param string $strBody The paragraph's body text
+     * @param string $strHeader The paragraph's optional header
+     * @param array $meta Standard meta array
+     * @return \ValidFormBuilder\Paragraph
+     */
     public function addParagraph($strBody, $strHeader = "", $meta = array())
     {
         $objParagraph = new Paragraph($strHeader, $strBody, $meta);
@@ -98,6 +228,13 @@ class Area extends Base
         return $objParagraph;
     }
 
+    /**
+     * Add a multifield to the Area
+     *
+     * @param string $label The multifield's label
+     * @param array $meta The standard meta array
+     * @return \ValidFormBuilder\MultiField
+     */
     public function addMultiField($label = null, $meta = array())
     {
         if (! array_key_exists("dynamic", $meta)) {
@@ -120,6 +257,16 @@ class Area extends Base
         return $objField;
     }
 
+    /**
+     * Render the Area and it's children with toHtml()
+     *
+     * @internal
+     * @param boolean $submitted Define if the area has been submitted and propagate that flag to the child fields
+     * @param boolean $blnSimpleLayout Only render in simple layout mode
+     * @param boolean $blnLabel
+     * @param boolean $blnDisplayErrors Display generated errors
+     * @return string Rendered Area
+     */
     public function toHtml($submitted = false, $blnSimpleLayout = false, $blnLabel = true, $blnDisplayErrors = true)
     {
         $strOutput = "";
@@ -135,6 +282,13 @@ class Area extends Base
         return $strOutput;
     }
 
+    /**
+     * Verify if any of the child fields in this area has submitted data
+     *
+     * @internal
+     * @param number $intCount Optional counter to do the same for dynamic multifields.
+     * @return boolean True if area childs contain submitted data, false if not.
+     */
     public function hasContent($intCount = 0)
     {
         $blnReturn = false;
@@ -162,6 +316,17 @@ class Area extends Base
         return $blnReturn;
     }
 
+    /**
+     * Same as {@link \ValidFormBuilder\Area::toHtml()} but with dynamic counter as extra parameter
+     *
+     * @internal
+     * @param boolean $submitted Define if the area has been submitted and propagate that flag to the child fields
+     * @param boolean $blnSimpleLayout Only render in simple layout mode
+     * @param boolean $blnLabel
+     * @param boolean $blnDisplayErrors Display generated errors
+     * @param number $intCount The dynamic count of this area
+     * @return string Rendered Area
+     */
     protected function __toHtml($submitted = false, $blnSimpleLayout = false, $blnLabel = true, $blnDisplayErrors = true, $intCount = 0)
     {
         // *** Conditional meta should be set before all other meta. Otherwise the set meta is being reset.
@@ -186,7 +351,7 @@ class Area extends Base
             $this->setMeta("class", "vf__clone");
         }
 
-        $strId = ($intCount == 0) ? " id=\"{$this->getId()}\"" : "";
+        $strId = ($intCount == 0) ? " id=\"container_{$this->getId()}\"" : "";
         $strOutput = "<fieldset{$this->__getMetaString()}{$strId}>\n";
 
         if ($this->__active) {
@@ -219,6 +384,11 @@ class Area extends Base
         return $strOutput;
     }
 
+    /**
+     * Generate extra HTML output to facilitate the dynamic duplication logic
+     * @internal
+     * @return string
+     */
     protected function __addDynamicHtml()
     {
         $strReturn = "";
@@ -256,6 +426,15 @@ class Area extends Base
         return $strReturn;
     }
 
+    /**
+     * Generate Javascript code.
+     *
+     * See {@link \ValidFormBuilder\Base::toJs() Base::toJs()}
+     *
+     * @internal
+     * @param $intDynamicPosition The dynamic position counter
+     * @return string Generated javascript code
+     */
     public function toJS($intDynamicPosition = 0)
     {
         $strReturn = "";
@@ -269,11 +448,23 @@ class Area extends Base
         return $strReturn;
     }
 
+    /**
+     * Check if this is an active area
+     *
+     * @internal
+     * @return boolean
+     */
     public function isActive()
     {
         return $this->__active;
     }
 
+    /**
+     * Verify if all submitted data of this area and it's children is valid.
+     *
+     * @internal
+     * @return boolean
+     */
     public function isValid()
     {
         $intDynamicCount = $this->getDynamicCount();
@@ -289,11 +480,23 @@ class Area extends Base
         return $blnReturn;
     }
 
+    /**
+     * Check if this area is a dynamic area
+     *
+     * @internal
+     * @return boolean
+     */
     public function isDynamic()
     {
         return $this->__dynamic;
     }
 
+    /**
+     * Get the dynamic counter value if this is an dynamic area.
+     * @internal
+     * @return integer Defaults to 0 if not an dynamic area. If dynamic, this returns the number of times the user
+     * duplicated this area.
+     */
     public function getDynamicCount()
     {
         $intReturn = 0;
@@ -319,11 +522,22 @@ class Area extends Base
         return $intReturn;
     }
 
+    /**
+     * Return all children in a Collection
+     * @internal
+     * @return \ValidFormBuilder\Collection
+     */
     public function getFields()
     {
         return $this->__fields;
     }
 
+    /**
+     * If this is an active area, this will return the value of the checkbox.
+     * @internal
+     * @param string $intCount Dynamic counter, defaults to null
+     * @return boolean
+     */
     public function getValue($intCount = null)
     {
         $strName = ($intCount > 0) ? $this->__name . "_" . $intCount : $this->__name;
@@ -331,21 +545,43 @@ class Area extends Base
         return (($this->__active && ! empty($value)) || ! $this->__active) ? true : false;
     }
 
+    /**
+     * Return the Area name
+     * @internal
+     * @return string
+     */
     public function getId()
     {
         return $this->getName();
     }
 
+    /**
+     * For API compatibility, we've added the placeholder method 'getType'
+     * @internal
+     * @return number
+     */
     public function getType()
     {
         return 0;
     }
 
+    /**
+     * Check if this area contains child objects.
+     * @internal
+     * @return boolean True if fields collection > 0, false if not.
+     */
     public function hasFields()
     {
         return ($this->__fields->count() > 0) ? true : false;
     }
 
+    /**
+     * Validate this Area and it's children's submitted values
+     *
+     * @internal
+     * @param string $intCount The dynamic counter
+     * @return boolean True if Area and children are valid, false if not.
+     */
     private function __validate($intCount = null)
     {
         $blnReturn = true;

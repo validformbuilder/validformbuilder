@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<phpdoc>
+    <title>ValidForm Builder API Documentation</title>
+    <parser>
+        <default-package-name>Validform</default-package-name>
+        <encoding>utf-8</encoding>
+        <target>docs/build</target>
+        <markers>
+            <item>TODO</item>
+            <item>FIXME</item>
+        </markers>
+        <extensions>
+            <extension>php</extension>
+        </extensions>
+        <visibility></visibility>
+    </parser>
+    <files>
+        <directory>./classes/ValidFormBuilder</directory>
+        <ignore-hidden>true</ignore-hidden>
+        <ignore-symlinks>true</ignore-symlinks>
+    </files>
+    <transformer>
+        <target>docs</target>
+    </transformer>
+    <logging>
+        <level>error</level>
+    </logging>
+    <transformations>
+        <template name="clean"/>
+    </transformations>
+</phpdoc>

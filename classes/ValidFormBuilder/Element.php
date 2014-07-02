@@ -1,10 +1,8 @@
 <?php
-namespace ValidFormBuilder;
-
 /**
  * ValidForm Builder - build valid and secure web forms quickly
  *
- * Copyright (c) 2009-2013 Neverwoods Internet Technology - http://neverwoods.com
+ * Copyright (c) 2009-2014 Neverwoods Internet Technology - http://neverwoods.com
  *
  * Felix Langfeldt <felix@neverwoods.com>
  * Robin van Baalen <robin@neverwoods.com>
@@ -15,42 +13,105 @@ namespace ValidFormBuilder;
  *
  * @package ValidForm
  * @author Felix Langfeldt <felix@neverwoods.com>, Robin van Baalen <robin@neverwoods.com>
- * @copyright 2009-2013 Neverwoods Internet Technology - http://neverwoods.com
+ * @copyright 2009-2014 Neverwoods Internet Technology - http://neverwoods.com
  * @license http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU GPL v2
  * @link http://validformbuilder.org
  */
+namespace ValidFormBuilder;
 
 /**
  * Element Class
  *
+ * The base class for most form elements
+ *
  * @package ValidForm
- * @author Felix Langfeldt
+ * @author Felix Langfeldt <felix@neverwoods.com>
+ * @author Robin van Baalen <robin@neverwoods.com>
+ * @version Release: 3.0.0
+ *
+ * @internal
  */
 class Element extends Base
 {
 
+    /**
+     * Element name
+     * @internal
+     * @var string
+     */
     protected $__name;
-
+    /**
+     * Element label
+     * @internal
+     * @var string
+     */
     protected $__label;
-
+    /**
+     * Element tip text
+     * @internal
+     * @var string
+     */
     protected $__tip = null;
-
+    /**
+     * Element type
+     * @internal
+     * @var integer
+     */
     protected $__type;
-
+    /**
+     * Element hint value
+     * @internal
+     * @var string
+     */
     protected $__hint = null;
-
+    /**
+     * Element default value
+     * @internal
+     * @var string
+     */
     protected $__default = null;
-
+    /**
+     * Element dynamic flag
+     * @internal
+     * @var boolean
+     */
     protected $__dynamic = null;
-
+    /**
+     * Element dynamic counter
+     * @internal
+     * @var integer
+     */
     protected $__dynamiccounter = false;
-
+    /**
+     * Element dynamic label
+     * @internal
+     * @var string
+     */
     protected $__dynamicLabel = null;
-
+    /**
+     * Element required style
+     * @internal
+     * @var string
+     */
     protected $__requiredstyle;
-
+    /**
+     * Element Validator object
+     * @internal
+     * @var Validator
+     */
     protected $__validator;
 
+    /**
+     * Create new element
+     *
+     * @internal
+     * @param string $name Field name
+     * @param integer $type Field type
+     * @param string $label Field label
+     * @param array $validationRules Validation rules
+     * @param array $errorHandlers Error rules
+     * @param array $meta The meta array
+     */
     public function __construct($name, $type, $label = "", $validationRules = array(), $errorHandlers = array(), $meta = array())
     {
         // Set meta class
@@ -77,11 +138,22 @@ class Element extends Base
         $this->__validator = new FieldValidator($this, $validationRules, $errorHandlers);
     }
 
+    /**
+     * Checks if this element is a dynamic counter for another element
+     * @internal
+     * @return boolean `True` if it is, `false` if not. Default `false`.
+     */
     public function isDynamicCounter()
     {
         return false;
     }
 
+    /**
+     * Set type class
+     * @internal
+     * @param integer $type
+     * @param array $meta
+     */
     protected function setClass($type, &$meta)
     {
         switch ($type) {
@@ -126,9 +198,6 @@ class Element extends Base
                 $this->setFieldMeta("class", "vf__password");
                 $this->setFieldMeta("class", "vf__text");
                 break;
-            case ValidForm::VFORM_CAPTCHA:
-                $this->setFieldMeta("class", "vf__text_small");
-                break;
             case ValidForm::VFORM_HTML:
                 $this->setFieldMeta("class", "vf__html");
                 $this->setFieldMeta("class", "vf__text");
@@ -162,27 +231,78 @@ class Element extends Base
         }
     }
 
+    /**
+     * Generate HTML output
+     *
+     * @internal
+     * @param boolean $submitted Force if this field should behave like a submitted field or not (e.g. validate etc.)
+     * @param boolean $blnSimpleLayout Force 'simple layout' output -- no labels and wrapping divs.
+     * @param boolean $blnLabel Show label. Don't show if false.
+     * @param boolean $blnDisplayErrors Show errors (default true). Don't show errors if false.
+     * @return string
+     */
     public function toHtml($submitted = false, $blnSimpleLayout = false, $blnLabel = true, $blnDisplayErrors = true)
     {
         return "Field type not defined.";
     }
 
+    /**
+     * Generate HTML output for specific dynamic count
+     *
+     * @internal
+     * @param boolean $submitted
+     * @param boolean $blnSimpleLayout
+     * @param boolean $blnLabel
+     * @param boolean $blnDisplayErrors
+     * @param integer $intCount
+     * @return string
+     */
     public function __toHtml($submitted = false, $blnSimpleLayout = false, $blnLabel = true, $blnDisplayErrors = true, $intCount = 0)
     {
         return $this->toHtml($submitted, $blnSimpleLayout, $blnLabel, $blnDisplayErrors, $intCount);
     }
 
+    /**
+     * Set a (custom) error message on this specific element
+     *
+     * This is mostly used when doing custom server-side validation like validating a username existance. Example:
+     * ```php
+     * if ($objForm->isSubmitted() && $objForm->isValid()) {
+     *     $objUserNameField = $objForm->getValidField("username");
+     *     $strUserName = $objUserNameField->getValue();
+     *     if (User::exists($strUserName)) {
+     *         $objUserNameField->setError("User already exists.");
+     *         $strOutput = $objForm->toHtml();
+     *     } else {
+     *         $strOutput = "Account created successfully with the following details:<br />";
+     *         $strOutput .= $objForm->valuesAsHtml();
+     *     }
+     * }
+     * ```
+     *
+     * @param string $strError The error message
+     * @param number $intDynamicPosition Set the error message on a specific dynamic field with this index
+     */
     public function setError($strError, $intDynamicPosition = 0)
     {
         // *** Override the validator message.
         $this->__validator->setError($strError, $intDynamicPosition);
     }
 
+    /**
+     * @see \ValidFormBuilder\Base::toJS()
+     */
     public function toJS($intDynamicPosition = 0)
     {
         return "alert('Field type of field {$this->__name} not defined.');\n";
     }
 
+    /**
+     * Generate a random ID
+     * @internal
+     * @param string $name Fieldname
+     * @return string
+     */
     public function getRandomId($name)
     {
         $strReturn = $name;
@@ -198,8 +318,12 @@ class Element extends Base
 
     /**
      * Validate the current field.
-     * This is a wrapper method to call the FieldValidator->validate() method.
+     * This is a wrapper method to call the Validator->validate() method.
+     * Although you could validate fields on a per-field basis with this method, this is mostly used internally.
+     * For instance, when {@link \ValidFormBuilder\ValidForm::validate()} is called, it loops trough it's elements
+     * collection and calls this method for each element it finds.
      *
+     * @see \ValidFormBuilder\Validator::validate()
      * @return boolean True if field validates, false if not.
      */
     public function isValid($intCount = null)
@@ -227,6 +351,7 @@ class Element extends Base
     /**
      * Check if the current field is a dynamic field.
      *
+     * @internal
      * @return boolean True if dynamic, false if not.
      */
     public function isDynamic()
@@ -236,8 +361,8 @@ class Element extends Base
 
     /**
      * Get the number of dynamic fields from the dynamic counter field.
-     *
-     * @return [type] [description]
+     * @internal
+     * @return integer The dynamic count of this field
      */
     public function getDynamicCount($blnParentIsDynamic = false)
     {
@@ -250,6 +375,11 @@ class Element extends Base
         return (int) $intReturn;
     }
 
+    /**
+     * Add a dynamic counter object
+     * @internal
+     * @param \ValidFormBuilder\Element $objCounter
+     */
     public function setDynamicCounter(&$objCounter)
     {
         $this->__dynamiccounter = $objCounter;
@@ -258,8 +388,7 @@ class Element extends Base
     /**
      * Get the *valid* value of the current field.
      *
-     * @param integer $intDynamicPosition
-     *            Optional parameter to get the value of a dynamic field.
+     * @param integer $intDynamicPosition Optional parameter to get the value of a dynamic field.
      * @return mixed The valid value of this field. If validation fails, it returns null.
      */
     public function getValue($intDynamicPosition = 0)
@@ -280,7 +409,7 @@ class Element extends Base
 
     /**
      * Placeholder function to determine wheter or not a field contains other fields.
-     *
+     * @internal
      * @return boolean Return false by default.
      */
     public function hasFields()
@@ -289,11 +418,11 @@ class Element extends Base
     }
 
     /**
-     * If an element's name is updated, also update the name in it's corresponding validator.
-     * Therefore, we cannot use the default 'magic method' getName()
+     * Set a new name for this element
      *
-     * @param string $strName
-     *            The new name
+     * This method also updates the name in the elements Validator instance.
+     *
+     * @param string $strName The new name
      */
     public function setName($strName)
     {
@@ -307,13 +436,17 @@ class Element extends Base
     /**
      * Get default value
      *
-     * @return Ambigous <array, string>
+     * @return array|string
      */
     public function getDefault()
     {
         return $this->__default;
     }
 
+    /**
+     * Set default value on this element
+     * @param array|string $varValue The value to set as default value
+     */
     public function setDefault($varValue)
     {
         $this->__default = $varValue;
@@ -323,11 +456,10 @@ class Element extends Base
      * Get the value of the field.
      * If the value is *valid* then it will return that value, otherwise the invalid value is returned.
      *
-     * @param boolean $submitted
-     *            Indicate if the form is submitted.
-     * @param integer $intDynamicPosition
-     *            The position of the field in a dynamic field setup.
-     * @return Ambigous <NULL, string>
+     * @internal
+     * @param boolean $submitted Indicate if the form is submitted.
+     * @param integer $intDynamicPosition The position of the field in a dynamic field setup.
+     * @return string|null
      */
     public function __getValue($submitted = false, $intDynamicPosition = 0)
     {

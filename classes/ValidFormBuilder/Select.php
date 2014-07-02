@@ -1,10 +1,8 @@
 <?php
-namespace ValidFormBuilder;
-
 /**
  * ValidForm Builder - build valid and secure web forms quickly
  *
- * Copyright (c) 2009-2013 Neverwoods Internet Technology - http://neverwoods.com
+ * Copyright (c) 2009-2014 Neverwoods Internet Technology - http://neverwoods.com
  *
  * Felix Langfeldt <felix@neverwoods.com>
  * Robin van Baalen <robin@neverwoods.com>
@@ -15,34 +13,123 @@ namespace ValidFormBuilder;
  *
  * @package ValidForm
  * @author Felix Langfeldt <felix@neverwoods.com>, Robin van Baalen <robin@neverwoods.com>
- * @copyright 2009-2013 Neverwoods Internet Technology - http://neverwoods.com
+ * @copyright 2009-2014 Neverwoods Internet Technology - http://neverwoods.com
  * @license http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU GPL v2
  * @link http://validformbuilder.org
  */
+namespace ValidFormBuilder;
 
 /**
- * Select Class
+ * Create a select element
+ *
+ * ValidForm Builder select elements support both &lt;option&gt; and &lt;optgroup&gt; elements by
+ * using respectively `addField()` and `addGroup()`.
+ *
+ * #### Example 1; Standard way of creating a select element
+ * ```php
+ * $objSelect = $objForm->addField(
+ *     "rating",
+ *     "Rate ValidForm Builder",
+ *     ValidForm::VFORM_SELECT_LIST
+ * );
+ * $objSelect->addField("Awesome", 1);
+ * $objSelect->addField("Great", 2);
+ * $objSelect->addField("Super Cool", 3, true); // This item is selected by default
+ * $objSelect->addField("Splendid", 4);
+ * $objSelect->addField("Best thing ever happened", 5);
+ * ```
+ *
+ * #### Example 2; Creating options by using `labelRange` and `valueRange` options
+ * ```php
+ * $objForm->addField(
+ *     "rating",
+ *     "Rate ValidForm Builder",
+ *     ValidForm::VFORM_SELECT_LIST,
+ *     array(),
+ *     array(),
+ *     array(
+ *         // An array of <option> labels
+ *         "labelRange" => array(
+ *             "Awesome",
+ *             "Great",
+ *             "Super Cool",
+ *             "Splendid",
+ *             "Best thing ever happened"
+ *         ),
+ *         // An array of corresponding <option> values
+ *         "valueRange" => array(1, 2, 3, 4, 5)
+ *     )
+ * );
+ * ```
+ *
+ * #### Example 3; Creating options by using `start` and `end` meta
+ * ```php
+ * $objForm->addField("rating", "Rate ValidForm Builder", ValidForm::VFORM_SELECT_LIST, array(), array(), array(
+ * 	"start" => 1,
+ * 	"end" => 5
+ * ));
+ * ```
+ *
+ * #### Example 4; Adding optgroups to the select element
+ * ```php
+ * $objSelect = $objForm->addField("rating", "Rate ValidForm Builder", ValidForm::VFORM_SELECT_LIST);
+ * $objSelect->addGroup("Preferred rating");
+ * $objSelect->addField("Awesome", 1);
+ * $objSelect->addGroup("Other ratings");
+ * $objSelect->addField("Great", 2);
+ * $objSelect->addField("Super Cool", 3, true); // This item is selected by default
+ * $objSelect->addField("Splendid", 4);
+ * $objSelect->addField("Best thing ever happened", 5);
+ * ```
  *
  * @package ValidForm
- * @author Felix Langfeldt
+ * @author Felix Langfeldt <felix@neverwoods.com>
+ * @author Robin van Baalen <robin@neverwoods.com>
+ * @version Release: 3.0.0
  */
 class Select extends Element
 {
-
+    /**
+     * Collection of option elements created for this select element
+     * @internal
+     * @var \ValidFormBuilder\Collection
+     */
     protected $__options;
 
-    public function __construct($name, $type, $label = "", $validationRules = array(), $errorHandlers = array(), $meta = array())
-    {
+    /**
+     * Create new Select element
+     *
+     * @internal
+     * @param string $name Field name
+     * @param integer $type Field type
+     * @param string $label Field label
+     * @param array $validationRules Validation rules
+     * @param array $errorHandlers Error rules
+     * @param array $meta The meta array
+     */
+    public function __construct(
+        $name,
+        $type,
+        $label = "",
+        $validationRules = array(),
+        $errorHandlers = array(),
+        $meta = array()
+    ) {
         $this->__options = new Collection();
 
         parent::__construct($name, $type, $label, $validationRules, $errorHandlers, $meta);
 
-        // *** Parse ranges if meta ranges are set. Thisway, the Select element is filled before calling toHtml and therefore ready for custom manipulation
+        // Parse ranges if meta ranges are set. Thisway, the Select element is filled before
+        // calling toHtml and therefore ready for custom manipulation
         if ($this->__options->count() == 0) {
             $this->__parseRanges();
         }
     }
 
+    /**
+     * @internal
+     * @see \ValidFormBuilder\Element::toHtml()
+     */
     public function toHtml($submitted = false, $blnSimpleLayout = false, $blnLabel = true, $blnDisplayErrors = true)
     {
         $strOutput = "";
@@ -59,8 +146,17 @@ class Select extends Element
         return $strOutput;
     }
 
-    public function __toHtml($submitted = false, $blnSimpleLayout = false, $blnLabel = true, $blnDisplayErrors = true, $intCount = 0)
-    {
+    /**
+     * @internal
+     * @see \ValidFormBuilder\Element::__toHtml()
+     */
+    public function __toHtml(
+        $submitted = false,
+        $blnSimpleLayout = false,
+        $blnLabel = true,
+        $blnDisplayErrors = true,
+        $intCount = 0
+    ) {
         $strOutput = "";
 
         $strName = ($intCount == 0) ? $this->__name : $this->__name . "_" . $intCount;
@@ -140,6 +236,18 @@ class Select extends Element
         return $strOutput;
     }
 
+    /**
+     * Generate ranges
+     *
+     * Supported meta keys for ranges:
+     *
+     * - labelRange
+     * - valueRange
+     * - start
+     * - end
+     *
+     * @internal
+     */
     protected function __parseRanges()
     {
         if (isset($this->__meta["labelRange"]) && is_array($this->__meta["labelRange"])) {
@@ -167,6 +275,11 @@ class Select extends Element
         }
     }
 
+    /**
+     * Render html element needed for dynamic duplication client-side
+     * @internal
+     * @return string
+     */
     protected function __addDynamicHtml()
     {
         $strReturn = "";
@@ -178,6 +291,11 @@ class Select extends Element
         return $strReturn;
     }
 
+    /**
+     * Render javascript
+     * @internal
+     * @see \ValidFormBuilder\Element::toJS()
+     */
     public function toJS($intDynamicPosition = 0)
     {
         $strCheck = $this->__validator->getCheck();
@@ -213,9 +331,18 @@ class Select extends Element
         return $strOutput;
     }
 
-    public function addField($value, $label, $selected = false, $meta = array())
+    /**
+     * Add option element
+     *
+     * @param string $label The option elements label
+     * @param string $label The option elements value
+     * @param boolean $selected True if this option should be selected by default
+     * @param array $meta The meta array
+     * @return \ValidFormBuilder\SelectOption
+     */
+    public function addField($label, $value, $selected = false, $meta = array())
     {
-        $objOption = new SelectOption($value, $label, $selected, $meta);
+        $objOption = new SelectOption($label, $value, $selected, $meta);
         $objOption->setMeta("parent", $this, true);
 
         $this->__options->addObject($objOption);
@@ -223,6 +350,12 @@ class Select extends Element
         return $objOption;
     }
 
+    /**
+     * Add optgroup element
+     *
+     * @param string $label The optgroup's label
+     * @return \ValidFormBuilder\SelectGroup
+     */
     public function addGroup($label)
     {
         $objGroup = new SelectGroup($label);

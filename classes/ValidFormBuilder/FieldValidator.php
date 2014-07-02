@@ -1,85 +1,211 @@
 <?php
-namespace ValidFormBuilder;
-
 /**
  * ValidForm Builder - build valid and secure web forms quickly
  *
- * Copyright (c) 2009-2013 Neverwoods Internet Technology
+ * Copyright (c) 2009-2014 Neverwoods Internet Technology - http://neverwoods.com
+ *
+ * Felix Langfeldt <felix@neverwoods.com>
+ * Robin van Baalen <robin@neverwoods.com>
+ *
  * All rights reserved.
  *
  * This software is released under the GNU GPL v2 License <http://www.gnu.org/licenses/old-licenses/gpl-2.0.html>
  *
  * @package ValidForm
  * @author Felix Langfeldt <felix@neverwoods.com>, Robin van Baalen <robin@neverwoods.com>
- * @copyright 2009-2013 Neverwoods Internet Technology
+ * @copyright 2009-2014 Neverwoods Internet Technology - http://neverwoods.com
  * @license http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU GPL v2
- * @link http://code.google.com/p/validformbuilder/
+ * @link http://validformbuilder.org
  */
+namespace ValidFormBuilder;
 
 /**
  * FieldValidator Class
  *
- * @package ValidForm
- * @author Felix Langfeldt, Robin van Baalen
- * @version Release: 1.0
+ * This class handles all the validation logic
  *
+ * @package ValidForm
+ * @author Felix Langfeldt <felix@neverwoods.com>
+ * @author Robin van Baalen <robin@neverwoods.com>
+ * @version Release: 3.0.0
+ *
+ * @internal
  */
 class FieldValidator extends ClassDynamic
 {
-    // Base properties
+    /**
+     * Field object
+     * @internal
+     * @var \ValidFormBuilder\Base
+     */
     protected $__field;
 
+    /**
+     * Validation type
+     * @internal
+     * @var integer
+     */
     protected $__type;
 
+    /**
+     * Fieldname
+     * @internal
+     * @var string
+     */
     protected $__fieldname; // Not the same as __field->getName()
 
+    /**
+     * Field hint
+     * @internal
+     * @var string
+     */
     protected $__fieldhint;
 
+    /**
+     * Valid values
+     * @internal
+     * @var array
+     */
     protected $__validvalues = array();
 
-    // Validation rules
+    /**
+     * Validation rule min length
+     * @internal
+     * @var integer
+     */
     protected $__minlength;
 
+    /**
+     * Validation rule max length
+     * @internal
+     * @var integer
+     */
     protected $__maxlength;
 
+    /**
+     * Valdiation rule matchWith
+     * @internal
+     * @var \ValidFormBuilder\Base
+     */
     protected $__matchwith;
 
+    /**
+     * Validation rule required
+     * @internal
+     * @var boolean
+     */
     protected $__required = false;
 
+    /**
+     * Validation rule max files
+     * @internal
+     * @var integer
+     */
     protected $__maxfiles = 1;
 
+    /**
+     * Validation rule max size
+     * @internal
+     * @var integer
+     */
     protected $__maxsize = 3000;
 
+    /**
+     * Validation rule filetypes
+     * @internal
+     * @var array
+     */
     protected $__filetypes;
 
+    /**
+     * Validation regular expression
+     * @internal
+     * @var string
+     */
     protected $__validation;
 
+    /**
+     * Default required state
+     * @internal
+     * @var boolean
+     */
     protected $__defaultRequired = false;
 
-    // Error handling
+    /**
+     * Min length error
+     * @internal
+     * @var string
+     */
     protected $__minlengtherror = "The input is too short. The minimum is %s characters.";
-
+    /**
+     * Max length error
+     * @internal
+     * @var string
+     */
     protected $__maxlengtherror = "The input is too long. The maximum is %s characters.";
-
+    /**
+     * Match with error
+     * @internal
+     * @var string
+     */
     protected $__matchwitherror = "The values do not match.";
-
+    /**
+     * Required error
+     * @internal
+     * @var string
+     */
     protected $__requirederror = "This field is required.";
-
+    /**
+     * Type error
+     * @internal
+     * @var string
+     */
     protected $__typeerror;
-
+    /**
+     * Overwrite errors
+     * @internal
+     * @var array
+     */
     protected $__overrideerrors = array();
-
+    /**
+     * Max files error
+     * @internal
+     * @var string
+     */
     protected $__maxfileserror = "Too many files selected. The maximum is %s files.";
-
+    /**
+     * Max size error
+     * @internal
+     * @var string
+     */
     protected $__maxsizeerror = "The filesize is too big. The maximum is %s KB.";
-
+    /**
+     * File type error
+     * @internal
+     * @var string
+     */
     protected $__filetypeerror = "Invalid file types selected. Only types of %s are permitted.";
-
+    /**
+     * Hint error
+     * @internal
+     * @var string
+     */
     protected $__hinterror = "The value is the hint value. Enter your own value.";
-
+    /**
+     * Errors
+     * @internal
+     * @var array
+     */
     protected $__errors = array();
 
-    // public function __construct($fieldName, $fieldType, $validationRules, $errorHandlers, $fieldHint = NULL) {
+    /**
+     * Construct new validation object
+     *
+     * @internal
+     * @param Element $objField
+     * @param array $arrValidationRules
+     * @param array $arrErrorHandlers
+     */
     public function __construct(Element $objField, Array $arrValidationRules = array(), Array $arrErrorHandlers = array())
     {
         foreach ($arrValidationRules as $key => $value) {
@@ -106,6 +232,13 @@ class FieldValidator extends ClassDynamic
         $this->__defaultRequired = $this->__required;
     }
 
+    /**
+     * Get the validated value
+     *
+     * @internal
+     * @param integer $intDynamicPosition
+     * @return array|string
+     */
     public function getValidValue($intDynamicPosition = 0)
     {
         $varReturn = null;
@@ -120,14 +253,13 @@ class FieldValidator extends ClassDynamic
     /**
      * Get the value to validate from either the global request variable or the cached __validvalues array.
      *
-     * @param integer $intDynamicPosition
-     *            Using the intDynamicPosition parameter, you can get the specific value
-     *            of a dynamic field.
-     * @return string array null returns the submitted field value. If no sumitted value is set,
-     *         return value is the cached valid value. If no cached value is set, return
-     *         value is the default value. If no default value is set, return value
-     *         is null. When field type is VFORM_FILE and a file is submitted, the return
-     *         value is the $_FILES[fieldname] array.
+     * @internal
+     * @param integer $intDynamicPosition Using the intDynamicPosition parameter, you can get the specific value
+     * of a dynamic field.
+     * @return string|array|null Returns the submitted field value. If no sumitted value is set,
+     * return value is the cached valid value. If no cached value is set, return value is the default value. If no
+     * default value is set, return value is null. When field type is `ValidForm::VFORM_FILE` and a file is submitted,
+     * the return value is the `$_FILES[fieldname]` array.
      */
     public function getValue($intDynamicPosition = 0)
     {
@@ -173,24 +305,33 @@ class FieldValidator extends ClassDynamic
         return $varReturn;
     }
 
+    /**
+     * Set required state
+     * @param boolean $blnValue
+     */
     public function setRequired($blnValue)
     {
         // Convert whatever is given into a real boolean by using !!
         $this->__required = ! ! $blnValue;
     }
 
+    /**
+     * Get required state
+     * @param boolean $blnDefault
+     * @return boolean
+     */
     public function getRequired($blnDefault = false)
     {
-        return (! ! $blnDefault) ? $this->__defaultRequired : $this->__required;
+        return (!!$blnDefault) ? $this->__defaultRequired : $this->__required;
     }
 
     /**
      * The most important function of ValidForm Builder library.
-     * This function
-     * handles all the server-side field validation logic.
      *
-     * @param integer $intDynamicPosition
-     *            Using the intDynamicPosition parameter, you can validate a specific dynamic field, if necessary.
+     * This function handles all the server-side field validation logic.
+     * @internal
+     * @param integer $intDynamicPosition Using the intDynamicPosition parameter, you can validate a specific dynamic
+     * field, if necessary.
      * @return boolean True if the current field validates, false if not.
      */
     public function validate($intDynamicPosition = 0)
@@ -353,7 +494,7 @@ class FieldValidator extends ClassDynamic
                     $blnValidType = Validator::validate($this->__validation, $value);
                     break;
                 default:
-                    $blnValidType = Validator::validate($this->__field->getType(), ($this->__field->getType() == ValidForm::VFORM_CAPTCHA) ? $this->__fieldname : $value);
+                    $blnValidType = Validator::validate($this->__field->getType(), $value);
             }
 
             if (! $blnValidType) {
@@ -375,19 +516,46 @@ class FieldValidator extends ClassDynamic
             $this->__errors[$intDynamicPosition] = $this->__overrideerrors[$intDynamicPosition];
         }
 
-        return (! isset($this->__validvalues[$intDynamicPosition])) ? false : true;
+        return (!isset($this->__validvalues[$intDynamicPosition])) ? false : true;
     }
 
+    /**
+     * Set custom error on a field
+     *
+     * Use this to set a custom error on a field
+     *
+     * @internal
+     * @param string $strError Custom error message
+     * @param integer $intDynamicPosition
+     */
     public function setError($strError, $intDynamicPosition = 0)
     {
         $this->__overrideerrors[$intDynamicPosition] = $strError;
     }
 
+    /**
+     * Get error message
+     *
+     * @internal
+     * @param integer $intDynamicPosition
+     * @return string
+     */
     public function getError($intDynamicPosition = 0)
     {
-        return (isset($this->__errors[$intDynamicPosition]) && ! empty($this->__errors[$intDynamicPosition])) ? $this->__errors[$intDynamicPosition] : "";
+        $strReturn = "";
+
+        if (isset($this->__errors[$intDynamicPosition]) && !empty($this->__errors[$intDynamicPosition])) {
+            $strReturn = $this->__errors[$intDynamicPosition];
+        }
+
+        return $strReturn;
     }
 
+    /**
+     * Get the validation rule (regular expression)
+     * @internal
+     * @return string
+     */
     public function getCheck()
     {
         $strReturn = "";
@@ -404,6 +572,12 @@ class FieldValidator extends ClassDynamic
         return $strReturn;
     }
 
+    /**
+     * Check if an error has occured
+     * @internal
+     * @param integer $intDynamicPosition
+     * @return boolean
+     */
     private function __hasError($intDynamicPosition = 0)
     {
         return (isset($this->__errors[$intDynamicPosition]) && ! empty($this->__errors[$intDynamicPosition]));

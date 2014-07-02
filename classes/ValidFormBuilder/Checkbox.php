@@ -1,10 +1,8 @@
 <?php
-namespace ValidFormBuilder;
-
 /**
  * ValidForm Builder - build valid and secure web forms quickly
  *
- * Copyright (c) 2009-2013 Neverwoods Internet Technology - http://neverwoods.com
+ * Copyright (c) 2009-2014 Neverwoods Internet Technology - http://neverwoods.com
  *
  * Felix Langfeldt <felix@neverwoods.com>
  * Robin van Baalen <robin@neverwoods.com>
@@ -15,21 +13,36 @@ namespace ValidFormBuilder;
  *
  * @package ValidForm
  * @author Felix Langfeldt <felix@neverwoods.com>, Robin van Baalen <robin@neverwoods.com>
- * @copyright 2009-2013 Neverwoods Internet Technology - http://neverwoods.com
+ * @copyright 2009-2014 Neverwoods Internet Technology - http://neverwoods.com
  * @license http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU GPL v2
  * @link http://validformbuilder.org
  */
 
+namespace ValidFormBuilder;
+
 /**
- * Checkbox Class
+ * Create checkboxes (boolean fields)
+ *
+ * #### Example
+ * ```php
+ * // The following code adds a \ValidFormBuilder\Checkbox element to the forms elements collection.
+ * $objForm->addField("agree", "I agree to the terms and conditions.", ValidForm::VFORM_BOOLEAN);
+ * ```
  *
  * @package ValidForm
- * @author Felix Langfeldt
- * @version Release: 0.2.4
+ * @author Felix Langfeldt <felix@neverwoods.com>
+ * @author Robin van Baalen <robin@neverwoods.com>
+ * @version Release: 3.0.0
  */
 class Checkbox extends Element
 {
 
+    /**
+     * Generate HTML output
+     *
+     * @internal
+     * @see \ValidFormBuilder\Element::toHtml() Element::toHtml() for a full description of this method
+     */
     public function toHtml($submitted = false, $blnSimpleLayout = false, $blnLabel = true, $blnDisplayErrors = true)
     {
         $blnError = ($submitted && ! $this->__validator->validate() && $blnDisplayErrors) ? true : false;
@@ -50,7 +63,7 @@ class Checkbox extends Element
                 $this->setMeta("class", "vf__nolabel");
             }
 
-                // Call this right before __getMetaString();
+            // Call this right before __getMetaString();
             $this->setConditionalMeta();
 
             $strOutput = "<div{$this->__getMetaString()}>\n";
@@ -105,6 +118,11 @@ class Checkbox extends Element
         return $strOutput;
     }
 
+    /**
+     * Generate Javascript
+     * @internal
+     * @see \ValidFormBuilder\Element::toJS() Element::toJS() for a full description of this method
+     */
     public function toJS($intDynamicPosition = 0)
     {
         $strOutput = "";
@@ -124,12 +142,27 @@ class Checkbox extends Element
         return $strOutput;
     }
 
+    /**
+     * Get checkbox value
+     *
+     * See {@link \ValidFormBuilder\Element::getValue()}
+     *
+     * @internal
+     * @see \ValidFormBuilder\Element::getValue()
+     */
     public function getValue($intDynamicPosition = 0)
     {
         $varValue = parent::getValue($intDynamicPosition);
         return (strlen($varValue) > 0 && $varValue !== 0) ? true : false;
     }
 
+    /**
+     * Get default value
+     * See {@link \ValidFormBuilder\Element::getDefault()}
+     *
+     * @internal
+     * @see \ValidFormBuilder\Element::getDefault()
+     */
     public function getDefault($intDynamicPosition = 0)
     {
         return (strlen($this->__default) > 0 && $this->getValue($intDynamicPosition)) ? "on" : null;
