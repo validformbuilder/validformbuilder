@@ -1,5 +1,5 @@
-[![Latest Stable Version](https://poser.pugx.org/neverwoods/validformbuilder/v/stable.png)](https://packagist.org/packages/neverwoods/validformbuilder)
 [![Build Status](https://travis-ci.org/neverwoods/validformbuilder.svg?branch=wip-new-documentation)](https://travis-ci.org/neverwoods/validformbuilder)
+[![Latest Stable Version](https://poser.pugx.org/neverwoods/validformbuilder/v/stable.svg)](https://packagist.org/packages/neverwoods/validformbuilder) [![Total Downloads](https://poser.pugx.org/neverwoods/validformbuilder/downloads.svg)](https://packagist.org/packages/neverwoods/validformbuilder) [![Latest Unstable Version](https://poser.pugx.org/neverwoods/validformbuilder/v/unstable.svg)](https://packagist.org/packages/neverwoods/validformbuilder) [![License](https://poser.pugx.org/neverwoods/validformbuilder/license.svg)](https://packagist.org/packages/neverwoods/validformbuilder)
 
 Quick links:
 ------------
