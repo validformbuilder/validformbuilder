@@ -1,6 +1,7 @@
 [![Build Status](https://travis-ci.org/neverwoods/validformbuilder.svg?branch=wip-new-documentation)](https://travis-ci.org/neverwoods/validformbuilder)
 [![Latest Stable Version](https://poser.pugx.org/neverwoods/validformbuilder/v/stable.svg)](https://packagist.org/packages/neverwoods/validformbuilder)
 [![License](https://poser.pugx.org/neverwoods/validformbuilder/license.svg)](https://packagist.org/packages/neverwoods/validformbuilder)
+[![A project by Neverwoods](http://img.shields.io/badge/by-neverwoods-blue.svg)](http://neverwoods.com)
 
 Quick links:
 ------------
