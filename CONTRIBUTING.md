@@ -4,7 +4,7 @@ If you have a question on how something works, or its expected functionality, yo
 
 If you think you have found a bug, or have a new feature idea, please start by making sure it hasn't already been [reported](https://github.com/neverwoods/validformbuilder/issues?state=open). You can search through existing issues to see if someone's reported one similar to yours.
 
-If not, then try to reproduce the problem by hosting a demo file on your server and share the source code. Try to use as little code as possible: the more minimalist, the faster we can debug it. Also, please do not group multiple topics into one issue, but instead each should be its own issue.
+If not, then try to reproduce the problem by hosting a demo file on your server and share the source code. Try to use as little code as possible: the smaller the code snippet, the faster we can debug it. Also, please do not group multiple topics into one issue, but instead each should be its own issue.
 
 Next, [create a new issue](https://github.com/neverwoods/validformbuilder/issues/new) that briefly explains the problem, and provides a bit of background as to the circumstances that triggered it. Don't forget to include the link to that demo file you created!
 
