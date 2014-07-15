@@ -6,9 +6,10 @@
  *
  * This software is released under the GNU GPL v2 License <http://www.gnu.org/licenses/old-licenses/gpl-2.0.html>
  *
- * @author     Felix Langfeldt <felix@neverwoods.com>, Robin van Baalen <robin@neverwoods.com>
- * @license    http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU GPL v2.
- * @link       http://code.google.com/p/validformbuilder/
+ * @author     Felix Langfeldt <felix@neverwoods.com>
+ * @author     Robin van Baalen <robin@neverwoods.com>
+ * @license    https://github.com/neverwoods/validformbuilder/blob/master/LICENSE
+ * @link       https://github.com/neverwoods/validformbuilder
  ***************************/
 
 /**
