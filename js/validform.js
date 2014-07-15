@@ -1731,7 +1731,7 @@ ValidFormFieldValidator.prototype.showAlert = function(strAlert) {
         objElement.closest("div.vf__optional, div.vf__required").addClass("vf__error").prepend("<p class=\"vf__error\">" + strAlert + "</p>");
     }
 
-    $("#" + __this.id).trigger("VF_ShowAlert", [{ValidForm: __this, errorMsg: strAlert}]);
+    $("#" + this.id).trigger("VF_ShowAlert", [{FormFieldValidator: this, errorMsg: strAlert}]);
 };
 
 /**
