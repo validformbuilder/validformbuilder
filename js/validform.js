@@ -188,14 +188,24 @@ ValidForm.prototype.dynamicDuplication = function () {
 	// Bind click event to duplicate button
 	jQuery(".vf__dynamic a").bind("click", function() {
 		var $anchor = jQuery(this);
+		var $dynamicDuplicationWrap = $anchor.closest("div.vf__dynamic"); 
 
 		//*** Call custom event if set.
-		jQuery("#" + this.id).trigger("VF_BeforeDynamicChange", [{ValidForm: __this, objAnchor: $anchor}]);
+		jQuery("#" + __this.id).trigger("VF_BeforeDynamicChange", [{
+		    ValidForm: __this,
+		    objAnchor: $anchor,
+		    objOriginal: $dynamicDuplicationWrap.prev()
+		}]);
+		
 		if (typeof __this.events.beforeDynamicChange == "function") {
 			__this.events.beforeDynamicChange(__this, $anchor);
 		}
 
-		var $dynamicDuplicationWrap = $anchor.closest("div.vf__dynamic"); 
+		//*** Stop if this flag is false
+		if (!__this.__continueExecution) {
+		    return;
+		}
+
 		if (!$dynamicDuplicationWrap.prev().hasClass("vf__disabled")) {
 			//*** Update dynamic field counter.
 			var $original 	= $dynamicDuplicationWrap.prev();
