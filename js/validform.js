@@ -274,13 +274,13 @@ ValidForm.prototype.dynamicDuplication = function () {
 							.prev("label").attr("for", ids[index] + "_" + counter.val());
 						
 						jQuery(this)
-							.bind("focus", function() {
+							.bind("focus.validform-hint", function() {
 								if (jQuery(this).val() == objOriginal.validator.hint) {
 									jQuery(this).val("");
 									jQuery(this).closest(".vf__hint").removeClass("vf__hint");
 								}
 							})
-							.bind("blur", function() {
+							.bind("blur.validform-hint", function() {
                                 if (jQuery(this).val() === "") {
 									jQuery(this).val(objOriginal.validator.hint);
 									jQuery(this).parent().addClass("vf__hint");
@@ -288,6 +288,10 @@ ValidForm.prototype.dynamicDuplication = function () {
 									jQuery(this).closest(".vf__hint").removeClass("vf__hint");
 								}
 							});
+							
+						jQuery(this)
+						    .trigger("focus.validform-hint")
+						    .trigger("blur.validform-hint");
 					}
 				});
 
