@@ -6,9 +6,10 @@
  *
  * This software is released under the GNU GPL v2 License <http://www.gnu.org/licenses/old-licenses/gpl-2.0.html>
  *
- * @author     Felix Langfeldt <felix@neverwoods.com>, Robin van Baalen <robin@neverwoods.com>
- * @license    http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU GPL v2.
- * @link       http://code.google.com/p/validformbuilder/
+ * @author     Felix Langfeldt <felix@neverwoods.com>
+ * @author     Robin van Baalen <robin@neverwoods.com>
+ * @license    https://github.com/neverwoods/validformbuilder/blob/master/LICENSE
+ * @link       https://github.com/neverwoods/validformbuilder
  ***************************/
 
 /**
@@ -187,14 +188,24 @@ ValidForm.prototype.dynamicDuplication = function () {
 	// Bind click event to duplicate button
 	jQuery(".vf__dynamic a").bind("click", function() {
 		var $anchor = jQuery(this);
+		var $dynamicDuplicationWrap = $anchor.closest("div.vf__dynamic"); 
 
 		//*** Call custom event if set.
-		jQuery("#" + this.id).trigger("VF_BeforeDynamicChange", [{ValidForm: __this, objAnchor: $anchor}]);
+		jQuery("#" + __this.id).trigger("VF_BeforeDynamicChange", [{
+		    ValidForm: __this,
+		    objAnchor: $anchor,
+		    objOriginal: $dynamicDuplicationWrap.prev()
+		}]);
+		
 		if (typeof __this.events.beforeDynamicChange == "function") {
 			__this.events.beforeDynamicChange(__this, $anchor);
 		}
 
-		var $dynamicDuplicationWrap = $anchor.closest("div.vf__dynamic"); 
+		//*** Stop if this flag is false
+		if (!__this.__continueExecution) {
+		    return;
+		}
+
 		if (!$dynamicDuplicationWrap.prev().hasClass("vf__disabled")) {
 			//*** Update dynamic field counter.
 			var $original 	= $dynamicDuplicationWrap.prev();
@@ -263,13 +274,13 @@ ValidForm.prototype.dynamicDuplication = function () {
 							.prev("label").attr("for", ids[index] + "_" + counter.val());
 						
 						jQuery(this)
-							.bind("focus", function() {
+							.bind("focus.validform-hint", function() {
 								if (jQuery(this).val() == objOriginal.validator.hint) {
 									jQuery(this).val("");
 									jQuery(this).closest(".vf__hint").removeClass("vf__hint");
 								}
 							})
-							.bind("blur", function() {
+							.bind("blur.validform-hint", function() {
                                 if (jQuery(this).val() === "") {
 									jQuery(this).val(objOriginal.validator.hint);
 									jQuery(this).parent().addClass("vf__hint");
@@ -277,6 +288,10 @@ ValidForm.prototype.dynamicDuplication = function () {
 									jQuery(this).closest(".vf__hint").removeClass("vf__hint");
 								}
 							});
+							
+						jQuery(this)
+						    .trigger("focus.validform-hint")
+						    .trigger("blur.validform-hint");
 					}
 				});
 
@@ -1731,7 +1746,7 @@ ValidFormFieldValidator.prototype.showAlert = function(strAlert) {
         objElement.closest("div.vf__optional, div.vf__required").addClass("vf__error").prepend("<p class=\"vf__error\">" + strAlert + "</p>");
     }
 
-    $("#" + __this.id).trigger("VF_ShowAlert", [{ValidForm: __this, errorMsg: strAlert}]);
+    $("#" + this.id).trigger("VF_ShowAlert", [{FormFieldValidator: this, errorMsg: strAlert}]);
 };
 
 /**
