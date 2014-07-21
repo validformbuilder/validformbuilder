@@ -1751,6 +1751,7 @@ class ValidForm extends ClassDynamic
      */
     public static function getStrippedClassName($classname)
     {
+        // Find the position of the last occurrence of \\ in $classname with strrpos
         $pos = strrpos($classname, '\\');
         if ($pos) {
             return substr($classname, $pos + 1);
