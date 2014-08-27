@@ -319,12 +319,13 @@ class ValidWizard extends ValidForm
      *
      * @see \ValidFormBuilder\ValidForm::valuesAsHtml()
      */
-    public function valuesAsHtml($hideEmpty = false)
+    public function valuesAsHtml($hideEmpty = false, $collection = null)
     {
         $strTable = "\t<table border=\"0\" cellspacing=\"0\" cellpadding=\"0\" class=\"validform\">\n";
         $strTableOutput = "";
+        $collection = (!is_null($collection)) ? $collection : $this->__elements;
 
-        foreach ($this->__elements as $objPage) {
+        foreach ($collection as $objPage) {
             if (get_class($objPage) === "ValidFormBuilder\\Page") {
                 // Passing 'true' will return the optional 'short header' if available.
                 $strHeader = $objPage->getShortHeader();
@@ -372,14 +373,17 @@ class ValidWizard extends ValidForm
      * See {@link \ValidFormBuilder\ValidForm::toJs()}
      *
      * @internal
-     * @param string $strCustomJs Optional custom javascript to execute when initialising the form code
-     * @param string $blnFromSession Obsolete
+     * @param string $strCustomJs Optional custom javascript code to be executed at the same
+     * time the form is initialized
+     * @param array $arrInitArguments Only use this when initializing a custom client-side object. This is a flat array
+     * of arguments being passed to the custom client-side object.
+     * @param string $blnRawJs If set to true, the generated javascript will not be wrapped in a <script> element. This
+     * is particulary useful when generating javascript to be returned to an AJAX response.
      * @return string Generated javascript
      */
-    protected function __toJs($strCustomJs = "", $blnFromSession = false)
+    protected function __toJs($strCustomJs = "", $arrInitArguments = array(), $blnRawJs = false)
     {
         // Add extra arguments to javascript initialization method.
-        $arrInitArguments = array();
         if ($this->__currentpage > 1) {
             $arrInitArguments["initialPage"] = $this->__currentpage;
         }
@@ -394,7 +398,7 @@ class ValidWizard extends ValidForm
             $strJs .= $strCustomJs;
         }
 
-        return parent::__toJs($strJs, $arrInitArguments);
+        return parent::__toJs($strJs, $arrInitArguments, $blnRawJs);
     }
 
     /**

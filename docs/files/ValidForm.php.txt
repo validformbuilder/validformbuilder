@@ -1664,8 +1664,8 @@ class ValidForm extends ClassDynamic
          * If that javascript class is not available / does not exist, continue initializing ValidForm as usual.
          */
         if ($strCalledClass !== "ValidForm") {
-            $strReturn .= "\tvar objForm = (typeof {$strCalledClass} !== \"undefined\") ? " .
-            $strReturn .= "new {$strCalledClass}({$strArguments}) : " .
+            $strReturn .= "\tvar objForm = (typeof {$strCalledClass} !== \"undefined\") ? ";
+            $strReturn .= "new {$strCalledClass}({$strArguments}) : ";
             $strReturn .= "new ValidForm(\"{$this->__name}\", \"{$this->__mainalert}\");\n";
         } else {
             $strReturn .= "\tvar objForm = new ValidForm(\"{$this->__name}\", \"{$this->__mainalert}\");\n";
