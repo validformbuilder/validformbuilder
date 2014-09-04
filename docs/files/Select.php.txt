@@ -214,7 +214,7 @@ class Select extends Element
         }
 
         foreach ($this->__options as $option) {
-            $strOutput .= $option->toHtml($this->__getValue($submitted, $intCount));
+            $strOutput .= $option->toHtmlInternal($this->__getValue($submitted, $intCount));
         }
 
         $strOutput .= "</select>\n";

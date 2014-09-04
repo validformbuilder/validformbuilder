@@ -167,7 +167,7 @@ class Group extends Element
         foreach ($this->__fields as $objField) {
             switch (get_class($objField)) {
                 case "ValidFormBuilder\\GroupField":
-                    $strOutput .= $objField->toHtml($this->__getValue($submitted, $intCount), $submitted, $intCount);
+                    $strOutput .= $objField->toHtmlInternal($this->__getValue($submitted, $intCount), $submitted, $intCount);
 
                     break;
             }
