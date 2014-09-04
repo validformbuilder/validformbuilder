@@ -82,6 +82,10 @@ ValidWizard.prototype.initialize = function () {
 				for (strPageId in this.pages) {
 					if (this.pages.hasOwnProperty(strPageId)) {
 						$("#" + key + "_" + this.pages[strPageId]).html(this.labels[key]);
+						
+						if (this.classes.hasOwnProperty(key)) {
+							$("#" + key + "_" + this.pages[strPageId]).addClass(this.classes[key]);
+						}
 					}
 				}
 			}

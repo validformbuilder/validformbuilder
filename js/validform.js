@@ -18,36 +18,39 @@
  * @param {String} strMainAlert         The main form alert
  */
 function ValidForm(strFormId, strMainAlert) {
-    this.id                     = strFormId;
-    this.elements               = {};
-    this.pages                  = [];
-    this.valid                  = false;
-    this.validator              = new ValidFormValidator(this.id);
-    this.validator.mainAlert    = strMainAlert;
-    this.events                 = [];
-    this.cachedEvents           = [];
-    this.conditions             = [];
-    this.customEvents           = [
-                                    "beforeSubmit",
-                                    "beforeNextPage",
-                                    "afterNextPage",
-                                    "beforePreviousPage",
-                                    "afterPreviousPage",
-                                    "beforeAddPreviousButton",
-                                    "afterAddPreviousButton",
-                                    "beforeShowPage",
-                                    "afterShowPage",
-                                    "beforeAddPageNavigation",
-                                    "afterAddPageNavigation",
-                                    "beforeDynamicChange",
-                                    "afterDynamicChange",
-                                    "afterValidate"
-                                ];
-    this.labels                 = {};
-    this.__continueExecution    = true;
+	if (strFormId !== undefined) {
+    	this.id                     = strFormId;
+	    this.elements               = {};
+    	this.pages                  = [];
+	    this.valid                  = false;
+	    this.validator              = new ValidFormValidator(this.id);
+	    this.validator.mainAlert    = strMainAlert;
+	    this.events                 = [];
+	    this.cachedEvents           = [];
+	    this.conditions             = [];
+	    this.customEvents           = [
+    	                                "beforeSubmit",
+        	                            "beforeNextPage",
+            	                        "afterNextPage",
+                	                    "beforePreviousPage",
+                    	                "afterPreviousPage",
+                        	            "beforeAddPreviousButton",
+                            	        "afterAddPreviousButton",
+                                	    "beforeShowPage",
+	                                    "afterShowPage",
+    	                                "beforeAddPageNavigation",
+        	                            "afterAddPageNavigation",
+            	                        "beforeDynamicChange",
+                	                    "afterDynamicChange",
+                    	                "afterValidate"
+                        	        ];
+	    this.labels                 = {};
+	    this.classes                = {};
+	    this.__continueExecution    = true;
 
-    // Initialize ValidForm class
-    this._init();
+    	// Initialize ValidForm class
+	    this._init();
+	}
 }
 
 /**
@@ -156,6 +159,14 @@ ValidForm.prototype.setLabel = function (key, value) {
         this.labels[key] = value;
     } else {
         throw new Error("Cannot set empty label in ValidForm.setLabel('" + key + "', '" + value + "')");
+    }
+};
+
+ValidForm.prototype.setClass = function (key, value) {
+    if (typeof value !== "undefined") {
+        this.classes[key] = value;
+    } else {
+        throw new Error("Cannot set empty class in ValidForm.setClass('" + key + "', '" + value + "')");
     }
 };
 

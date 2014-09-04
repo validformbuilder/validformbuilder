@@ -79,7 +79,7 @@ class GroupField extends Element
      * @internal
      * @see \ValidFormBuilder\Element::toHtml()
      */
-    public function toHtml($value = null, $submitted = false, $intCount = 0)
+    public function toHtmlInternal($value = null, $submitted = false, $intCount = 0)
     {
         $strChecked = "";
 

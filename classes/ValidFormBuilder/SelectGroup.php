@@ -61,7 +61,7 @@ class SelectGroup extends Base
      * @param string $value
      * @return string Generated HTML
      */
-    public function toHtml($value = null)
+    public function toHtmlInternal($value = null)
     {
         $strOutput = "<optgroup label=\"{$this->__label}\">\n";
         foreach ($this->__options as $option) {

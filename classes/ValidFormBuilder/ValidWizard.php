@@ -94,6 +94,20 @@ class ValidWizard extends ValidForm
     protected $__nextlabel;
 
     /**
+     * The previous button class
+     * @internal
+     * @var string
+     */
+    protected $__previousclass;
+
+    /**
+     * The next button class
+     * @internal
+     * @var string
+     */
+    protected $__nextclass;
+
+    /**
      * Flag if wizard has confirm page
      * @internal
      * @var boolean
@@ -114,6 +128,8 @@ class ValidWizard extends ValidForm
 
         $this->__nextlabel = (isset($meta["nextLabel"])) ? $meta["nextLabel"] : "Next &rarr;";
         $this->__previouslabel = (isset($meta["previousLabel"])) ? $meta["previousLabel"] : "&larr; Previous";
+        $this->__nextclass = (isset($meta["nextClass"])) ? $meta["nextClass"] : "";
+        $this->__previousclass = (isset($meta["previousClass"])) ? $meta["previousClass"] : "";
     }
 
     /**
@@ -393,6 +409,14 @@ class ValidWizard extends ValidForm
         $strJs = "";
         $strJs .= "objForm.setLabel('next', '" . $this->__nextlabel . "');\n\t";
         $strJs .= "objForm.setLabel('previous', '" . $this->__previouslabel . "');\n\t";
+
+        if (!empty($this->__nextclass)) {
+        	$strJs .= "objForm.setClass('next', '" . $this->__nextclass . "');\n\t";
+        }
+
+        if (!empty($this->__previousclass)) {
+        	$strJs .= "objForm.setClass('previous', '" . $this->__previousclass . "');\n\t";
+        }
 
         if (strlen($strCustomJs) > 0) {
             $strJs .= $strCustomJs;
