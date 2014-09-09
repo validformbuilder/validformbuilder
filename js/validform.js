@@ -19,9 +19,9 @@
  */
 function ValidForm(strFormId, strMainAlert) {
 	if (strFormId !== undefined) {
-    	this.id                     = strFormId;
+        this.id                     = strFormId;
 	    this.elements               = {};
-    	this.pages                  = [];
+        this.pages                  = [];
 	    this.valid                  = false;
 	    this.validator              = new ValidFormValidator(this.id);
 	    this.validator.mainAlert    = strMainAlert;
@@ -29,26 +29,26 @@ function ValidForm(strFormId, strMainAlert) {
 	    this.cachedEvents           = [];
 	    this.conditions             = [];
 	    this.customEvents           = [
-    	                                "beforeSubmit",
-        	                            "beforeNextPage",
-            	                        "afterNextPage",
-                	                    "beforePreviousPage",
-                    	                "afterPreviousPage",
-                        	            "beforeAddPreviousButton",
-                            	        "afterAddPreviousButton",
-                                	    "beforeShowPage",
+                                        "beforeSubmit",
+                                        "beforeNextPage",
+                                        "afterNextPage",
+                                        "beforePreviousPage",
+                                        "afterPreviousPage",
+                                        "beforeAddPreviousButton",
+                                        "afterAddPreviousButton",
+                                        "beforeShowPage",
 	                                    "afterShowPage",
-    	                                "beforeAddPageNavigation",
-        	                            "afterAddPageNavigation",
-            	                        "beforeDynamicChange",
-                	                    "afterDynamicChange",
-                    	                "afterValidate"
-                        	        ];
+                                        "beforeAddPageNavigation",
+                                        "afterAddPageNavigation",
+                                        "beforeDynamicChange",
+                                        "afterDynamicChange",
+                                        "afterValidate"
+                                    ];
 	    this.labels                 = {};
 	    this.classes                = {};
 	    this.__continueExecution    = true;
 
-    	// Initialize ValidForm class
+        // Initialize ValidForm class
 	    this._init();
 	}
 }
@@ -313,7 +313,7 @@ ValidForm.prototype.dynamicDuplication = function () {
                     } else {
                         //*** Normal fields (input, textarea) are easy.
                         $field
-                            .attr("value", objOriginalElement.getDefaultValue()) // = hint or empty
+                            .val(objOriginalElement.getDefaultValue()) // = hint or empty
                             .attr("name", fieldname + "_" + counter.val())
                             .attr("id", ids[index] + "_" + counter.val())
                             .prev("label").attr("for", ids[index] + "_" + counter.val());
@@ -328,7 +328,7 @@ ValidForm.prototype.dynamicDuplication = function () {
                                 }
                             })
                             .bind("blur.validform-hint", function() {
-                                if ($field.val() === "") {
+                                if (objOriginalElement.validator.hint && $field.val() === "") {
                                     $field.val(objOriginalElement.validator.hint);
                                     $field.parent().addClass("vf__hint");
                                 } else {
@@ -338,9 +338,8 @@ ValidForm.prototype.dynamicDuplication = function () {
                                 }
                             });
 
-                        $field
-                            .trigger("focus.validform-hint")
-                            .trigger("blur.validform-hint");
+                        $field.triggerHandler("focus.validform-hint");
+                        $field.triggerHandler("blur.validform-hint");
                     }
                 });
 
@@ -424,9 +423,9 @@ ValidForm.prototype.dynamicDuplication = function () {
             }
 
             //*** Call custom event if set.
-            jQuery("#" + __this.id).trigger("VF_AfterDynamicChange", [{ValidForm: __this, objAnchor: $anchor, objCopy: copy}]);
+            jQuery("#" + __this.id).trigger("VF_AfterDynamicChange", [{ValidForm: __this, objAnchor: $anchor, objCopy: copy, objOriginal: $original, count: counter.val()}]);
             if (typeof __this.events.afterDynamicChange == "function") {
-                __this.events.afterDynamicChange({ValidForm: __this, objAnchor: $anchor, objCopy: copy});
+                __this.events.afterDynamicChange({ValidForm: __this, objAnchor: $anchor, objCopy: copy, objOriginal: $original, count: counter.val()});
             }
         }
 
