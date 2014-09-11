@@ -224,7 +224,7 @@ class Select extends Element
         }
 
         if (! empty($this->__tip)) {
-            $strOutput .= "<small class=\"vf__tip\">{$this->__tip}</small>\n";
+            $strOutput .= "<small class=\"vf__tip\"{$this->__getTipMetaString()}>{$this->__tip}</small>\n";
         }
 
         $strOutput .= "</div>\n";
