@@ -81,13 +81,21 @@ class Base extends ClassDynamic
     protected $__labelmeta = array();
 
     /**
+     * Tip specific meta array
+     * @internal
+     * @var array
+     */
+    protected $__tipmeta = array();
+
+    /**
      * Predefiend magic meta prefixes
      * @internal
      * @var array
      */
     protected $__magicmeta = array(
         "label",
-        "field"
+        "field",
+        "tip"
     );
 
     /**
@@ -96,7 +104,8 @@ class Base extends ClassDynamic
      * @var array
      */
     protected $__magicreservedmeta = array(
-        "labelRange"
+        "labelRange",
+        "tip"
     );
 
     /**
@@ -138,6 +147,10 @@ class Base extends ClassDynamic
         "labelStyle",
         "labelClass",
         "labelRange",
+        "fieldStyle",
+        "fieldClass",
+        "tipStyle",
+        "tipClass",
         "valueRange",
         "dynamic",
         "dynamicLabel",
@@ -517,6 +530,18 @@ class Base extends ClassDynamic
     }
 
     /**
+     * Set tip specific meta data
+     * @param string $property Property name.
+     * @param mixed $value Property value.
+     * @param boolean $blnOverwrite Optionally use this boolean to force an overwrite of previous property value.
+     * @return mixed The newly set value
+     */
+    public function setTipMeta($property, $value, $blnOverwrite = false)
+    {
+        return $this->__setMeta("tip" . $property, $value, $blnOverwrite);
+    }
+
+    /**
      *
      * @return string Property value or empty string of none is set.
      */
@@ -794,6 +819,26 @@ class Base extends ClassDynamic
     }
 
     /**
+     * Convert tipmeta array to html attributes+values
+     * @internal
+     * @return string
+     */
+    protected function __getTipMetaString()
+    {
+        $strOutput = "";
+
+        if (is_array($this->__tipmeta)) {
+            foreach ($this->__tipmeta as $key => $value) {
+                if (! in_array($key, $this->__reservedmeta)) {
+                    $strOutput .= " {$key}=\"{$value}\"";
+                }
+            }
+        }
+
+        return $strOutput;
+    }
+
+    /**
      * Filter out special field or label specific meta tags from the main
      * meta array and add them to the designated meta arrays __fieldmeta or __labelmeta.
      * Example: `$meta["labelstyle"] = "width: 20px";` will become `$__fieldmeta["style"] = "width: 20px;"`
@@ -814,10 +859,15 @@ class Base extends ClassDynamic
                 $key = "label" . $key;
             }
 
-            $strMagicKey = strtolower(substr($key, 0, 5));
+            $intLength = 5;
+            $strMagicKey = strtolower(substr($key, 0, $intLength));
+            if (!in_array($strMagicKey, $this->__magicmeta)) {
+                $intLength = 3;
+                $strMagicKey = strtolower(substr($key, 0, $intLength));
+            }
             if (in_array($strMagicKey, $this->__magicmeta) && ! in_array($key, $this->__magicreservedmeta)) {
                 $strMethod = "set" . ucfirst($strMagicKey) . "Meta";
-                $this->$strMethod(strtolower(substr($key, - (strlen($key) - 5))), $value);
+                $this->$strMethod(strtolower(substr($key, - (strlen($key) - $intLength))), $value);
 
                 unset($this->__meta[$key]);
             }
@@ -836,8 +886,11 @@ class Base extends ClassDynamic
     {
         $internalMetaArray = &$this->__meta;
 
-        // *** Re-set internalMetaArray if property has magic key 'label' or 'field'
+        // *** Re-set internalMetaArray if property has magic key 'label', 'field' or 'tip'
         $strMagicKey = strtolower(substr($property, 0, 5));
+        if (!in_array($strMagicKey, $this->__magicmeta)) {
+            $strMagicKey = strtolower(substr($property, 0, 3));
+        }
         if (in_array($strMagicKey, $this->__magicmeta)) {
             switch ($strMagicKey) {
                 case "field":
@@ -847,6 +900,10 @@ class Base extends ClassDynamic
                 case "label":
                     $internalMetaArray = &$this->__labelmeta;
                     $property = strtolower(substr($property, - (strlen($property) - 5)));
+                    break;
+                case "tip":
+                    $internalMetaArray = &$this->__tipmeta;
+                    $property = strtolower(substr($property, - (strlen($property) - 3)));
                     break;
                 default:
             }
@@ -903,8 +960,11 @@ class Base extends ClassDynamic
     {
         $internalMetaArray = &$this->__meta;
 
-        // *** Re-set internalMetaArray if property has magic key 'label' or 'field'
+        // *** Re-set internalMetaArray if property has magic key 'label', 'field' or 'tip'
         $strMagicKey = strtolower(substr($property, 0, 5));
+        if (!in_array($strMagicKey, $this->__magicmeta)) {
+            $strMagicKey = strtolower(substr($property, 0, 3));
+        }
         if (in_array($strMagicKey, $this->__magicmeta)) {
             switch ($strMagicKey) {
                 case "field":
@@ -914,6 +974,10 @@ class Base extends ClassDynamic
                 case "label":
                     $internalMetaArray = &$this->__labelmeta;
                     $property = strtolower(substr($property, - (strlen($property) - 5)));
+                    break;
+                case "tip":
+                    $internalMetaArray = &$this->__tipmeta;
+                    $property = strtolower(substr($property, - (strlen($property) - 3)));
                     break;
                 default:
             }

@@ -110,7 +110,7 @@ class Checkbox extends Element
         $strOutput .= "<input type=\"checkbox\" name=\"{$this->__name}\" id=\"{$this->__id}\"{$this->__getFieldMetaString()}/>\n";
 
         if (! empty($this->__tip)) {
-            $strOutput .= "<small class=\"vf__tip\">{$this->__tip}</small>\n";
+            $strOutput .= "<small class=\"vf__tip\"{$this->__getTipMetaString()}>{$this->__tip}</small>\n";
         }
 
         $strOutput .= "</div>\n";

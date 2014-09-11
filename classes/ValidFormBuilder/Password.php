@@ -155,7 +155,7 @@ class Password extends Element
         $strOutput .= "<input type=\"password\" value=\"{$varValue}\" name=\"{$strName}\" id=\"{$strId}\"{$this->__getFieldMetaString()} />\n";
 
         if (! empty($this->__tip)) {
-            $strOutput .= "<small class=\"vf__tip\">{$this->__tip}</small>\n";
+            $strOutput .= "<small class=\"vf__tip\"{$this->__getTipMetaString()}>{$this->__tip}</small>\n";
         }
 
         $strOutput .= "</div>\n";
