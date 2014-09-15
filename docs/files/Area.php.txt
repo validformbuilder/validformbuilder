@@ -351,7 +351,7 @@ class Area extends Base
             $this->setMeta("class", "vf__clone");
         }
 
-        $strId = ($intCount == 0) ? " id=\"container_{$this->getId()}\"" : "";
+        $strId = ($intCount == 0) ? " id=\"{$this->getId()}\"" : "";
         $strOutput = "<fieldset{$this->__getMetaString()}{$strId}>\n";
 
         if ($this->__active) {
