@@ -132,7 +132,7 @@ class GroupField extends Element
 
         $strOutput = "<label for=\"{$strId}\"{$this->__getLabelMetaString()}>\n";
         $strOutput .= "<input type=\"{$type}\" value=\"{$this->__value}\" name=\"{$strName}\"
-                        id=\"{$strId}\"{$this->__getFieldMetaString()}/> {$this->__label}\n";
+                        id=\"{$strId}\"{$this->__getFieldMetaString()}/>{$this->__label}\n";
         $strOutput .= "</label>\n";
 
         return $strOutput;
