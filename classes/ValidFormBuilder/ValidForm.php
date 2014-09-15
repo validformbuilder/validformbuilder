@@ -1422,8 +1422,8 @@ class ValidForm extends ClassDynamic
 
             if (! empty($strLabel)) {
                 $strReturn = "<tr>";
-                $strReturn .= "<td colspan=\"3\" style=\"white-space:nowrap\" class=\"vf__area_header\">" .
-                $strReturn .= "<h3>{$strLabel}</h3>" .
+                $strReturn .= "<td colspan=\"3\" style=\"white-space:nowrap\" class=\"vf__area_header\">";
+                $strReturn .= "<h3>{$strLabel}</h3>";
                 $strReturn .= "</td>\n";
                 $strReturn .= "</tr>";
             }
@@ -1432,8 +1432,8 @@ class ValidForm extends ClassDynamic
         } else {
             if (! empty($this->__novaluesmessage) && $objField->isActive()) {
                 $strReturn = "<tr>";
-                $strReturn .= "<td colspan=\"3\" style=\"white-space:nowrap\" class=\"vf__area_header\">" .
-                $strReturn .= "<h3>{$strLabel}</h3>" .
+                $strReturn .= "<td colspan=\"3\" style=\"white-space:nowrap\" class=\"vf__area_header\">";
+                $strReturn .= "<h3>{$strLabel}</h3>";
                 $strReturn .= "</td>\n";
                 $strReturn .= "</tr>";
 
@@ -1485,13 +1485,13 @@ class ValidForm extends ClassDynamic
                     $strValue = htmlspecialchars($strValue, ENT_QUOTES);
 
                     $strReturn .= "<tr class=\"vf__field_value\">";
-                    $strReturn .= "<td valign=\"top\" " .
-                    $strReturn .= "style=\"white-space:nowrap; padding-right: 20px\" " .
-                    $strReturn .= "class=\"vf__field\">" .
-                    $strReturn .= $strLabel .
-                    $strReturn .= "</td>" .
-                    $strReturn .= "<td valign=\"top\" class=\"vf__value\">" .
-                    $strReturn .= "<strong>" . $strValue . "</strong>" .
+                    $strReturn .= "<td valign=\"top\"";
+                    $strReturn .= " style=\"white-space:nowrap; padding-right: 20px\"";
+                    $strReturn .= " class=\"vf__field\">";
+                    $strReturn .= $strLabel;
+                    $strReturn .= "</td>";
+                    $strReturn .= "<td valign=\"top\" class=\"vf__value\">";
+                    $strReturn .= "<strong>" . $strValue . "</strong>";
                     $strReturn .= "</td>\n";
                     $strReturn .= "</tr>";
                 }
@@ -1536,11 +1536,11 @@ class ValidForm extends ClassDynamic
                     $strValue = htmlspecialchars($strValue, ENT_QUOTES);
 
                     $strReturn .= "<tr class=\"vf__field_value\">";
-                    $strReturn .= "<td valign=\"top\" style=\"padding-right: 20px\" class=\"vf__field\">" .
-                    $strReturn .= $strLabel .
-                    $strReturn .= "</td>" .
-                    $strReturn .= "<td valign=\"top\" class=\"vf__value\">" .
-                    $strReturn .= "<strong>" . $strValue . "</strong>" .
+                    $strReturn .= "<td valign=\"top\" style=\"padding-right: 20px\" class=\"vf__field\">";
+                    $strReturn .= $strLabel;
+                    $strReturn .= "</td>";
+                    $strReturn .= "<td valign=\"top\" class=\"vf__value\">";
+                    $strReturn .= "<strong>" . $strValue . "</strong>";
                     $strReturn .= "</td>\n";
                     $strReturn .= "</tr>";
                 }
