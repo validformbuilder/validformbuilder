@@ -892,7 +892,7 @@ class ValidForm extends ClassDynamic
      *
      * @return string Generated HTML output
      */
-    public function toHtml($blnClientSide = true, $blnForceSubmitted = false, $strCustomJs = "")
+    public function toHtml($blnClientSide = true, $blnForceSubmitted = null, $strCustomJs = "")
     {
         $strOutput = "";
 
