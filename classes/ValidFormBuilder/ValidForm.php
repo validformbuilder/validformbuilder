@@ -925,9 +925,10 @@ class ValidForm extends ClassDynamic
         }
 
         $blnNavigation = false;
+        $blnForceSubmitted = (is_null($blnForceSubmitted)) ? $this->isSubmitted() : $blnForceSubmitted;
         $strOutput .= $this->fieldsToHtml($blnForceSubmitted, $blnNavigation);
 
-        if (! $blnNavigation) {
+        if (!$blnNavigation) {
             $strOutput .= "<div class=\"vf__navigation vf__cf\">\n";
             $strOutput .= "<input type=\"submit\" value=\"{$this->__submitlabel}\" class=\"vf__button\" />\n";
             $strOutput .= "</div>\n";
