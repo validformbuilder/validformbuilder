@@ -1450,7 +1450,11 @@ ValidFormElement.prototype.setEnabled = function (blnValue) {
     var $element = $("[name='" + this.name + "']");
     var $parent = $element.closest("div.vf__optional, div.vf__required, div.vf__multifielditem");
 
-    var $parent = $element.parent();
+    /**
+     * FIXME: Next line is disabled because it will break on comparisons where a checkbox (boolean) is the subject.
+     * Tested on multifields and normal fields and works good without it. Why was it introduced in revision d309314?
+     */
+    //var $parent = $element.parent();
     if ($parent.hasClass("vf__multifielditem")) {
         // Multifield item
         $parent = $parent.parent();
