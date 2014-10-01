@@ -109,101 +109,121 @@ class ValidForm extends ClassDynamic
      * @var number
      */
     const VFORM_STRING = 1;
+
     /**
      * Textarea element type
      * @var number
      */
     const VFORM_TEXT = 2;
+
     /**
      * Input type[text] with numeric validation
      * @var number
      */
     const VFORM_NUMERIC = 3;
+
     /**
      * Input type[text] with integer validation
      * @var number
      */
     const VFORM_INTEGER = 4;
+
     /**
      * Input type[text] with single word validation
      * @var number
      */
     const VFORM_WORD = 5;
+
     /**
      * Input type[text] with email validation
      * @var number
      */
     const VFORM_EMAIL = 6;
+
     /**
      * Input type[password]
      * @var number
      */
     const VFORM_PASSWORD = 7;
+
     /**
      * Input type[text] with basic URL validation
      * @var number
      */
     const VFORM_SIMPLEURL = 8;
+
     /**
      * Input type[file]
      * @var number
      */
     const VFORM_FILE = 9;
+
     /**
      * Input type[radio]
      * @var number
      */
     const VFORM_BOOLEAN = 10;
+
     /**
      * Group element. Each added element is an input[type=radio]
      * @var number
      */
     const VFORM_RADIO_LIST = 12;
+
     /**
      * Group element. Each added element is an input[type=checkbox]
      * @var number
      */
     const VFORM_CHECK_LIST = 13;
+
     /**
      * Group element. Each added element is an option element
      * @var number
      */
     const VFORM_SELECT_LIST = 14;
+
     /**
      * Not an element. This creates a paragraph in between form fields.
      * @var number
      */
     const VFORM_PARAGRAPH = 15;
+
     /**
      * Input element
      * @var number
      */
     const VFORM_CURRENCY = 16;
+
     /**
      * Input type[text] with European date validation (dd/mm/yyyy)
      * @var number
      */
     const VFORM_DATE = 17;
+
     /**
      * Input type[text] with custom regular expression validation
      * @var number
      */
     const VFORM_CUSTOM = 18;
+
     /**
      * Textarea with custom regular expression validation
      * @var number
      */
     const VFORM_CUSTOM_TEXT = 19;
+
     /**
      * Textarea with basic input validation + HTML tags allowed
      * @var number
      */
     const VFORM_HTML = 20;
+
     /**
      * Input type[text] with url validation
      * @var number
      */
     const VFORM_URL = 21;
+
     /**
      * Input type[hidden]
      * @var number
@@ -215,56 +235,67 @@ class ValidForm extends ClassDynamic
      * @var string
      */
     const VFORM_COMPARISON_EQUAL = "equal";
+
     /**
      * Check if this value is **not** equal (case insensitive)
      * @var string
      */
     const VFORM_COMPARISON_NOT_EQUAL = "notequal";
+
     /**
      * Check if this value is empty
      * @var stringq
      */
     const VFORM_COMPARISON_EMPTY = "empty";
+
     /**
      * Check if this value is **not** empty
      * @var string
      */
     const VFORM_COMPARISON_NOT_EMPTY = "notempty";
+
     /**
      * Check if this value is less than
      * @var string
      */
     const VFORM_COMPARISON_LESS_THAN = "lessthan";
+
     /**
      * Check if this value is greater than
      * @var string
      */
     const VFORM_COMPARISON_GREATER_THAN = "greaterthan";
+
     /**
      * Check if this value is less than or equal
      * @var string
      */
     const VFORM_COMPARISON_LESS_THAN_OR_EQUAL = "lessthanorequal";
+
     /**
      * Check if this value is greater than or equal
      * @var string
      */
     const VFORM_COMPARISON_GREATER_THAN_OR_EQUAL = "greaterthanorequal";
+
     /**
      * Check if the value contains this string (case insensitive)
      * @var string
      */
     const VFORM_COMPARISON_CONTAINS = "contains";
+
     /**
      * Check if the value **starts** with this string
      * @var string
      */
     const VFORM_COMPARISON_STARTS_WITH = "startswith";
+
     /**
      * Check if the value **ends** with this string
      * @var string
      */
     const VFORM_COMPARISON_ENDS_WITH = "endswith";
+
     /**
      * Check if the value matches your own custom regular expression
      * @var string
@@ -278,6 +309,7 @@ class ValidForm extends ClassDynamic
      * @var string
      */
     const VFORM_MATCH_ALL = "all";
+
     /**
      * ValidForm Condition match
      *
@@ -292,54 +324,63 @@ class ValidForm extends ClassDynamic
      * @var string
      */
     protected $__description;
+
     /**
      * Form's custom meta like style, classes etc.
      * @internal
      * @var array
      */
     protected $__meta;
+
     /**
      * Default values array
      * @internal
      * @var array
      */
     protected $__defaults = array();
+
     /**
      * The HTML <form>-tag's 'action' attribute value
      * @internal
      * @var string
      */
     protected $__action;
+
     /**
      * The submit button's label
      * @internal
      * @var string
      */
     protected $__submitlabel;
+
     /**
      * An array of custom javascript events to include in javascript parsing
      * @internal
      * @var array
      */
     protected $__jsevents = array();
+
     /**
      * The main elements Collection
      * @internal
      * @var \ValidFormBuilder\Collection
      */
     protected $__elements;
+
     /**
      * The form's name
      * @internal
      * @var string
      */
     protected $__name;
+
     /**
      * The main alert to be shown when any alert has happened after trying to submit.
      * @internal
      * @var string
      */
     protected $__mainalert;
+
     /**
      * Define the field required style. Note: **This value will be passed to `sprintf`** so be sure to throw in an %s.
      *
@@ -353,6 +394,7 @@ class ValidForm extends ClassDynamic
      * @var string
      */
     protected $__requiredstyle;
+
     /**
      * This message is shown in `valuesAsHtml()` output when for
      * example an area or fieldset don't contain any submitted values.
@@ -360,12 +402,23 @@ class ValidForm extends ClassDynamic
      * @var string
      */
     protected $__novaluesmessage;
+
+    /**
+     * Wether or not server side validation errors should be displayed. This property is used together with
+     * the forceSubmitted parameter in the toHtml method to determine if validation errors should be shown for
+     * fields that have values injected using forceSubmitted.
+     *
+     * @var boolean
+     */
+    protected $__displayerrors = false;
+
     /**
      * The collection of cached fields.
      * @internal
      * @var \ValidFormBuilder\Collection
      */
     private $__cachedfields = null;
+
     /**
      * A uniquely generated string to identify the form with.
      * @internal
@@ -988,8 +1041,9 @@ class ValidForm extends ClassDynamic
             }
         }
 
+        $blnDisplayErrors = ($this->isSubmitted()) ? true : $this->getDisplayErrors();
         foreach ($this->__elements as $element) {
-            $strReturn .= $element->toHtml($this->isSubmitted($blnForceSubmitted), false, true, $blnForceSubmitted);
+            $strReturn .= $element->toHtml($this->isSubmitted($blnForceSubmitted), false, true, $blnDisplayErrors);
 
             if (get_class($element) == "ValidFormBuilder\\Navigation") {
                 $blnNavigation = true;
