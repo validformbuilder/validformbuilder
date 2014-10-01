@@ -133,24 +133,6 @@ class ValidWizard extends ValidForm
     }
 
     /**
-     * Generate Wizard HTML output
-     *
-     * See {@link \ValidFormBuilder\ValidForm::toHtml()}
-     *
-     * @return string Generated HTML
-     */
-    public function toHtml($blnClientSide = true, $blnForceSubmitted = false, $strJs = "")
-    {
-        $strReturn = null;
-
-        if (is_null($strReturn)) {
-            $strReturn = parent::toHtml($blnClientSide, $blnForceSubmitted);
-        }
-
-        return $strReturn;
-    }
-
-    /**
      * Check if the wizard is submitted
      *
      * See {@link \ValidFormBuilder\ValidForm::isSubmitted()}
