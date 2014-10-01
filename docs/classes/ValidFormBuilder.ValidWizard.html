@@ -114,7 +114,7 @@
                         <ul class="dropdown-menu">
                             <li>
                                 <a href="../reports/errors.html">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <i class="icon-list-alt"></i>&#160;Errors <span class="label label-info pull-right">53</span>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <i class="icon-list-alt"></i>&#160;Errors <span class="label label-info pull-right">50</span>
                                 </a>
                             </li>
                             <li>
@@ -144,19 +144,19 @@
                                 <div class="accordion" style="margin-bottom: 0">
         <div class="accordion-group">
             <div class="accordion-heading">
-                                    <a class="accordion-toggle " data-toggle="collapse" data-target="#namespace-127740579"></a>
+                                    <a class="accordion-toggle " data-toggle="collapse" data-target="#namespace-1675301264"></a>
                                 <a href="../namespaces/default.html" style="margin-left: 30px; padding-left: 0">\</a>
             </div>
-            <div id="namespace-127740579" class="accordion-body collapse in">
+            <div id="namespace-1675301264" class="accordion-body collapse in">
                 <div class="accordion-inner">
 
                                                     <div class="accordion" style="margin-bottom: 0">
         <div class="accordion-group">
             <div class="accordion-heading">
-                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-444803068"></a>
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-41446905"></a>
                                 <a href="../namespaces/ValidFormBuilder.html" style="margin-left: 30px; padding-left: 0">ValidFormBuilder</a>
             </div>
-            <div id="namespace-444803068" class="accordion-body collapse ">
+            <div id="namespace-41446905" class="accordion-body collapse ">
                 <div class="accordion-inner">
 
                     
@@ -260,7 +260,7 @@ $objForm = new ValidWizard(
                                                                     <a href="../classes/ValidFormBuilder.ValidForm.html#method_addArea" class="">addArea()</a><br />
                                                                     <a href="../classes/ValidFormBuilder.ValidWizard.html#method_addMultiField" class="">addMultiField()</a><br />
                                                                     <a href="../classes/ValidFormBuilder.ValidForm.html#method_addJSEvent" class="">addJSEvent()</a><br />
-                                                                    <a href="../classes/ValidFormBuilder.ValidWizard.html#method_toHtml" class="">toHtml()</a><br />
+                                                                    <a href="../classes/ValidFormBuilder.ValidForm.html#method_toHtml" class="">toHtml()</a><br />
                                                                     <a href="../classes/ValidFormBuilder.ValidForm.html#method_fieldsToHtml" class="">fieldsToHtml()</a><br />
                                                                     <a href="../classes/ValidFormBuilder.ValidForm.html#method_toJs" class="">toJs()</a><br />
                                                                     <a href="../classes/ValidFormBuilder.ValidForm.html#method_serialize" class="">serialize()</a><br />
@@ -1943,40 +1943,43 @@ or you can register the callback function on a jQuery bindable event (e.g. jQuer
             <article class="method">
                 <h3 class="public ">toHtml()</h3>
                 <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
-                <pre class="signature" style="margin-right: 54px;">toHtml(  <span class="argument">$blnClientSide = true</span>,   <span class="argument">$blnForceSubmitted = false</span>,   <span class="argument">$strJs = &quot;&quot;</span>) : string</pre>
-                <p><em>Generate Wizard HTML output</em></p>
-                <p>See <a href="/classes/ValidFormBuilder.ValidForm.html#method_toHtml">\ValidFormBuilder\ValidForm::toHtml()</a></p>
+                <pre class="signature" style="margin-right: 54px;">toHtml(string  <span class="argument">$blnClientSide = true</span>, string  <span class="argument">$blnForceSubmitted = null</span>, string  <span class="argument">$strCustomJs = &quot;&quot;</span>) : string</pre>
+                <p><em>Generate HTML output - build form</em></p>
+                
 
                                     <h4>Parameters</h4>
                     <table class="table table-condensed table-hover">
                                                     <tr>
-                                <td></td>
+                                <td>string</td>
                                 <td>$blnClientSide </td>
-                                <td></td>
+                                <td><p>Render javascript code or not, defaults to true</p></td>
                             </tr>
                                                     <tr>
-                                <td></td>
+                                <td>string</td>
                                 <td>$blnForceSubmitted </td>
-                                <td></td>
+                                <td><p>This forces the form rendering as if the fields are submitted</p></td>
                             </tr>
                                                     <tr>
-                                <td></td>
-                                <td>$strJs </td>
-                                <td></td>
+                                <td>string</td>
+                                <td>$strCustomJs </td>
+                                <td><p>Inject custom javascript to be executed while
+initializing ValidForm Builder client-side.</p></td>
                             </tr>
                                             </table>
                 
                 
                                     <h4>Returns</h4>
                     string
-                                            &mdash; <p>Generated HTML</p>
+                                            &mdash; <p>Generated HTML output</p>
                                     				
                             </article>
         </div>
         <aside class="span4 detailsbar">
             <h1><i class="icon-arrow-down"></i></h1>
                                                             <dl>
-                                                                            </dl>
+                                                    <dt>Inherited from</dt>
+                    <dd><a href="../classes/ValidFormBuilder.ValidForm.html"><div class="path-wrapper">\ValidFormBuilder\ValidForm</div></a></dd>
+                                                            </dl>
             <h2>Tags</h2>
             <table class="table table-condensed">
                                     <tr><td colspan="2"><em>None found</em></td></tr>
@@ -3906,7 +3909,7 @@ the value of <code>$__novaluesmessage</code>.</p>
                 <section class="span10 offset1">
                     <hr />
                     Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor </a> and authored
-                    on September 25th, 2014 at 15:58.
+                    on October 1st, 2014 at 13:26.
                 </section>
             </section>
         </section>
