@@ -135,7 +135,10 @@ class Fieldset extends Base
         // Call this right before __getMetaString();
         $this->setConditionalMeta();
 
-        $strOutput = "<fieldset{$this->__getMetaString()} id=\"{$this->getName()}\">\n";
+        //*** Set the "id" if not yet set.
+        $this->__setMeta("id", $this->getName(), false);
+
+        $strOutput = "<fieldset{$this->__getMetaString()}>\n";
         if (! empty($this->__header)) {
             $strOutput .= "<legend><span>{$this->__header}</span></legend>\n";
         }
