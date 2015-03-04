@@ -1650,7 +1650,7 @@ class ValidForm extends ClassDynamic
     }
 
     /**
-     * Read parameters from the `$_REQUEST` array with an optional fallback value
+     * Read parameters from the `$_REQUEST` array and body string with an optional fallback value
      *
      * @param string $param The parameter to read
      * @param string $replaceEmpty Optional replace value when parameter is not available or empty
@@ -1660,9 +1660,51 @@ class ValidForm extends ClassDynamic
     {
         $strReturn = (isset($_REQUEST[$param])) ? $_REQUEST[$param] : "";
 
-        if (empty($strReturn) && ! is_numeric($strReturn) && $strReturn !== 0) {
-            $strReturn = $replaceEmpty;
+        if (empty($strReturn) && !is_numeric($strReturn) && $strReturn !== 0) {
+            //*** Try PUT or DELETE.
+            $strReturn = static::getHttpBodyValue($param, "");
+
+            if (empty($strReturn) && !is_numeric($strReturn) && $strReturn !== 0) {
+                //*** Return replace value.
+                $strReturn = $replaceEmpty;
+            }
         }
+
+        return $strReturn;
+    }
+
+    /**
+     * Read parameters from the `$_REQUEST` array and body string and determine if it is "set".
+     *
+     * @param string $param The parameter to read
+     * @return boolean
+     */
+    public static function getIsSet($param)
+    {
+        $blnReturn = (isset($_REQUEST[$param]));
+
+        if (!$blnReturn) {
+            //*** Try PUT or DELETE.
+            $strPutValue = static::getHttpBodyValue($param);
+
+            $blnReturn = (!is_null($strPutValue));
+        }
+
+        return $blnReturn;
+    }
+
+    /**
+     * Get the value of a form field from the raw HTTP body. This is used for PUT and DELETE HTTP methods.
+     *
+     * @param string $param The parameter to read
+     * @param string $varReplaceNotSet Optional replace value when parameter is not set in the body
+     * @return Ambigous <string, array>
+     */
+    public static function getHttpBodyValue($param, $varReplaceNotSet = null)
+    {
+        parse_str(file_get_contents('php://input'), $arrPostVars);
+
+        $strReturn = (isset($arrPostVars[$param])) ? $arrPostVars[$param] : $varReplaceNotSet;
 
         return $strReturn;
     }

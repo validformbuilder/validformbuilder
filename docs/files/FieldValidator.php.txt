@@ -280,15 +280,17 @@ class FieldValidator extends ClassDynamic
                 }
 
                 // Overwrite cached value with value from REQUEST array if available
-                if (isset($_REQUEST[$strFieldName])) {
-                    if (is_array($_REQUEST[$strFieldName])) {
+                if (ValidForm::getIsSet($strFieldName)) {
+                    $varValue = ValidForm::get($strFieldName);
+
+                    if (is_array($varValue)) {
                         $varReturn = [];
 
-                        foreach ($_REQUEST[$strFieldName] as $key => $value) {
+                        foreach ($varValue as $key => $value) {
                             $varReturn[$key] = $value; // NEVER return unsanitized output
                         }
                     } else {
-                        $varReturn = $_REQUEST[$strFieldName]; // NEVER return unsanitized output
+                        $varReturn = $varValue; // NEVER return unsanitized output
                     }
                 } else {
                     $varReturn = $varValidValue;
