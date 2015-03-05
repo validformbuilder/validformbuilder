@@ -961,6 +961,8 @@ class ValidForm extends ClassDynamic
             }
         }
 
+        $blnForceSubmitted = (is_null($blnForceSubmitted)) ? $this->isSubmitted() : $blnForceSubmitted;
+
         $strOutput .= "<form " .
             "id=\"{$this->__name}\" " .
             "method=\"post\" " .
@@ -969,16 +971,15 @@ class ValidForm extends ClassDynamic
             "class=\"{$strClass}\"{$this->__metaToData()}>\n";
 
         // *** Main error.
-        if ($this->isSubmitted() && ! empty($this->__mainalert)) {
+        if ($blnForceSubmitted && !empty($this->__mainalert)) {
             $strOutput .= "<div class=\"vf__main_error\"><p>{$this->__mainalert}</p></div>\n";
         }
 
-        if (! empty($this->__description)) {
+        if (!empty($this->__description)) {
             $strOutput .= "<div class=\"vf__description\"><p>{$this->__description}</p></div>\n";
         }
 
         $blnNavigation = false;
-        $blnForceSubmitted = (is_null($blnForceSubmitted)) ? $this->isSubmitted() : $blnForceSubmitted;
         $strOutput .= $this->fieldsToHtml($blnForceSubmitted, $blnNavigation);
 
         if (!$blnNavigation) {
