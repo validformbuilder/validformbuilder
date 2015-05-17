@@ -65,7 +65,7 @@ class SelectGroup extends Base
     {
         $strOutput = "<optgroup label=\"{$this->__label}\">\n";
         foreach ($this->__options as $option) {
-            $strOutput .= $option->toHtml($value);
+            $strOutput .= $option->toHtmlInternal($value);
         }
         $strOutput .= "</optgroup>\n";
 
@@ -80,9 +80,9 @@ class SelectGroup extends Base
      * @param boolean $selected Set this option as selected by default
      * @return \ValidFormBuilder\SelectOption
      */
-    public function addField($label, $value, $selected = false)
+    public function addField($label, $value, $selected = false, $meta = array())
     {
-        $objOption = new SelectOption($label, $value, $selected);
+        $objOption = new SelectOption($label, $value, $selected, $meta);
         $objOption->setMeta("parent", $this, true);
 
         $this->__options->addObject($objOption);
