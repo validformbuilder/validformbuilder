@@ -21,6 +21,7 @@
 
 namespace ValidFormBuilder;
 
+use Volnix\CSRF\CSRF;
 /**
  * ValidForm Builder main class - all the magic starts here.
  *
@@ -81,6 +82,7 @@ namespace ValidFormBuilder;
  * @method array getDefaults() getDefaults() Returns the value of `$__defaults`
  * @method string getAction() getAction() Returns the value of `$__action`
  * @method void setAction() setAction(string $strFormAction) Overwrites the value of `$__action`
+ * @method void setUseCsrfProtection() setUseCsrfProtection(boolean $value) Overwrites the value of `$__usecsrfprotection`
  * @method string getSubmitLabel() getSubmitLabel() Returns the value of `$__submitlabel`
  * @method void setSubmitLabel() setSubmitLabel(string $strSubmitLabel) Overwrites the value of `$__submitlabel`
  * @method array getJsEvents() getJsEvents() Returns the value of `$__jsevents`
@@ -345,6 +347,13 @@ class ValidForm extends ClassDynamic
      * @var string
      */
     protected $__action;
+
+    /**
+     * Indication wether to protect from CSRF attacks or not.
+     * @internal
+     * @var boolean
+     */
+    protected $__usecsrfprotection = true;
 
     /**
      * The submit button's label
@@ -989,6 +998,12 @@ class ValidForm extends ClassDynamic
         }
 
         $strOutput .= "<input type=\"hidden\" name=\"vf__dispatch\" value=\"{$this->__name}\" />\n";
+
+        if ($this->__usecsrfprotection) {
+            $strOutput .= "<input type=\"hidden\" name=\"" . CSRF::TOKEN_NAME
+                . "\" value=\"" . CSRF::getToken() . "\" />\n";
+        }
+
         $strOutput .= "</form>";
 
         return $strOutput;
@@ -1107,7 +1122,11 @@ class ValidForm extends ClassDynamic
     public function isSubmitted($blnForce = false)
     {
         if (ValidForm::get("vf__dispatch") == $this->__name || $blnForce) {
-            return true;
+            if ($this->__usecsrfprotection) {
+                return CSRF::validate($_POST);
+            } else {
+                return true;
+            }
         } else {
             return false;
         }
