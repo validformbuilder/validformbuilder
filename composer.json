@@ -16,7 +16,8 @@
         }
     ],
     "require": {
-        "php": ">=5.4.0"
+        "php": ">=5.4.0",
+        "volnix/csrf": "~1.0"
     },
     "autoload": {
         "psr-0": {"ValidFormBuilder": "classes/"}
