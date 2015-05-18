@@ -1122,7 +1122,7 @@ class ValidForm extends ClassDynamic
     public function isSubmitted($blnForce = false)
     {
         if (ValidForm::get("vf__dispatch") == $this->__name || $blnForce) {
-            if ($this->__usecsrfprotection) {
+            if ($this->__usecsrfprotection && !$blnForce) {
                 return CSRF::validate($_POST);
             } else {
                 return true;
