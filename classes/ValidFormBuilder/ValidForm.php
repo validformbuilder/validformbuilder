@@ -287,6 +287,12 @@ class ValidForm extends ClassDynamic
     const VFORM_COMPARISON_CONTAINS = "contains";
 
     /**
+     * Check if the value does not contain this string (case insensitive)
+     * @var string
+     */
+    const VFORM_COMPARISON_DOES_NOT_CONTAIN = "doesnotcontain";
+
+    /**
      * Check if the value **starts** with this string
      * @var string
      */
