@@ -140,11 +140,31 @@ class File extends Element
         $intMaxFileSize = $this->convertToBytes(ini_get("upload_max_filesize"));
         $strOutput .= "<input type=\"hidden\" name=\"MAX_FILE_SIZE\" value=\"{$intMaxFileSize}\" />";
 
+        $arrValues = [];
         $strValue = $this->__getValue($submitted, $intCount);
-        $strValue = htmlspecialchars($strValue, ENT_QUOTES);
-
-        $strOutput .= "<input type=\"file\" value=\"{$strValue}\" name=\"{$strName}[]\" id=\"{$strId}\"{$this->__getFieldMetaString()} />\n";
-
+        if (!is_array($strValue)) {
+            $strValue = htmlspecialchars($strValue, ENT_QUOTES);
+            if (!empty($strValue)) {
+                $arrValues = [$strValue];
+            }
+        } else {
+            foreach ($strValue as $value) {
+                $value = htmlspecialchars($value, ENT_QUOTES);
+                $arrValues[] = $value;
+            }
+        }
+        
+        //*** Render the file input. We don't set a value for it.
+        $strOutput .= "<input type=\"file\" name=\"{$strName}[]\" id=\"{$strId}\"{$this->__getFieldMetaString()} />\n";
+        
+        //*** Render sanitized values as hidden inputs.
+        $intCount = 1;
+        foreach ($arrValues as $strValue) {
+            $strOutput .= "<input type=\"hidden\" name=\"{$strName}[]\" id=\"{$strId}-{$intCount}\" value=\"{$strValue}\" />\n";
+        
+            $intCount++;
+        }
+        
         if (! empty($this->__tip)) {
             $strOutput .= "<small class=\"vf__tip\"{$this->__getTipMetaString()}>{$this->__tip}</small>\n";
         }
