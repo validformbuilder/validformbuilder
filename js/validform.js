@@ -978,6 +978,11 @@ ValidFormComparison.prototype.check = function () {
                 blnReturn = true;
             }
             break;
+        case "doesnotcontain":
+            if (strValue.toString().toLowerCase().indexOf(self.value.toString().toLowerCase()) === -1) {
+                blnReturn = true;
+            }
+            break;
         case "startswith":
             if (strValue.indexOf(self.value) === 0) {
                 blnReturn = true;
