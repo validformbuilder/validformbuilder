@@ -112,9 +112,11 @@ ValidForm.prototype.addCondition = function (objCondition) {
  * This enables us to push validation errors from ajax return objects.
  *
  * @param  {object} objFields The fields object which contains fieldname-error pairs
+ * @param  {boolean} silent Silent validation flag should be explicitly set on showAlerts
  */
-ValidForm.prototype.showAlerts = function (objFields) {
+ValidForm.prototype.showAlerts = function (objFields, silent) {
     var __this = this;
+    silent = silent || false;
 
     //*** Remove open alerts first.
     __this.removeAlerts();
@@ -130,6 +132,7 @@ ValidForm.prototype.showAlerts = function (objFields) {
 
                         if (objField !== null) {
                             // Field found in current form
+                            objField.validator.setSilentValidation(silent);
                             objField.validator.showAlert(objFieldError[fieldName]);
                         }
                     }
