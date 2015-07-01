@@ -22,6 +22,7 @@
 namespace ValidFormBuilder;
 
 use Volnix\CSRF\CSRF;
+
 /**
  * ValidForm Builder main class - all the magic starts here.
  *
