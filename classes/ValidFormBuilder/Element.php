@@ -100,6 +100,12 @@ class Element extends Base
      * @var Validator
      */
     protected $__validator;
+    /**
+     * Sanitize actions
+     * @internal
+     * @var array
+     */
+    protected $__sanitize;
 
     /**
      * Create new element
@@ -133,6 +139,8 @@ class Element extends Base
         $this->__dynamic = $this->getMeta("dynamic", $this->__dynamic);
         $this->__dynamicLabel = $this->getMeta("dynamicLabel", $this->__dynamicLabel);
         $this->__dynamiccounter = (! is_null($this->getMeta("dynamicCounter", null))) ? true : $this->__dynamiccounter;
+
+        $this->__sanitize = $this->getMeta("sanitize", $this->__sanitize);
 
         // $this->__validator = new FieldValidator($name, $type, $validationRules, $errorHandlers, $this->__hint);
         $this->__validator = new FieldValidator($this, $validationRules, $errorHandlers);
@@ -402,6 +410,37 @@ class Element extends Base
             $varValue = $objValidator->getValidValue($intDynamicPosition);
         } else {
             $varValue = $this->__validator->getValidValue();
+        }
+
+        //*** Sanitize the value before returning.
+        $varValue = $this->sanitize($varValue);
+
+        return $varValue;
+    }
+
+    /**
+     * Sanitize a value according to the order of actions in __sanitize.
+     *
+     * @param mixed $varValue
+     */
+    protected function sanitize($varValue)
+    {
+        if (is_array($this->__sanitize)) {
+            foreach ($this->__sanitize as $value) {
+                try {
+                    if (is_string($value)) {
+                        switch ($value) {
+                            case "trim":
+                                $varValue = trim($varValue);
+                                break;
+                        }
+                    } else if (is_callable($value)) {
+                        $varValue = $value($varValue);
+                    }
+                } catch (\Exception $ex) {
+                    //*** Sanitisation failed. Continue silently.
+                }
+            }
         }
 
         return $varValue;
