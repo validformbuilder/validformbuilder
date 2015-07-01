@@ -22,6 +22,7 @@
 namespace ValidFormBuilder;
 
 use Volnix\CSRF\CSRF;
+
 /**
  * ValidForm Builder main class - all the magic starts here.
  *
@@ -285,6 +286,12 @@ class ValidForm extends ClassDynamic
      * @var string
      */
     const VFORM_COMPARISON_CONTAINS = "contains";
+
+    /**
+     * Check if the value does not contain this string (case insensitive)
+     * @var string
+     */
+    const VFORM_COMPARISON_DOES_NOT_CONTAIN = "doesnotcontain";
 
     /**
      * Check if the value **starts** with this string

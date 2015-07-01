@@ -155,7 +155,8 @@ class Base extends ClassDynamic
         "dynamic",
         "dynamicLabel",
         "matchWith",
-        "uniqueId"
+        "uniqueId",
+        "sanitize"
     );
 
     /**

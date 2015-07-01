@@ -270,7 +270,7 @@ class FieldValidator extends ClassDynamic
         } else {
             $strFieldName = ($intDynamicPosition > 0) ? $this->__fieldname . "_" . $intDynamicPosition : $this->__fieldname;
 
-            if ($this->__type !== ValidForm::VFORM_FILE) {
+            //if ($this->__type !== ValidForm::VFORM_FILE) {
                 // Default value
                 $varValidValue = $this->__field->getDefault();
 
@@ -295,7 +295,7 @@ class FieldValidator extends ClassDynamic
                 } else {
                     $varReturn = $varValidValue;
                 }
-            }
+            //}
             // *** Not ready for implementation yet.
             // else {
             // if (isset($_FILES[$strFieldName]) && isset($_FILES[$strFieldName])) {
