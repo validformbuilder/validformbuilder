@@ -1881,6 +1881,6 @@ class ValidForm extends ClassDynamic
             return substr($classname, $pos + 1);
         }
 
-        return $pos;
+        return $classname;
     }
 }
