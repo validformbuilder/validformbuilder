@@ -530,14 +530,14 @@ class ValidForm extends ClassDynamic
      * Enter the amount:   $ _____
      * ```
      *
-     * In this example, we used String to inject the dollar sign before our input field.
+     * In this example, we used StaticText to inject the dollar sign before our input field.
      *
      * @param string $html The string or HTML code to inject
-     * @return \ValidFormBuilder\String
+     * @return \ValidFormBuilder\StaticText
      */
     public function addHtml($html)
     {
-        $objString = new String($html);
+        $objString = new StaticText($html);
         $this->__elements->addObject($objString);
 
         return $objString;

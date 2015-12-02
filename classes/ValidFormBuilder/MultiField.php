@@ -204,11 +204,11 @@ class MultiField extends Base
      *
      * @param string $strText The text to add (can be HTML as well)
      * @param array $meta The meta array
-     * @return \ValidFormBuilder\String
+     * @return \ValidFormBuilder\StaticText
      */
     public function addText($strText, $meta = array())
     {
-        $objString = new String($strText, $meta);
+        $objString = new StaticText($strText, $meta);
         $objString->setMeta("parent", $this, true);
 
         $this->__fields->addObject($objString);

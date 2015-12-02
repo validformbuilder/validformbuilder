@@ -314,7 +314,7 @@ class Condition extends ClassDynamic
             || get_class($this->__subject) == "ValidFormBuilder\\Area"
         ) {
             $identifier = $this->__subject->getId();
-        } elseif (get_class($this->__subject) == "ValidFormBuilder\\String") {
+        } elseif (get_class($this->__subject) == "ValidFormBuilder\\StaticText") {
             $identifier = $this->__subject->getMeta("id");
         } else {
             $identifier = $this->__subject->getName();
