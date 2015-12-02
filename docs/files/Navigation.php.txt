@@ -74,11 +74,11 @@ class Navigation extends Base
      * Inject HTML in the navigation element
      *
      * @param string $html The HTML string
-     * @return \ValidFormBuilder\String
+     * @return \ValidFormBuilder\StaticText
      */
     public function addHtml($html)
     {
-        $objString = new String($html);
+        $objString = new StaticText($html);
         $objString->setMeta("parent", $this, true);
         $this->__fields->addObject($objString);
 
