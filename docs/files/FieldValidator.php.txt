@@ -490,13 +490,10 @@ class FieldValidator extends ClassDynamic
 
         // *** Check specific types.
         if (! $this->__hasError($intDynamicPosition)) {
-            switch ($this->__field->getType()) {
-                case ValidForm::VFORM_CUSTOM:
-                case ValidForm::VFORM_CUSTOM_TEXT:
-                    $blnValidType = Validator::validate($this->__validation, $value);
-                    break;
-                default:
-                    $blnValidType = Validator::validate($this->__field->getType(), $value);
+            if (!empty($this->__validation)) {
+                $blnValidType = Validator::validate($this->__validation, $value);
+            } else {
+                $blnValidType = Validator::validate($this->__field->getType(), $value);
             }
 
             if (! $blnValidType) {
@@ -562,13 +559,10 @@ class FieldValidator extends ClassDynamic
     {
         $strReturn = "";
 
-        switch ($this->__field->getType()) {
-            case ValidForm::VFORM_CUSTOM:
-            case ValidForm::VFORM_CUSTOM_TEXT:
-                $strReturn = $this->__validation;
-                break;
-            default:
-                $strReturn = Validator::getCheck($this->__field->getType());
+        if (!empty($this->__validation)) {
+            $strReturn = $this->__validation;
+        } else {
+            $strReturn = Validator::getCheck($this->__field->getType());
         }
 
         return $strReturn;
