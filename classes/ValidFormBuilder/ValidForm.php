@@ -1563,8 +1563,8 @@ class ValidForm extends ClassDynamic
                 $strLabel = $objField->getShortLabel();
 
                 if ((! empty($strValue) && $hideEmpty) || (! $hideEmpty && ! empty($strValue))) {
-                    $strValue = nl2br($strValue);
                     $strValue = htmlspecialchars($strValue, ENT_QUOTES);
+                    $strValue = nl2br($strValue);
 
                     $strReturn .= "<tr class=\"vf__field_value\">";
                     $strReturn .= "<td valign=\"top\"";
@@ -1614,8 +1614,8 @@ class ValidForm extends ClassDynamic
                 if (empty($strLabel) && empty($strValue)) {
                     // *** Skip the field.
                 } else {
-                    $strValue = nl2br($strValue);
                     $strValue = htmlspecialchars($strValue, ENT_QUOTES);
+                    $strValue = nl2br($strValue);
 
                     $strReturn .= "<tr class=\"vf__field_value\">";
                     $strReturn .= "<td valign=\"top\" style=\"padding-right: 20px\" class=\"vf__field\">";
