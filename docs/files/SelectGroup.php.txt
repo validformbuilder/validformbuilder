@@ -78,6 +78,7 @@ class SelectGroup extends Base
      * @param string $label Option's label
      * @param string $value Option's value
      * @param boolean $selected Set this option as selected by default
+     * @param array $meta Optional extra meta data
      * @return \ValidFormBuilder\SelectOption
      */
     public function addField($label, $value, $selected = false, $meta = array())

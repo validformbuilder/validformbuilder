@@ -1122,9 +1122,8 @@ class ValidForm extends ClassDynamic
      * Check if the form is submitted by validating the value of the hidden
      * vf__dispatch field.
      *
-     * @param boolean $blnForce
-     *            Fake isSubmitted to true to force field values.
-     * @return boolean [description]
+     * @param boolean $blnForce Fake isSubmitted to true to force field values.
+     * @return boolean
      */
     public function isSubmitted($blnForce = false)
     {
@@ -1396,6 +1395,12 @@ class ValidForm extends ClassDynamic
     public function fieldsetAsHtml($objFieldset, &$strSet, $hideEmpty = false)
     {
         $strTableOutput = "";
+        
+        // If this fieldset was rendered invisible due to conditions,
+        // don't show it on the valuesAsHtml overview either.
+        if (!$this->elementShouldDisplay($objFieldset)) {
+            return $strTableOutput;
+        }
 
         foreach ($objFieldset->getFields() as $objField) {
             if (is_object($objField) && get_class($objField) !== "ValidFormBuilder\\Hidden") {
@@ -1475,8 +1480,12 @@ class ValidForm extends ClassDynamic
     {
         $strReturn = "";
         $strSet = "";
+        
+        // If this area was rendered invisible due to conditions,
+        // don't show it on the valuesAsHtml overview either.
+        $blnShouldDisplay = $this->elementShouldDisplay($objField, $intDynamicCount);
 
-        if ($objField->hasContent($intDynamicCount)) {
+        if ($objField->hasContent($intDynamicCount) && $blnShouldDisplay) {
             foreach ($objField->getFields() as $objSubField) {
                 if (get_class($objSubField) !== "ValidFormBuilder\\Paragraph") {
                     switch (get_class($objSubField)) {
@@ -1500,9 +1509,8 @@ class ValidForm extends ClassDynamic
         }
 
         $strLabel = $objField->getShortLabel();
-        if (! empty($strSet)) {
-
-            if (! empty($strLabel)) {
+        if (!empty($strSet)) {
+            if (!empty($strLabel)) {
                 $strReturn = "<tr>";
                 $strReturn .= "<td colspan=\"3\" style=\"white-space:nowrap\" class=\"vf__area_header\">";
                 $strReturn .= "<h3>{$strLabel}</h3>";
@@ -1512,7 +1520,7 @@ class ValidForm extends ClassDynamic
 
             $strReturn .= $strSet;
         } else {
-            if (! empty($this->__novaluesmessage) && $objField->isActive()) {
+            if (!empty($this->__novaluesmessage) && $objField->isActive()) {
                 $strReturn = "<tr>";
                 $strReturn .= "<td colspan=\"3\" style=\"white-space:nowrap\" class=\"vf__area_header\">";
                 $strReturn .= "<h3>{$strLabel}</h3>";
@@ -1540,6 +1548,12 @@ class ValidForm extends ClassDynamic
     private function multiFieldAsHtml($objField, $hideEmpty = false, $intDynamicCount = 0)
     {
         $strReturn = "";
+        
+        // If this multi field was rendered invisible due to conditions,
+        // don't show it on the valuesAsHtml overview either.
+        if (!$this->elementShouldDisplay($objField, $intDynamicCount)) {
+            return $strReturn;
+        }
 
         if ($objField->hasContent($intDynamicCount)) {
             if ($objField->hasFields()) {
@@ -1563,8 +1577,8 @@ class ValidForm extends ClassDynamic
                 $strLabel = $objField->getShortLabel();
 
                 if ((! empty($strValue) && $hideEmpty) || (! $hideEmpty && ! empty($strValue))) {
-                    $strValue = nl2br($strValue);
                     $strValue = htmlspecialchars($strValue, ENT_QUOTES);
+                    $strValue = nl2br($strValue);
 
                     $strReturn .= "<tr class=\"vf__field_value\">";
                     $strReturn .= "<td valign=\"top\"";
@@ -1600,6 +1614,12 @@ class ValidForm extends ClassDynamic
         $strLabel = $objField->getShortLabel(); // Passing 'true' gets the short label if available.
         $varValue = ($intDynamicCount > 0) ? $objField->getValue($intDynamicCount) : $objField->getValue();
         $strValue = (is_array($varValue)) ? implode(", ", $varValue) : $varValue;
+        
+        // If this field was rendered invisible due to conditions,
+        // don't show it on the valuesAsHtml overview either.
+        if (!$this->elementShouldDisplay($objField, $intDynamicCount)) {
+            return $strReturn;
+        }
 
         if ((! empty($strValue) && $hideEmpty) || (! $hideEmpty && ! is_null($strValue))) {
             if ((get_class($objField) == "ValidFormBuilder\\Hidden") && $objField->isDynamicCounter()) {
@@ -1614,8 +1634,8 @@ class ValidForm extends ClassDynamic
                 if (empty($strLabel) && empty($strValue)) {
                     // *** Skip the field.
                 } else {
-                    $strValue = nl2br($strValue);
                     $strValue = htmlspecialchars($strValue, ENT_QUOTES);
+                    $strValue = nl2br($strValue);
 
                     $strReturn .= "<tr class=\"vf__field_value\">";
                     $strReturn .= "<td valign=\"top\" style=\"padding-right: 20px\" class=\"vf__field\">";
@@ -1818,6 +1838,29 @@ class ValidForm extends ClassDynamic
         }
 
         return $strReturn;
+    }
+
+    /**
+     * Check if an element should be visible according to an optionally attached "visible" condition.
+     *
+     * @param Base $objElement
+     * @param $intDynamicCount
+     * @return bool|true
+     */
+    protected function elementShouldDisplay(Base $objElement, $intDynamicCount = 0)
+    {
+        $blnReturn = true;
+
+        $objCondition = $objElement->getConditionRecursive("visible");
+        if (is_object($objCondition)) {
+            if ($objCondition->isMet($intDynamicCount)) {
+                $blnReturn = $objCondition->getValue();
+            } else {
+                $blnReturn = !$objCondition->getValue();
+            }
+        }
+
+        return $blnReturn;
     }
 
     /**

@@ -34,8 +34,6 @@ namespace ValidFormBuilder;
  * @author Felix Langfeldt <felix@neverwoods.com>
  * @author Robin van Baalen <robin@neverwoods.com>
  * @version Release: 3.0.0
- *
- * @internal
  */
 class StaticText extends Base
 {

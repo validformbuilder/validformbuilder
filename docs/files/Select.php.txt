@@ -335,7 +335,7 @@ class Select extends Element
      * Add option element
      *
      * @param string $label The option elements label
-     * @param string $label The option elements value
+     * @param string $value The option elements value
      * @param boolean $selected True if this option should be selected by default
      * @param array $meta The meta array
      * @return \ValidFormBuilder\SelectOption

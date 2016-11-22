@@ -114,7 +114,7 @@
                         <ul class="dropdown-menu">
                             <li>
                                 <a href="../reports/errors.html">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <i class="icon-list-alt"></i>&#160;Errors <span class="label label-info pull-right">25</span>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <i class="icon-list-alt"></i>&#160;Errors <span class="label label-info pull-right">0</span>
                                 </a>
                             </li>
                             <li>
@@ -144,19 +144,19 @@
                                 <div class="accordion" style="margin-bottom: 0">
         <div class="accordion-group">
             <div class="accordion-heading">
-                                    <a class="accordion-toggle " data-toggle="collapse" data-target="#namespace-322271487"></a>
+                                    <a class="accordion-toggle " data-toggle="collapse" data-target="#namespace-1828507637"></a>
                                 <a href="../namespaces/default.html" style="margin-left: 30px; padding-left: 0">\</a>
             </div>
-            <div id="namespace-322271487" class="accordion-body collapse in">
+            <div id="namespace-1828507637" class="accordion-body collapse in">
                 <div class="accordion-inner">
 
                                                     <div class="accordion" style="margin-bottom: 0">
         <div class="accordion-group">
             <div class="accordion-heading">
-                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-571576656"></a>
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-1266380338"></a>
                                 <a href="../namespaces/ValidFormBuilder.html" style="margin-left: 30px; padding-left: 0">ValidFormBuilder</a>
             </div>
-            <div id="namespace-571576656" class="accordion-body collapse ">
+            <div id="namespace-1266380338" class="accordion-body collapse ">
                 <div class="accordion-inner">
 
                     
@@ -352,8 +352,8 @@
                                 author
                             </th>
                             <td>
-                                                                    <p>Felix Langfeldt <a href="mailto:felix@neverwoods.com">felix@neverwoods.com</a></p>
-                                                                    <p>Robin van Baalen <a href="mailto:robin@neverwoods.com">robin@neverwoods.com</a></p>
+                                                                                                        <p>Felix Langfeldt <a href="mailto:felix@neverwoods.com">felix@neverwoods.com</a></p>
+                                                                                                        <p>Robin van Baalen <a href="mailto:robin@neverwoods.com">robin@neverwoods.com</a></p>
                                                             </td>
                         </tr>
                                             <tr>
@@ -361,7 +361,7 @@
                                 version
                             </th>
                             <td>
-                                                                    <p>Release: 3.0.0</p>
+                                                                                                        <p>Release: 3.0.0</p>
                                                             </td>
                         </tr>
                                         </table>
@@ -382,7 +382,7 @@
             <article class="method">
                 <h3 class="public ">setError()</h3>
                 <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
-                <pre class="signature" style="margin-right: 54px;">setError(string  <span class="argument">$strError</span>, \ValidFormBuilder\number  <span class="argument">$intDynamicPosition</span>) </pre>
+                <pre class="signature" style="margin-right: 54px;">setError(string  <span class="argument">$strError</span>, integer  <span class="argument">$intDynamicPosition</span>) </pre>
                 <p><em>Set a (custom) error message on this specific element</em></p>
                 <p>This is mostly used when doing custom server-side validation like validating a username existance. Example:</p>
 <pre><code class="language-php">if ($objForm-&gt;isSubmitted() &amp;&amp; $objForm-&gt;isValid()) {
@@ -405,7 +405,7 @@
                                 <td><p>The error message</p></td>
                             </tr>
                                                     <tr>
-                                <td>\ValidFormBuilder\number</td>
+                                <td>integer</td>
                                 <td>$intDynamicPosition </td>
                                 <td><p>Set the error message on a specific dynamic field with this index</p></td>
                             </tr>
@@ -472,7 +472,7 @@
             <article class="method">
                 <h3 class="public ">isValid()</h3>
                 <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
-                <pre class="signature" style="margin-right: 54px;">isValid(  <span class="argument">$intCount = null</span>) : boolean</pre>
+                <pre class="signature" style="margin-right: 54px;">isValid(null  <span class="argument">$intCount = null</span>) : boolean</pre>
                 <p><em>Validate the current field.</em></p>
                 <p>This is a wrapper method to call the Validator-&gt;validate() method.
 Although you could validate fields on a per-field basis with this method, this is mostly used internally.
@@ -482,9 +482,9 @@ collection and calls this method for each element it finds.</p>
                                     <h4>Parameters</h4>
                     <table class="table table-condensed table-hover">
                                                     <tr>
-                                <td></td>
+                                <td>null</td>
                                 <td>$intCount </td>
-                                <td></td>
+                                <td><p>Optional. If set, only the dynamic field with this index will be validated.</p></td>
                             </tr>
                                             </table>
                 
@@ -1200,7 +1200,7 @@ can store some custom data from your CMS or an other library in a field object, 
                 <section class="span10 offset1">
                     <hr />
                     Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor </a> and authored
-                    on February 7th, 2016 at 12:39.
+                    on November 22nd, 2016 at 12:38.
                 </section>
             </section>
         </section>
