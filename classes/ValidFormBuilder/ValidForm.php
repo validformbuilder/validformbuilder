@@ -1399,17 +1399,7 @@ class ValidForm extends ClassDynamic
         
         // If this fieldset was rendered invisible due to conditions,
         // don't show it on the valuesAsHtml overview either.
-        $blnShouldDisplay = true;
-        $objCondition = $objFieldset->getConditionRecursive("visible");
-        if (is_object($objCondition)) {
-            if ($objCondition->isMet($intDynamicCount)) {
-                $blnShouldDisplay = $objCondition->getValue();
-            } else {
-                $blnShouldDisplay = !$objCondition->getValue();
-            }
-        }
-
-        if (!$blnShouldDisplay) {
+        if (!$this->elementShouldDisplay($objFieldset)) {
             return $strTableOutput;
         }
 
@@ -1492,17 +1482,9 @@ class ValidForm extends ClassDynamic
         $strReturn = "";
         $strSet = "";
         
-        // If this fieldset was rendered invisible due to conditions,
+        // If this area was rendered invisible due to conditions,
         // don't show it on the valuesAsHtml overview either.
-        $blnShouldDisplay = true;
-        $objCondition = $objField->getConditionRecursive("visible");
-        if (is_object($objCondition)) {
-            if ($objCondition->isMet($intDynamicCount)) {
-                $blnShouldDisplay = $objCondition->getValue();
-            } else {
-                $blnShouldDisplay = !$objCondition->getValue();
-            }
-        }
+        $blnShouldDisplay = $this->elementShouldDisplay($objField, $intDynamicCount);
 
         if ($objField->hasContent($intDynamicCount) && $blnShouldDisplay) {
             foreach ($objField->getFields() as $objSubField) {
@@ -1568,19 +1550,9 @@ class ValidForm extends ClassDynamic
     {
         $strReturn = "";
         
-        // If this fieldset was rendered invisible due to conditions,
+        // If this multi field was rendered invisible due to conditions,
         // don't show it on the valuesAsHtml overview either.
-        $blnShouldDisplay = true;
-        $objCondition = $objField->getConditionRecursive("visible");
-        if (is_object($objCondition)) {
-            if ($objCondition->isMet($intDynamicCount)) {
-                $blnShouldDisplay = $objCondition->getValue();
-            } else {
-                $blnShouldDisplay = !$objCondition->getValue();
-            }
-        }
-
-        if (!$blnShouldDisplay) {
+        if (!$this->elementShouldDisplay($objField, $intDynamicCount)) {
             return $strReturn;
         }
 
@@ -1644,19 +1616,9 @@ class ValidForm extends ClassDynamic
         $varValue = ($intDynamicCount > 0) ? $objField->getValue($intDynamicCount) : $objField->getValue();
         $strValue = (is_array($varValue)) ? implode(", ", $varValue) : $varValue;
         
-        // If this fieldset was rendered invisible due to conditions,
+        // If this field was rendered invisible due to conditions,
         // don't show it on the valuesAsHtml overview either.
-        $blnShouldDisplay = true;
-        $objCondition = $objField->getConditionRecursive("visible");
-        if (is_object($objCondition)) {
-            if ($objCondition->isMet($intDynamicCount)) {
-                $blnShouldDisplay = $objCondition->getValue();
-            } else {
-                $blnShouldDisplay = !$objCondition->getValue();
-            }
-        }
-
-        if (!$blnShouldDisplay) {
+        if (!$this->elementShouldDisplay($objField, $intDynamicCount)) {
             return $strReturn;
         }
 
@@ -1877,6 +1839,29 @@ class ValidForm extends ClassDynamic
         }
 
         return $strReturn;
+    }
+
+    /**
+     * Check if an element should be visible according to an optionally attached "visible" condition.
+     *
+     * @param Base $objElement
+     * @param $intDynamicCount
+     * @return bool|true
+     */
+    protected function elementShouldDisplay(Base $objElement, $intDynamicCount = 0)
+    {
+        $blnReturn = true;
+
+        $objCondition = $objElement->getConditionRecursive("visible");
+        if (is_object($objCondition)) {
+            if ($objCondition->isMet($intDynamicCount)) {
+                $blnReturn = $objCondition->getValue();
+            } else {
+                $blnReturn = !$objCondition->getValue();
+            }
+        }
+
+        return $blnReturn;
     }
 
     /**

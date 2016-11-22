@@ -327,17 +327,7 @@ class ValidWizard extends ValidForm
             if (get_class($objPage) === "ValidFormBuilder\\Page") {
                 // If this page was rendered invisible due to conditions,
                 // don't show it on the valuesAsHtml overview either.
-                $blnShouldDisplay = true;
-                $objCondition = $objPage->getConditionRecursive("visible");
-                if (is_object($objCondition)) {
-                    if ($objCondition->isMet($intDynamicCount)) {
-                        $blnShouldDisplay = $objCondition->getValue();
-                    } else {
-                        $blnShouldDisplay = !$objCondition->getValue();
-                    }
-                }
-
-                if (!$blnShouldDisplay) {
+                if (!$this->elementShouldDisplay($objPage)) {
                     continue; // Continue to the next page.
                 }
                 
