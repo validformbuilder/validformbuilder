@@ -52,10 +52,10 @@ Here are some documentation quick links:
 - [The Documentation (entry point)](http://validformbuilder.org/docs/namespaces/ValidFormBuilder.html)
 - [Get started with the ValidForm object](http://validformbuilder.org/docs/classes/ValidFormBuilder.ValidForm.html)
 - [Creating a checkbox / radio button list](http://validformbuilder.org/docs/classes/ValidFormBuilder.Group.html)
-- [Four ways to create a <select> list](http://validformbuilder.org/docs/classes/ValidFormBuilder.Select.html)
+- [Four ways to create a `<select>` list](http://validformbuilder.org/docs/classes/ValidFormBuilder.Select.html)
 - [Create a basic text field](http://validformbuilder.org/docs/classes/ValidFormBuilder.Text.html)
 - Advanced - Getting started with [Conditions](http://validformbuilder.org/docs/classes/ValidFormBuilder.Condition.html) and [Comparisons](http://validformbuilder.org/docs/classes/ValidFormBuilder.Comparison.html)
-- [Match two password fields client & server-side](http://validformbuilder.org/docs/classes/ValidFormBuilder.Password.html)
+- [Match two password fields client &amp; server-side](http://validformbuilder.org/docs/classes/ValidFormBuilder.Password.html)
 
 If you have any questions, please ask them on [stackoverflow](http://stackoverflow.com) and be sure to tag your question with the `validform` tag. We regulary monitor these questions and try to answer them as soon as we can :)
 
