@@ -15,7 +15,7 @@ script:
 notifications:
   email:
     recipients:
-      - robin@trainedby.ninja
+      - robin@cattlea.com
     on_success: always # default: change
     on_failure: always # default: always
 
