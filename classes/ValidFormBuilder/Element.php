@@ -298,6 +298,8 @@ class Element extends Base
     }
 
     /**
+     * Placeholder method
+     * @param integer $intDynamicPosition Dynamic position counter
      * @see \ValidFormBuilder\Base::toJS()
      */
     public function toJS($intDynamicPosition = 0)
