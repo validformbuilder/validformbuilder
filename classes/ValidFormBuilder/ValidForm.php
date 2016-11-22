@@ -1396,6 +1396,22 @@ class ValidForm extends ClassDynamic
     public function fieldsetAsHtml($objFieldset, &$strSet, $hideEmpty = false)
     {
         $strTableOutput = "";
+        
+        // If this fieldset was rendered invisible due to conditions,
+        // don't show it on the valuesAsHtml overview either.
+        $blnShouldDisplay = true;
+        $objCondition = $objFieldset->getConditionRecursive("visible");
+        if (is_object($objCondition)) {
+            if ($objCondition->isMet($intDynamicCount)) {
+                $blnShouldDisplay = $objCondition->getValue();
+            } else {
+                $blnShouldDisplay = !$objCondition->getValue();
+            }
+        }
+
+        if (!$blnShouldDisplay) {
+            return $strTableOutput;
+        }
 
         foreach ($objFieldset->getFields() as $objField) {
             if (is_object($objField) && get_class($objField) !== "ValidFormBuilder\\Hidden") {
@@ -1475,8 +1491,20 @@ class ValidForm extends ClassDynamic
     {
         $strReturn = "";
         $strSet = "";
+        
+        // If this fieldset was rendered invisible due to conditions,
+        // don't show it on the valuesAsHtml overview either.
+        $blnShouldDisplay = true;
+        $objCondition = $objField->getConditionRecursive("visible");
+        if (is_object($objCondition)) {
+            if ($objCondition->isMet($intDynamicCount)) {
+                $blnShouldDisplay = $objCondition->getValue();
+            } else {
+                $blnShouldDisplay = !$objCondition->getValue();
+            }
+        }
 
-        if ($objField->hasContent($intDynamicCount)) {
+        if ($objField->hasContent($intDynamicCount) && $blnShouldDisplay) {
             foreach ($objField->getFields() as $objSubField) {
                 if (get_class($objSubField) !== "ValidFormBuilder\\Paragraph") {
                     switch (get_class($objSubField)) {
@@ -1500,9 +1528,8 @@ class ValidForm extends ClassDynamic
         }
 
         $strLabel = $objField->getShortLabel();
-        if (! empty($strSet)) {
-
-            if (! empty($strLabel)) {
+        if (!empty($strSet)) {
+            if (!empty($strLabel)) {
                 $strReturn = "<tr>";
                 $strReturn .= "<td colspan=\"3\" style=\"white-space:nowrap\" class=\"vf__area_header\">";
                 $strReturn .= "<h3>{$strLabel}</h3>";
@@ -1512,7 +1539,7 @@ class ValidForm extends ClassDynamic
 
             $strReturn .= $strSet;
         } else {
-            if (! empty($this->__novaluesmessage) && $objField->isActive()) {
+            if (!empty($this->__novaluesmessage) && $objField->isActive()) {
                 $strReturn = "<tr>";
                 $strReturn .= "<td colspan=\"3\" style=\"white-space:nowrap\" class=\"vf__area_header\">";
                 $strReturn .= "<h3>{$strLabel}</h3>";
@@ -1540,6 +1567,22 @@ class ValidForm extends ClassDynamic
     private function multiFieldAsHtml($objField, $hideEmpty = false, $intDynamicCount = 0)
     {
         $strReturn = "";
+        
+        // If this fieldset was rendered invisible due to conditions,
+        // don't show it on the valuesAsHtml overview either.
+        $blnShouldDisplay = true;
+        $objCondition = $objField->getConditionRecursive("visible");
+        if (is_object($objCondition)) {
+            if ($objCondition->isMet($intDynamicCount)) {
+                $blnShouldDisplay = $objCondition->getValue();
+            } else {
+                $blnShouldDisplay = !$objCondition->getValue();
+            }
+        }
+
+        if (!$blnShouldDisplay) {
+            return $strReturn;
+        }
 
         if ($objField->hasContent($intDynamicCount)) {
             if ($objField->hasFields()) {
@@ -1600,6 +1643,22 @@ class ValidForm extends ClassDynamic
         $strLabel = $objField->getShortLabel(); // Passing 'true' gets the short label if available.
         $varValue = ($intDynamicCount > 0) ? $objField->getValue($intDynamicCount) : $objField->getValue();
         $strValue = (is_array($varValue)) ? implode(", ", $varValue) : $varValue;
+        
+        // If this fieldset was rendered invisible due to conditions,
+        // don't show it on the valuesAsHtml overview either.
+        $blnShouldDisplay = true;
+        $objCondition = $objField->getConditionRecursive("visible");
+        if (is_object($objCondition)) {
+            if ($objCondition->isMet($intDynamicCount)) {
+                $blnShouldDisplay = $objCondition->getValue();
+            } else {
+                $blnShouldDisplay = !$objCondition->getValue();
+            }
+        }
+
+        if (!$blnShouldDisplay) {
+            return $strReturn;
+        }
 
         if ((! empty($strValue) && $hideEmpty) || (! $hideEmpty && ! is_null($strValue))) {
             if ((get_class($objField) == "ValidFormBuilder\\Hidden") && $objField->isDynamicCounter()) {
