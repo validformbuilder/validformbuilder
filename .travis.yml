@@ -10,12 +10,8 @@ before_script:
 script:
 - bash .travis-generate-docs.sh
 notifications:
-  email:
-    recipients:
-    - robin@cattlea.com
-    - felix@neverwoods.com
-    on_success: always
-    on_failure: always
+  slack:
+    secure: mWZfvX4NA+B7ec0r4oEhYcTmjgeVb7AyQ/F50St6/padNvstSLSuzrdVAHpF6+xHcib5/qwkTUrS/RNzuqGWdehJqX7jmLnVBwGiMyW3+1cI72qnH7dZrmgy2jX354y3NTo+fvjjtSVniMta28CvqwXH+G+sNo1VIidxxxcXAzU=
 env:
   global:
   - secure: ZCoO8vC5W3k+V3vb7uxsZtROjdikHCxNbvE1ptTvRWjq9tJS9LV5gQVM6f+FNylgPgcQL9qzhd4krrh8fNuriuRotqWd35XH9FW1ISzSMpkADpwDM2t/az/dhucRKc43eDqW8d/XrrvrmqsTYe694jd+lrvcimGeFw0WEfXIHBk=
