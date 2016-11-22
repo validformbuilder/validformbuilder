@@ -268,6 +268,7 @@ class Collection implements \Iterator
 
     /**
      * Merge a collection with this collection.
+     * @param Collection $collection Collection to merge with
      */
     public function merge($collection)
     {

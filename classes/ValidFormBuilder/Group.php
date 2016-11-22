@@ -245,7 +245,8 @@ class Group extends Element
      * This automatically strips off the [] from a checkbox ID
      *
      * @see \ValidFormBuilder\Base::getName()
-     * @return string The element's ID
+     * @param bool $blnPlain If false, [] will be stripped from a checklist group name
+     * @return string The element's name
      */
     public function getName($blnPlain = false)
     {

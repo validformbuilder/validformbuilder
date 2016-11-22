@@ -1,8 +1,7 @@
 language: php
-
 php:
-- 5.4
-
+- 5.6
+- 7.0
 before_script:
 - composer install
 - export PATH=./vendor/bin/:$PATH
@@ -10,14 +9,13 @@ before_script:
 - echo "https://${GH_TOKEN}:@github.com" > .git/credentials
 script:
 - bash .travis-generate-docs.sh
-
 notifications:
   email:
     recipients:
-      - robin@trainedby.ninja
-    on_success: always # default: change
-    on_failure: always # default: always
-
+    - robin@cattlea.com
+    - felix@neverwoods.com
+    on_success: always
+    on_failure: always
 env:
   global:
-    secure: Uu5Bz73vVwNuVDcB6qiIFC5tT4al7p6shVV5cNzJ4YQag3qEO0DeaU+y+V6DNLorKXYcksHp4MnyiOnQm3UyXS4X/xTbXx7wzefzBl6usFjD9kbxiaCSGFZfNURwGQ3u4pqiD9W7t9+5dibQ8LHR7O+cAbSOw/s7rWFtkRtY5eg=
+  - secure: ZCoO8vC5W3k+V3vb7uxsZtROjdikHCxNbvE1ptTvRWjq9tJS9LV5gQVM6f+FNylgPgcQL9qzhd4krrh8fNuriuRotqWd35XH9FW1ISzSMpkADpwDM2t/az/dhucRKc43eDqW8d/XrrvrmqsTYe694jd+lrvcimGeFw0WEfXIHBk=
