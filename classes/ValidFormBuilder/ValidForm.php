@@ -1122,9 +1122,8 @@ class ValidForm extends ClassDynamic
      * Check if the form is submitted by validating the value of the hidden
      * vf__dispatch field.
      *
-     * @param boolean $blnForce
-     *            Fake isSubmitted to true to force field values.
-     * @return boolean [description]
+     * @param boolean $blnForce Fake isSubmitted to true to force field values.
+     * @return boolean
      */
     public function isSubmitted($blnForce = false)
     {

@@ -137,7 +137,8 @@ class ValidWizard extends ValidForm
      *
      * See {@link \ValidFormBuilder\ValidForm::isSubmitted()}
      *
-     * @return boolean
+     * @param boolean $blnForce Fake isSubmitted to true to force field values.
+     * @return bool
      */
     public function isSubmitted($blnForce = false)
     {
@@ -162,8 +163,11 @@ class ValidWizard extends ValidForm
      * Add multifield
      *
      * See {@link \ValidFormBuilder\ValidForm::addMultiField()}
-     *
      * @see \ValidFormBuilder\ValidForm::addMultiField()
+     *
+     * @param string $label
+     * @param array $meta The meta array
+     * @return \ValidFormBuilder\MultiField
      */
     public function addMultiField($label = null, $meta = array())
     {
@@ -260,7 +264,7 @@ class ValidWizard extends ValidForm
      */
     public function hasConfirmPage()
     {
-        return ! ! $this->__hasconfirmpage;
+        return !!$this->__hasconfirmpage;
     }
 
     /**
@@ -269,6 +273,18 @@ class ValidWizard extends ValidForm
      * See {@link \ValidFormBuilder\ValidForm::addField()}
      *
      * @see \ValidFormBuilder\ValidForm::addField()
+     *
+     * @api
+     * @param string $name The element's name
+     * @param string $label The element's label
+     * @param integer $type The element's validation type
+     * @param array $validationRules Optional.Custom validation rules array
+     * @param array $errorHandlers Custom error handling array
+     * @param array $meta Optional. Meta data array
+     * @param boolean $blnJustRender When true, the element is not added to the internal elements collection.
+     * `addField()` with `$blnJustRender` set to true is exactly the same as calling `ValidForm::renderField()`
+     *
+     * @return \ValidFormBuilder\Element Returns null when no valid type is defined
      */
     public function addField($name, $label, $type, $validationRules = array(), $errorHandlers = array(), $meta = array(), $blnJustRender = false)
     {
@@ -295,10 +311,17 @@ class ValidWizard extends ValidForm
      * See {@link \ValidFormBuilder\ValidForm::addFieldset()}
      *
      * @see \ValidFormBuilder\ValidForm::addFieldset()
+     *
+     * @param string $header The header for this fieldset
+     * @param string $noteHeader An optional header for the 'note' block on the side of this fieldset
+     * @param string $noteBody The optional body for the 'note block on the side of this fieldset
+     * @param array $meta The meta array
+     *
+     * @return \ValidFormBuilder\Fieldset
      */
-    public function addFieldset($label = null, $noteHeader = null, $noteBody = null, $options = array())
+    public function addFieldset($header = null, $noteHeader = null, $noteBody = null, $meta = array())
     {
-        $objFieldSet = new Fieldset($label, $noteHeader, $noteBody, $options);
+        $objFieldSet = new Fieldset($header, $noteHeader, $noteBody, $meta);
 
         $objPage = $this->__elements->getLast("ValidFormBuilder\\Page");
         if (! is_object($objPage)) {
@@ -314,8 +337,11 @@ class ValidWizard extends ValidForm
      * Generate valuesAsHtml overview
      *
      * See {@link \ValidFormBuilder\ValidForm::valuesAsHtml()}
-     *
      * @see \ValidFormBuilder\ValidForm::valuesAsHtml()
+     *
+     * @param boolean $hideEmpty Set to true to hide empty field values from the overview. Defaults to false.
+     * @param string $collection Optional - advanced usage only; a custom Collection of elements to parse
+     * @return string Generated `table` with `label: value` pairs
      */
     public function valuesAsHtml($hideEmpty = false, $collection = null)
     {
@@ -593,6 +619,8 @@ class ValidWizard extends ValidForm
     /**
      * See {@link \ValidFormBuilder\ValidForm::isValid()}
      * @see \ValidFormBuilder\ValidForm::isValid()
+     * @param null $strPageId Optional. If page ID is given, only that page will be validated.
+     * @return bool True if successful, false if one of the fields contains an error.
      */
     public function isValid($strPageId = null)
     {
