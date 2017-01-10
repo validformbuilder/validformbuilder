@@ -187,6 +187,7 @@ class File extends Element
         $strCheck = $this->__validator->getCheck();
         $strCheck = (empty($strCheck)) ? "''" : str_replace('\\\\', "\\\\\\\\", $strCheck);
         $strCheck = str_replace("'", "\\'", $strCheck);
+        $strCheck = (mb_substr($strCheck, -1) == "u") ? mb_substr($strCheck, 0, -1) : $strCheck;
         $strRequired = ($this->__validator->getRequired()) ? "true" : "false";
         ;
         $intMaxLength = ($this->__validator->getMaxLength() > 0) ? $this->__validator->getMaxLength() : "null";

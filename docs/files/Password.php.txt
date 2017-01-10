@@ -173,8 +173,7 @@ class Password extends Element
      */
     public function toJS($intDynamicPosition = 0)
     {
-        $strCheck = $this->__validator->getCheck();
-        $strCheck = (empty($strCheck)) ? "''" : str_replace("'", "\\'", $strCheck);
+        $strCheck = $this->__sanitizeCheckForJs($this->__validator->getCheck());
         $strRequired = ($this->__validator->getRequired()) ? "true" : "false";
         ;
         $intMaxLength = ($this->__validator->getMaxLength() > 0) ? $this->__validator->getMaxLength() : "null";

@@ -752,6 +752,20 @@ class Base extends ClassDynamic
     }
 
     /**
+     * Sanitize a regular expression check for javascript.
+     *
+     * @param string $strCheck
+     * @return mixed|string
+     */
+    protected function __sanitizeCheckForJs($strCheck)
+    {
+        $strCheck = (empty($strCheck)) ? "''" : str_replace("'", "\\'", $strCheck);
+        $strCheck = (mb_substr($strCheck, -1) == "u") ? mb_substr($strCheck, 0, -1) : $strCheck;
+
+        return $strCheck;
+    }
+
+    /**
      * Generate unique name based on class name
      * @internal
      * @return string
