@@ -19,24 +19,3 @@ if ($objForm->isValid() && $objForm->isSubmitted()) {
 } else {
     $strOutput = $objForm->toHtml();
 }
-
-?>
-<!DOCTYPE html>
-<html>
-<head>
-    <title>ValidForm Sandbox</title>
-    <!-- bower:css -->
-    <!-- endbower -->
-	<link rel="stylesheet" type="text/css" href="vendor/composer.css">
-
-    <!-- bower:js -->
-    <script src="vendor/jquery/dist/jquery.js"></script>
-    <!-- endbower -->
-	<script src="vendor/composer.js"></script>
-</head>
-<body>
-
-<?=$strOutput?>
-
-</body>
-</html>

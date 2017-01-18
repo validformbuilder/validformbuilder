@@ -50,5 +50,3 @@ if ($objForm->isValid() && $objForm->isSubmitted()) {
 } else {
     $strOutput = $objForm->toHtml();
 }
-
-?>

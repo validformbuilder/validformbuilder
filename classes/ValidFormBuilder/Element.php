@@ -289,7 +289,7 @@ class Element extends Base
      * ```
      *
      * @param string $strError The error message
-     * @param number $intDynamicPosition Set the error message on a specific dynamic field with this index
+     * @param integer $intDynamicPosition Set the error message on a specific dynamic field with this index
      */
     public function setError($strError, $intDynamicPosition = 0)
     {
@@ -298,7 +298,10 @@ class Element extends Base
     }
 
     /**
+     * Placeholder method
+     * @param integer $intDynamicPosition Dynamic position counter
      * @see \ValidFormBuilder\Base::toJS()
+     * @return string
      */
     public function toJS($intDynamicPosition = 0)
     {
@@ -306,9 +309,9 @@ class Element extends Base
     }
 
     /**
-     * Generate a random ID
+     * Generate a random ID for a given field name to prevent having two fields with the same name
      * @internal
-     * @param string $name Fieldname
+     * @param string $name Field name
      * @return string
      */
     public function getRandomId($name)
@@ -332,7 +335,8 @@ class Element extends Base
      * collection and calls this method for each element it finds.
      *
      * @see \ValidFormBuilder\Validator::validate()
-     * @return boolean True if field validates, false if not.
+     * @param null $intCount Optional. If set, only the dynamic field with this index will be validated.
+     * @return bool True if field validates, false if not.
      */
     public function isValid($intCount = null)
     {

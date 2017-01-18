@@ -298,8 +298,7 @@ class Select extends Element
      */
     public function toJS($intDynamicPosition = 0)
     {
-        $strCheck = $this->__validator->getCheck();
-        $strCheck = (empty($strCheck)) ? "''" : str_replace("'", "\\'", $strCheck);
+        $strCheck = $this->__sanitizeCheckForJs($this->__validator->getCheck());
         $strRequired = ($this->__validator->getRequired()) ? "true" : "false";
         $intMaxLength = ($this->__validator->getMaxLength() > 0) ? $this->__validator->getMaxLength() : "null";
         $intMinLength = ($this->__validator->getMinLength() > 0) ? $this->__validator->getMinLength() : "null";
@@ -335,7 +334,7 @@ class Select extends Element
      * Add option element
      *
      * @param string $label The option elements label
-     * @param string $label The option elements value
+     * @param string $value The option elements value
      * @param boolean $selected True if this option should be selected by default
      * @param array $meta The meta array
      * @return \ValidFormBuilder\SelectOption
