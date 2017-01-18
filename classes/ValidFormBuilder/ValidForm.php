@@ -1483,7 +1483,7 @@ class ValidForm extends ClassDynamic
         
         // If this area was rendered invisible due to conditions,
         // don't show it on the valuesAsHtml overview either.
-        $blnShouldDisplay = $this->elementShouldDisplay($objField, $intDynamicCount);
+        $blnShouldDisplay = $this->elementShouldDisplay($objField);
 
         if ($objField->hasContent($intDynamicCount) && $blnShouldDisplay) {
             foreach ($objField->getFields() as $objSubField) {
@@ -1551,7 +1551,7 @@ class ValidForm extends ClassDynamic
         
         // If this multi field was rendered invisible due to conditions,
         // don't show it on the valuesAsHtml overview either.
-        if (!$this->elementShouldDisplay($objField, $intDynamicCount)) {
+        if (!$this->elementShouldDisplay($objField)) {
             return $strReturn;
         }
 
@@ -1617,7 +1617,7 @@ class ValidForm extends ClassDynamic
         
         // If this field was rendered invisible due to conditions,
         // don't show it on the valuesAsHtml overview either.
-        if (!$this->elementShouldDisplay($objField, $intDynamicCount)) {
+        if (!$this->elementShouldDisplay($objField)) {
             return $strReturn;
         }
 
@@ -1847,13 +1847,16 @@ class ValidForm extends ClassDynamic
      * @param $intDynamicCount
      * @return bool|true
      */
-    protected function elementShouldDisplay(Base $objElement, $intDynamicCount = 0)
+    protected function elementShouldDisplay(Base $objElement)
     {
         $blnReturn = true;
 
         $objCondition = $objElement->getConditionRecursive("visible");
         if (is_object($objCondition)) {
-            if ($objCondition->isMet($intDynamicCount)) {
+            // If the condition is met for the first element,
+            // it automatically applies to the dynamic clones as well.
+            // Therefore we only check dynamic counter 0
+            if ($objCondition->isMet(0)) {
                 $blnReturn = $objCondition->getValue();
             } else {
                 $blnReturn = !$objCondition->getValue();
