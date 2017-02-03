@@ -61,11 +61,11 @@ class SelectGroup extends Base
      * @param string $value
      * @return string Generated HTML
      */
-    public function toHtml($value = null)
+    public function toHtmlInternal($value = null)
     {
         $strOutput = "<optgroup label=\"{$this->__label}\">\n";
         foreach ($this->__options as $option) {
-            $strOutput .= $option->toHtml($value);
+            $strOutput .= $option->toHtmlInternal($value);
         }
         $strOutput .= "</optgroup>\n";
 
@@ -78,11 +78,12 @@ class SelectGroup extends Base
      * @param string $label Option's label
      * @param string $value Option's value
      * @param boolean $selected Set this option as selected by default
+     * @param array $meta Optional extra meta data
      * @return \ValidFormBuilder\SelectOption
      */
-    public function addField($label, $value, $selected = false)
+    public function addField($label, $value, $selected = false, $meta = array())
     {
-        $objOption = new SelectOption($label, $value, $selected);
+        $objOption = new SelectOption($label, $value, $selected, $meta);
         $objOption->setMeta("parent", $this, true);
 
         $this->__options->addObject($objOption);

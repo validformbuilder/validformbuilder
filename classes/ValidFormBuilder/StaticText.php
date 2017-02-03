@@ -28,16 +28,14 @@ namespace ValidFormBuilder;
  * Enter the amount:   $ _____
  * ```
  *
- * In this example, we used String to inject the dollar sign before our input field.
+ * In this example, we used StaticText to inject the dollar sign before our input field.
  *
  * @package ValidForm
  * @author Felix Langfeldt <felix@neverwoods.com>
  * @author Robin van Baalen <robin@neverwoods.com>
  * @version Release: 3.0.0
- *
- * @internal
  */
-class String extends Base
+class StaticText extends Base
 {
 
     /**
@@ -48,7 +46,7 @@ class String extends Base
     protected $__id;
 
     /**
-     * String contents
+     * StaticText contents
      * @internal
      * @var string
      */
@@ -62,7 +60,7 @@ class String extends Base
     protected $__dynamiccounter = false;
 
     /**
-     * Create new String instance
+     * Create new StaticText instance
      *
      * @internal
      * @param string $bodyString The string to inject. Can be a simple string or even HTML code.
@@ -184,7 +182,7 @@ class String extends Base
     /**
      * Get string name
      *
-     * String has no name, only an ID
+     * StaticText has no name, only an ID
      * @internal
      * @return void
      */
@@ -196,7 +194,7 @@ class String extends Base
     /**
      * Get information from data array
      *
-     * Not applicable for String objects.
+     * Not applicable for StaticText objects.
      *
      * @internal
      * @return void

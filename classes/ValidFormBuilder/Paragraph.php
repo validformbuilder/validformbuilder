@@ -196,4 +196,14 @@ class Paragraph extends Base
     {
         return array();
     }
+
+    /**
+     * For API compatibility, we've added the placeholder method 'getType'
+     * @internal
+     * @return number
+     */
+    public function getType()
+    {
+        return ValidForm::VFORM_PARAGRAPH;
+    }
 }

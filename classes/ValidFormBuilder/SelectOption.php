@@ -52,7 +52,7 @@ class SelectOption extends Element
     protected $__selected;
 
     /**
-     * Create new GroupField instance
+     * Create new SelectOption instance
      *
      * @internal
      * @param string $label The label
@@ -80,7 +80,7 @@ class SelectOption extends Element
      * @internal
      * @see \ValidFormBuilder\Element::toHtml()
      */
-    public function toHtml($value = null)
+    public function toHtmlInternal($value = null)
     {
         $strSelected = "";
         if ($this->__selected && is_null($value)) {

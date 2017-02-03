@@ -79,7 +79,7 @@ class GroupField extends Element
      * @internal
      * @see \ValidFormBuilder\Element::toHtml()
      */
-    public function toHtml($value = null, $submitted = false, $intCount = 0)
+    public function toHtmlInternal($value = null, $submitted = false, $intCount = 0)
     {
         $strChecked = "";
 
@@ -132,7 +132,7 @@ class GroupField extends Element
 
         $strOutput = "<label for=\"{$strId}\"{$this->__getLabelMetaString()}>\n";
         $strOutput .= "<input type=\"{$type}\" value=\"{$this->__value}\" name=\"{$strName}\"
-                        id=\"{$strId}\"{$this->__getFieldMetaString()}/> {$this->__label}\n";
+                        id=\"{$strId}\"{$this->__getFieldMetaString()}/>{$this->__label}\n";
         $strOutput .= "</label>\n";
 
         return $strOutput;

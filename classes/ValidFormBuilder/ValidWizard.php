@@ -94,6 +94,20 @@ class ValidWizard extends ValidForm
     protected $__nextlabel;
 
     /**
+     * The previous button class
+     * @internal
+     * @var string
+     */
+    protected $__previousclass;
+
+    /**
+     * The next button class
+     * @internal
+     * @var string
+     */
+    protected $__nextclass;
+
+    /**
      * Flag if wizard has confirm page
      * @internal
      * @var boolean
@@ -114,24 +128,8 @@ class ValidWizard extends ValidForm
 
         $this->__nextlabel = (isset($meta["nextLabel"])) ? $meta["nextLabel"] : "Next &rarr;";
         $this->__previouslabel = (isset($meta["previousLabel"])) ? $meta["previousLabel"] : "&larr; Previous";
-    }
-
-    /**
-     * Generate Wizard HTML output
-     *
-     * See {@link \ValidFormBuilder\ValidForm::toHtml()}
-     *
-     * @return string Generated HTML
-     */
-    public function toHtml($blnClientSide = true, $blnForceSubmitted = false, $strJs = "")
-    {
-        $strReturn = null;
-
-        if (is_null($strReturn)) {
-            $strReturn = parent::toHtml($blnClientSide, $blnForceSubmitted);
-        }
-
-        return $strReturn;
+        $this->__nextclass = (isset($meta["nextClass"])) ? $meta["nextClass"] : "";
+        $this->__previousclass = (isset($meta["previousClass"])) ? $meta["previousClass"] : "";
     }
 
     /**
@@ -139,7 +137,8 @@ class ValidWizard extends ValidForm
      *
      * See {@link \ValidFormBuilder\ValidForm::isSubmitted()}
      *
-     * @return boolean
+     * @param boolean $blnForce Fake isSubmitted to true to force field values.
+     * @return bool
      */
     public function isSubmitted($blnForce = false)
     {
@@ -164,8 +163,11 @@ class ValidWizard extends ValidForm
      * Add multifield
      *
      * See {@link \ValidFormBuilder\ValidForm::addMultiField()}
-     *
      * @see \ValidFormBuilder\ValidForm::addMultiField()
+     *
+     * @param string $label
+     * @param array $meta The meta array
+     * @return \ValidFormBuilder\MultiField
      */
     public function addMultiField($label = null, $meta = array())
     {
@@ -262,7 +264,7 @@ class ValidWizard extends ValidForm
      */
     public function hasConfirmPage()
     {
-        return ! ! $this->__hasconfirmpage;
+        return !!$this->__hasconfirmpage;
     }
 
     /**
@@ -271,6 +273,18 @@ class ValidWizard extends ValidForm
      * See {@link \ValidFormBuilder\ValidForm::addField()}
      *
      * @see \ValidFormBuilder\ValidForm::addField()
+     *
+     * @api
+     * @param string $name The element's name
+     * @param string $label The element's label
+     * @param integer $type The element's validation type
+     * @param array $validationRules Optional.Custom validation rules array
+     * @param array $errorHandlers Custom error handling array
+     * @param array $meta Optional. Meta data array
+     * @param boolean $blnJustRender When true, the element is not added to the internal elements collection.
+     * `addField()` with `$blnJustRender` set to true is exactly the same as calling `ValidForm::renderField()`
+     *
+     * @return \ValidFormBuilder\Element Returns null when no valid type is defined
      */
     public function addField($name, $label, $type, $validationRules = array(), $errorHandlers = array(), $meta = array(), $blnJustRender = false)
     {
@@ -297,10 +311,17 @@ class ValidWizard extends ValidForm
      * See {@link \ValidFormBuilder\ValidForm::addFieldset()}
      *
      * @see \ValidFormBuilder\ValidForm::addFieldset()
+     *
+     * @param string $header The header for this fieldset
+     * @param string $noteHeader An optional header for the 'note' block on the side of this fieldset
+     * @param string $noteBody The optional body for the 'note block on the side of this fieldset
+     * @param array $meta The meta array
+     *
+     * @return \ValidFormBuilder\Fieldset
      */
-    public function addFieldset($label = null, $noteHeader = null, $noteBody = null, $options = array())
+    public function addFieldset($header = null, $noteHeader = null, $noteBody = null, $meta = array())
     {
-        $objFieldSet = new Fieldset($label, $noteHeader, $noteBody, $options);
+        $objFieldSet = new Fieldset($header, $noteHeader, $noteBody, $meta);
 
         $objPage = $this->__elements->getLast("ValidFormBuilder\\Page");
         if (! is_object($objPage)) {
@@ -316,16 +337,26 @@ class ValidWizard extends ValidForm
      * Generate valuesAsHtml overview
      *
      * See {@link \ValidFormBuilder\ValidForm::valuesAsHtml()}
-     *
      * @see \ValidFormBuilder\ValidForm::valuesAsHtml()
+     *
+     * @param boolean $hideEmpty Set to true to hide empty field values from the overview. Defaults to false.
+     * @param string $collection Optional - advanced usage only; a custom Collection of elements to parse
+     * @return string Generated `table` with `label: value` pairs
      */
-    public function valuesAsHtml($hideEmpty = false)
+    public function valuesAsHtml($hideEmpty = false, $collection = null)
     {
         $strTable = "\t<table border=\"0\" cellspacing=\"0\" cellpadding=\"0\" class=\"validform\">\n";
         $strTableOutput = "";
+        $collection = (!is_null($collection)) ? $collection : $this->__elements;
 
-        foreach ($this->__elements as $objPage) {
+        foreach ($collection as $objPage) {
             if (get_class($objPage) === "ValidFormBuilder\\Page") {
+                // If this page was rendered invisible due to conditions,
+                // don't show it on the valuesAsHtml overview either.
+                if (!$this->elementShouldDisplay($objPage)) {
+                    continue; // Continue to the next page.
+                }
+                
                 // Passing 'true' will return the optional 'short header' if available.
                 $strHeader = $objPage->getShortHeader();
 
@@ -372,14 +403,17 @@ class ValidWizard extends ValidForm
      * See {@link \ValidFormBuilder\ValidForm::toJs()}
      *
      * @internal
-     * @param string $strCustomJs Optional custom javascript to execute when initialising the form code
-     * @param string $blnFromSession Obsolete
+     * @param string $strCustomJs Optional custom javascript code to be executed at the same
+     * time the form is initialized
+     * @param array $arrInitArguments Only use this when initializing a custom client-side object. This is a flat array
+     * of arguments being passed to the custom client-side object.
+     * @param string $blnRawJs If set to true, the generated javascript will not be wrapped in a <script> element. This
+     * is particulary useful when generating javascript to be returned to an AJAX response.
      * @return string Generated javascript
      */
-    protected function __toJs($strCustomJs = "", $blnFromSession = false)
+    protected function __toJs($strCustomJs = "", $arrInitArguments = array(), $blnRawJs = false)
     {
         // Add extra arguments to javascript initialization method.
-        $arrInitArguments = array();
         if ($this->__currentpage > 1) {
             $arrInitArguments["initialPage"] = $this->__currentpage;
         }
@@ -390,11 +424,19 @@ class ValidWizard extends ValidForm
         $strJs .= "objForm.setLabel('next', '" . $this->__nextlabel . "');\n\t";
         $strJs .= "objForm.setLabel('previous', '" . $this->__previouslabel . "');\n\t";
 
+        if (!empty($this->__nextclass)) {
+        	$strJs .= "objForm.setClass('next', '" . $this->__nextclass . "');\n\t";
+        }
+
+        if (!empty($this->__previousclass)) {
+        	$strJs .= "objForm.setClass('previous', '" . $this->__previousclass . "');\n\t";
+        }
+
         if (strlen($strCustomJs) > 0) {
             $strJs .= $strCustomJs;
         }
 
-        return parent::__toJs($strJs, $arrInitArguments);
+        return parent::__toJs($strJs, $arrInitArguments, $blnRawJs);
     }
 
     /**
@@ -577,6 +619,8 @@ class ValidWizard extends ValidForm
     /**
      * See {@link \ValidFormBuilder\ValidForm::isValid()}
      * @see \ValidFormBuilder\ValidForm::isValid()
+     * @param null $strPageId Optional. If page ID is given, only that page will be validated.
+     * @return bool True if successful, false if one of the fields contains an error.
      */
     public function isValid($strPageId = null)
     {

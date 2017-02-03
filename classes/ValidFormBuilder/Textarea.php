@@ -162,10 +162,10 @@ class Textarea extends Element
 
         $varValue = htmlspecialchars($varValue, ENT_QUOTES);
 
-        $strOutput .= "<textarea name=\"{$strName}\" id=\"{$strId}\" {$this->__getFieldMetaString()}>{$varValue}</textarea>\n";
+        $strOutput .= "<textarea name=\"{$strName}\" id=\"{$strId}\"{$this->__getFieldMetaString()}>{$varValue}</textarea>\n";
 
         if (! empty($this->__tip)) {
-            $strOutput .= "<small class=\"vf__tip\">{$this->__tip}</small>\n";
+            $strOutput .= "<small class=\"vf__tip\"{$this->__getTipMetaString()}>{$this->__tip}</small>\n";
         }
 
         $strOutput .= "</div>\n";
@@ -185,8 +185,7 @@ class Textarea extends Element
     public function toJS($intDynamicPosition = 0)
     {
         $strOutput = "";
-        $strCheck = $this->__validator->getCheck();
-        $strCheck = (empty($strCheck)) ? "''" : str_replace("'", "\\'", $strCheck);
+        $strCheck = $this->__sanitizeCheckForJs($this->__validator->getCheck());
         $strRequired = ($this->__validator->getRequired()) ? "true" : "false";
         $intMaxLength = ($this->__validator->getMaxLength() > 0) ? $this->__validator->getMaxLength() : "null";
         $intMinLength = ($this->__validator->getMinLength() > 0) ? $this->__validator->getMinLength() : "null";

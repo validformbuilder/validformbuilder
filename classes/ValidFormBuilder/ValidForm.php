@@ -21,6 +21,8 @@
 
 namespace ValidFormBuilder;
 
+use Volnix\CSRF\CSRF;
+
 /**
  * ValidForm Builder main class - all the magic starts here.
  *
@@ -81,6 +83,7 @@ namespace ValidFormBuilder;
  * @method array getDefaults() getDefaults() Returns the value of `$__defaults`
  * @method string getAction() getAction() Returns the value of `$__action`
  * @method void setAction() setAction(string $strFormAction) Overwrites the value of `$__action`
+ * @method void setUseCsrfProtection() setUseCsrfProtection(boolean $value) Overwrites the value of `$__usecsrfprotection`
  * @method string getSubmitLabel() getSubmitLabel() Returns the value of `$__submitlabel`
  * @method void setSubmitLabel() setSubmitLabel(string $strSubmitLabel) Overwrites the value of `$__submitlabel`
  * @method array getJsEvents() getJsEvents() Returns the value of `$__jsevents`
@@ -109,101 +112,121 @@ class ValidForm extends ClassDynamic
      * @var number
      */
     const VFORM_STRING = 1;
+
     /**
      * Textarea element type
      * @var number
      */
     const VFORM_TEXT = 2;
+
     /**
      * Input type[text] with numeric validation
      * @var number
      */
     const VFORM_NUMERIC = 3;
+
     /**
      * Input type[text] with integer validation
      * @var number
      */
     const VFORM_INTEGER = 4;
+
     /**
      * Input type[text] with single word validation
      * @var number
      */
     const VFORM_WORD = 5;
+
     /**
      * Input type[text] with email validation
      * @var number
      */
     const VFORM_EMAIL = 6;
+
     /**
      * Input type[password]
      * @var number
      */
     const VFORM_PASSWORD = 7;
+
     /**
      * Input type[text] with basic URL validation
      * @var number
      */
     const VFORM_SIMPLEURL = 8;
+
     /**
      * Input type[file]
      * @var number
      */
     const VFORM_FILE = 9;
+
     /**
      * Input type[radio]
      * @var number
      */
     const VFORM_BOOLEAN = 10;
+
     /**
      * Group element. Each added element is an input[type=radio]
      * @var number
      */
     const VFORM_RADIO_LIST = 12;
+
     /**
      * Group element. Each added element is an input[type=checkbox]
      * @var number
      */
     const VFORM_CHECK_LIST = 13;
+
     /**
      * Group element. Each added element is an option element
      * @var number
      */
     const VFORM_SELECT_LIST = 14;
+
     /**
      * Not an element. This creates a paragraph in between form fields.
      * @var number
      */
     const VFORM_PARAGRAPH = 15;
+
     /**
      * Input element
      * @var number
      */
     const VFORM_CURRENCY = 16;
+
     /**
      * Input type[text] with European date validation (dd/mm/yyyy)
      * @var number
      */
     const VFORM_DATE = 17;
+
     /**
      * Input type[text] with custom regular expression validation
      * @var number
      */
     const VFORM_CUSTOM = 18;
+
     /**
      * Textarea with custom regular expression validation
      * @var number
      */
     const VFORM_CUSTOM_TEXT = 19;
+
     /**
      * Textarea with basic input validation + HTML tags allowed
      * @var number
      */
     const VFORM_HTML = 20;
+
     /**
      * Input type[text] with url validation
      * @var number
      */
     const VFORM_URL = 21;
+
     /**
      * Input type[hidden]
      * @var number
@@ -215,56 +238,73 @@ class ValidForm extends ClassDynamic
      * @var string
      */
     const VFORM_COMPARISON_EQUAL = "equal";
+
     /**
      * Check if this value is **not** equal (case insensitive)
      * @var string
      */
     const VFORM_COMPARISON_NOT_EQUAL = "notequal";
+
     /**
      * Check if this value is empty
      * @var stringq
      */
     const VFORM_COMPARISON_EMPTY = "empty";
+
     /**
      * Check if this value is **not** empty
      * @var string
      */
     const VFORM_COMPARISON_NOT_EMPTY = "notempty";
+
     /**
      * Check if this value is less than
      * @var string
      */
     const VFORM_COMPARISON_LESS_THAN = "lessthan";
+
     /**
      * Check if this value is greater than
      * @var string
      */
     const VFORM_COMPARISON_GREATER_THAN = "greaterthan";
+
     /**
      * Check if this value is less than or equal
      * @var string
      */
     const VFORM_COMPARISON_LESS_THAN_OR_EQUAL = "lessthanorequal";
+
     /**
      * Check if this value is greater than or equal
      * @var string
      */
     const VFORM_COMPARISON_GREATER_THAN_OR_EQUAL = "greaterthanorequal";
+
     /**
      * Check if the value contains this string (case insensitive)
      * @var string
      */
     const VFORM_COMPARISON_CONTAINS = "contains";
+
+    /**
+     * Check if the value does not contain this string (case insensitive)
+     * @var string
+     */
+    const VFORM_COMPARISON_DOES_NOT_CONTAIN = "doesnotcontain";
+
     /**
      * Check if the value **starts** with this string
      * @var string
      */
     const VFORM_COMPARISON_STARTS_WITH = "startswith";
+
     /**
      * Check if the value **ends** with this string
      * @var string
      */
     const VFORM_COMPARISON_ENDS_WITH = "endswith";
+
     /**
      * Check if the value matches your own custom regular expression
      * @var string
@@ -278,6 +318,7 @@ class ValidForm extends ClassDynamic
      * @var string
      */
     const VFORM_MATCH_ALL = "all";
+
     /**
      * ValidForm Condition match
      *
@@ -292,54 +333,70 @@ class ValidForm extends ClassDynamic
      * @var string
      */
     protected $__description;
+
     /**
      * Form's custom meta like style, classes etc.
      * @internal
      * @var array
      */
     protected $__meta;
+
     /**
      * Default values array
      * @internal
      * @var array
      */
     protected $__defaults = array();
+
     /**
      * The HTML <form>-tag's 'action' attribute value
      * @internal
      * @var string
      */
     protected $__action;
+
+    /**
+     * Indication wether to protect from CSRF attacks or not.
+     * @internal
+     * @var boolean
+     */
+    protected $__usecsrfprotection = true;
+
     /**
      * The submit button's label
      * @internal
      * @var string
      */
     protected $__submitlabel;
+
     /**
      * An array of custom javascript events to include in javascript parsing
      * @internal
      * @var array
      */
     protected $__jsevents = array();
+
     /**
      * The main elements Collection
      * @internal
      * @var \ValidFormBuilder\Collection
      */
     protected $__elements;
+
     /**
      * The form's name
      * @internal
      * @var string
      */
     protected $__name;
+
     /**
      * The main alert to be shown when any alert has happened after trying to submit.
      * @internal
      * @var string
      */
     protected $__mainalert;
+
     /**
      * Define the field required style. Note: **This value will be passed to `sprintf`** so be sure to throw in an %s.
      *
@@ -353,6 +410,7 @@ class ValidForm extends ClassDynamic
      * @var string
      */
     protected $__requiredstyle;
+
     /**
      * This message is shown in `valuesAsHtml()` output when for
      * example an area or fieldset don't contain any submitted values.
@@ -360,12 +418,23 @@ class ValidForm extends ClassDynamic
      * @var string
      */
     protected $__novaluesmessage;
+
+    /**
+     * Wether or not server side validation errors should be displayed. This property is used together with
+     * the forceSubmitted parameter in the toHtml method to determine if validation errors should be shown for
+     * fields that have values injected using forceSubmitted.
+     *
+     * @var boolean
+     */
+    protected $__displayerrors = false;
+
     /**
      * The collection of cached fields.
      * @internal
      * @var \ValidFormBuilder\Collection
      */
     private $__cachedfields = null;
+
     /**
      * A uniquely generated string to identify the form with.
      * @internal
@@ -461,14 +530,14 @@ class ValidForm extends ClassDynamic
      * Enter the amount:   $ _____
      * ```
      *
-     * In this example, we used String to inject the dollar sign before our input field.
+     * In this example, we used StaticText to inject the dollar sign before our input field.
      *
      * @param string $html The string or HTML code to inject
-     * @return \ValidFormBuilder\String
+     * @return \ValidFormBuilder\StaticText
      */
     public function addHtml($html)
     {
-        $objString = new String($html);
+        $objString = new StaticText($html);
         $this->__elements->addObject($objString);
 
         return $objString;
@@ -892,7 +961,7 @@ class ValidForm extends ClassDynamic
      *
      * @return string Generated HTML output
      */
-    public function toHtml($blnClientSide = true, $blnForceSubmitted = false, $strCustomJs = "")
+    public function toHtml($blnClientSide = true, $blnForceSubmitted = null, $strCustomJs = "")
     {
         $strOutput = "";
 
@@ -908,6 +977,8 @@ class ValidForm extends ClassDynamic
             }
         }
 
+        $blnForceSubmitted = (is_null($blnForceSubmitted)) ? $this->isSubmitted() : $blnForceSubmitted;
+
         $strOutput .= "<form " .
             "id=\"{$this->__name}\" " .
             "method=\"post\" " .
@@ -916,24 +987,30 @@ class ValidForm extends ClassDynamic
             "class=\"{$strClass}\"{$this->__metaToData()}>\n";
 
         // *** Main error.
-        if ($this->isSubmitted() && ! empty($this->__mainalert)) {
+        if ($blnForceSubmitted && !empty($this->__mainalert)) {
             $strOutput .= "<div class=\"vf__main_error\"><p>{$this->__mainalert}</p></div>\n";
         }
 
-        if (! empty($this->__description)) {
+        if (!empty($this->__description)) {
             $strOutput .= "<div class=\"vf__description\"><p>{$this->__description}</p></div>\n";
         }
 
         $blnNavigation = false;
         $strOutput .= $this->fieldsToHtml($blnForceSubmitted, $blnNavigation);
 
-        if (! $blnNavigation) {
+        if (!$blnNavigation) {
             $strOutput .= "<div class=\"vf__navigation vf__cf\">\n";
             $strOutput .= "<input type=\"submit\" value=\"{$this->__submitlabel}\" class=\"vf__button\" />\n";
             $strOutput .= "</div>\n";
         }
 
         $strOutput .= "<input type=\"hidden\" name=\"vf__dispatch\" value=\"{$this->__name}\" />\n";
+
+        if ($this->__usecsrfprotection) {
+            $strOutput .= "<input type=\"hidden\" name=\"" . CSRF::TOKEN_NAME
+                . "\" value=\"" . CSRF::getToken() . "\" />\n";
+        }
+
         $strOutput .= "</form>";
 
         return $strOutput;
@@ -987,8 +1064,9 @@ class ValidForm extends ClassDynamic
             }
         }
 
+        $blnDisplayErrors = ($this->isSubmitted()) ? true : $this->getDisplayErrors();
         foreach ($this->__elements as $element) {
-            $strReturn .= $element->toHtml($this->isSubmitted($blnForceSubmitted), false, true, $blnForceSubmitted);
+            $strReturn .= $element->toHtml($this->isSubmitted($blnForceSubmitted), false, true, $blnDisplayErrors);
 
             if (get_class($element) == "ValidFormBuilder\\Navigation") {
                 $blnNavigation = true;
@@ -1044,14 +1122,17 @@ class ValidForm extends ClassDynamic
      * Check if the form is submitted by validating the value of the hidden
      * vf__dispatch field.
      *
-     * @param boolean $blnForce
-     *            Fake isSubmitted to true to force field values.
-     * @return boolean [description]
+     * @param boolean $blnForce Fake isSubmitted to true to force field values.
+     * @return boolean
      */
     public function isSubmitted($blnForce = false)
     {
         if (ValidForm::get("vf__dispatch") == $this->__name || $blnForce) {
-            return true;
+            if ($this->__usecsrfprotection && !$blnForce) {
+                return CSRF::validate($_POST);
+            } else {
+                return true;
+            }
         } else {
             return false;
         }
@@ -1314,6 +1395,12 @@ class ValidForm extends ClassDynamic
     public function fieldsetAsHtml($objFieldset, &$strSet, $hideEmpty = false)
     {
         $strTableOutput = "";
+        
+        // If this fieldset was rendered invisible due to conditions,
+        // don't show it on the valuesAsHtml overview either.
+        if (!$this->elementShouldDisplay($objFieldset)) {
+            return $strTableOutput;
+        }
 
         foreach ($objFieldset->getFields() as $objField) {
             if (is_object($objField) && get_class($objField) !== "ValidFormBuilder\\Hidden") {
@@ -1393,8 +1480,12 @@ class ValidForm extends ClassDynamic
     {
         $strReturn = "";
         $strSet = "";
+        
+        // If this area was rendered invisible due to conditions,
+        // don't show it on the valuesAsHtml overview either.
+        $blnShouldDisplay = $this->elementShouldDisplay($objField);
 
-        if ($objField->hasContent($intDynamicCount)) {
+        if ($objField->hasContent($intDynamicCount) && $blnShouldDisplay) {
             foreach ($objField->getFields() as $objSubField) {
                 if (get_class($objSubField) !== "ValidFormBuilder\\Paragraph") {
                     switch (get_class($objSubField)) {
@@ -1418,22 +1509,21 @@ class ValidForm extends ClassDynamic
         }
 
         $strLabel = $objField->getShortLabel();
-        if (! empty($strSet)) {
-
-            if (! empty($strLabel)) {
+        if (!empty($strSet)) {
+            if (!empty($strLabel)) {
                 $strReturn = "<tr>";
-                $strReturn .= "<td colspan=\"3\" style=\"white-space:nowrap\" class=\"vf__area_header\">" .
-                $strReturn .= "<h3>{$strLabel}</h3>" .
+                $strReturn .= "<td colspan=\"3\" style=\"white-space:nowrap\" class=\"vf__area_header\">";
+                $strReturn .= "<h3>{$strLabel}</h3>";
                 $strReturn .= "</td>\n";
                 $strReturn .= "</tr>";
             }
 
             $strReturn .= $strSet;
         } else {
-            if (! empty($this->__novaluesmessage) && $objField->isActive()) {
+            if (!empty($this->__novaluesmessage) && $objField->isActive()) {
                 $strReturn = "<tr>";
-                $strReturn .= "<td colspan=\"3\" style=\"white-space:nowrap\" class=\"vf__area_header\">" .
-                $strReturn .= "<h3>{$strLabel}</h3>" .
+                $strReturn .= "<td colspan=\"3\" style=\"white-space:nowrap\" class=\"vf__area_header\">";
+                $strReturn .= "<h3>{$strLabel}</h3>";
                 $strReturn .= "</td>\n";
                 $strReturn .= "</tr>";
 
@@ -1458,6 +1548,12 @@ class ValidForm extends ClassDynamic
     private function multiFieldAsHtml($objField, $hideEmpty = false, $intDynamicCount = 0)
     {
         $strReturn = "";
+        
+        // If this multi field was rendered invisible due to conditions,
+        // don't show it on the valuesAsHtml overview either.
+        if (!$this->elementShouldDisplay($objField)) {
+            return $strReturn;
+        }
 
         if ($objField->hasContent($intDynamicCount)) {
             if ($objField->hasFields()) {
@@ -1481,17 +1577,17 @@ class ValidForm extends ClassDynamic
                 $strLabel = $objField->getShortLabel();
 
                 if ((! empty($strValue) && $hideEmpty) || (! $hideEmpty && ! empty($strValue))) {
-                    $strValue = nl2br($strValue);
                     $strValue = htmlspecialchars($strValue, ENT_QUOTES);
+                    $strValue = nl2br($strValue);
 
                     $strReturn .= "<tr class=\"vf__field_value\">";
-                    $strReturn .= "<td valign=\"top\" " .
-                    $strReturn .= "style=\"white-space:nowrap; padding-right: 20px\" " .
-                    $strReturn .= "class=\"vf__field\">" .
-                    $strReturn .= $strLabel .
-                    $strReturn .= "</td>" .
-                    $strReturn .= "<td valign=\"top\" class=\"vf__value\">" .
-                    $strReturn .= "<strong>" . $strValue . "</strong>" .
+                    $strReturn .= "<td valign=\"top\"";
+                    $strReturn .= " style=\"white-space:nowrap; padding-right: 20px\"";
+                    $strReturn .= " class=\"vf__field\">";
+                    $strReturn .= $strLabel;
+                    $strReturn .= "</td>";
+                    $strReturn .= "<td valign=\"top\" class=\"vf__value\">";
+                    $strReturn .= "<strong>" . $strValue . "</strong>";
                     $strReturn .= "</td>\n";
                     $strReturn .= "</tr>";
                 }
@@ -1518,6 +1614,12 @@ class ValidForm extends ClassDynamic
         $strLabel = $objField->getShortLabel(); // Passing 'true' gets the short label if available.
         $varValue = ($intDynamicCount > 0) ? $objField->getValue($intDynamicCount) : $objField->getValue();
         $strValue = (is_array($varValue)) ? implode(", ", $varValue) : $varValue;
+        
+        // If this field was rendered invisible due to conditions,
+        // don't show it on the valuesAsHtml overview either.
+        if (!$this->elementShouldDisplay($objField)) {
+            return $strReturn;
+        }
 
         if ((! empty($strValue) && $hideEmpty) || (! $hideEmpty && ! is_null($strValue))) {
             if ((get_class($objField) == "ValidFormBuilder\\Hidden") && $objField->isDynamicCounter()) {
@@ -1532,15 +1634,15 @@ class ValidForm extends ClassDynamic
                 if (empty($strLabel) && empty($strValue)) {
                     // *** Skip the field.
                 } else {
-                    $strValue = nl2br($strValue);
                     $strValue = htmlspecialchars($strValue, ENT_QUOTES);
+                    $strValue = nl2br($strValue);
 
                     $strReturn .= "<tr class=\"vf__field_value\">";
-                    $strReturn .= "<td valign=\"top\" style=\"padding-right: 20px\" class=\"vf__field\">" .
-                    $strReturn .= $strLabel .
-                    $strReturn .= "</td>" .
-                    $strReturn .= "<td valign=\"top\" class=\"vf__value\">" .
-                    $strReturn .= "<strong>" . $strValue . "</strong>" .
+                    $strReturn .= "<td valign=\"top\" style=\"padding-right: 20px\" class=\"vf__field\">";
+                    $strReturn .= $strLabel;
+                    $strReturn .= "</td>";
+                    $strReturn .= "<td valign=\"top\" class=\"vf__value\">";
+                    $strReturn .= "<strong>" . $strValue . "</strong>";
                     $strReturn .= "</td>\n";
                     $strReturn .= "</tr>";
                 }
@@ -1595,7 +1697,7 @@ class ValidForm extends ClassDynamic
     }
 
     /**
-     * Read parameters from the `$_REQUEST` array with an optional fallback value
+     * Read parameters from the `$_REQUEST` array and body string with an optional fallback value
      *
      * @param string $param The parameter to read
      * @param string $replaceEmpty Optional replace value when parameter is not available or empty
@@ -1605,9 +1707,51 @@ class ValidForm extends ClassDynamic
     {
         $strReturn = (isset($_REQUEST[$param])) ? $_REQUEST[$param] : "";
 
-        if (empty($strReturn) && ! is_numeric($strReturn) && $strReturn !== 0) {
-            $strReturn = $replaceEmpty;
+        if (empty($strReturn) && !is_numeric($strReturn) && $strReturn !== 0) {
+            //*** Try PUT or DELETE.
+            $strReturn = static::getHttpBodyValue($param, "");
+
+            if (empty($strReturn) && !is_numeric($strReturn) && $strReturn !== 0) {
+                //*** Return replace value.
+                $strReturn = $replaceEmpty;
+            }
         }
+
+        return $strReturn;
+    }
+
+    /**
+     * Read parameters from the `$_REQUEST` array and body string and determine if it is "set".
+     *
+     * @param string $param The parameter to read
+     * @return boolean
+     */
+    public static function getIsSet($param)
+    {
+        $blnReturn = (isset($_REQUEST[$param]));
+
+        if (!$blnReturn) {
+            //*** Try PUT or DELETE.
+            $strPutValue = static::getHttpBodyValue($param);
+
+            $blnReturn = (!is_null($strPutValue));
+        }
+
+        return $blnReturn;
+    }
+
+    /**
+     * Get the value of a form field from the raw HTTP body. This is used for PUT and DELETE HTTP methods.
+     *
+     * @param string $param The parameter to read
+     * @param string $varReplaceNotSet Optional replace value when parameter is not set in the body
+     * @return Ambigous <string, array>
+     */
+    public static function getHttpBodyValue($param, $varReplaceNotSet = null)
+    {
+        parse_str(file_get_contents('php://input'), $arrPostVars);
+
+        $strReturn = (isset($arrPostVars[$param])) ? $arrPostVars[$param] : $varReplaceNotSet;
 
         return $strReturn;
     }
@@ -1664,8 +1808,8 @@ class ValidForm extends ClassDynamic
          * If that javascript class is not available / does not exist, continue initializing ValidForm as usual.
          */
         if ($strCalledClass !== "ValidForm") {
-            $strReturn .= "\tvar objForm = (typeof {$strCalledClass} !== \"undefined\") ? " .
-            $strReturn .= "new {$strCalledClass}({$strArguments}) : " .
+            $strReturn .= "\tvar objForm = (typeof {$strCalledClass} !== \"undefined\") ? ";
+            $strReturn .= "new {$strCalledClass}({$strArguments}) : ";
             $strReturn .= "new ValidForm(\"{$this->__name}\", \"{$this->__mainalert}\");\n";
         } else {
             $strReturn .= "\tvar objForm = new ValidForm(\"{$this->__name}\", \"{$this->__mainalert}\");\n";
@@ -1694,6 +1838,32 @@ class ValidForm extends ClassDynamic
         }
 
         return $strReturn;
+    }
+
+    /**
+     * Check if an element should be visible according to an optionally attached "visible" condition.
+     *
+     * @param Base $objElement
+     * @param $intDynamicCount
+     * @return bool|true
+     */
+    protected function elementShouldDisplay(Base $objElement)
+    {
+        $blnReturn = true;
+
+        $objCondition = $objElement->getConditionRecursive("visible");
+        if (is_object($objCondition)) {
+            // If the condition is met for the first element,
+            // it automatically applies to the dynamic clones as well.
+            // Therefore we only check dynamic counter 0
+            if ($objCondition->isMet(0)) {
+                $blnReturn = $objCondition->getValue();
+            } else {
+                $blnReturn = !$objCondition->getValue();
+            }
+        }
+
+        return $blnReturn;
     }
 
     /**
@@ -1751,6 +1921,7 @@ class ValidForm extends ClassDynamic
      */
     public static function getStrippedClassName($classname)
     {
+        // Find the position of the last occurrence of \\ in $classname with strrpos
         $pos = strrpos($classname, '\\');
         if ($pos) {
             return substr($classname, $pos + 1);

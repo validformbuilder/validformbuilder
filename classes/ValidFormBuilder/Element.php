@@ -100,6 +100,12 @@ class Element extends Base
      * @var Validator
      */
     protected $__validator;
+    /**
+     * Sanitize actions
+     * @internal
+     * @var array
+     */
+    protected $__sanitize;
 
     /**
      * Create new element
@@ -133,6 +139,8 @@ class Element extends Base
         $this->__dynamic = $this->getMeta("dynamic", $this->__dynamic);
         $this->__dynamicLabel = $this->getMeta("dynamicLabel", $this->__dynamicLabel);
         $this->__dynamiccounter = (! is_null($this->getMeta("dynamicCounter", null))) ? true : $this->__dynamiccounter;
+
+        $this->__sanitize = $this->getMeta("sanitize", $this->__sanitize);
 
         // $this->__validator = new FieldValidator($name, $type, $validationRules, $errorHandlers, $this->__hint);
         $this->__validator = new FieldValidator($this, $validationRules, $errorHandlers);
@@ -281,7 +289,7 @@ class Element extends Base
      * ```
      *
      * @param string $strError The error message
-     * @param number $intDynamicPosition Set the error message on a specific dynamic field with this index
+     * @param integer $intDynamicPosition Set the error message on a specific dynamic field with this index
      */
     public function setError($strError, $intDynamicPosition = 0)
     {
@@ -290,7 +298,10 @@ class Element extends Base
     }
 
     /**
+     * Placeholder method
+     * @param integer $intDynamicPosition Dynamic position counter
      * @see \ValidFormBuilder\Base::toJS()
+     * @return string
      */
     public function toJS($intDynamicPosition = 0)
     {
@@ -298,9 +309,9 @@ class Element extends Base
     }
 
     /**
-     * Generate a random ID
+     * Generate a random ID for a given field name to prevent having two fields with the same name
      * @internal
-     * @param string $name Fieldname
+     * @param string $name Field name
      * @return string
      */
     public function getRandomId($name)
@@ -324,7 +335,8 @@ class Element extends Base
      * collection and calls this method for each element it finds.
      *
      * @see \ValidFormBuilder\Validator::validate()
-     * @return boolean True if field validates, false if not.
+     * @param null $intCount Optional. If set, only the dynamic field with this index will be validated.
+     * @return bool True if field validates, false if not.
      */
     public function isValid($intCount = null)
     {
@@ -402,6 +414,37 @@ class Element extends Base
             $varValue = $objValidator->getValidValue($intDynamicPosition);
         } else {
             $varValue = $this->__validator->getValidValue();
+        }
+
+        //*** Sanitize the value before returning.
+        $varValue = $this->sanitize($varValue);
+
+        return $varValue;
+    }
+
+    /**
+     * Sanitize a value according to the order of actions in __sanitize.
+     *
+     * @param mixed $varValue
+     */
+    protected function sanitize($varValue)
+    {
+        if (is_array($this->__sanitize)) {
+            foreach ($this->__sanitize as $value) {
+                try {
+                    if (is_string($value)) {
+                        switch ($value) {
+                            case "trim":
+                                $varValue = trim($varValue);
+                                break;
+                        }
+                    } else if (is_callable($value)) {
+                        $varValue = $value($varValue);
+                    }
+                } catch (\Exception $ex) {
+                    //*** Sanitisation failed. Continue silently.
+                }
+            }
         }
 
         return $varValue;

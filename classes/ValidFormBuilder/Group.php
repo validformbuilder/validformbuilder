@@ -167,7 +167,7 @@ class Group extends Element
         foreach ($this->__fields as $objField) {
             switch (get_class($objField)) {
                 case "ValidFormBuilder\\GroupField":
-                    $strOutput .= $objField->toHtml($this->__getValue($submitted, $intCount), $submitted, $intCount);
+                    $strOutput .= $objField->toHtmlInternal($this->__getValue($submitted, $intCount), $submitted, $intCount);
 
                     break;
             }
@@ -176,7 +176,7 @@ class Group extends Element
         $strOutput .= "</fieldset>\n";
 
         if (! empty($this->__tip)) {
-            $strOutput .= "<small class=\"vf__tip\">{$this->__tip}</small>\n";
+            $strOutput .= "<small class=\"vf__tip\"{$this->__getTipMetaString()}>{$this->__tip}</small>\n";
         }
 
         $strOutput .= "</div>\n";
@@ -195,8 +195,7 @@ class Group extends Element
     public function toJS($intDynamicPosition = 0)
     {
         $strOutput = "";
-        $strCheck = $this->__validator->getCheck();
-        $strCheck = (empty($strCheck)) ? "''" : str_replace("'", "\\'", $strCheck);
+        $strCheck = $this->__sanitizeCheckForJs($this->__validator->getCheck());
         $strRequired = ($this->__validator->getRequired()) ? "true" : "false";
         $intMaxLength = ($this->__validator->getMaxLength() > 0) ? $this->__validator->getMaxLength() : "null";
         $intMinLength = ($this->__validator->getMinLength() > 0) ? $this->__validator->getMinLength() : "null";
@@ -245,7 +244,8 @@ class Group extends Element
      * This automatically strips off the [] from a checkbox ID
      *
      * @see \ValidFormBuilder\Base::getName()
-     * @return string The element's ID
+     * @param bool $blnPlain If false, [] will be stripped from a checklist group name
+     * @return string The element's name
      */
     public function getName($blnPlain = false)
     {

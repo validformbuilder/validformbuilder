@@ -173,7 +173,7 @@ form.validform fieldset.vf__disabled legend label {
 form.validform fieldset fieldset input[type="radio"],
 form.validform fieldset fieldset input[type="checkbox"] 
 {
-	margin-right: 2px;
+	margin-right: 7px;
 }
 
 form.validform .vf__hide {
