@@ -1425,7 +1425,7 @@ ValidFormElement.prototype.setRequired = function (blnValue) {
 
     var $element = $("[name='" + this.name + "']");
 
-    var $parent = $element.closest("div.vf__optional, div.vf__required");
+    var $parent = $element.parentsUntil('div.vf__optional, div.vf__required').parent();
     if (blnValue) {
         // Required == true
         $parent.removeClass("vf__optional").addClass("vf__required");
