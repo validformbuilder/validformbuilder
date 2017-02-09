@@ -1113,7 +1113,7 @@ ValidFormCondition.prototype.set = function (blnResult) {
                     $objBase.next().show();
                 }
 
-                $objSubject.nextAll(".vf__clone, .vf__dynamic").show();
+                $objBase.nextAll(".vf__clone, .vf__dynamic").show();
 
                 // Set enabled back to default state
                 Util.enabled(null, true);
@@ -1138,7 +1138,7 @@ ValidFormCondition.prototype.set = function (blnResult) {
                     $objBase.next().hide();
                 }
 
-                $objSubject.nextAll(".vf__clone, .vf__dynamic").hide();
+                $objBase.nextAll(".vf__clone, .vf__dynamic").hide();
 
                 // Set enabled back to default state
                 Util.enabled(false);
