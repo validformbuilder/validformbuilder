@@ -257,16 +257,20 @@ ValidForm.prototype.dynamicDuplication = function () {
                     search = fieldname;
                 } else {
                     search = fieldname + "_" + (counterValue - 1);
+                }
 
-                    if (blnHasBrackets) {
-                        search += "[]";
-                    }
+                if (blnHasBrackets) {
+                    search += "[]";
                 }
 
                 //*** Add fields to the form collection.
                 if (objOriginalElement !== null) { // objOriginalElement is null if there is a paragraph in the area.
                     objNewElement.id = ids[index] + "_" + counter.val();
                     objNewElement.name = fieldname + "_" + counter.val();
+                    if (blnHasBrackets) {
+                        objNewElement.name += '[]';
+                    }
+
                     objNewElement.validator = jQuery.extend(new ValidFormFieldValidator(), objOriginalElement.validator);
                     objNewElement.validator.id = objNewElement.id;
                     objNewElement.validator.required = false;
