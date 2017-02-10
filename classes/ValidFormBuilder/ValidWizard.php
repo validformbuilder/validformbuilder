@@ -204,6 +204,10 @@ class ValidWizard extends ValidForm
     public function getPage($intIndex = 0)
     {
         $intIndex --; // Convert page no. to index no.
+        if ($intIndex < 0) {
+            $intIndex = 0;
+        }
+
         $this->__elements->seek($intIndex);
 
         $objReturn = $this->__elements->current();
