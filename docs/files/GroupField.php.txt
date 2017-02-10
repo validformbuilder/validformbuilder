@@ -2,18 +2,18 @@
 /**
  * ValidForm Builder - build valid and secure web forms quickly
  *
- * Copyright (c) 2009-2014 Neverwoods Internet Technology - http://neverwoods.com
+ * Copyright (c) 2009-2017 Neverwoods Internet Technology - http://neverwoods.com
  *
  * Felix Langfeldt <felix@neverwoods.com>
- * Robin van Baalen <robin@neverwoods.com>
+ * Robin van Baalen <robin@cattlea.com>
  *
  * All rights reserved.
  *
  * This software is released under the GNU GPL v2 License <http://www.gnu.org/licenses/old-licenses/gpl-2.0.html>
  *
  * @package ValidForm
- * @author Felix Langfeldt <felix@neverwoods.com>, Robin van Baalen <robin@neverwoods.com>
- * @copyright 2009-2014 Neverwoods Internet Technology - http://neverwoods.com
+ * @author Felix Langfeldt <felix@neverwoods.com>, Robin van Baalen <robin@cattlea.com>
+ * @copyright 2009-2017 Neverwoods Internet Technology - http://neverwoods.com
  * @license http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU GPL v2
  * @link http://validformbuilder.org
  */
@@ -26,7 +26,7 @@ namespace ValidFormBuilder;
  *
  * @package ValidForm
  * @author Felix Langfeldt <felix@neverwoods.com>
- * @author Robin van Baalen <robin@neverwoods.com>
+ * @author Robin van Baalen <robin@cattlea.com>
  * @version Release: 3.0.0
  */
 class GroupField extends Element
