@@ -118,6 +118,13 @@ class Area extends Base
     protected $__dynamicLabel;
 
     /**
+     * The label which a user can click to remove a cloned dynamic area
+     * @internal
+     * @var string
+     */
+    protected $__dynamicRemoveLabel;
+
+    /**
      * Using the dynamic 'setRequiredStyle()', you can add for instance an asterix to each required field like so:
      * $this->setRequiredStyle('%s *'); // First show the label, %s, then show an asterix after the label.
      * @internal
@@ -161,6 +168,7 @@ class Area extends Base
 
         $this->__dynamic = $this->getMeta("dynamic", null);
         $this->__dynamicLabel = $this->getMeta("dynamicLabel", null);
+        $this->__dynamicRemoveLabel = $this->getMeta("dynamicRemoveLabel", null);
     }
 
     /**
@@ -174,7 +182,7 @@ class Area extends Base
      * @param array $validationRules Standard validation rules array
      * @param array $errorHandlers Standard error handler array
      * @param array $meta Standard meta array
-     * @return Ambigous <NULL, \ValidFormBuilder\Element> Returns an instance of the field type generated
+     * @return null|\ValidFormBuilder\Element Returns an instance of the field type generated
      */
     public function addField($name, $label, $type, $validationRules = array(), $errorHandlers = array(), $meta = array())
     {
@@ -351,6 +359,12 @@ class Area extends Base
             $this->setMeta("class", "vf__clone");
         }
 
+        $removeLabel = $this->getMeta('dynamicRemoveLabel');
+        $hasRemoveLabel = !empty($removeLabel);
+        if ($hasRemoveLabel) {
+            $this->setMeta("class", "vf__removable");
+        }
+
         $strId = ($intCount == 0) ? " id=\"{$this->getId()}\"" : "";
         $strOutput = "<fieldset{$this->__getMetaString()}{$strId}>\n";
 
@@ -373,6 +387,10 @@ class Area extends Base
 
             // $submitted = ($this->__active && !$blnHasContent) ? FALSE : $submitted;
             $strOutput .= $objField->__toHtml($submitted, $blnSimpleLayout, $blnLabel, $blnDisplayErrors, $intCount);
+        }
+
+        if ($hasRemoveLabel) {
+            $strOutput .= "<a class='vf__removeLabel' href='#remove-" . $this->getId() . "'>" . $removeLabel . "</a>";
         }
 
         $strOutput .= "</fieldset>\n";
