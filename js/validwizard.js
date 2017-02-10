@@ -3,7 +3,7 @@
  * This class extends the ValidForm javascript class with added
  * support for pagination and other fancy wizard stuff.
  *
- * @author Robin van Baalen <robin@neverwoods.com>
+ * @author Robin van Baalen <robin@cattlea.com>
  *
  * CHANGELOG
  * 	1.0	Initial release
