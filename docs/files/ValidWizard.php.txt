@@ -198,13 +198,17 @@ class ValidWizard extends ValidForm
     /**
      * Get a page from the collection based on it's zero-based position in the elements collection
      *
-     * @param Integer $intIndex Zero-based position
+     * @param Integer $intPage The page number, starting at 1.
      * @return \ValidFormBuilder\Page Page element, if found.
      */
-    public function getPage($intIndex = 0)
+    public function getPage($intPage = 1)
     {
-        $intIndex --; // Convert page no. to index no.
-        $this->__elements->seek($intIndex);
+        $intPage--; // Convert page no. to index no.
+        if ($intPage < 0) {
+            $intPage = 0;
+        }
+
+        $this->__elements->seek($intPage);
 
         $objReturn = $this->__elements->current();
         if ($objReturn === false || get_class($objReturn) !== "ValidFormBuilder\\Page") {
