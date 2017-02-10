@@ -154,6 +154,7 @@ class Base extends ClassDynamic
         "valueRange",
         "dynamic",
         "dynamicLabel",
+        "dynamicRemoveLabel",
         "matchWith",
         "uniqueId",
         "sanitize"
