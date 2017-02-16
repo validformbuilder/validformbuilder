@@ -272,6 +272,11 @@ ValidForm.prototype.dynamicDuplication = function () {
                     newId += '[]';
                 }
 
+                var $correspondingLabel = $("label[for='" + $targetElement.prop('id') + "']");
+                if ($correspondingLabel.length > 0) {
+                    $correspondingLabel.prop('for', newId);
+                }
+
                 $targetElement
                     .prop('id', newId)
                     .prop('name', newId);
