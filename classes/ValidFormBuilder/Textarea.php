@@ -108,7 +108,14 @@ class Textarea extends Element
         $varValue = $this->__getValue($submitted, $intCount);
 
         $blnError = ($submitted && ! $this->__validator->validate($intCount) && $blnDisplayErrors) ? true : false;
-        if (! $blnSimpleLayout) {
+
+        $removeLabel = $this->getMeta('dynamicRemoveLabel');
+        $hasRemoveLabel = !empty($removeLabel);
+        if ($hasRemoveLabel) {
+            $this->setMeta("class", "vf__removable");
+        }
+
+        if (!$blnSimpleLayout) {
             // *** We asume that all dynamic fields greater than 0 are never required.
             if ($this->__validator->getRequired() && $intCount == 0) {
                 $this->setMeta("class", "vf__required");
@@ -166,6 +173,10 @@ class Textarea extends Element
 
         if (! empty($this->__tip)) {
             $strOutput .= "<small class=\"vf__tip\"{$this->__getTipMetaString()}>{$this->__tip}</small>\n";
+        }
+
+        if ($hasRemoveLabel) {
+            $strOutput .= "<a class='vf__removeLabel' href='#'>" . $removeLabel . "</a>";
         }
 
         $strOutput .= "</div>\n";
