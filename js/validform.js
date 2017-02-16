@@ -249,14 +249,23 @@ ValidForm.prototype.dynamicDuplication = function () {
 
         var resetInputNumbering = function ($inputs) {
             $inputs.each(function (index) {
-                if (index === 0) {
+                var currentId = $(this).prop('id');
+                if (currentId.indexOf('_dynamic') > -1) {
                     // We want to skip the hidden 'id_dynamic' field and only renumber the id_*number* fields
                     return true; // equivalent of continue
                 }
 
-                var currentId = $(this).prop('id');
                 var newId = currentId.slice(0, -2) + '_' + index;
                 var $targetElement = $("#" + currentId);
+                var containerId = $targetElement.closest('.vf__removable').prop('id');
+
+                if (typeof containerId !== 'undefined' && containerId !== '') {
+                    // Container element has an ID too, make sure it's properly updated.
+                    var containerIndex = parseInt(containerId.substring(containerId.length, containerId.length - 1)) || 0;
+                    if (containerIndex !== index) {
+                        $("#" + containerId).prop('id', containerId.slice(0, -2) + '_' + index);
+                    }
+                }
 
                 if ($targetElement.is(':radio') || $targetElement.is('checkbox')) {
                     // TODO: Test this with actual radio or checkboxes
@@ -278,7 +287,9 @@ ValidForm.prototype.dynamicDuplication = function () {
             for (var i in ids) {
                 if (ids.hasOwnProperty(i)) {
                     var id = ids[i];
-                    var $inputs = $("[id^='" + id + "_']");
+
+                    //*** Get all the ids but exclude area's which ID's contain '_vf_wrapper'
+                    var $inputs = $("[id^='" + id + "_']").filter(':not([id*="_vf_wrapper"])');
                     resetInputNumbering($inputs);
                 }
             }
@@ -342,7 +353,9 @@ ValidForm.prototype.dynamicDuplication = function () {
                 var objNewElement = jQuery.extend(new ValidFormElement(), objOriginalElement);
 
                 //*** Clear fieldname from brackets
-                fieldname = fieldname.replace("[]", "");
+                if (blnHasBrackets) {
+                    fieldname = fieldname.replace("[]", "");    
+                }                
 
                 //*** Set counter variable on current counter object
                 counter = $("#" + fieldname + "_dynamic");
@@ -391,7 +404,7 @@ ValidForm.prototype.dynamicDuplication = function () {
                         $field.attr("type") == "checkbox"
                     ) {
                         var suffix = '';
-                        if ($field.prop("type") === "checkbox") {
+                        if (blnHasBrackets) {
                             suffix = '[]';
                         }
 
@@ -470,6 +483,7 @@ ValidForm.prototype.dynamicDuplication = function () {
             }
 
             //*** Remove 'required' styling.
+            // TODO: Address this logic to fix #57
             copy
                 .find(".vf__required")
                 .removeClass("vf__required")
@@ -479,18 +493,6 @@ ValidForm.prototype.dynamicDuplication = function () {
                 .removeClass("vf__error")
                 .addClass("vf__optional")
                 .addClass("vf__clone");
-
-            // Increse the cloned element's ID with the counter value
-            if (typeof copy.prop("id") !== "undefined" && copy.prop("id") !== "") {
-                if (counter.val() == 1) {
-                    fieldId = copy.attr("id");
-                } else {
-                    var arrFieldId = copy.attr("id").split("_");
-                    arrFieldId.pop();
-                    fieldId = arrFieldId.join("_");
-                }
-                copy.attr("id", fieldId + "_" + counter.val());
-            }
 
             // Remove errors
             copy.find("p.vf__error").remove();
@@ -505,18 +507,18 @@ ValidForm.prototype.dynamicDuplication = function () {
                 var originalTrigger = jQuery("legend :checkbox", $original);
 
                 if (copiedTrigger.length > 0) {
-                    counter = $("#" + copiedTrigger.attr("name") + "_dynamic");
+//                     counter = $("#" + originalTrigger.attr("name") + "_dynamic");
 
-                    // +1 on the counter
-                    counter.val(parseInt(counter.val()) + 1);
+//                     // +1 on the counter
+//                     counter.val(parseInt(counter.val()) + 1);
 
-                    copiedTrigger.attr("id", copiedTrigger.attr("id") + "_" + counter.val());
-                    copiedTrigger.attr("name", copiedTrigger.attr("name") + "_" + counter.val());
-                    copiedTrigger.parent("label").attr("for", copiedTrigger.attr("id"));
+//                     copiedTrigger.attr("id", copiedTrigger.attr("id") + "_" + counter.val());
+//                     copiedTrigger.attr("name", copiedTrigger.attr("name") + "_" + counter.val());
+//                     copiedTrigger.parent("label").attr("for", copiedTrigger.attr("id"));
 
-                    if (originalTrigger.attr("checked") == "checked") {
-                        copiedTrigger.attr("checked", "checked");
-                    }
+//                     if (originalTrigger.attr("checked") == "checked") {
+//                         copiedTrigger.attr("checked", "checked");
+//                     }
 
                     __this.attachAreaEvents(copiedTrigger);
                 }
@@ -524,6 +526,20 @@ ValidForm.prototype.dynamicDuplication = function () {
 
             // Add copy to DOM
             jQuery(this).parent().before(copy);
+
+            // Increase the cloned element's ID with the counter value
+            if (typeof copy.prop("id") !== "undefined" && copy.prop("id") !== "") {
+                var $firstInput = copy.find(':input:not(:hidden)').first();
+                var idSuffix = $firstInput.prop('id').substring($firstInput.prop('id').length - 2);
+                var fieldId = copy.prop('id');
+                var counterValue = parseInt(counter.val()) || 0;
+
+                if (counterValue !== 1) {
+                    fieldId = fieldId.substring(0, fieldId.length - 2); // cut off the last '_*counter value*' piece
+                }
+
+                copy.prop("id", fieldId + idSuffix);
+            }
 
             //*** Fix conditions that might be attached to the original elements.
             var copyName = copy.prop("name");
@@ -567,8 +583,8 @@ ValidForm.prototype.attachDynamicConditions = function(arrElementNames, dynamicC
                             newCondSubject = condition.subject.attr("id") + "_" + dynamicCount;
 
                                 break;
+                            }
                         }
-                }
                     }
                 }
             } else {
