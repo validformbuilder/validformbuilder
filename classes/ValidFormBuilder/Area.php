@@ -396,7 +396,7 @@ class Area extends Base
         $strOutput .= "</fieldset>\n";
 
         if ($intCount == $this->getDynamicCount()) {
-            $strOutput .= $this->__addDynamicHtml();
+            $strOutput .= $this->__addDynamicHtml($intCount);
         }
 
         return $strOutput;
@@ -405,9 +405,10 @@ class Area extends Base
     /**
      * Generate extra HTML output to facilitate the dynamic duplication logic
      * @internal
+     * @param int $intCount
      * @return string
      */
-    protected function __addDynamicHtml()
+    protected function __addDynamicHtml($intCount = 0)
     {
         $strReturn = "";
 
@@ -434,6 +435,12 @@ class Area extends Base
                         $arrFields[$field->getId()] = $field->getName();
                         break;
                 }
+            }
+
+            //*** Store the active area's checkbox in the dynamic fields array as well
+            $areaName = ($intCount == 0) ? $this->getName() : $this->getName() . "_" . $intCount;
+            if ($this->__active) {
+                $arrFields[$areaName] = $areaName;
             }
 
             $strReturn .= "<div class=\"vf__dynamic vf__cf\"{$this->getDynamicButtonMeta()}>";
