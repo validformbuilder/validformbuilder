@@ -390,7 +390,7 @@ class Area extends Base
         }
 
         if ($hasRemoveLabel) {
-            $strOutput .= "<a class='vf__removeLabel' href='#remove-" . $this->getId() . "'>" . $removeLabel . "</a>";
+            $strOutput .= "<a class='vf__removeLabel' href='#'>" . $removeLabel . "</a>";
         }
 
         $strOutput .= "</fieldset>\n";

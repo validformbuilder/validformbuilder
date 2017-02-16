@@ -428,3 +428,20 @@ table.validform td.vf__page-header {
 	font-weight: bold;
 	padding: 10px 0 5px;
 }
+
+/************************************************************************
+ * Dynamic remove label styling
+ *************************************************************************/
+
+.vf__removeLabel {
+	display: none;
+}
+.vf__clone {
+	position: relative;
+}
+.vf__clone .vf__removeLabel {
+	display: block;
+	position: absolute;
+	bottom: 1px;
+	right: 5px;
+}

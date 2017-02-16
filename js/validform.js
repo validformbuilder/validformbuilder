@@ -195,6 +195,107 @@ ValidForm.prototype.traverseDisabledElements = function () {
 
 ValidForm.prototype.dynamicDuplication = function () {
     var __this  = this;
+    var $formElement = jQuery("#" + __this.id);
+
+    /**
+     * Trigger VF_BeforeDynamicChange event
+     */
+    $formElement.on("VF_BeforeDynamicChange", function (event, data) {
+        // Store original element on the vf__removeLabel for later use.
+        data.objOriginal.find('a.vf__removeLabel').data('vf_originalElement', data.objOriginal);
+    });
+
+
+    var findOriginalElement = function ($element) {
+        var $original = $element.data('vf_originalElement');
+
+        if (typeof $original !== 'undefined') {
+            return findOriginalElement($original);
+        }
+
+        return $element;
+    };
+
+    /**
+     * Remove dynamic field logic
+     */
+    jQuery('form.validform').on('click', 'a.vf__removeLabel', function (event) {
+        event.preventDefault();
+
+        // Remove the element
+        var $elementToBeRemoved = $(this).closest('.vf__clone');
+
+        // Stop execution if this element is disabled
+        if ($elementToBeRemoved.hasClass('.vf__disabled')) {
+            return;
+        }
+
+        var $original = findOriginalElement($elementToBeRemoved);
+        var $dynamicCounterFields = $original.find('input[id$=_dynamic]');
+
+        // Update counter values
+        $dynamicCounterFields.each(function () {
+            var currentValue = $(this).val();
+            currentValue = parseInt(currentValue) || 0;
+
+            // Lowest possible new value is 0
+            var newValue = (currentValue >= 1) ? currentValue - 1 : currentValue;
+
+            $(this).val(newValue);
+        });
+
+        // Remove dom element
+        $elementToBeRemoved.remove();
+
+        var resetInputNumbering = function ($inputs) {
+            $inputs.each(function (index) {
+                if (index === 0) {
+                    // We want to skip the hidden 'id_dynamic' field and only renumber the id_*number* fields
+                    return true; // equivalent of continue
+                }
+
+                var currentId = $(this).prop('id');
+                var newId = currentId.slice(0, -2) + '_' + index;
+                var $targetElement = $("#" + currentId);
+
+                if ($targetElement.is(':radio') || $targetElement.is('checkbox')) {
+                    // TODO: Test this with actual radio or checkboxes
+                    newId += '[]';
+                }
+
+                $targetElement
+                    .prop('id', newId)
+                    .prop('name', newId);
+            });
+        };
+
+        // Rename form fields according to new counter values
+        var $duplicationContainer = $original.data('vf_duplicator');
+        if (typeof $duplicationContainer !== 'undefined') {
+            var $anchor = $duplicationContainer.find('a');
+            var ids = $anchor.data("target-id").split("|");
+
+            for (var i in ids) {
+                if (ids.hasOwnProperty(i)) {
+                    var id = ids[i];
+                    var $inputs = $("[id^='" + id + "_']");
+                    resetInputNumbering($inputs);
+                }
+            }
+        }
+
+    });
+
+    /**
+     * @param $original
+     * @param copy
+     */
+    var registerCloneElement = function ($original, copy) {
+        $original = findOriginalElement($original);
+        // Register original element in the clone object for later reference
+        // Using data prevents us from having to traverse through the DOM to find elements
+        copy.data('vf_originalElement', $original);
+    };
 
     // Bind click event to duplicate button
     jQuery(".vf__dynamic a").bind("click", function() {
@@ -202,7 +303,7 @@ ValidForm.prototype.dynamicDuplication = function () {
         var $dynamicDuplicationWrap = $anchor.closest("div.vf__dynamic");
 
         //*** Call custom event if set.
-        jQuery("#" + __this.id).trigger("VF_BeforeDynamicChange", [{
+        $formElement.trigger("VF_BeforeDynamicChange", [{
             ValidForm: __this,
             objAnchor: $anchor,
             objOriginal: $dynamicDuplicationWrap.prev()
@@ -213,16 +314,21 @@ ValidForm.prototype.dynamicDuplication = function () {
         }
 
         //*** Stop if this flag is false
+        // TODO: This has to be one of the ugliest hacks in here. Get rid of it or make it pretty.
         if (!__this.__continueExecution) {
             return;
         }
-
 
         if (!$dynamicDuplicationWrap.prev().hasClass("vf__disabled")) {
             //*** Update dynamic field counter.
             var $original   = $dynamicDuplicationWrap.prev();
             var copy        = $original.clone();
             var counter; // Counter placeholder
+
+            $original.data('vf_duplicator', $dynamicDuplicationWrap);
+
+            //*** Register new clone element in clone collection of original element
+            registerCloneElement($original, copy, jQuery(this));
 
             //*** Clear values.
             var names = jQuery(this).data("target-name").split("|");
@@ -346,7 +452,6 @@ ValidForm.prototype.dynamicDuplication = function () {
                         $field.triggerHandler("blur.validform-hint");
                     }
                 });
-
             });
 
             //*** Fix multifields in areas.
@@ -390,6 +495,9 @@ ValidForm.prototype.dynamicDuplication = function () {
             // Remove errors
             copy.find("p.vf__error").remove();
             copy.find(".vf__error").removeClass("vf__error");
+
+            //*** Set the correct ID on the remove label
+            copy.find('a.vf__removeLabel').data('remove-id', copy.prop('id'));
 
             //*** Fix click event on active areas.
             if (copy.hasClass("vf__area")) {
