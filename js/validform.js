@@ -205,7 +205,6 @@ ValidForm.prototype.dynamicDuplication = function () {
         data.objOriginal.find('a.vf__removeLabel').data('vf_originalElement', data.objOriginal);
     });
 
-
     var findOriginalElement = function ($element) {
         var $original = $element.data('vf_originalElement');
 
@@ -214,6 +213,20 @@ ValidForm.prototype.dynamicDuplication = function () {
         }
 
         return $element;
+    };
+
+    var getIndexFromId = function (id) {
+        var arrId = id.split('_');
+        var index = parseInt(arrId.pop());
+
+        return index || 0;
+    };
+
+    var getIdWithoutIndex = function (id) {
+        var arrId = id.split('_');
+        arrId.pop();
+
+        return arrId.join('_');
     };
 
     /**
@@ -255,15 +268,16 @@ ValidForm.prototype.dynamicDuplication = function () {
                     return true; // equivalent of continue
                 }
 
-                var newId = currentId.slice(0, -2) + '_' + index;
+                var offset = ("" + index).length + 1;
+                var newId = currentId.slice(0, - offset) + '_' + index;
                 var $targetElement = $("#" + currentId);
                 var containerId = $targetElement.closest('.vf__removable').prop('id');
 
                 if (typeof containerId !== 'undefined' && containerId !== '') {
                     // Container element has an ID too, make sure it's properly updated.
-                    var containerIndex = parseInt(containerId.substring(containerId.length, containerId.length - 1)) || 0;
+                    var containerIndex = parseInt(containerId.substring(containerId.length, containerId.length - (offset - 1))) || 0;
                     if (containerIndex !== index) {
-                        $("#" + containerId).prop('id', containerId.slice(0, -2) + '_' + index);
+                        $("#" + containerId).prop('id', containerId.slice(0, - offset) + '_' + index);
                     }
                 }
 
@@ -418,12 +432,10 @@ ValidForm.prototype.dynamicDuplication = function () {
                         if (counterValue == 1) {
                             fieldId = $field.attr("id");
                         } else {
-                            var arrFieldId = $field.attr("id").split("_");
-                            arrFieldId.pop();
-                            fieldId = arrFieldId.join("_");
+                            fieldId = getIdWithoutIndex($field.prop('id'));
                         }
 
-                        var fieldId = fieldId + "_" + counterValue;
+                        fieldId = fieldId + "_" + counterValue;
                         $field
                             .removeAttr("checked")
                             .attr("name", fieldname + "_" + counterValue + suffix)
@@ -475,12 +487,9 @@ ValidForm.prototype.dynamicDuplication = function () {
             //*** Fix multifields in areas.
             if (typeof counter == "object" && copy.hasClass("vf__area")) {
                 copy.find(".vf__multifield").each(function(){
-                    if (counter.val() == 1) {
-                        fieldId = jQuery(this).attr("id");
-                    } else {
-                        var arrFieldId = jQuery(this).attr("id").split("_");
-                        arrFieldId.pop();
-                        fieldId = arrFieldId.join("_");
+                    var fieldId = jQuery(this).attr("id");
+                    if (counter.val() > 1) {
+                        fieldId = getIdWithoutIndex($(this).prop('id'));
                     }
 
                     jQuery(this).attr("id", fieldId + "_" + counter.val());
@@ -509,22 +518,7 @@ ValidForm.prototype.dynamicDuplication = function () {
             //*** Fix click event on active areas.
             if (copy.hasClass("vf__area")) {
                 var copiedTrigger = jQuery("legend :checkbox", copy);
-                var originalTrigger = jQuery("legend :checkbox", $original);
-
                 if (copiedTrigger.length > 0) {
-//                     counter = $("#" + originalTrigger.attr("name") + "_dynamic");
-
-//                     // +1 on the counter
-//                     counter.val(parseInt(counter.val()) + 1);
-
-//                     copiedTrigger.attr("id", copiedTrigger.attr("id") + "_" + counter.val());
-//                     copiedTrigger.attr("name", copiedTrigger.attr("name") + "_" + counter.val());
-//                     copiedTrigger.parent("label").attr("for", copiedTrigger.attr("id"));
-
-//                     if (originalTrigger.attr("checked") == "checked") {
-//                         copiedTrigger.attr("checked", "checked");
-//                     }
-
                     __this.attachAreaEvents(copiedTrigger);
                 }
             }
@@ -535,15 +529,15 @@ ValidForm.prototype.dynamicDuplication = function () {
             // Increase the cloned element's ID with the counter value
             if (typeof copy.prop("id") !== "undefined" && copy.prop("id") !== "") {
                 var $firstInput = copy.find(':input:not(:hidden)').first();
-                var idSuffix = $firstInput.prop('id').substring($firstInput.prop('id').length - 2);
-                var fieldId = copy.prop('id');
                 var counterValue = parseInt(counter.val()) || 0;
+                var fieldId = copy.prop('id');
+                var index = getIndexFromId($firstInput.prop('id'));
 
-                if (counterValue !== 1) {
-                    fieldId = fieldId.substring(0, fieldId.length - 2); // cut off the last '_*counter value*' piece
+                if (counterValue > 1) {
+                    fieldId = getIdWithoutIndex(fieldId);
                 }
 
-                copy.prop("id", fieldId + idSuffix);
+                copy.prop("id", fieldId + '_' + index);
             }
 
             //*** Fix conditions that might be attached to the original elements.
