@@ -106,6 +106,12 @@ class Element extends Base
      * @var array
      */
     protected $__sanitize;
+    /**
+     * Sanitize actions for display values
+     * @internal
+     * @var array
+     */
+    protected $__displaySanitize;
 
     /**
      * Create new element
@@ -141,6 +147,7 @@ class Element extends Base
         $this->__dynamiccounter = (! is_null($this->getMeta("dynamicCounter", null))) ? true : $this->__dynamiccounter;
 
         $this->__sanitize = $this->getMeta("sanitize", $this->__sanitize);
+        $this->__displaySanitize = $this->getMeta("displaySanitize", $this->__displaySanitize);
 
         // $this->__validator = new FieldValidator($name, $type, $validationRules, $errorHandlers, $this->__hint);
         $this->__validator = new FieldValidator($this, $validationRules, $errorHandlers);
@@ -417,28 +424,35 @@ class Element extends Base
         }
 
         //*** Sanitize the value before returning.
-        $varValue = $this->sanitize($varValue);
+        $varValue = $this->sanitize($varValue, $this->__sanitize);
 
         return $varValue;
     }
 
     /**
-     * Sanitize a value according to the order of actions in __sanitize.
+     * Sanitize a value according to the order of actions in a sanitize array.
      *
      * @param mixed $varValue
+     * @param null|array $sanitizations
+     * @return mixed|string
      */
-    protected function sanitize($varValue)
+    protected function sanitize($varValue, $sanitizations)
     {
-        if (is_array($this->__sanitize)) {
-            foreach ($this->__sanitize as $value) {
+        if (is_array($sanitizations)) {
+            foreach ($sanitizations as $value) {
                 try {
                     if (is_string($value)) {
                         switch ($value) {
                             case "trim":
                                 $varValue = trim($varValue);
+
+                                break;
+                            case "clear":
+                                $varValue = "";
+
                                 break;
                         }
-                    } else if (is_callable($value)) {
+                    } elseif (is_callable($value)) {
                         $varValue = $value($varValue);
                     }
                 } catch (\Exception $ex) {
@@ -517,7 +531,8 @@ class Element extends Base
         } else {
             if (is_array($this->__default)) {
                 if ($this->isDynamic()) {
-                    if (isset($this->__default[$intDynamicPosition]) && strlen($this->__default[$intDynamicPosition]) > 0) {
+                    if (isset($this->__default[$intDynamicPosition])
+                            && strlen($this->__default[$intDynamicPosition]) > 0) {
                         $varReturn = $this->__default[$intDynamicPosition];
                     }
                 } else {
@@ -535,6 +550,9 @@ class Element extends Base
         if (! $varReturn && ((get_class($this) == "ValidFormBuilder\\Hidden") && $this->isDynamicCounter())) {
             $varReturn = (int) 0;
         }
+
+        //*** Sanitize the value before returning.
+        $varReturn = $this->sanitize($varReturn, $this->__displaySanitize);
 
         return $varReturn;
     }
