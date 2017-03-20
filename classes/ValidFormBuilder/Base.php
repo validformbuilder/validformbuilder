@@ -156,7 +156,8 @@ class Base extends ClassDynamic
         "dynamicRemoveLabel",
         "matchWith",
         "uniqueId",
-        "sanitize"
+        "sanitize",
+        "displaySanitize"
     );
 
     /**
