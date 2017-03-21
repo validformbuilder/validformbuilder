@@ -257,7 +257,7 @@ class Group extends Element
                     $name = $this->__name;
                     break;
                 case ValidForm::VFORM_CHECK_LIST:
-                    $name = (strpos($this->__name, "[]") === false) ? $this->__name . "[]" : $this->__name;
+                    $name = (strpos($this->__name, "[]") === FALSE) ? $this->__name . '\\\\[\\\\]' : $this->__name;
                     break;
             }
         }
