@@ -48,7 +48,7 @@ function ValidForm(strFormId, strMainAlert) {
 	    this.classes                = {};
 	    this.__continueExecution    = true;
 
-        // Initialize ValidForm class
+      // Initialize ValidForm class
 	    this._init();
 	}
 }
@@ -112,9 +112,11 @@ ValidForm.prototype.addCondition = function (objCondition) {
  * This enables us to push validation errors from ajax return objects.
  *
  * @param  {object} objFields The fields object which contains fieldname-error pairs
+ * @param  {boolean} silent Silent validation flag should be explicitly set on showAlerts
  */
-ValidForm.prototype.showAlerts = function (objFields) {
+ValidForm.prototype.showAlerts = function (objFields, silent) {
     var __this = this;
+    silent = silent || false;
 
     //*** Remove open alerts first.
     __this.removeAlerts();
@@ -130,6 +132,7 @@ ValidForm.prototype.showAlerts = function (objFields) {
 
                         if (objField !== null) {
                             // Field found in current form
+                            objField.validator.setSilentValidation(silent);
                             objField.validator.showAlert(objFieldError[fieldName]);
                         }
                     }
@@ -764,13 +767,17 @@ ValidForm.prototype.reset = function() {
  * @param  {String} strSelector Optional selector to specify validation limits
  * @return {Boolean}             True if all fields are valid, false if not.
  */
-ValidForm.prototype.validate = function(strSelector) {
+ValidForm.prototype.validate = function(strSelector, silent) {
     this.valid = true;
     var objDOMForm = null;
     var blnReturn = false;
     strSelector = strSelector || null;
 
-    //*** Set the form object.
+    silent = silent || false;
+    this.validator.setSilentValidation(silent);
+
+
+  //*** Set the form object.
     try {
         objDOMForm = jQuery("#" + this.id);
     } catch(e) {
@@ -785,6 +792,8 @@ ValidForm.prototype.validate = function(strSelector) {
 
         for (var strElement in this.elements) {
             var objElement = this.elements[strElement];
+
+            objElement.validator.setSilentValidation(silent);
 
             if ((
                     (strSelector !== null) &&
@@ -1534,6 +1543,16 @@ function ValidFormValidator(strFormId) {
      * @type {String}
      */
     this.mainAlert          = "";
+
+    this.silentValidation = false;
+}
+
+/**
+ * Toggle silent validation
+ * @param silent boolean
+ */
+ValidFormValidator.prototype.setSilentValidation = function (silent) {
+  this.silentValidation = !!silent;
 }
 
 /**
@@ -1541,10 +1560,18 @@ function ValidFormValidator(strFormId) {
  * @return {void}
  */
 ValidFormValidator.prototype.removeMain = function() {
+    if (this.silentValidation) {
+        return;
+    }
+
     jQuery("#" + this.id + " div.vf__main_error").remove();
 };
 
 ValidFormValidator.prototype.showMain = function(strMessage) {
+    if (this.silentValidation) {
+        return;
+    }
+
     var strMainError = (typeof strMessage !== "undefined" && strMessage.length > 0) ? strMessage : this.mainAlert;
 
     if (strMainError !== "undefined" && strMainError.length > 0) {
@@ -1559,6 +1586,10 @@ ValidFormValidator.prototype.showMain = function(strMessage) {
 };
 
 ValidFormValidator.prototype.showPage = function (strAlert) {
+    if (this.silentValidation) {
+        return;
+    }
+
     strAlert = (typeof this.pageAlert !== "undefined") ? this.pageAlert : strAlert;
 
     if (typeof strAlert !== "undefined" && strAlert !== "") {
@@ -1579,6 +1610,10 @@ ValidFormValidator.prototype.showPage = function (strAlert) {
 };
 
 ValidFormValidator.prototype.removePage = function() {
+    if (this.silentValidation) {
+        return;
+    }
+
     jQuery("#" + this.id + " .vf__page:visible div.vf__page_error").remove();
 };
 
@@ -1655,6 +1690,16 @@ function ValidFormFieldValidator(strElementId, strElementName) {
      * @type {String}
      */
     this.maxLengthError     = "";
+
+    this.silentValidation = false;
+}
+
+/**
+ * Toggle silent validation
+ * @param silent boolean
+ */
+ValidFormFieldValidator.prototype.setSilentValidation = function (silent) {
+    this.silentValidation = !!silent;
 }
 
 /**
@@ -1789,6 +1834,10 @@ ValidFormFieldValidator.prototype.validate = function(value) {
 };
 
 ValidFormFieldValidator.prototype.removeAlert = function() {
+    if (this.silentValidation) {
+        return;
+    }
+
     var objElement = jQuery("#" + this.id);
 
     if (objElement.length === 0) {
@@ -1803,6 +1852,9 @@ ValidFormFieldValidator.prototype.removeAlert = function() {
 };
 
 ValidFormFieldValidator.prototype.showAlert = function(strAlert) {
+    if (this.silentValidation) {
+        return;
+    }
     var objElement = jQuery("#" + this.id);
     if (objElement.length === 0) {
         objElement = jQuery("input[name='" + this.name + "']:first").closest(".vf__list");
