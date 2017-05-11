@@ -41,7 +41,7 @@ class Validator
         ValidForm::VFORM_INTEGER => '/^[0-9]*$/i',
         ValidForm::VFORM_WORD => '/^[-a-zàáâãäåāæçèéêẽëēìíîïĩīðñòóôõöōøùúûũüūýß€0-9%_]*$/iu',
         ValidForm::VFORM_EMAIL => '/^[^@\s]+@([-a-z0-9]+\.)+[a-z]{2,}$/i',
-        ValidForm::VFORM_PASSWORD => '/^[-A-Z0-9.\'"_!@#()$%^&*?]*$/i',
+        ValidForm::VFORM_PASSWORD => '',
         ValidForm::VFORM_SIMPLEURL => '/^[-A-Z0-9]+\.[-A-Z0-9]+/i',
         ValidForm::VFORM_URL => '/^(http(s)?:\/\/)*[a-z0-9-]+(.[a-z0-9-]+)*(:[0-9]+)?(\/.*)?$/i',
         ValidForm::VFORM_FILE => '/^[-a-zàáâãäåāæçèéêẽëēìíîïĩīðñòóôõöōøùúûũüūýß0-9.\':"\\\\_\/ ]*$/iu',
