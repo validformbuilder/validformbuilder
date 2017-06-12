@@ -390,7 +390,7 @@ ValidForm.prototype.dynamicDuplication = function () {
                 counter.val(counterValue);
 
                 var search;
-                if (counterValue == 1) {
+                if (counterValue === 1) {
                     search = fieldname;
                 } else {
                     search = fieldname + "_" + (counterValue - 1);
@@ -418,8 +418,8 @@ ValidForm.prototype.dynamicDuplication = function () {
                 copy.find("[name='" + search + "']").each(function() {
                     var $field = jQuery(this);
 
-                    if ($field.attr("type") == "radio" ||
-                        $field.attr("type") == "checkbox"
+                    if ($field.attr("type") === "radio" ||
+                        $field.attr("type") === "checkbox"
                     ) {
                         var suffix = '';
                         if (blnHasBrackets) {
@@ -428,7 +428,7 @@ ValidForm.prototype.dynamicDuplication = function () {
 
                         //*** Radio buttons and checkboxes have to be treated differently.
                         var fieldId;
-                        if (counterValue == 1) {
+                        if (counterValue === 1) {
                             fieldId = $field.attr("id");
                         } else {
                             fieldId = getIdWithoutIndex($field.prop('id'));
