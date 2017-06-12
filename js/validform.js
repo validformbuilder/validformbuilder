@@ -282,7 +282,6 @@ ValidForm.prototype.dynamicDuplication = function () {
                 }
 
                 if ($targetElement.is(':radio') || $targetElement.is('checkbox')) {
-                    // TODO: Test this with actual radio or checkboxes
                     newId += '[]';
                 }
 
@@ -339,7 +338,7 @@ ValidForm.prototype.dynamicDuplication = function () {
             objOriginal: $dynamicDuplicationWrap.prev()
         }]);
 
-        if (typeof __this.events.beforeDynamicChange == "function") {
+        if (typeof __this.events.beforeDynamicChange === "function") {
             __this.events.beforeDynamicChange(__this, $anchor);
         }
 
