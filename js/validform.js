@@ -410,7 +410,7 @@ ValidForm.prototype.dynamicDuplication = function () {
 
                     objNewElement.validator = jQuery.extend(new ValidFormFieldValidator(), objOriginalElement.validator);
                     objNewElement.validator.id = objNewElement.id;
-                    objNewElement.validator.required = false;
+                    objNewElement.validator.name = objNewElement.name;
 
                     __this.addElement(objNewElement);
                 }
@@ -436,11 +436,15 @@ ValidForm.prototype.dynamicDuplication = function () {
 
                         fieldId = fieldId + "_" + counterValue;
                         $field
-                            .removeAttr("checked")
                             .attr("name", fieldname + "_" + counterValue + suffix)
                             .attr("id", fieldId)
                             .parent("label")
                                 .attr("for", fieldId);
+                        if (!$field.parent().parent().is('legend')) {
+                            $field
+                                .prop("checked", false)
+                                .prop("selected", false);
+                        }
                     } else if ($field.is("select")) {
                         //*** Special 'select' treatment
                         $field
@@ -496,16 +500,7 @@ ValidForm.prototype.dynamicDuplication = function () {
             }
 
             //*** Remove 'required' styling.
-            // TODO: Address this logic to fix #57
-            copy
-                .find(".vf__required")
-                .removeClass("vf__required")
-                .addClass("vf__optional");
-            copy
-                .removeClass("vf__required")
-                .removeClass("vf__error")
-                .addClass("vf__optional")
-                .addClass("vf__clone");
+            copy.addClass("vf__clone");
 
             // Remove errors
             copy.find("p.vf__error").remove();
@@ -541,7 +536,7 @@ ValidForm.prototype.dynamicDuplication = function () {
 
             //*** Fix conditions that might be attached to the original elements.
             var copyName = copy.prop("name");
-            if (typeof counter == "object"
+            if (typeof counter === "object"
                 && typeof copyName !== "undefined"
                 && !__this.inArray(names, copyName)
             ) {
@@ -550,7 +545,7 @@ ValidForm.prototype.dynamicDuplication = function () {
 
             //*** Call custom event if set.
             jQuery("#" + __this.id).trigger("VF_AfterDynamicChange", [{ValidForm: __this, objAnchor: $anchor, objCopy: copy, objOriginal: $original, count: counter.val()}]);
-            if (typeof __this.events.afterDynamicChange == "function") {
+            if (typeof __this.events.afterDynamicChange === "function") {
                 __this.events.afterDynamicChange({ValidForm: __this, objAnchor: $anchor, objCopy: copy, objOriginal: $original, count: counter.val()});
             }
         }
