@@ -260,59 +260,43 @@ ValidForm.prototype.dynamicDuplication = function () {
         // Remove dom element
         $elementToBeRemoved.remove();
 
-        var resetInputNumbering = function ($inputs) {
-            $inputs.each(function (index) {
-                var currentId = $(this).prop('id');
-                if (currentId.indexOf('_dynamic') > -1) {
-                    // We want to skip the hidden 'id_dynamic' field and only renumber the id_*number* fields
-                    return true; // equivalent of continue
+        var $siblings = $original.siblings('.vf__clone');
+        var siblingCounter = 1;
+        $siblings.each(function () {
+            var currentCount = $(this).prop('id').split('_').pop();
+            $(this).prop('id', $original.prop('id') + '_' + siblingCounter);
+
+            $(this).find('*').each(function () {
+                var elementId = $(this).prop('id');
+                var elementName = $(this).prop('name');
+
+                //*** Update element 'id' property
+                if (elementId !== '' && typeof elementId !== 'undefined') {
+                    var baseElementId = getIdWithoutIndex(elementId);
+
+                    $(this).prop('id', baseElementId + '_' + siblingCounter);
                 }
 
-                var offset = ("" + index).length + 1;
-                var newId = currentId.slice(0, - offset) + '_' + index;
-                var $targetElement = $("#" + currentId);
-                var containerId = $targetElement.closest('.vf__removable').prop('id');
+                //*** Update element 'name' property
+                if (elementName !== '' && typeof elementName !== 'undefined') {
+                    var hasBrackets = elementName.indexOf('[]') > -1;
+                    var baseElementName = getIdWithoutIndex(elementName);
+                    var suffix = hasBrackets ? '[]' : '';
 
-                if (typeof containerId !== 'undefined' && containerId !== '') {
-                    // Container element has an ID too, make sure it's properly updated.
-                    var containerIndex = parseInt(containerId.substring(containerId.length, containerId.length - (offset - 1))) || 0;
-                    if (containerIndex !== index) {
-                        $("#" + containerId).prop('id', containerId.slice(0, - offset) + '_' + index);
-                    }
+                    $(this).prop('name', baseElementName + '_' + siblingCounter + suffix);
                 }
 
-                if ($targetElement.is(':radio') || $targetElement.is('checkbox')) {
-                    newId += '[]';
-                }
+                //*** Update label 'for' property
+                var forLabel = $(this).prop('for');
+                if (typeof forLabel !== 'undefined') {
+                    var baseForLabel = getIdWithoutIndex(forLabel);
 
-                var $correspondingLabel = $("label[for='" + $targetElement.prop('id') + "']");
-                if ($correspondingLabel.length > 0) {
-                    $correspondingLabel.prop('for', newId);
+                    $(this).prop('for', baseForLabel + '_' + siblingCounter);
                 }
-
-                $targetElement
-                    .prop('id', newId)
-                    .prop('name', newId);
             });
-        };
 
-        // Rename form fields according to new counter values
-        var $duplicationContainer = $original.data('vf_duplicator');
-        if (typeof $duplicationContainer !== 'undefined') {
-            var $anchor = $duplicationContainer.find('a');
-            var ids = $anchor.data("target-id").split("|");
-
-            for (var i in ids) {
-                if (ids.hasOwnProperty(i)) {
-                    var id = ids[i];
-
-                    //*** Get all the ids but exclude area's which ID's contain '_vf_wrapper'
-                    var $inputs = $("[id^='" + id + "_']").filter(':not([id*="_vf_wrapper"])');
-                    resetInputNumbering($inputs);
-                }
-            }
-        }
-
+            siblingCounter++;
+        });
     });
 
     /**
@@ -357,7 +341,7 @@ ValidForm.prototype.dynamicDuplication = function () {
             $original.data('vf_duplicator', $dynamicDuplicationWrap);
 
             //*** Register new clone element in clone collection of original element
-            registerCloneElement($original, copy, jQuery(this));
+            registerCloneElement($original, copy);
 
             //*** Clear values.
             var names = jQuery(this).data("target-name").split("|");
@@ -426,25 +410,32 @@ ValidForm.prototype.dynamicDuplication = function () {
                             suffix = '[]';
                         }
 
+                        // Find wrapping label
+                        var $label = $('label[for="' + $field.prop('id') + '"]', copy);
+
                         //*** Radio buttons and checkboxes have to be treated differently.
                         var fieldId;
                         if (counterValue === 1) {
-                            fieldId = $field.attr("id");
+                            fieldId = $field.prop("id");
                         } else {
                             fieldId = getIdWithoutIndex($field.prop('id'));
                         }
 
                         fieldId = fieldId + "_" + counterValue;
                         $field
-                            .attr("name", fieldname + "_" + counterValue + suffix)
-                            .attr("id", fieldId)
-                            .parent("label")
-                                .attr("for", fieldId);
+                            .prop("name", fieldname + "_" + counterValue + suffix)
+                            .prop("id", fieldId);
+
                         if (!$field.parent().parent().is('legend')) {
                             $field
                                 .prop("checked", false)
                                 .prop("selected", false);
                         }
+
+                        if ($label.length > 0) {
+                            $label.prop('for', fieldId);
+                        }
+
                     } else if ($field.is("select")) {
                         //*** Special 'select' treatment
                         $field
@@ -463,7 +454,7 @@ ValidForm.prototype.dynamicDuplication = function () {
 
                         $field
                             .bind("focus.validform-hint", function() {
-                                if ($field.val() == objOriginalElement.validator.hint) {
+                                if ($field.val() === objOriginalElement.validator.hint) {
                                     $field.val("");
                                     $field
                                         .closest(".vf__hint")
