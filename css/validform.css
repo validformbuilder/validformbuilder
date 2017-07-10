@@ -25,23 +25,31 @@ form.validform {
 }
 
 /*The famous micro clearfix*/
+form.validform .vf__optional:before,
+form.validform .vf__optional:after,
+form.validform .vf__required:before,
+form.validform .vf__required:after,
 form.validform .vf__cf:before,
 form.validform .vf__cf:after,
 form.vf__cf:before,
 form.vf__cf:after
 {
-    content: " ";
-    display: table;
+	content: " ";
+	display: table;
 }
+form.validform .vf__required:after,
+form.validform .vf__optional:after,
 form.validform .vf__cf:after,
 form.vf__cf:after
 {
-    clear: both;
+	clear: both;
 }
+form.validform .vf__optional,
+form.validform .vf__required,
 form.validform .vf__cf,
 form.vf__cf
 {
-    *zoom: 1;
+	*zoom: 1;
 }
 
 form.validform fieldset {
