@@ -449,7 +449,5 @@ table.validform td.vf__page-header {
 }
 .vf__clone .vf__removeLabel {
 	display: block;
-	position: absolute;
-	bottom: 1px;
-	right: 5px;
+	text-align: right;
 }
