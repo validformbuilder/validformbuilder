@@ -566,7 +566,7 @@ class Area extends Base
      */
     public function getId()
     {
-        return $this->getName() . "_vf_wrapper";
+        return $this->getName() . "_wrapper";
     }
 
     /**
