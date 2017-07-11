@@ -80,6 +80,8 @@ namespace ValidFormBuilder;
  */
 class Area extends Base
 {
+    use CanRemoveDynamicFields;
+
     /**
      * The Area's label, presented as a 'legend' header above the area
      * @internal
@@ -103,27 +105,6 @@ class Area extends Base
     protected $__checked;
 
     /**
-     * Defines if this area is dynamic
-     * @internal
-     * @var boolean
-     */
-    protected $__dynamic;
-
-    /**
-     * The label used by __addDynamicHtml() which a user can click to clone this dynamic area
-     * @internal
-     * @var string
-     */
-    protected $__dynamicLabel;
-
-    /**
-     * The label which a user can click to remove a cloned dynamic area
-     * @internal
-     * @var string
-     */
-    protected $__dynamicRemoveLabel;
-
-    /**
      * Using the dynamic 'setRequiredStyle()', you can add for instance an asterix to each required field like so:
      * $this->setRequiredStyle('%s *'); // First show the label, %s, then show an asterix after the label.
      * @internal
@@ -137,6 +118,20 @@ class Area extends Base
      * @var \ValidFormBuilder\Collection
      */
     protected $__fields;
+
+    /**
+     * Defines if this area is dynamic
+     * @internal
+     * @var boolean
+     */
+    protected $__dynamic;
+
+    /**
+     * The label used by __addDynamicHtml() which a user can click to clone this dynamic area
+     * @internal
+     * @var string
+     */
+    protected $__dynamicLabel;
 
     /**
      * Create a new Area instance
@@ -167,7 +162,8 @@ class Area extends Base
 
         $this->__dynamic = $this->getMeta("dynamic", null);
         $this->__dynamicLabel = $this->getMeta("dynamicLabel", null);
-        $this->__dynamicRemoveLabel = $this->getMeta("dynamicRemoveLabel", null);
+
+        $this->initialiseDynamicRemoveMeta();
     }
 
     /**
@@ -244,7 +240,7 @@ class Area extends Base
      */
     public function addMultiField($label = null, $meta = array())
     {
-        if (! array_key_exists("dynamic", $meta)) {
+        if (!array_key_exists("dynamic", $meta)) {
             $meta["dynamic"] = $this->__dynamic;
         }
 
@@ -277,13 +273,9 @@ class Area extends Base
     public function toHtml($submitted = false, $blnSimpleLayout = false, $blnLabel = true, $blnDisplayErrors = true)
     {
         $strOutput = "";
-        if ($this->__dynamic) {
-            $intDynamicCount = $this->getDynamicCount();
-            for ($intCount = 0; $intCount <= $intDynamicCount; $intCount ++) {
-                $strOutput .= $this->__toHtml($submitted, $blnSimpleLayout, $blnLabel, $blnDisplayErrors, $intCount);
-            }
-        } else {
-            $strOutput = $this->__toHtml($submitted, $blnSimpleLayout, $blnLabel, $blnDisplayErrors);
+        $intDynamicCount = $this->getDynamicCount();
+        for ($intCount = 0; $intCount <= $intDynamicCount; $intCount++) {
+            $strOutput .= $this->__toHtml($submitted, $blnSimpleLayout, $blnLabel, $blnDisplayErrors, $intCount);
         }
 
         return $strOutput;
@@ -293,7 +285,7 @@ class Area extends Base
      * Verify if any of the child fields in this area has submitted data
      *
      * @internal
-     * @param number $intCount Optional counter to do the same for dynamic multifields.
+     * @param integer $intCount Optional counter to do the same for dynamic multifields.
      * @return boolean True if area childs contain submitted data, false if not.
      */
     public function hasContent($intCount = 0)
@@ -331,7 +323,7 @@ class Area extends Base
      * @param boolean $blnSimpleLayout Only render in simple layout mode
      * @param boolean $blnLabel
      * @param boolean $blnDisplayErrors Display generated errors
-     * @param number $intCount The dynamic count of this area
+     * @param integer $intCount The dynamic count of this area
      * @return string Rendered Area
      */
     protected function __toHtml($submitted = false, $blnSimpleLayout = false, $blnLabel = true, $blnDisplayErrors = true, $intCount = 0)
@@ -358,9 +350,7 @@ class Area extends Base
             $this->setMeta("class", "vf__clone");
         }
 
-        $removeLabel = $this->getMeta('dynamicRemoveLabel');
-        $hasRemoveLabel = !empty($removeLabel);
-        if ($hasRemoveLabel) {
+        if ($this->isRemovable()) {
             $this->setMeta("class", "vf__removable");
         }
 
@@ -388,8 +378,8 @@ class Area extends Base
             $strOutput .= $objField->__toHtml($submitted, $blnSimpleLayout, $blnLabel, $blnDisplayErrors, $intCount);
         }
 
-        if ($hasRemoveLabel) {
-            $strOutput .= "<a class='vf__removeLabel' href='#'>" . $removeLabel . "</a>";
+        if ($this->isRemovable()) {
+            $strOutput .= $this->getRemoveLabelHtml();
         }
 
         $strOutput .= "</fieldset>\n";
