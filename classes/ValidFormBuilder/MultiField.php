@@ -90,6 +90,7 @@ namespace ValidFormBuilder;
  */
 class MultiField extends Base
 {
+    use CanRemoveDynamicFields;
 
     /**
      * Field label
@@ -147,6 +148,8 @@ class MultiField extends Base
 
         $this->__dynamic = $this->getMeta("dynamic", $this->__dynamic);
         $this->__dynamicLabel = $this->getMeta("dynamicLabel", $this->__dynamicLabel);
+
+        $this->initialiseDynamicRemoveMeta();
     }
 
     /**
@@ -173,7 +176,10 @@ class MultiField extends Base
             unset($meta["dynamicLabel"]);
         }
 
-            // Render the field and add it to the multifield field collection.
+        //*** Clear remove meta as well
+        $meta = $this->unsetDynamicRemoveLabelMeta($meta);
+
+        // Render the field and add it to the multifield field collection.
         $objField = ValidForm::renderField($name, "", $type, $validationRules, $errorHandlers, $meta);
 
         // *** Set the parent for the new field.
@@ -230,13 +236,9 @@ class MultiField extends Base
     {
         $strOutput = "";
 
-        if ($this->__dynamic) {
-            $intDynamicCount = $this->getDynamicCount();
-            for ($intCount = 0; $intCount <= $intDynamicCount; $intCount ++) {
-                $strOutput .= $this->__toHtml($submitted, $blnSimpleLayout, $blnLabel, $blnDisplayError, $intCount);
-            }
-        } else {
-            $strOutput = $this->__toHtml($submitted, $blnSimpleLayout, $blnLabel, $blnDisplayError);
+        $intDynamicCount = $this->getDynamicCount();
+        for ($intCount = 0; $intCount <= $intDynamicCount; $intCount++) {
+            $strOutput .= $this->__toHtml($submitted, $blnSimpleLayout, $blnLabel, $blnDisplayError, $intCount);
         }
 
         return $strOutput;
@@ -266,7 +268,6 @@ class MultiField extends Base
         $blnError = false;
         $arrError = array();
 
-        $strId = "";
         $blnRequired = false;
 
         foreach ($this->__fields as $field) {
@@ -302,6 +303,10 @@ class MultiField extends Base
 
         $this->setMeta("class", "vf__multifield vf__cf");
 
+        if ($this->isRemovable()) {
+            $this->setMeta("class", "vf__removable");
+        }
+
         $strId = ($intCount == 0) ? $this->getId() : $this->getId() . "_{$intCount}";
         $strOutput = "<div{$this->__getMetaString()} id=\"{$strId}\">\n";
 
@@ -327,6 +332,10 @@ class MultiField extends Base
             $strOutput .= "<small class=\"vf__tip\"{$this->__getTipMetaString()}>{$this->__tip}</small>\n";
         }
 
+        if ($this->isRemovable()) {
+            $strOutput .= $this->getRemoveLabelHtml();
+        }
+
         $strOutput .= "</div>\n";
 
         if ($intCount == $this->getDynamicCount()) {
@@ -345,7 +354,7 @@ class MultiField extends Base
     {
         $strReturn = "";
 
-        if ($this->__dynamic && ! empty($this->__dynamicLabel)) {
+        if ($this->__dynamic && !empty($this->__dynamicLabel)) {
             $arrFields = array();
             // Generate an array of field id's
             foreach ($this->__fields as $field) {
