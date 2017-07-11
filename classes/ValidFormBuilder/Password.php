@@ -56,6 +56,13 @@ namespace ValidFormBuilder;
  */
 class Password extends Element
 {
+    use CanRemoveDynamicFields;
+
+    public function __construct($name, $type, $label = "", $validationRules = array(), $errorHandlers = array(), $meta = array())
+    {
+        parent::__construct($name, $type, $label, $validationRules, $errorHandlers, $meta);
+        $this->initialiseDynamicRemoveMeta();
+    }
 
     /**
      * @internal
@@ -92,7 +99,7 @@ class Password extends Element
 
         $blnError = ($submitted && ! $this->__validator->validate($intCount) && $blnDisplayErrors) ? true : false;
 
-        if (! $blnSimpleLayout) {
+        if (!$blnSimpleLayout) {
             // *** We asume that all dynamic fields greater than 0 are never required.
             if ($this->__validator->getRequired() && $intCount == 0) {
                 $this->setMeta("class", "vf__required");
@@ -100,12 +107,16 @@ class Password extends Element
                 $this->setMeta("class", "vf__optional");
             }
 
+            if ($this->isRemovable()) {
+                $this->setMeta("class", "vf__removable");
+            }
+
             // *** Set custom meta.
             if ($blnError) {
                 $this->setMeta("class", "vf__error");
             }
 
-            if (! $blnLabel) {
+            if (!$blnLabel) {
                 $this->setMeta("class", "vf__nolabel");
             }
 
@@ -139,6 +150,10 @@ class Password extends Element
 
             $this->setMeta("class", "vf__multifielditem");
 
+            if ($this->isRemovable()) {
+                $this->setMeta("class", "vf__removable");
+            }
+
             // Call this right before __getMetaString();
             $this->setConditionalMeta();
 
@@ -158,6 +173,10 @@ class Password extends Element
             $strOutput .= "<small class=\"vf__tip\"{$this->__getTipMetaString()}>{$this->__tip}</small>\n";
         }
 
+        if ($this->isRemovable()) {
+            $strOutput .= $this->getRemoveLabelHtml();
+        }
+
         $strOutput .= "</div>\n";
 
         if (! $blnSimpleLayout && $this->__dynamic && ! empty($this->__dynamicLabel) && ($intCount == $this->getDynamicCount())) {
@@ -173,9 +192,9 @@ class Password extends Element
      */
     public function toJS($intDynamicPosition = 0)
     {
+        $strOutput = "";
         $strCheck = $this->__sanitizeCheckForJs($this->__validator->getCheck());
         $strRequired = ($this->__validator->getRequired()) ? "true" : "false";
-        ;
         $intMaxLength = ($this->__validator->getMaxLength() > 0) ? $this->__validator->getMaxLength() : "null";
         $intMinLength = ($this->__validator->getMinLength() > 0) ? $this->__validator->getMinLength() : "null";
 
