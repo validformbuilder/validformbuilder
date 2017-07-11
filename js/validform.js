@@ -479,7 +479,7 @@ ValidForm.prototype.dynamicDuplication = function () {
             });
 
             //*** Fix multifields in areas.
-            if (typeof counter == "object" && copy.hasClass("vf__area")) {
+            if (typeof counter === "object" && copy.hasClass("vf__area")) {
                 copy.find(".vf__multifield").each(function(){
                     var fieldId = jQuery(this).attr("id");
                     if (counter.val() > 1) {
@@ -496,6 +496,7 @@ ValidForm.prototype.dynamicDuplication = function () {
             // Remove errors
             copy.find("p.vf__error").remove();
             copy.find(".vf__error").removeClass("vf__error");
+            copy.removeClass('vf__error');
 
             //*** Set the correct ID on the remove label
             copy.find('a.vf__removeLabel').data('remove-id', copy.prop('id'));
@@ -631,7 +632,7 @@ ValidForm.prototype.attachAreaEvents = function(objActiveTrigger) {
             var fieldset = jQuery(this),
                 $dynamicTrigger;
 
-            if (fieldset[0] == currentFieldset[0]) {
+            if (fieldset[0] === currentFieldset[0]) {
                 if (self.checked) {
                     // Enable active area
                     jQuery("input, select, textarea", currentFieldset).removeAttr("disabled");
@@ -739,7 +740,7 @@ ValidForm.prototype.addElement = function() {
     var objAddedElement = null;
     var strElementName = "";
 
-    if (arguments.length > 0 && typeof(arguments[0]) == "object") {
+    if (arguments.length > 0 && typeof(arguments[0]) === "object") {
         strElementName = arguments[0].name;
         objAddedElement = this.elements[arguments[0].name] = arguments[0];
     } else {
@@ -822,7 +823,7 @@ ValidForm.prototype.getElement = function(strElementName){
     var objReturn = null;
 
     for (var strElement in this.elements) {
-        if (strElement == strElementName) {
+        if (strElement === strElementName) {
             objReturn = this.elements[strElement];
             break;
         }
@@ -840,7 +841,7 @@ ValidForm.prototype.addEvent = function(strEvent, callback){
                 var objCachedEvent = this.cachedEvents[i];
                 for (var eventName in objCachedEvent) {
                     if (objCachedEvent.hasOwnProperty(eventName)) {
-                        if (strEvent == eventName) {
+                        if (strEvent === eventName) {
                             this.events[strEvent](objCachedEvent[eventName]);
                         }
                     }
@@ -858,7 +859,7 @@ ValidForm.prototype.reset = function() {
         var objElement = this.elements[strElement];
 
         // Only reset if this is an element that can be reset.
-        if (typeof objElement.reset == "function") {
+        if (typeof objElement.reset === "function") {
             objElement.reset();
         }
     }
@@ -934,7 +935,7 @@ ValidForm.prototype.validate = function(strSelector) {
     blnReturn = this.valid;
 
     jQuery("#" + this.id).trigger("VF_AfterValidate", [{ValidForm: this, selector: strSelector}]);
-    if (typeof this.events.afterValidate == "function") {
+    if (typeof this.events.afterValidate === "function") {
         varReturn = this.events.afterValidate(this, strSelector);
         if (typeof varReturn !== "undefined") {
             blnReturn = varReturn;
@@ -1032,13 +1033,13 @@ ValidFormComparison.prototype.check = function () {
 
     switch (self.comparison) {
         case "equal":
-            if (strValue == self.value) {
+            if (strValue === self.value) {
                 // Comparison met.
                 blnReturn = true;
             }
             break;
         case "notequal":
-            if (strValue != self.value) {
+            if (strValue !== self.value) {
                 // Comparison met.
                 blnReturn = true;
             }
