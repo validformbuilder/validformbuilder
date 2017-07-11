@@ -448,6 +448,6 @@ table.validform td.vf__page-header {
 	position: relative;
 }
 .vf__clone .vf__removeLabel {
-	display: block;
-	text-align: right;
+	float: right;
+	display: inline;
 }
