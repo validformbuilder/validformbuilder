@@ -43,7 +43,7 @@ EOF
 
 # Pull requests and commits to other branches shouldn't try to deploy, just build to verify
 if [ "$TRAVIS_PULL_REQUEST" != "false" -o "$TRAVIS_BRANCH" != "$SOURCE_BRANCH" ]; then
-    echo "Skipping documentation generation; just doing a build."
+    echo "We will not commit generated documentation to the master branch. Only builds from the master branch will be committed."
     exit 0
 fi
 
