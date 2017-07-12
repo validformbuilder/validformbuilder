@@ -23,6 +23,12 @@
         "psr-0": {"ValidFormBuilder": "classes/"}
     },
     "require-dev": {
-        "phpdocumentor/phpdocumentor": "~2.9"
-    }
+        "phpdocumentor/phpdocumentor": "dev-master"
+    },
+    "repositories": [
+        {
+            "url": "https://github.com/validformbuilder/phpdocumentor2.git",
+            "type": "vcs"
+        }
+    ]
 }
