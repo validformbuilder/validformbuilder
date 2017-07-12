@@ -25,6 +25,16 @@ form.validform {
 }
 
 /*The famous micro clearfix*/
+form.validform:before,
+form.validform:after,
+form.validform .vf__pagenavigation:before,
+form.validform .vf__pagenavigation:after,
+form.validform .vf__multifield:before,
+form.validform .vf__multifield:after,
+form.validform .vf__navigation:before,
+form.validform .vf__navigation:after,
+form.validform .vf__dynamic:before,
+form.validform .vf__dynamic:after,
 form.validform .vf__optional:before,
 form.validform .vf__optional:after,
 form.validform .vf__required:before,
@@ -37,6 +47,11 @@ form.vf__cf:after
 	content: " ";
 	display: table;
 }
+form.validform:after,
+form.validform .vf__pagenavigation:after,
+form.validform .vf__multifield:after,
+form.validform .vf__navigation:after,
+form.validform .vf__dynamic:after,
 form.validform .vf__required:after,
 form.validform .vf__optional:after,
 form.validform .vf__cf:after,
@@ -44,6 +59,11 @@ form.vf__cf:after
 {
 	clear: both;
 }
+form.validform,
+form.validform .vf__pagenavigation,
+form.validform .vf__multifield,
+form.validform .vf__navigation,
+form.validform .vf__dynamic,
 form.validform .vf__optional,
 form.validform .vf__required,
 form.validform .vf__cf,

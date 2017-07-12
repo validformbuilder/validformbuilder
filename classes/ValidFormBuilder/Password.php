@@ -161,7 +161,7 @@ class Password extends Element
         $strOutput .= "</div>\n";
 
         if (! $blnSimpleLayout && $this->__dynamic && ! empty($this->__dynamicLabel) && ($intCount == $this->getDynamicCount())) {
-            $strOutput .= "<div class=\"vf__dynamic vf__cf\"><a href=\"#\" data-target-id=\"{$this->__id}\" data-target-name=\"{$this->__name}\">{$this->__dynamicLabel}</a></div>\n";
+            $strOutput .= "<div class=\"vf__dynamic\"><a href=\"#\" data-target-id=\"{$this->__id}\" data-target-name=\"{$this->__name}\">{$this->__dynamicLabel}</a></div>\n";
         }
 
         return $strOutput;
