@@ -5,12 +5,6 @@ set -e # Exit with nonzero exit code if anything fails
 SOURCE_BRANCH="master"
 TARGET_BRANCH="gh-pages"
 
-# Pull requests and commits to other branches shouldn't try to deploy, just build to verify
-if [ "$TRAVIS_PULL_REQUEST" != "false" -o "$TRAVIS_BRANCH" != "$SOURCE_BRANCH" ]; then
-    echo "Skipping documentation generation; just doing a build."
-    exit 0
-fi
-
 echo "Generating docs with PHPDocumentor..."
 phpdoc -c phpdoc.xml --visibility=public # Since we've added vendor/bin to the PATH variable, we can just execute phpdoc now.
 
@@ -47,5 +41,12 @@ Latest docs on successful travis build $TRAVIS_BUILD_NUMBER
 ValidForm Builder commit $TRAVIS_COMMIT
 EOF
 
+# Pull requests and commits to other branches shouldn't try to deploy, just build to verify
+if [ "$TRAVIS_PULL_REQUEST" != "false" -o "$TRAVIS_BRANCH" != "$SOURCE_BRANCH" ]; then
+    echo "Skipping documentation generation; just doing a build."
+    exit 0
+fi
+
+# Commit the generated docs to the master branch
 git push https://${GH_TOKEN}:@github.com/neverwoods/validformbuilder.git HEAD:${TARGET_BRANCH} > /dev/null 2>&1 || exit 1
 echo "Published docs to ${TARGET_BRANCH}."
