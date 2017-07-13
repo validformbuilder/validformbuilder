@@ -1476,7 +1476,7 @@ class ValidForm extends ClassDynamic
      * @param integer $intDynamicCount The dynamic counter for the current area being parsed
      * @return string Generated HTML
      */
-    private function areaAsHtml($objField, $hideEmpty = false, $intDynamicCount = 0)
+    protected function areaAsHtml($objField, $hideEmpty = false, $intDynamicCount = 0)
     {
         $strReturn = "";
         $strSet = "";
@@ -1545,7 +1545,7 @@ class ValidForm extends ClassDynamic
      * @param integer $intDynamicCount The dynamic counter for the current MultiField being parsed
      * @return string Generated HTML
      */
-    private function multiFieldAsHtml($objField, $hideEmpty = false, $intDynamicCount = 0)
+    protected function multiFieldAsHtml($objField, $hideEmpty = false, $intDynamicCount = 0)
     {
         $strReturn = "";
         
@@ -1606,7 +1606,7 @@ class ValidForm extends ClassDynamic
      * @param integer $intDynamicCount The dynamic counter for the current Element being parsed
      * @return string Generated HTML
      */
-    private function fieldAsHtml($objField, $hideEmpty = false, $intDynamicCount = 0)
+    protected function fieldAsHtml($objField, $hideEmpty = false, $intDynamicCount = 0)
     {
         $strReturn = "";
 
