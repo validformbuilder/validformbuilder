@@ -432,7 +432,7 @@ class Area extends Base
                 $arrFields[$areaName] = $areaName;
             }
 
-            $strReturn .= "<div class=\"vf__dynamic vf__cf\"{$this->getDynamicButtonMeta()}>";
+            $strReturn .= "<div class=\"vf__dynamic\"{$this->getDynamicButtonMeta()}>";
             $strReturn .= "<a href=\"#\" data-target-id=\"" . implode("|", array_keys(array_filter($arrFields))) . "\" data-target-name=\"" . implode("|", array_values(array_filter($arrFields))) . "\">{$this->__dynamicLabel}</a>";
             $strReturn .= "</div>";
         }

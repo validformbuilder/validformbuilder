@@ -301,7 +301,7 @@ class MultiField extends Base
             $this->setMeta("class", "vf__error");
         }
 
-        $this->setMeta("class", "vf__multifield vf__cf");
+        $this->setMeta("class", "vf__multifield");
 
         if ($this->isRemovable()) {
             $this->setMeta("class", "vf__removable");
@@ -365,7 +365,7 @@ class MultiField extends Base
                 $arrFields[$field->getId()] = $field->getName();
             }
 
-            $strReturn .= "<div class=\"vf__dynamic vf__cf\">";
+            $strReturn .= "<div class=\"vf__dynamic\">";
             $strReturn .= "<a href=\"#\" data-target-id=\"" . implode("|", array_keys($arrFields)) . "\" data-target-name=\"" . implode("|", array_values($arrFields)) . "\">{$this->__dynamicLabel}</a>";
             $strReturn .= "</div>";
         }

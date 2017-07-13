@@ -99,7 +99,7 @@ class Navigation extends Base
     {
         $this->setConditionalMeta();
 
-        $this->setMeta("class", "vf__navigation vf__cf");
+        $this->setMeta("class", "vf__navigation");
         $strReturn = "<div{$this->__getMetaString()}>\n";
 
         foreach ($this->__fields as $field) {
@@ -117,7 +117,7 @@ class Navigation extends Base
      * See {@link \ValidFormBuilder\Base::toJs() Base::toJs()}
      *
      * @internal
-     * @param $intDynamicPosition The dynamic position counter
+     * @param integer $intDynamicPosition The dynamic position counter
      * @return string Generated javascript code
      */
     public function toJS($intDynamicPosition = 0)
