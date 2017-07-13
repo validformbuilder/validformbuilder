@@ -331,7 +331,7 @@ ValidWizard.prototype.addPageNavigation = function (strPageId) {
 
 	// Button label will be set later in initWizard
 	var $page 			= jQuery("#" + strPageId);
-	var $nextNavigation = jQuery("<div class='vf__pagenavigation vf__cf'><a href='#' id='next_" + strPageId + "' class='vf__button'></a></div>");
+	var $nextNavigation = jQuery("<div class='vf__pagenavigation'><a href='#' id='next_" + strPageId + "' class='vf__button'></a></div>");
 
 	jQuery("#" + strPageId).append($nextNavigation);
 

@@ -285,7 +285,7 @@ class Select extends Element
         $strReturn = "";
 
         if ($this->__dynamic && ! empty($this->__dynamicLabel)) {
-            $strReturn = "<div class=\"vf__dynamic vf__cf\"><a href=\"#\" data-target-id=\"{$this->__id}\" data-target-name=\"{$this->__name}\">{$this->__dynamicLabel}</a></div>\n";
+            $strReturn = "<div class=\"vf__dynamic\"><a href=\"#\" data-target-id=\"{$this->__id}\" data-target-name=\"{$this->__name}\">{$this->__dynamicLabel}</a></div>\n";
         }
 
         return $strReturn;

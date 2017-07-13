@@ -969,7 +969,7 @@ class ValidForm extends ClassDynamic
             $strOutput .= $this->__toJS($strCustomJs);
         }
 
-        $strClass = "validform vf__cf";
+        $strClass = "validform";
 
         if (is_array($this->__meta)) {
             if (isset($this->__meta["class"])) {
@@ -999,7 +999,7 @@ class ValidForm extends ClassDynamic
         $strOutput .= $this->fieldsToHtml($blnForceSubmitted, $blnNavigation);
 
         if (!$blnNavigation) {
-            $strOutput .= "<div class=\"vf__navigation vf__cf\">\n";
+            $strOutput .= "<div class=\"vf__navigation\">\n";
             $strOutput .= "<input type=\"submit\" value=\"{$this->__submitlabel}\" class=\"vf__button\" />\n";
             $strOutput .= "</div>\n";
         }
