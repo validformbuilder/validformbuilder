@@ -244,7 +244,15 @@ ValidForm.prototype.dynamicDuplication = function () {
         }
 
         var $original = findOriginalElement($elementToBeRemoved);
-        var $dynamicCounterFields = $original.find('input[id$=_dynamic]');
+        var $dynamicCounterFields;
+        if ($original.hasClass('vf__area') || $original.hasClass('vf__multifield')) {
+            // Multi-field container
+            $dynamicCounterFields = $original.find('input[id$=_dynamic]');
+        } else {
+            // Single field
+            var originalElementId = $original.find(':input').prop('id');
+            $dynamicCounterFields = $("#" + originalElementId + "_dynamic");
+        }
 
         // Update counter values
         $dynamicCounterFields.each(function () {
@@ -264,7 +272,10 @@ ValidForm.prototype.dynamicDuplication = function () {
         var siblingCounter = 1;
         $siblings.each(function () {
             var currentCount = $(this).prop('id').split('_').pop();
-            $(this).prop('id', $original.prop('id') + '_' + siblingCounter);
+            var siblingId = $(this).prop('id');
+            if (siblingId !== '') {
+                $(this).prop('id', $original.prop('id') + '_' + siblingCounter);
+            }
 
             $(this).find('*').each(function () {
                 var elementId = $(this).prop('id');
@@ -395,6 +406,9 @@ ValidForm.prototype.dynamicDuplication = function () {
                     objNewElement.validator = jQuery.extend(new ValidFormFieldValidator(), objOriginalElement.validator);
                     objNewElement.validator.id = objNewElement.id;
                     objNewElement.validator.name = objNewElement.name;
+                    if (!copy.hasClass('vf__removable')) {
+                        objNewElement.validator.required = false;
+                    }
 
                     __this.addElement(objNewElement);
                 }
@@ -488,6 +502,18 @@ ValidForm.prototype.dynamicDuplication = function () {
 
                     jQuery(this).attr("id", fieldId + "_" + counter.val());
                 });
+            }
+
+            if (!copy.hasClass('vf__removable')) {
+                //*** Remove 'required' styling if not removable
+                copy
+                    .find(".vf__required")
+                    .removeClass("vf__required")
+                    .addClass("vf__optional");
+                copy
+                    .removeClass("vf__required")
+                    .removeClass("vf__error")
+                    .addClass("vf__optional");
             }
 
             //*** Remove 'required' styling.
