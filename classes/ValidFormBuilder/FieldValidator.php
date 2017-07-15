@@ -405,7 +405,7 @@ class FieldValidator extends ClassDynamic
                 }
             }
         } elseif (strlen($value) == 0) {
-            if ($this->__required && $intDynamicPosition == 0) {
+            if (($this->__required && $intDynamicPosition == 0) || !!$this->__field->getMeta('dynamicRemoveLabel', false)) {
                 // *** Only the first dynamic field has a required check. We asume by design that "real" dynamic fields are not required.
                 unset($this->__validvalues[$intDynamicPosition]);
                 $this->__errors[$intDynamicPosition] = $this->__requirederror;
