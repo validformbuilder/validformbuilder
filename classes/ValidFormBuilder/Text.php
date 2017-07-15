@@ -69,6 +69,13 @@ namespace ValidFormBuilder;
  */
 class Text extends Element
 {
+    use CanRemoveDynamicFields;
+
+    public function __construct($name, $type, $label = "", $validationRules = array(), $errorHandlers = array(), $meta = array())
+    {
+        parent::__construct($name, $type, $label, $validationRules, $errorHandlers, $meta);
+        $this->initialiseDynamicRemoveMeta();
+    }
 
     /**
      * @internal
@@ -78,13 +85,9 @@ class Text extends Element
     {
         $strOutput = "";
 
-        if ($this->__dynamic) {
-            $intDynamicCount = $this->getDynamicCount();
-            for ($intCount = 0; $intCount <= $intDynamicCount; $intCount ++) {
-                $strOutput .= $this->__toHtml($submitted, $blnSimpleLayout, $blnLabel, $blnDisplayErrors, $intCount);
-            }
-        } else {
-            $strOutput = $this->__toHtml($submitted, $blnSimpleLayout, $blnLabel, $blnDisplayErrors);
+        $intDynamicCount = $this->getDynamicCount();
+        for ($intCount = 0; $intCount <= $intDynamicCount; $intCount ++) {
+            $strOutput .= $this->__toHtml($submitted, $blnSimpleLayout, $blnLabel, $blnDisplayErrors, $intCount);
         }
 
         return $strOutput;
@@ -111,6 +114,10 @@ class Text extends Element
                 $this->setMeta("class", "vf__required");
             } else {
                 $this->setMeta("class", "vf__optional");
+            }
+
+            if ($this->isRemovable()) {
+                $this->setMeta("class", "vf__removable");
             }
 
             // *** Set custom meta.
@@ -152,6 +159,10 @@ class Text extends Element
 
             $this->setMeta("class", "vf__multifielditem");
 
+            if ($this->isRemovable()) {
+                $this->setMeta("class", "vf__removable");
+            }
+
             // Call this right before __getMetaString();
             $this->setConditionalMeta();
 
@@ -169,6 +180,10 @@ class Text extends Element
 
         if (! empty($this->__tip)) {
             $strOutput .= "<small class=\"vf__tip\"{$this->__getTipMetaString()}>{$this->__tip}</small>\n";
+        }
+
+        if ($this->isRemovable()) {
+            $strOutput .= $this->getRemoveLabelHtml();
         }
 
         $strOutput .= "</div>\n";

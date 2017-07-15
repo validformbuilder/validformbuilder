@@ -72,13 +72,9 @@ class Password extends Element
     {
         $strOutput = "";
 
-        if ($this->__dynamic) {
-            $intDynamicCount = $this->getDynamicCount();
-            for ($intCount = 0; $intCount <= $intDynamicCount; $intCount ++) {
-                $strOutput .= $this->__toHtml($submitted, $blnSimpleLayout, $blnLabel, $blnDisplayErrors, $intCount);
-            }
-        } else {
-            $strOutput = $this->__toHtml($submitted, $blnSimpleLayout, $blnLabel, $blnDisplayErrors);
+        $intDynamicCount = $this->getDynamicCount();
+        for ($intCount = 0; $intCount <= $intDynamicCount; $intCount ++) {
+            $strOutput .= $this->__toHtml($submitted, $blnSimpleLayout, $blnLabel, $blnDisplayErrors, $intCount);
         }
 
         return $strOutput;
@@ -97,7 +93,7 @@ class Password extends Element
 
         $varValue = $this->__getValue($submitted, $intCount);
 
-        $blnError = ($submitted && ! $this->__validator->validate($intCount) && $blnDisplayErrors) ? true : false;
+        $blnError = ($submitted && !$this->__validator->validate($intCount) && $blnDisplayErrors) ? true : false;
 
         if (!$blnSimpleLayout) {
             // *** We asume that all dynamic fields greater than 0 are never required.

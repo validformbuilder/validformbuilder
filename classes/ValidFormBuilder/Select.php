@@ -89,6 +89,8 @@ namespace ValidFormBuilder;
  */
 class Select extends Element
 {
+    use CanRemoveDynamicFields;
+
     /**
      * Collection of option elements created for this select element
      * @internal
@@ -124,6 +126,8 @@ class Select extends Element
         if ($this->__options->count() == 0) {
             $this->__parseRanges();
         }
+
+        $this->initialiseDynamicRemoveMeta();
     }
 
     /**
@@ -171,6 +175,10 @@ class Select extends Element
                 $this->setMeta("class", "vf__optional");
             }
 
+            if ($this->isRemovable()) {
+                $this->setMeta("class", "vf__removable");
+            }
+
             // *** Set custom meta.
             if ($blnError) {
                 $this->setMeta("class", "vf__error");
@@ -200,6 +208,10 @@ class Select extends Element
 
             $this->setMeta("class", "vf__multifielditem");
 
+            if ($this->isRemovable()) {
+                $this->setMeta("class", "vf__removable");
+            }
+
             // Call this right before __getMetaString();
             $this->setConditionalMeta();
 
@@ -225,6 +237,10 @@ class Select extends Element
 
         if (! empty($this->__tip)) {
             $strOutput .= "<small class=\"vf__tip\"{$this->__getTipMetaString()}>{$this->__tip}</small>\n";
+        }
+
+        if ($this->isRemovable()) {
+            $strOutput .= $this->getRemoveLabelHtml();
         }
 
         $strOutput .= "</div>\n";

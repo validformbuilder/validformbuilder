@@ -52,6 +52,8 @@ namespace ValidFormBuilder;
  */
 class Textarea extends Element
 {
+    use CanRemoveDynamicFields;
+
     /**
      * Create new Textarea object
      * @internal
@@ -68,6 +70,8 @@ class Textarea extends Element
         }
 
         parent::__construct($name, $type, $label, $validationRules, $errorHandlers, $meta);
+
+        $this->initialiseDynamicRemoveMeta();
     }
 
     /**
@@ -79,13 +83,9 @@ class Textarea extends Element
     {
         $strOutput = "";
 
-        if ($this->__dynamic) {
-            $intDynamicCount = $this->getDynamicCount();
-            for ($intCount = 0; $intCount <= $intDynamicCount; $intCount ++) {
-                $strOutput .= $this->__toHtml($submitted, $blnSimpleLayout, $blnLabel, $blnDisplayErrors, $intCount);
-            }
-        } else {
-            $strOutput = $this->__toHtml($submitted, $blnSimpleLayout, $blnLabel, $blnDisplayErrors);
+        $intDynamicCount = $this->getDynamicCount();
+        for ($intCount = 0; $intCount <= $intDynamicCount; $intCount ++) {
+            $strOutput .= $this->__toHtml($submitted, $blnSimpleLayout, $blnLabel, $blnDisplayErrors, $intCount);
         }
 
         return $strOutput;
@@ -109,18 +109,16 @@ class Textarea extends Element
 
         $blnError = ($submitted && ! $this->__validator->validate($intCount) && $blnDisplayErrors) ? true : false;
 
-        $removeLabel = $this->getMeta('dynamicRemoveLabel');
-        $hasRemoveLabel = !empty($removeLabel);
-        if ($hasRemoveLabel) {
-            $this->setMeta("class", "vf__removable");
-        }
-
         if (!$blnSimpleLayout) {
             // *** We asume that all dynamic fields greater than 0 are never required.
             if ($this->__validator->getRequired() && $intCount == 0) {
                 $this->setMeta("class", "vf__required");
             } else {
                 $this->setMeta("class", "vf__optional");
+            }
+
+            if ($this->isRemovable()) {
+                $this->setMeta("class", "vf__removable");
             }
 
             // *** Set custom meta.
@@ -159,6 +157,10 @@ class Textarea extends Element
 
             $this->setMeta("class", "vf__multifielditem");
 
+            if ($this->isRemovable()) {
+                $this->setMeta("class", "vf__removable");
+            }
+
             $strOutput = "<div{$this->__getMetaString()}>\n";
         }
 
@@ -175,8 +177,8 @@ class Textarea extends Element
             $strOutput .= "<small class=\"vf__tip\"{$this->__getTipMetaString()}>{$this->__tip}</small>\n";
         }
 
-        if ($hasRemoveLabel) {
-            $strOutput .= "<a class='vf__removeLabel' href='#'>" . $removeLabel . "</a>";
+        if ($this->isRemovable()) {
+            $strOutput .= $this->getRemoveLabelHtml();
         }
 
         $strOutput .= "</div>\n";
