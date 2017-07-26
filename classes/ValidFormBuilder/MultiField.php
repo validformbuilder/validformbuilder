@@ -230,13 +230,9 @@ class MultiField extends Base
     {
         $strOutput = "";
 
-        if ($this->__dynamic) {
-            $intDynamicCount = $this->getDynamicCount();
-            for ($intCount = 0; $intCount <= $intDynamicCount; $intCount ++) {
-                $strOutput .= $this->__toHtml($submitted, $blnSimpleLayout, $blnLabel, $blnDisplayError, $intCount);
-            }
-        } else {
-            $strOutput = $this->__toHtml($submitted, $blnSimpleLayout, $blnLabel, $blnDisplayError);
+        $intDynamicCount = $this->getDynamicCount();
+        for ($intCount = 0; $intCount <= $intDynamicCount; $intCount ++) {
+            $strOutput .= $this->__toHtml($submitted, $blnSimpleLayout, $blnLabel, $blnDisplayError, $intCount);
         }
 
         return $strOutput;
