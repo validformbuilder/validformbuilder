@@ -1,5 +1,5 @@
 {
-    "name": "neverwoods/validformbuilder",
+    "name": "validformbuilder/validformbuilder",
     "type": "library",
     "description": "The easiest tool for generating XHTML 1.0 valid and CSS enabled webforms.",
     "keywords": ["form", "validation", "building"],
