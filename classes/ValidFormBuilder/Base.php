@@ -894,7 +894,7 @@ class Base extends ClassDynamic
      * @internal
      * @param string $property The key to set in the meta array
      * @param string $value The corresponding value
-     * @param string $blnOverwrite If true, overwrite pre-existing key-value pair
+     * @param boolean $blnOverwrite If true, overwrite pre-existing key-value pair
      * @return array
      */
     protected function __setMeta($property, $value, $blnOverwrite = false)
@@ -956,6 +956,12 @@ class Base extends ClassDynamic
 
             // Make sure no empty values are left in the array.
             $arrMeta = array_filter($arrMeta);
+
+            // Make sure there are no duplicate entries for the 'class' property
+            if (strtolower($property) === 'class') {
+                $arrMeta = array_unique($arrMeta);
+            }
+
             $varMeta = implode($strDelimiter, $arrMeta);
 
             $internalMetaArray[$property] = $varMeta;
