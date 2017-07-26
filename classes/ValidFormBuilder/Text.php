@@ -120,6 +120,16 @@ class Text extends Element
                 $this->setMeta("class", "vf__removable");
             }
 
+            //*** Add data-dynamic="original" or data-dynamic="clone" attributes to dynamic fields
+            if ($this->getDynamicCount() > 1) {
+                if ($intCount === 0) {
+                    // This is the first, original element. Make sure to define that.
+                    $this->setMeta('data-dynamic', 'original', true);
+                } else {
+                    $this->setMeta('data-dynamic', 'clone', true);
+                }
+            }
+
             // *** Set custom meta.
             if ($blnError) {
                 $this->setMeta("class", "vf__error");
@@ -161,6 +171,16 @@ class Text extends Element
 
             if ($this->isRemovable()) {
                 $this->setMeta("class", "vf__removable");
+            }
+
+            //*** Add data-dynamic="original" or data-dynamic="clone" attributes to dynamic fields
+            if ($this->getDynamicCount() > 1) {
+                if ($intCount === 0) {
+                    // This is the first, original element. Make sure to define that.
+                    $this->setMeta('data-dynamic', 'original', true);
+                } else {
+                    $this->setMeta('data-dynamic', 'clone', true);
+                }
             }
 
             // Call this right before __getMetaString();

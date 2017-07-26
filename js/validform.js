@@ -229,6 +229,15 @@ ValidForm.prototype.dynamicDuplication = function () {
         return arrId.join('_');
     };
 
+    //*** Initialise the relationships between clones and original dynamic elements if predefined
+    $("[data-dynamic='original']").each(function () {
+        var $original = $(this);
+        $original.siblings('[data-dynamic="clone"]').each(function () {
+            var $clone = $(this);
+            $clone.data('vf_originalElement', $original);
+        });
+    });
+
     /**
      * Remove dynamic field logic
      */
