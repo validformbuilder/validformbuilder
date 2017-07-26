@@ -958,7 +958,7 @@ class Base extends ClassDynamic
             $arrMeta = array_filter($arrMeta);
 
             // Make sure there are no duplicate entries for the 'class' property
-            if ($property === 'class') {
+            if (strtolower($property) === 'class') {
                 $arrMeta = array_unique($arrMeta);
             }
 
