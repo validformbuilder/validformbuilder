@@ -1,6 +1,6 @@
-[![Build Status](https://travis-ci.org/neverwoods/validformbuilder.svg?branch=master)](https://travis-ci.org/neverwoods/validformbuilder)
-[![Latest Stable Version](https://poser.pugx.org/neverwoods/validformbuilder/v/stable.svg)](https://packagist.org/packages/neverwoods/validformbuilder)
-[![License](https://poser.pugx.org/neverwoods/validformbuilder/license.svg)](https://packagist.org/packages/neverwoods/validformbuilder)
+[![Build Status](https://travis-ci.org/validformbuilder/validformbuilder.svg?branch=master)](https://travis-ci.org/validformbuilder/validformbuilder)
+[![Latest Stable Version](https://poser.pugx.org/validformbuilder/validformbuilder/v/stable.svg)](https://packagist.org/packages/validformbuilder/validformbuilder)
+[![License](https://poser.pugx.org/validformbuilder/validformbuilder/license.svg)](https://packagist.org/packages/validformbuilder/validformbuilder)
 [![A project by Neverwoods](http://img.shields.io/badge/project_by-Neverwoods-blue.svg)](http://neverwoods.com)
 
 Quick links:
@@ -9,7 +9,7 @@ Quick links:
 - [About](#validform-builder)
 - [Installation](#installation)
 - [Documentation](#user-content-documentation)
-- [Examples](https://github.com/neverwoods/validformbuilder/tree/master/examples)
+- [Examples](https://github.com/validformbuilder/validformbuilder/tree/master/examples)
 
 ValidForm Builder
 ================
@@ -61,7 +61,7 @@ If you have any questions, please ask them on [stackoverflow](http://stackoverfl
 
 Examples
 ========
-Check out [the examples folder](https://github.com/neverwoods/validformbuilder/tree/master/examples) for many real-live use cases for ValidForm Buider. Each snippet is ready to copy-paste into your project!
+Check out [the examples folder](https://github.com/validformbuilder/validformbuilder/tree/master/examples) for many real-live use cases for ValidForm Buider. Each snippet is ready to copy-paste into your project!
 
 
 Happy coding!
