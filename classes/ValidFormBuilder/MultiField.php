@@ -90,8 +90,6 @@ namespace ValidFormBuilder;
  */
 class MultiField extends Base
 {
-    use CanRemoveDynamicFields;
-
     /**
      * Field label
      * @internal
@@ -148,8 +146,7 @@ class MultiField extends Base
 
         $this->__dynamic = $this->getMeta("dynamic", $this->__dynamic);
         $this->__dynamicLabel = $this->getMeta("dynamicLabel", $this->__dynamicLabel);
-
-        $this->initialiseDynamicRemoveMeta();
+        $this->__dynamicRemoveLabel = $this->getMeta("dynamicRemoveLabel", null);
     }
 
     /**
@@ -168,16 +165,11 @@ class MultiField extends Base
     public function addField($name, $type, $validationRules = array(), $errorHandlers = array(), $meta = array())
     {
         // Creating dynamic fields inside a multifield is not supported.
-        if (array_key_exists("dynamic", $meta)) {
-            unset($meta["dynamic"]);
+        foreach(['dynamic', 'dynamicLabel', 'dynamicRemoveLabel'] as $metaKey) {
+            if (array_key_exists($metaKey, $meta)) {
+                unset($meta[$metaKey]);
+            }
         }
-
-        if (array_key_exists("dynamicLabel", $meta)) {
-            unset($meta["dynamicLabel"]);
-        }
-
-        //*** Clear remove meta as well
-        $meta = $this->unsetDynamicRemoveLabelMeta($meta);
 
         // Render the field and add it to the multifield field collection.
         $objField = ValidForm::renderField($name, "", $type, $validationRules, $errorHandlers, $meta);
@@ -308,7 +300,7 @@ class MultiField extends Base
         }
 
         //*** Add data-dynamic="original" or data-dynamic="clone" attributes to dynamic fields
-        if ($this->getDynamicCount() > 0) {
+        if ($this->isDynamic()) {
             if ($intCount === 0) {
                 // This is the first, original element. Make sure to define that.
                 $this->setMeta('data-dynamic', 'original', true);

@@ -80,8 +80,6 @@ namespace ValidFormBuilder;
  */
 class Area extends Base
 {
-    use CanRemoveDynamicFields;
-
     /**
      * The Area's label, presented as a 'legend' header above the area
      * @internal
@@ -132,6 +130,12 @@ class Area extends Base
      * @var string
      */
     protected $__dynamicLabel;
+    /**
+     * The label which a user can click to remove a cloned dynamic area
+     * @internal
+     * @var string
+     */
+    protected $__dynamicRemoveLabel;
 
     /**
      * Create a new Area instance
@@ -162,8 +166,7 @@ class Area extends Base
 
         $this->__dynamic = $this->getMeta("dynamic", null);
         $this->__dynamicLabel = $this->getMeta("dynamicLabel", null);
-
-        $this->initialiseDynamicRemoveMeta();
+        $this->__dynamicRemoveLabel = $this->getMeta("dynamicRemoveLabel", null);
     }
 
     /**
@@ -356,7 +359,7 @@ class Area extends Base
         }
 
         //*** Add data-dynamic="original" or data-dynamic="clone" attributes to dynamic fields
-        if ($this->getDynamicCount() > 0) {
+        if ($this->isDynamic()) {
             if ($intCount === 0) {
                 // This is the first, original element. Make sure to define that.
                 $this->setMeta('data-dynamic', 'original', true);

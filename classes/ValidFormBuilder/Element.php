@@ -89,6 +89,12 @@ class Element extends Base
      */
     protected $__dynamicLabel = null;
     /**
+     * The label which a user can click to remove a cloned dynamic area
+     * @internal
+     * @var string
+     */
+    protected $__dynamicRemoveLabel;
+    /**
      * Element required style
      * @internal
      * @var string
@@ -144,6 +150,7 @@ class Element extends Base
         $this->__default = $this->getMeta("default", $this->__default);
         $this->__dynamic = $this->getMeta("dynamic", $this->__dynamic);
         $this->__dynamicLabel = $this->getMeta("dynamicLabel", $this->__dynamicLabel);
+        $this->__dynamicRemoveLabel = $this->getMeta("dynamicRemoveLabel", $this->__dynamicRemoveLabel);
         $this->__dynamiccounter = (! is_null($this->getMeta("dynamicCounter", null))) ? true : $this->__dynamiccounter;
 
         $this->__sanitize = $this->getMeta("sanitize", $this->__sanitize);
@@ -376,6 +383,24 @@ class Element extends Base
     public function isDynamic()
     {
         return $this->__dynamic;
+    }
+
+    /**
+     * @param $label
+     * @return string
+     */
+    protected function getRemoveLabelHtml($label = null)
+    {
+        $label = (is_null($label)) ? $this->__dynamicRemoveLabel : $label;
+        return "<a class='vf__removeLabel' href='#'>" . $label . "</a>";
+    }
+
+    /**
+     * @return bool
+     */
+    protected function isRemovable()
+    {
+        return !is_null($this->__dynamicRemoveLabel);
     }
 
     /**
