@@ -312,6 +312,12 @@ class ValidForm extends ClassDynamic
     const VFORM_COMPARISON_REGEX = "regex";
 
     /**
+     * Check if the value matches your own custom regular expression
+     * @var string
+     */
+    const VFORM_COMPARISON_IN_ARRAY = "in_array";
+
+    /**
      * ValidForm Condition match
      *
      * Match **all** of the defined conditions

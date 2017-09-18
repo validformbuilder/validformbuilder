@@ -148,7 +148,7 @@ class Comparison extends ClassDynamic
     {
         $blnReturn = false;
         $strLowerValue = strtolower($strValue);
-        $strCompareAgainst = strtolower($this->__value);
+        $strCompareAgainst = (is_string($this->__value)) ? strtolower($this->__value) : null;
 
         switch ($this->__comparison) {
             case ValidForm::VFORM_COMPARISON_EQUAL:
@@ -187,6 +187,9 @@ class Comparison extends ClassDynamic
                 break;
             case ValidForm::VFORM_COMPARISON_REGEX:
                 $blnReturn = preg_match($this->__value, $strValue);
+                break;
+            case ValidForm::VFORM_COMPARISON_IN_ARRAY:
+                $blnReturn = in_array($strValue, $this->__value);
                 break;
         }
 
