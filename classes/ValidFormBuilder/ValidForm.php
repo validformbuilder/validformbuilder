@@ -449,6 +449,13 @@ class ValidForm extends ClassDynamic
     private $__uniqueid;
 
     /**
+     * Indicate if the form should allow auto complete or not.
+     *
+     * @var bool
+     */
+    private $autocomplete = true;
+
+    /**
      * Create a new ValidForm Builder instance
      *
      * @param string $name The form's name. This will also be the value of the name attribute in the generated HTML.
@@ -525,6 +532,11 @@ class ValidForm extends ClassDynamic
                 E_ERROR
             );
         }
+    }
+
+    public function setAutoComplete($blnValue)
+    {
+        $this->autocomplete = $blnValue;
     }
 
     /**
@@ -985,11 +997,13 @@ class ValidForm extends ClassDynamic
 
         $blnForceSubmitted = (is_null($blnForceSubmitted)) ? $this->isSubmitted() : $blnForceSubmitted;
 
+        $strAutoComplete = (!$this->autocomplete) ? "autocomplete=\"off\" " : "";
+
         $strOutput .= "<form " .
             "id=\"{$this->__name}\" " .
             "method=\"post\" " .
             "enctype=\"multipart/form-data\" " .
-            "action=\"{$this->__action}\" " .
+            "action=\"{$this->__action}\" {$strAutoComplete}" .
             "class=\"{$strClass}\"{$this->__metaToData()}>\n";
 
         // *** Main error.
@@ -1238,7 +1252,7 @@ class ValidForm extends ClassDynamic
      * }
      * ```
      * @param string $id
-     * @return Ambigous <NULL, Base>
+     * @return Element|null
      */
     public function getValidField($id)
     {
