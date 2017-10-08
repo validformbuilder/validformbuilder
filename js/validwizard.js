@@ -127,14 +127,11 @@ ValidWizard.prototype.showPage = function ($objPage) {
 		});
 
 		// Check if this is the last page.
-        // If that is the case, set the 'next button'-label the submit button value to
-        // simulate a submit button
+		// If that is the case, remove the "next" button from the page navigation and show the regular navigation.
 		var pageIndex = jQuery("#" + self.id + " .vf__page").index($objPage);
 		if (pageIndex > 0 && pageIndex == self.pages.length - 1) {
 			jQuery("#" + self.id).find(".vf__navigation").show();
-
-			$objPage.find(".vf__pagenavigation").remove();
-			
+            $objPage.find(".vf__pagenavigation").find("a").not(".vf__previous").remove();
 		} else {
 			jQuery("#" + self.id).find(".vf__navigation").hide();
 		}
