@@ -70,13 +70,7 @@ ValidForm.prototype._init = function() {
         }
 
         if (self.__continueExecution) {
-            if (self.pages.length > 1) {
-                // Validation has been done on each page individually.
-                // No need to re-validate here.
-                return true;
-            } else {
-                return self.validate();
-            }
+            return self.validate();
         } else {
             return false;
         }

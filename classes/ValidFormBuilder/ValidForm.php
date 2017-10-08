@@ -553,9 +553,9 @@ class ValidForm extends ClassDynamic
      * @param string $html The string or HTML code to inject
      * @return \ValidFormBuilder\StaticText
      */
-    public function addHtml($html)
+    public function addHtml($html, $meta = array())
     {
-        $objString = new StaticText($html);
+        $objString = new StaticText($html, $meta);
         $this->__elements->addObject($objString);
 
         return $objString;
