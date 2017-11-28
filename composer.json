@@ -23,7 +23,7 @@
         "psr-0": {"ValidFormBuilder": "classes/"}
     },
     "require-dev": {
-        "phpdocumentor/phpdocumentor": "dev-develop"
+        "phpdocumentor/phpdocumentor": "dev-master"
     },
     "repositories": [
         {
