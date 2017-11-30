@@ -46,6 +46,7 @@ function ValidForm(strFormId, strMainAlert) {
                                     ];
 	    this.labels                 = {};
 	    this.classes                = {};
+        this.initializing           = true;
 	    this.__continueExecution    = true;
 
         // Initialize ValidForm class
@@ -94,6 +95,8 @@ ValidForm.prototype.initialize = function () {
             self.conditions[i]._init();
         }
     }
+
+    self.initializing = false;
 };
 
 ValidForm.prototype.addCondition = function (objCondition) {
@@ -701,7 +704,22 @@ ValidForm.prototype.addElement = function() {
             maxLengthError = arguments[11];
         }
 
-        objAddedElement = this.elements[strElementName] = new ValidFormElement(this.id, strElementName, strElementId, strValidation, required, maxLength, minLength, hint, typeError, requiredError, hintError, minLengthError, maxLengthError);
+        objAddedElement = this.elements[strElementName] = new ValidFormElement(
+            this.id,
+            this,
+            strElementName,
+            strElementId,
+            strValidation,
+            required,
+            maxLength,
+            minLength,
+            hint,
+            typeError,
+            requiredError,
+            hintError,
+            minLengthError,
+            maxLengthError
+        );
     }
 
     // Store the element in a data property in the DOM element.
@@ -1276,37 +1294,37 @@ ValidFormCondition.prototype.isMet = function () {
  * ValidFormElement Class
  * Holds an element that can be validated
  * @param {String} strFormId      Form ID
+ * @param {String} formObject     ValidForm object
  * @param {String} strElementName Form element name
  * @param {String} strElementId   Form element ID
  * @param {String} strValidation  Validation regular expression
  */
-function ValidFormElement(strFormId, strElementName, strElementId, strValidation) {
+function ValidFormElement(strFormId, formObject, strElementName, strElementId, strValidation) {
     this.formId                 = strFormId;
+    this.formObject             = formObject;
     this.id                     = strElementId;
     this.name                   = strElementName;
-    this.disabled             = ($("#" + strElementId).attr("disabled") === "disabled");
+    this.disabled               = ($("#" + strElementId).attr("disabled") === "disabled");
     this.validator              = new ValidFormFieldValidator(strElementId, strElementName);
     this.validator.check        = strValidation;
     this.validator.required     = false;
     this.validator.minLength    = null;
     this.validator.maxLength    = null;
 
-    // Rewritten 'ValidFormElement.arguments' to just 'arguments' -Robin
-    // http://aptana.com/reference/api/Arguments.html
-    if (arguments.length > 4) {
-        this.validator.required = arguments[4];
-    }
-
     if (arguments.length > 5) {
-        this.validator.maxLength = arguments[5];
+        this.validator.required = arguments[5];
     }
 
     if (arguments.length > 6) {
-        this.validator.minLength = arguments[6];
+        this.validator.maxLength = arguments[6];
     }
 
     if (arguments.length > 7) {
-        this.validator.hint = arguments[7];
+        this.validator.minLength = arguments[7];
+    }
+
+    if (arguments.length > 8) {
+        this.validator.hint = arguments[8];
 
         var __this = this;
         if (this.validator.hint !== "") {
@@ -1328,24 +1346,24 @@ function ValidFormElement(strFormId, strElementName, strElementId, strValidation
         }
     }
 
-    if (arguments.length > 8) {
-        this.validator.typeError = arguments[8];
-    }
-
     if (arguments.length > 9) {
-        this.validator.requiredError = arguments[9];
+        this.validator.typeError = arguments[9];
     }
 
     if (arguments.length > 10) {
-        this.validator.hintError = arguments[10];
+        this.validator.requiredError = arguments[10];
     }
 
     if (arguments.length > 11) {
-        this.validator.minLengthError = arguments[11];
+        this.validator.hintError = arguments[11];
     }
 
     if (arguments.length > 12) {
-        this.validator.maxLengthError = arguments[12];
+        this.validator.minLengthError = arguments[12];
+    }
+
+    if (arguments.length > 13) {
+        this.validator.maxLengthError = arguments[13];
     }
 
     // Keep the original values in a local cache for future reference.
@@ -1430,7 +1448,10 @@ ValidFormElement.prototype.setRequired = function (blnValue) {
     this.validator.required = blnValue;
 
     // The state has changed, remove it's alert.
-    this.validator.removeAlert();
+    // But only if we are done initializing, otherwise inital alerts are not shown.
+    if (!this.formObject.initializing) {
+        this.validator.removeAlert();
+    }
 
     var $element = $("[name='" + this.name + "']");
 
