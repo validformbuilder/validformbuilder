@@ -1046,9 +1046,11 @@ ValidFormCondition.prototype._init = function () {
         if (typeof objComparisons === "object" && objComparisons.length > 0) {
             for (var i = 0; i < objComparisons.length; i++) {
                 var Comparison = objComparisons[i];
-                if (this.validform.getElement(Comparison.subject) !== null) {
+
+                //*** Check disabled. Element check messes up comparisons with hidden fields.
+                //if (this.validform.getElement(Comparison.subject) !== null) {
                     this.addComparison(new ValidFormComparison(this.validform, Comparison.subject, Comparison.comparison, Comparison.value));
-                }
+                //}
             }
         }
 
