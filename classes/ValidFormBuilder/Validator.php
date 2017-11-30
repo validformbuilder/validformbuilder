@@ -34,17 +34,17 @@ class Validator
      * @var array
      */
     public static $checks = array(
-        ValidForm::VFORM_STRING => '/^[-a-zàáâãäåāæçèéêẽëēìíîïĩīðñòóôõöōøùúûũüūýß€0-9%\s*.\'+\/",_!?#@:;()|& ]*$/iu',
-        ValidForm::VFORM_TEXT => '/^[-a-zàáâãäåāæçèéêẽëēìíîïĩīðñòóôõöōøùúûũüūýß€0-9%\s*.\'+\’\/"_,?#@:;^*!&() ]*$/iu',
-        ValidForm::VFORM_HTML => '/^[-a-zàáâãäåāæçèéêẽëēìíîïĩīðñòóôõöōøùúûũüūýß€0-9%\s*.\'\’\/"_,?#@;^*!&() <:>=]*$/iu',
+        ValidForm::VFORM_STRING => '/^[-a-zàáâãäåāæçèéêẽëēìíîïĩīðñòóôõöōøùúûũüūýß€0-9%\s*.\'+\/",_–!?#@:;()|& ]*$/iu',
+        ValidForm::VFORM_TEXT => '/^[-a-zàáâãäåāæçèéêẽëēìíîïĩīðñòóôõöōøùúûũüūýß€0-9%\s*.\'+\’\/"_–,?#@:;^*!&() ]*$/iu',
+        ValidForm::VFORM_HTML => '/^[-a-zàáâãäåāæçèéêẽëēìíîïĩīðñòóôõöōøùúûũüūýß€0-9%\s*.\'\’\/"_–,?#@;^*!&() <:>=]*$/iu',
         ValidForm::VFORM_NUMERIC => '/^[-]*[0-9,\.]*$/i',
         ValidForm::VFORM_INTEGER => '/^[0-9]*$/i',
-        ValidForm::VFORM_WORD => '/^[-a-zàáâãäåāæçèéêẽëēìíîïĩīðñòóôõöōøùúûũüūýß€0-9%_]*$/iu',
+        ValidForm::VFORM_WORD => '/^[-a-zàáâãäåāæçèéêẽëēìíîïĩīðñòóôõöōøùúûũüūýß€0-9%_–]*$/iu',
         ValidForm::VFORM_EMAIL => '/^[^@\s]+@([-a-z0-9]+\.)+[a-z]{2,}$/i',
-        ValidForm::VFORM_PASSWORD => '/^[-A-Z0-9.\'"_!@#()$%^&*?]*$/i',
+        ValidForm::VFORM_PASSWORD => '',
         ValidForm::VFORM_SIMPLEURL => '/^[-A-Z0-9]+\.[-A-Z0-9]+/i',
         ValidForm::VFORM_URL => '/^(http(s)?:\/\/)*[a-z0-9-]+(.[a-z0-9-]+)*(:[0-9]+)?(\/.*)?$/i',
-        ValidForm::VFORM_FILE => '/^[-a-zàáâãäåāæçèéêẽëēìíîïĩīðñòóôõöōøùúûũüūýß0-9.\':"\\\\_\/ ]*$/iu',
+        ValidForm::VFORM_FILE => '/^[-a-zàáâãäåāæçèéêẽëēìíîïĩīðñòóôõöōøùúûũüūýß0-9.\':"\\\\_–\/ ]*$/iu',
         ValidForm::VFORM_BOOLEAN => '/^[on]*$/i',
         ValidForm::VFORM_RADIO_LIST => '',
         ValidForm::VFORM_CHECK_LIST => '',
