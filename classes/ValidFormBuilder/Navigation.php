@@ -76,9 +76,9 @@ class Navigation extends Base
      * @param string $html The HTML string
      * @return \ValidFormBuilder\StaticText
      */
-    public function addHtml($html)
+    public function addHtml($html, $meta = array())
     {
-        $objString = new StaticText($html);
+        $objString = new StaticText($html, $meta);
         $objString->setMeta("parent", $this, true);
         $this->__fields->addObject($objString);
 
