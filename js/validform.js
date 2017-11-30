@@ -1003,6 +1003,9 @@ ValidFormComparison.prototype.check = function () {
 
             blnReturn = objRegEx.test(strValue);
             break;
+        case "in_array":
+            blnReturn = (self.value.indexOf(strValue) > -1);
+            break;
     }
 
     self.isMet = blnReturn;
