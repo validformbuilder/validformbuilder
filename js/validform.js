@@ -397,7 +397,7 @@ ValidForm.prototype.dynamicDuplication = function () {
                 counter.val(counterValue);
 
                 var search;
-                if (counterValue === 1) {
+                if (counterValue == 1) {
                     search = fieldname;
                 } else {
                     search = fieldname + "_" + (counterValue - 1);
@@ -441,7 +441,7 @@ ValidForm.prototype.dynamicDuplication = function () {
 
                         //*** Radio buttons and checkboxes have to be treated differently.
                         var fieldId;
-                        if (counterValue === 1) {
+                        if (counterValue == 1) {
                             fieldId = $field.prop("id");
                         } else {
                             fieldId = getIdWithoutIndex($field.prop('id'));
@@ -480,7 +480,7 @@ ValidForm.prototype.dynamicDuplication = function () {
 
                         $field
                             .bind("focus.validform-hint", function() {
-                                if ($field.val() === objOriginalElement.validator.hint) {
+                                if ($field.val() == objOriginalElement.validator.hint) {
                                     $field.val("");
                                     $field
                                         .closest(".vf__hint")
@@ -670,7 +670,7 @@ ValidForm.prototype.attachAreaEvents = function(objActiveTrigger) {
             var fieldset = jQuery(this),
                 $dynamicTrigger;
 
-            if (fieldset[0] === currentFieldset[0]) {
+            if (fieldset[0] == currentFieldset[0]) {
                 if (self.checked) {
                     // Enable active area
                     jQuery("input, select, textarea", currentFieldset).removeAttr("disabled");
@@ -876,7 +876,7 @@ ValidForm.prototype.getElement = function(strElementName){
     var objReturn = null;
 
     for (var strElement in this.elements) {
-        if (strElement === strElementName) {
+        if (strElement == strElementName) {
             objReturn = this.elements[strElement];
             break;
         }
@@ -894,7 +894,7 @@ ValidForm.prototype.addEvent = function(strEvent, callback){
                 var objCachedEvent = this.cachedEvents[i];
                 for (var eventName in objCachedEvent) {
                     if (objCachedEvent.hasOwnProperty(eventName)) {
-                        if (strEvent === eventName) {
+                        if (strEvent == eventName) {
                             this.events[strEvent](objCachedEvent[eventName]);
                         }
                     }
@@ -1086,13 +1086,13 @@ ValidFormComparison.prototype.check = function () {
 
     switch (self.comparison) {
         case "equal":
-            if (strValue === self.value) {
+            if (strValue == self.value) {
                 // Comparison met.
                 blnReturn = true;
             }
             break;
         case "notequal":
-            if (strValue !== self.value) {
+            if (strValue != self.value) {
                 // Comparison met.
                 blnReturn = true;
             }
