@@ -42,6 +42,10 @@ function ValidForm(strFormId, strMainAlert) {
                                         "afterAddPageNavigation",
                                         "beforeDynamicChange",
                                         "afterDynamicChange",
+                                        "beforeDynamicAdd",
+                                        "afterDynamicAdd",
+                                        "beforeDynamicRemove",
+                                        "afterDynamicRemove",
                                         "afterValidate"
                                     ];
 	    this.labels                 = {};
@@ -256,6 +260,28 @@ ValidForm.prototype.dynamicDuplication = function () {
         }
 
         var $original = findOriginalElement($elementToBeRemoved);
+
+        //*** Call custom event if set.
+        jQuery("#" + __this.id).trigger(
+            "VF_BeforeDynamicRemove",
+            [{
+                ValidForm: __this,
+                objAnchor: $(this),
+                objCopy: $elementToBeRemoved,
+                objOriginal: $original,
+                count: null
+            }]
+        );
+        if (typeof __this.events.beforeDynamicRemove === "function") {
+            __this.events.beforeDynamicRemove({
+                ValidForm: __this,
+                objAnchor: $anchor,
+                objCopy: $elementToBeRemoved,
+                objOriginal: $original,
+                count: null
+            });
+        }
+
         var $dynamicCounterFields;
         if ($original.hasClass('vf__area') || $original.hasClass('vf__multifield')) {
             // Multi-field container
@@ -320,6 +346,48 @@ ValidForm.prototype.dynamicDuplication = function () {
 
             siblingCounter++;
         });
+
+        //*** Call custom event if set.
+        jQuery("#" + __this.id).trigger(
+            "VF_AfterDynamicRemove",
+            [{
+                ValidForm: __this,
+                objAnchor: $(this),
+                objCopy: null,
+                objOriginal:
+                $original,
+                count: null
+            }]
+        );
+        if (typeof __this.events.afterDynamicRemove === "function") {
+            __this.events.afterDynamicRemove({
+                ValidForm: __this,
+                objAnchor: $anchor,
+                objCopy: null,
+                objOriginal: $original,
+                count: null
+            });
+        }
+
+        jQuery("#" + __this.id).trigger(
+            "VF_AfterDynamicChange",
+            [{
+                ValidForm: __this,
+                objAnchor: $(this),
+                objCopy: null,
+                objOriginal: $original,
+                count: null
+            }]
+        );
+        if (typeof __this.events.afterDynamicChange === "function") {
+            __this.events.afterDynamicChange({
+                ValidForm: __this,
+                objAnchor: $anchor,
+                objCopy: null,
+                objOriginal: $original,
+                count: null
+            });
+        }
     });
 
     /**
@@ -339,6 +407,16 @@ ValidForm.prototype.dynamicDuplication = function () {
         var $dynamicDuplicationWrap = $anchor.closest("div.vf__dynamic");
 
         //*** Call custom event if set.
+        $formElement.trigger("VF_BeforeDynamicAdd", [{
+            ValidForm: __this,
+            objAnchor: $anchor,
+            objOriginal: $dynamicDuplicationWrap.prev()
+        }]);
+
+        if (typeof __this.events.beforeDynamicAdd === "function") {
+            __this.events.beforeDynamicAdd(__this, $anchor);
+        }
+
         $formElement.trigger("VF_BeforeDynamicChange", [{
             ValidForm: __this,
             objAnchor: $anchor,
@@ -379,7 +457,7 @@ ValidForm.prototype.dynamicDuplication = function () {
 
                 //*** Clear fieldname from brackets
                 if (blnHasBrackets) {
-                    fieldname = fieldname.replace("[]", "");    
+                    fieldname = fieldname.replace("[]", "");
                 }                
 
                 //*** Set counter variable on current counter object
@@ -574,9 +652,41 @@ ValidForm.prototype.dynamicDuplication = function () {
             }
 
             //*** Call custom event if set.
-            jQuery("#" + __this.id).trigger("VF_AfterDynamicChange", [{ValidForm: __this, objAnchor: $anchor, objCopy: copy, objOriginal: $original, count: counter.val()}]);
+            $formElement.trigger("VF_AfterDynamicAdd", [{
+                ValidForm: __this,
+                objAnchor: $anchor,
+                objCopy: copy,
+                objOriginal: $original,
+                count: (typeof counter === "object") ? counter.val() : null
+            }]);
+            if (typeof __this.events.afterDynamicAdd === "function") {
+                __this.events.afterDynamicAdd({
+                    ValidForm: __this, objAnchor:
+                    $anchor, objCopy:
+                    copy, objOriginal:
+                    $original,
+                    count: (typeof counter === "object") ? counter.val() : null
+                });
+            }
+
+            jQuery("#" + __this.id).trigger(
+                "VF_AfterDynamicChange",
+                [{
+                    ValidForm: __this,
+                    objAnchor: $anchor,
+                    objCopy: copy,
+                    objOriginal: $original,
+                    count: (typeof counter === "object") ? counter.val() : null
+                }]
+            );
             if (typeof __this.events.afterDynamicChange === "function") {
-                __this.events.afterDynamicChange({ValidForm: __this, objAnchor: $anchor, objCopy: copy, objOriginal: $original, count: counter.val()});
+                __this.events.afterDynamicChange({
+                    ValidForm: __this,
+                    objAnchor: $anchor,
+                    objCopy: copy,
+                    objOriginal: $original,
+                    count: (typeof counter === "object") ? counter.val() : null
+                });
             }
         }
 
@@ -1599,7 +1709,7 @@ ValidFormElement.prototype.setRequired = function (blnValue) {
 
     var $element = $("[name='" + this.name + "']");
 
-    var $parent = $element.parentsUntil('div.vf__optional, div.vf__required').parent();
+    var $parent = $element.closest("div.vf__optional, div.vf__required");
     if (blnValue) {
         // Required == true
         $parent.removeClass("vf__optional").addClass("vf__required");
