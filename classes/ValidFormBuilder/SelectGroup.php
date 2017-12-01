@@ -33,20 +33,17 @@ class SelectGroup extends Base
 {
     /**
      * The label
-     * @internal
      * @var string
      */
     protected $__label;
     /**
      * The internal options collection
-     * @internal
      * @var \ValidFormBuilder\Collection
      */
     protected $__options;
 
     /**
      * Construct new SelectGroup
-     * @internal
      * @param string $label
      */
     public function __construct($label)
@@ -57,7 +54,6 @@ class SelectGroup extends Base
 
     /**
      * Generte HTML output
-     * @internal
      * @param string $value
      * @return string Generated HTML
      */

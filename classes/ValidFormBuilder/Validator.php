@@ -58,15 +58,12 @@ class Validator
     /**
      * Validate input against regular expression
      *
-     * @internal
      * @param integer $checkType The type to check for
      * @param string $value The value to validate
      * @return boolean True if valid, false if not.
      */
     public static function validate($checkType, $value)
     {
-        $blnReturn = false;
-
         if (array_key_exists($checkType, self::$checks)) {
             if (empty(self::$checks[$checkType])) {
                 $blnReturn = true;

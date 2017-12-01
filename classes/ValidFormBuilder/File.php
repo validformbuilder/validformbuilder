@@ -55,7 +55,6 @@ class File extends Element
      *
      * See {@link \ValidFormBuilder\Element::toHtml()}
      *
-     * @internal
      * @see \ValidFormBuilder\Element::toHtml()
      */
     public function toHtml($submitted = false, $blnSimpleLayout = false, $blnLabel = true, $blnDisplayErrors = true)
@@ -75,13 +74,10 @@ class File extends Element
      *
      * See {@link \ValidFormBuilder\Element::__toHtml()}
      *
-     * @internal
      * @see \ValidFormBuilder\Element::__toHtml()
      */
     public function __toHtml($submitted = false, $blnSimpleLayout = false, $blnLabel = true, $blnDisplayErrors = true, $intCount = 0)
     {
-        $strOutput = "";
-
         $strName = ($intCount == 0) ? $this->__name : $this->__name . "_" . $intCount;
         $strId = ($intCount == 0) ? $this->__id : $this->__id . "_" . $intCount;
 
@@ -175,17 +171,17 @@ class File extends Element
      *
      * See {@link \ValidFormBuilder\Element::toJS()}
      *
-     * @internal
      * @see \ValidFormBuilder\Element::toJS()
      */
     public function toJS($intDynamicPosition = 0)
     {
+        $strOutput = "";
+
         $strCheck = $this->__validator->getCheck();
         $strCheck = (empty($strCheck)) ? "''" : str_replace('\\\\', "\\\\\\\\", $strCheck);
         $strCheck = str_replace("'", "\\'", $strCheck);
         $strCheck = (mb_substr($strCheck, -1) == "u") ? mb_substr($strCheck, 0, -1) : $strCheck;
         $strRequired = ($this->__validator->getRequired()) ? "true" : "false";
-        ;
         $intMaxLength = ($this->__validator->getMaxLength() > 0) ? $this->__validator->getMaxLength() : "null";
         $intMinLength = ($this->__validator->getMinLength() > 0) ? $this->__validator->getMinLength() : "null";
 
@@ -200,13 +196,19 @@ class File extends Element
                     $strRequired = "false";
                 }
 
-                $strOutput .= "objForm.addElement('{$strId}', '{$strName}', {$strCheck}, {$strRequired}, {$intMaxLength}, {$intMinLength}, '" . addslashes($this->__validator->getFieldHint()) . "', '" . addslashes($this->__validator->getTypeError()) . "', '" . addslashes($this->__validator->getRequiredError()) . "', '" . addslashes($this->__validator->getHintError()) . "', '" . addslashes($this->__validator->getMinLengthError()) . "', '" . addslashes($this->__validator->getMaxLengthError()) . "');\n";
+                $strOutput .= "objForm.addElement('{$strId}', '{$strName}', {$strCheck}, {$strRequired}, {$intMaxLength}, {$intMinLength}, '"
+                    . addslashes($this->__validator->getFieldHint()) . "', '" . addslashes($this->__validator->getTypeError()) . "', '"
+                    . addslashes($this->__validator->getRequiredError()) . "', '" . addslashes($this->__validator->getHintError()) . "', '"
+                    . addslashes($this->__validator->getMinLengthError()) . "', '" . addslashes($this->__validator->getMaxLengthError()) . "');\n";
 
                 // *** Condition logicper dynamic field.
                 $strOutput .= $this->conditionsToJs($intCount);
             }
         } else {
-            $strOutput = "objForm.addElement('{$this->__id}', '{$this->__name}', {$strCheck}, {$strRequired}, {$intMaxLength}, {$intMinLength}, '" . addslashes($this->__validator->getFieldHint()) . "', '" . addslashes($this->__validator->getTypeError()) . "', '" . addslashes($this->__validator->getRequiredError()) . "', '" . addslashes($this->__validator->getHintError()) . "', '" . addslashes($this->__validator->getMinLengthError()) . "', '" . addslashes($this->__validator->getMaxLengthError()) . "');\n";
+            $strOutput = "objForm.addElement('{$this->__id}', '{$this->__name}', {$strCheck}, {$strRequired}, {$intMaxLength}, {$intMinLength}, '"
+                . addslashes($this->__validator->getFieldHint()) . "', '" . addslashes($this->__validator->getTypeError()) . "', '"
+                . addslashes($this->__validator->getRequiredError()) . "', '" . addslashes($this->__validator->getHintError()) . "', '"
+                . addslashes($this->__validator->getMinLengthError()) . "', '" . addslashes($this->__validator->getMaxLengthError()) . "');\n";
 
             // *** Condition logic.
             $strOutput .= $this->conditionsToJs();
@@ -218,7 +220,6 @@ class File extends Element
     /**
      * Convert file size to bytes
      *
-     * @internal
      * @param string $strSize File size to convert
      * @return string
      */
