@@ -57,7 +57,6 @@ namespace ValidFormBuilder;
 class Password extends Element
 {
     /**
-     * @internal
      * @see \ValidFormBuilder\Element::toHtml()
      */
     public function toHtml($submitted = false, $blnSimpleLayout = false, $blnLabel = true, $blnDisplayErrors = true)
@@ -73,13 +72,10 @@ class Password extends Element
     }
 
     /**
-     * @internal
      * @see \ValidFormBuilder\Element::__toHtml()
      */
     public function __toHtml($submitted = false, $blnSimpleLayout = false, $blnLabel = true, $blnDisplayErrors = true, $intCount = 0)
     {
-        $strOutput = "";
-
         $strName = ($intCount == 0) ? $this->__name : $this->__name . "_" . $intCount;
         $strId = ($intCount == 0) ? $this->__id : $this->__id . "_" . $intCount;
 
@@ -182,20 +178,21 @@ class Password extends Element
         }
 
         if ($this->isRemovable()) {
+            $this->setMeta("dynamicRemoveLabelClass", "vf__removeLabel");
+
             $strOutput .= $this->getRemoveLabelHtml();
         }
 
         $strOutput .= "</div>\n";
 
-        if (! $blnSimpleLayout && $this->__dynamic && ! empty($this->__dynamicLabel) && ($intCount == $this->getDynamicCount())) {
-            $strOutput .= "<div class=\"vf__dynamic\"><a href=\"#\" data-target-id=\"{$this->__id}\" data-target-name=\"{$this->__name}\">{$this->__dynamicLabel}</a></div>\n";
+        if (!$blnSimpleLayout && $intCount == $this->getDynamicCount()) {
+            $strOutput .= $this->getDynamicHtml();
         }
 
         return $strOutput;
     }
 
     /**
-     * @internal
      * @see \ValidFormBuilder\Element::toJS()
      */
     public function toJS($intDynamicPosition = 0)

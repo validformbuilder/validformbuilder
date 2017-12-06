@@ -28,50 +28,46 @@ namespace ValidFormBuilder;
  * @author Felix Langfeldt <felix@neverwoods.com>
  * @author Robin van Baalen <robin@cattlea.com>
  * @version 3.0.0
+ *
+ * @method string getHeader() getHeader() Returns the value of `$__header`
+ * @method void setHeader() setHeader(string $value) Overwrites the value of `$__header`
  */
 class Page extends Base
 {
 
     /**
      * Page HTML class attribute
-     * @internal
      * @var string
      */
     protected $__class;
     /**
      * Page HTML style attribute
-     * @internal
      * @var string
      */
     protected $__style;
     /**
      * Page elements collection
-     * @internal
      * @var \ValidFormBuilder\Collection
      */
     protected $__elements;
     /**
      * Page HTML header
-     * @internal
      * @var string
      */
     protected $__header;
     /**
      * Page HTML ID attribute
-     * @internal
      * @var string
      */
     protected $__id;
     /**
      * Flag if current page is overview page
-     * @internal
      * @var boolean
      */
     protected $__isOverview;
 
     /**
      * Create new Page instance
-     * @internal
      * @param string $id Page iD
      * @param string $header Page header
      * @param array $meta The meta array
@@ -92,7 +88,6 @@ class Page extends Base
      *
      * See {@link \ValidFormBuilder\ValidForm::toHtml()}
      *
-     * @internal
      * @return string
      */
     public function toHtml($submitted = false, $blnSimpleLayout = false, $blnLabel = true, $blnDisplayError = true)
@@ -121,7 +116,7 @@ class Page extends Base
      *
      * See {@link \ValidFormBuilder\Fieldset::addField()}
      *
-     * @param \ValidFormBuilder\Base $objField
+     * @param Element $objField
      */
     public function addField($objField)
     {
@@ -157,7 +152,6 @@ class Page extends Base
      * Generate javascript
      *
      * See {@link \ValidFormBuilder\Base::toJS()}
-     * @internal
      * @see \ValidFormBuilder\Base::toJS()
      */
     public function toJS($intDynamicPosition = 0)
@@ -173,7 +167,6 @@ class Page extends Base
 
     /**
      * Check if page is valid
-     * @internal
      * @return boolean
      */
     public function isValid()
@@ -183,7 +176,6 @@ class Page extends Base
 
     /**
      * Check if page is dynamic
-     * @internal
      * @return boolean
      */
     public function isDynamic()
@@ -193,7 +185,6 @@ class Page extends Base
 
     /**
      * Check if page has fields
-     * @internal
      * @return boolean
      */
     public function hasFields()
@@ -203,7 +194,6 @@ class Page extends Base
 
     /**
      * Return the internal elements collection
-     * @internal
      * @return \ValidFormBuilder\Collection
      */
     public function getFields()
@@ -233,14 +223,11 @@ class Page extends Base
     /**
      * Generate a random page ID
      *
-     * @internal
      * @param string $name The name to prefix this ID with
      * @return string
      */
     public function getRandomId($name)
     {
-        $strReturn = $name;
-
         if (strpos($name, "[]") !== false) {
             $strReturn = str_replace("[]", "_" . rand(100000, 900000), $name);
         } else {
@@ -253,7 +240,6 @@ class Page extends Base
     /**
      * Internal validate method
      *
-     * @internal
      * @return boolean
      */
     private function __validate()

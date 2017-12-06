@@ -33,7 +33,6 @@ class Navigation extends Base
 {
     /**
      * Internal fields collection
-     * @internal
      * @var \ValidFormBuilder\Collection
      */
     protected $__fields;
@@ -41,7 +40,6 @@ class Navigation extends Base
     /**
      * Construct new Navigation object
      *
-     * @internal
      * @param array $meta The meta array
      */
     public function __construct($meta = array())
@@ -74,6 +72,7 @@ class Navigation extends Base
      * Inject HTML in the navigation element
      *
      * @param string $html The HTML string
+     * @param array $meta Optional meta array
      * @return \ValidFormBuilder\StaticText
      */
     public function addHtml($html, $meta = array())
@@ -88,11 +87,10 @@ class Navigation extends Base
     /**
      * Render the Navigation and it's children
      *
-     * @internal
      * @param boolean $submitted Define if the element has been submitted and propagate that flag to the child fields
      * @param boolean $blnSimpleLayout Only render in simple layout mode
      * @param boolean $blnLabel
-     * @param boolean $blnDisplayErrors Display generated errors
+     * @param boolean $blnDisplayError Display generated errors
      * @return string Rendered Navigation
      */
     public function toHtml($submitted = false, $blnSimpleLayout = false, $blnLabel = true, $blnDisplayError = true)
@@ -116,7 +114,6 @@ class Navigation extends Base
      *
      * See {@link \ValidFormBuilder\Base::toJs() Base::toJs()}
      *
-     * @internal
      * @param integer $intDynamicPosition The dynamic position counter
      * @return string Generated javascript code
      */
@@ -134,7 +131,6 @@ class Navigation extends Base
     /**
      * Check if element is valid
      *
-     * @internal
      * @return boolean
      */
     public function isValid()
@@ -144,7 +140,6 @@ class Navigation extends Base
 
     /**
      * Get the internal fields collection
-     * @internal
      * @return \ValidFormBuilder\Collection
      */
     public function getFields()
@@ -154,7 +149,6 @@ class Navigation extends Base
 
     /**
      * Get element's value
-     * @internal
      * @return boolean
      */
     public function getValue()
@@ -164,7 +158,6 @@ class Navigation extends Base
 
     /**
      * Get element's ID
-     * @internal
      * @return null
      */
     public function getId()
@@ -174,7 +167,6 @@ class Navigation extends Base
 
     /**
      * Check if element is dynamic
-     * @internal
      * @return boolean
      */
     public function isDynamic()
@@ -184,7 +176,6 @@ class Navigation extends Base
 
     /**
      * Get element type
-     * @internal
      * @return integer
      */
     public function getType()
@@ -194,7 +185,6 @@ class Navigation extends Base
 
     /**
      * Get header
-     * @internal
      * @return void
      */
     public function getHeader()
@@ -204,7 +194,6 @@ class Navigation extends Base
 
     /**
      * Check if element contains child elements
-     * @internal
      * @return boolean
      */
     public function hasFields()

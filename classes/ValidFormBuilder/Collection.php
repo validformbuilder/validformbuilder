@@ -34,14 +34,12 @@ class Collection implements \Iterator
 
     /**
      * The array that contains all items
-     * @internal
      * @var array
      */
     protected $collection = array();
 
     /**
      * Seek flag
-     * @internal
      * @var boolean
      */
     private $isSeek = false;
@@ -373,7 +371,7 @@ class Collection implements \Iterator
      * Same as `remove()` but this is executed recursively.
      *
      * @see \ValidFormBuilder\Collection::remove()
-     * @param unknown $objElement
+     * @param Base $objElement
      */
     public function removeRecursive($objElement)
     {

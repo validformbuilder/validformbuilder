@@ -77,12 +77,16 @@ namespace ValidFormBuilder;
  * @package ValidForm
  * @author Felix Langfeldt <felix@neverwoods.com>
  * @author Robin van Baalen <robin@cattlea.com>
+ *
+ * @method string getLabel() getLabel() Returns the value of `$__label`
+ * @method void setLabel() setLabel(string $value) Overwrites the value of `$__label`
+ * @method string getRequiredStyle() getRequiredStyle() Returns the value of `$__requiredstyle`
+ * @method void setRequiredStyle() setRequiredStyle(string $value) Overwrites the value of `$__requiredstyle`
  */
 class Area extends Base
 {
     /**
      * The Area's label, presented as a 'legend' header above the area
-     * @internal
      * @var string
      */
     protected $__label;
@@ -90,14 +94,12 @@ class Area extends Base
     /**
      * Make this an active area with __active set on true. When active, the entire area
      * can be enabled and disabled with a checkbox.
-     * @internal
      * @var boolean
      */
     protected $__active;
 
     /**
      * Use in combination with 'active'; defines if the active area is checked by default or not
-     * @internal
      * @var boolean
      */
     protected $__checked;
@@ -105,37 +107,15 @@ class Area extends Base
     /**
      * Using the dynamic 'setRequiredStyle()', you can add for instance an asterix to each required field like so:
      * $this->setRequiredStyle('%s *'); // First show the label, %s, then show an asterix after the label.
-     * @internal
      * @var string
      */
     protected $__requiredstyle;
 
     /**
      * The child fields collection
-     * @internal
      * @var \ValidFormBuilder\Collection
      */
     protected $__fields;
-
-    /**
-     * Defines if this area is dynamic
-     * @internal
-     * @var boolean
-     */
-    protected $__dynamic;
-
-    /**
-     * The label used by __addDynamicHtml() which a user can click to clone this dynamic area
-     * @internal
-     * @var string
-     */
-    protected $__dynamicLabel;
-    /**
-     * The label which a user can click to remove a cloned dynamic area
-     * @internal
-     * @var string
-     */
-    protected $__dynamicRemoveLabel;
 
     /**
      * Create a new Area instance
@@ -143,7 +123,6 @@ class Area extends Base
      * The label is used as a small 'header' above the area. When setting an area to 'active', this label becomes
      * clickable using a checkbox. This clickable header can toggle child fields to be enabled / disabled.
      *
-     * @internal
      * @param string $label The Area's label
      * @param boolean $active Whether the area should be active or not.
      * When active, a checkbox will be prefixed to the header.
@@ -266,7 +245,6 @@ class Area extends Base
     /**
      * Render the Area and it's children with toHtml()
      *
-     * @internal
      * @param boolean $submitted Define if the area has been submitted and propagate that flag to the child fields
      * @param boolean $blnSimpleLayout Only render in simple layout mode
      * @param boolean $blnLabel
@@ -287,7 +265,6 @@ class Area extends Base
     /**
      * Verify if any of the child fields in this area has submitted data
      *
-     * @internal
      * @param integer $intCount Optional counter to do the same for dynamic multifields.
      * @return boolean True if area childs contain submitted data, false if not.
      */
@@ -321,7 +298,6 @@ class Area extends Base
     /**
      * Same as {@link \ValidFormBuilder\Area::toHtml()} but with dynamic counter as extra parameter
      *
-     * @internal
      * @param boolean $submitted Define if the area has been submitted and propagate that flag to the child fields
      * @param boolean $blnSimpleLayout Only render in simple layout mode
      * @param boolean $blnLabel
@@ -382,7 +358,6 @@ class Area extends Base
             $strOutput .= "<legend>{$label}</legend>\n";
         }
 
-        $blnHasContent = $this->hasContent($intCount);
         foreach ($this->__fields as $objField) {
             if (($intCount > 0) && get_class($objField) == "ValidFormBuilder\\Hidden" && $objField->isDynamicCounter()) {
                 continue;
@@ -393,13 +368,15 @@ class Area extends Base
         }
 
         if ($this->isRemovable()) {
+            $this->setMeta("dynamicRemoveLabelClass", "vf__removeLabel");
+
             $strOutput .= $this->getRemoveLabelHtml();
         }
 
         $strOutput .= "</fieldset>\n";
 
         if ($intCount == $this->getDynamicCount()) {
-            $strOutput .= $this->__addDynamicHtml($intCount);
+            $strOutput .= $this->getDynamicHtml($intCount);
         }
 
         return $strOutput;
@@ -407,11 +384,10 @@ class Area extends Base
 
     /**
      * Generate extra HTML output to facilitate the dynamic duplication logic
-     * @internal
      * @param int $intCount
      * @return string
      */
-    protected function __addDynamicHtml($intCount = 0)
+    protected function getDynamicHtml($intCount = 0)
     {
         $strReturn = "";
 
@@ -421,12 +397,16 @@ class Area extends Base
             foreach ($this->__fields as $field) {
                 switch (get_class($field)) {
                     case "ValidFormBuilder\\MultiField":
-                        foreach ($field->getFields() as $subfield) {
+                        /* @var $subField Element */
+                        foreach ($field->getFields() as $subField) {
                             // Skip the hidden dynamic counter fields.
-                            if ((get_class($subfield) == "ValidFormBuilder\\Hidden") && $subfield->isDynamicCounter()) {
+                            if ((get_class($subField) == "ValidFormBuilder\\Hidden") && $subField->isDynamicCounter()) {
                                 continue;
                             }
-                            $arrFields[$subfield->getId()] = $subfield->getName();
+
+                            if (!empty($field->getName())) {
+                                $arrFields[$subField->getId()] = $subField->getName();
+                            }
                         }
 
                         break;
@@ -435,7 +415,11 @@ class Area extends Base
                         if ((get_class($field) == "ValidFormBuilder\\Hidden") && $field->isDynamicCounter()) {
                             continue;
                         }
-                        $arrFields[$field->getId()] = $field->getName();
+
+                        if (!empty($field->getName())) {
+                            $arrFields[$field->getId()] = $field->getName();
+                        }
+
                         break;
                 }
             }
@@ -447,7 +431,9 @@ class Area extends Base
             }
 
             $strReturn .= "<div class=\"vf__dynamic\"{$this->getDynamicButtonMeta()}>";
-            $strReturn .= "<a href=\"#\" data-target-id=\"" . implode("|", array_keys(array_filter($arrFields))) . "\" data-target-name=\"" . implode("|", array_values(array_filter($arrFields))) . "\">{$this->__dynamicLabel}</a>";
+            $strReturn .= "<a href=\"#\" data-target-id=\"" . implode("|", array_keys(array_filter($arrFields)))
+                . "\" data-target-name=\"" . implode("|", array_values(array_filter($arrFields)))
+                . "\"{$this->__getDynamicLabelMetaString()}>{$this->__dynamicLabel}</a>";
             $strReturn .= "</div>";
         }
 
@@ -459,8 +445,7 @@ class Area extends Base
      *
      * See {@link \ValidFormBuilder\Base::toJs() Base::toJs()}
      *
-     * @internal
-     * @param $intDynamicPosition The dynamic position counter
+     * @param integer $intDynamicPosition The dynamic position counter
      * @return string Generated javascript code
      */
     public function toJS($intDynamicPosition = 0)
@@ -479,7 +464,6 @@ class Area extends Base
     /**
      * Check if this is an active area
      *
-     * @internal
      * @return boolean
      */
     public function isActive()
@@ -490,11 +474,12 @@ class Area extends Base
     /**
      * Verify if all submitted data of this area and it's children is valid.
      *
-     * @internal
      * @return boolean
      */
     public function isValid()
     {
+        $blnReturn = true;
+
         $intDynamicCount = $this->getDynamicCount();
 
         for ($intCount = 0; $intCount <= $intDynamicCount; $intCount ++) {
@@ -509,19 +494,7 @@ class Area extends Base
     }
 
     /**
-     * Check if this area is a dynamic area
-     *
-     * @internal
-     * @return boolean
-     */
-    public function isDynamic()
-    {
-        return $this->__dynamic;
-    }
-
-    /**
      * Get the dynamic counter value if this is an dynamic area.
-     * @internal
      * @return integer Defaults to 0 if not an dynamic area. If dynamic, this returns the number of times the user
      * duplicated this area.
      */
@@ -552,7 +525,6 @@ class Area extends Base
 
     /**
      * Return all children in a Collection
-     * @internal
      * @return \ValidFormBuilder\Collection
      */
     public function getFields()
@@ -562,7 +534,6 @@ class Area extends Base
 
     /**
      * If this is an active area, this will return the value of the checkbox.
-     * @internal
      * @param string $intCount Dynamic counter, defaults to null
      * @return boolean
      */
@@ -575,7 +546,6 @@ class Area extends Base
 
     /**
      * Return the Area name
-     * @internal
      * @return string
      */
     public function getId()
@@ -585,7 +555,6 @@ class Area extends Base
 
     /**
      * For API compatibility, we've added the placeholder method 'getType'
-     * @internal
      * @return number
      */
     public function getType()
@@ -595,7 +564,6 @@ class Area extends Base
 
     /**
      * Check if this area contains child objects.
-     * @internal
      * @return boolean True if fields collection > 0, false if not.
      */
     public function hasFields()
@@ -606,7 +574,6 @@ class Area extends Base
     /**
      * Validate this Area and it's children's submitted values
      *
-     * @internal
      * @param string $intCount The dynamic counter
      * @return boolean True if Area and children are valid, false if not.
      */

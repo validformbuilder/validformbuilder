@@ -29,171 +29,181 @@ namespace ValidFormBuilder;
  * @author Robin van Baalen <robin@cattlea.com>
  * @version Release: 3.0.0
  *
- * @internal
+ * @method Base getField() getField() Returns the value of `$__field`
+ * @method void setField() setField(Base $value) Overwrites the value of `$__field`
+ * @method integer getType() getType() Returns the value of `$__type`
+ * @method void setType() setType(integer $value) Overwrites the value of `$__type`
+ * @method string getFieldName() getFieldName() Returns the value of `$__fieldname`
+ * @method void setFieldName() setFieldName(string $value) Overwrites the value of `$__fieldname`
+ * @method string getFieldHint() getFieldHint() Returns the value of `$__fieldhint`
+ * @method void setFieldHint() setFieldHint(string $value) Overwrites the value of `$__fieldhint`
+ * @method integer getMinLength() getMinLength() Returns the value of `$__minlength`
+ * @method void setMinLength() setMinLength(integer $value) Overwrites the value of `$__minlength`
+ * @method integer getMaxLength() getMaxLength() Returns the value of `$__minlength`
+ * @method void setMaxLength() setMaxLength(integer $value) Overwrites the value of `$__minlength`
+ * @method Element getMatchWith() getMatchWith() Returns the value of `$__matchwith`
+ * @method void setMatchWith() setMatchWith(Element $value) Overwrites the value of `$__matchwith`
+ * @method integer getMaxFiles() getMaxFiles() Returns the value of `$__maxfiles`
+ * @method void setMaxFiles() setMaxFiles(integer $value) Overwrites the value of `$__maxfiles`
+ * @method integer getMaxSize() getMaxSize() Returns the value of `$__maxsize`
+ * @method void setMaxSize() setMaxSize(integer $value) Overwrites the value of `$__maxsize`
+ * @method array getFileTypes() getFileTypes() Returns the value of `$__filetypes`
+ * @method void setFileTypes() setFileTypes(array $value) Overwrites the value of `$__filetypes`
+ * @method string getValidation() getValidation() Returns the value of `$__validation`
+ * @method void setValidation() setValidation(string $value) Overwrites the value of `$__validation`
+ * @method boolean getDefaultRequired() getDefaultRequired() Returns the value of `$__defaultRequired`
+ * @method void setDefaultRequired() setDefaultRequired(boolean $value) Overwrites the value of `$__defaultRequired`
+ * @method string getMinLengthError() getMinLengthError() Returns the value of `$__minlengtherror`
+ * @method void setMinLengthError() setMinLengthError(string $value) Overwrites the value of `$__minlengtherror`
+ * @method string getMaxLengthError() getMaxLengthError() Returns the value of `$__maxlengtherror`
+ * @method void setMaxLengthError() setMaxLengthError(string $value) Overwrites the value of `$__maxlengtherror`
+ * @method string getMatchWithError() getMatchWithError() Returns the value of `$__matchwitherror`
+ * @method void setMatchWithError() setMatchWithError(string $value) Overwrites the value of `$__matchwitherror`
+ * @method string getRequiredError() getRequiredError() Returns the value of `$__requirederror`
+ * @method void setRequiredError() setRequiredError(string $value) Overwrites the value of `$__requirederror`
+ * @method string getTypeError() getTypeError() Returns the value of `$__typeerror`
+ * @method void setTypeError() setTypeError(string $value) Overwrites the value of `$__typeerror`
+ * @method string getHintError() getHintError() Returns the value of `$__hinterror`
+ * @method void setHintError() setHintError(string $value) Overwrites the value of `$__hinterror`
  */
 class FieldValidator extends ClassDynamic
 {
     /**
      * Field object
-     * @internal
      * @var \ValidFormBuilder\Base
      */
     protected $__field;
 
     /**
      * Validation type
-     * @internal
      * @var integer
      */
     protected $__type;
 
     /**
      * Fieldname
-     * @internal
      * @var string
      */
     protected $__fieldname; // Not the same as __field->getName()
 
     /**
      * Field hint
-     * @internal
      * @var string
      */
     protected $__fieldhint;
 
     /**
      * Valid values
-     * @internal
      * @var array
      */
     protected $__validvalues = array();
 
     /**
      * Validation rule min length
-     * @internal
      * @var integer
      */
     protected $__minlength;
 
     /**
      * Validation rule max length
-     * @internal
      * @var integer
      */
     protected $__maxlength;
 
     /**
      * Valdiation rule matchWith
-     * @internal
-     * @var \ValidFormBuilder\Base
+     * @var Element
      */
     protected $__matchwith;
 
     /**
      * Validation rule required
-     * @internal
      * @var boolean
      */
     protected $__required = false;
 
     /**
      * Validation rule max files
-     * @internal
      * @var integer
      */
     protected $__maxfiles = 1;
 
     /**
      * Validation rule max size
-     * @internal
      * @var integer
      */
     protected $__maxsize = 3000;
 
     /**
      * Validation rule filetypes
-     * @internal
      * @var array
      */
     protected $__filetypes;
 
     /**
      * Validation regular expression
-     * @internal
      * @var string
      */
     protected $__validation;
 
     /**
      * Default required state
-     * @internal
      * @var boolean
      */
     protected $__defaultRequired = false;
 
     /**
      * Min length error
-     * @internal
      * @var string
      */
     protected $__minlengtherror = "The input is too short. The minimum is %s characters.";
     /**
      * Max length error
-     * @internal
      * @var string
      */
     protected $__maxlengtherror = "The input is too long. The maximum is %s characters.";
     /**
      * Match with error
-     * @internal
      * @var string
      */
     protected $__matchwitherror = "The values do not match.";
     /**
      * Required error
-     * @internal
      * @var string
      */
     protected $__requirederror = "This field is required.";
     /**
      * Type error
-     * @internal
      * @var string
      */
     protected $__typeerror;
     /**
      * Overwrite errors
-     * @internal
      * @var array
      */
     protected $__overrideerrors = array();
     /**
      * Max files error
-     * @internal
      * @var string
      */
     protected $__maxfileserror = "Too many files selected. The maximum is %s files.";
     /**
      * Max size error
-     * @internal
      * @var string
      */
     protected $__maxsizeerror = "The filesize is too big. The maximum is %s KB.";
     /**
      * File type error
-     * @internal
      * @var string
      */
     protected $__filetypeerror = "Invalid file types selected. Only types of %s are permitted.";
     /**
      * Hint error
-     * @internal
      * @var string
      */
     protected $__hinterror = "The value is the hint value. Enter your own value.";
     /**
      * Errors
-     * @internal
      * @var array
      */
     protected $__errors = array();
@@ -201,7 +211,6 @@ class FieldValidator extends ClassDynamic
     /**
      * Construct new validation object
      *
-     * @internal
      * @param Element $objField
      * @param array $arrValidationRules
      * @param array $arrErrorHandlers
@@ -235,7 +244,6 @@ class FieldValidator extends ClassDynamic
     /**
      * Get the validated value
      *
-     * @internal
      * @param integer $intDynamicPosition
      * @return array|string
      */
@@ -253,7 +261,6 @@ class FieldValidator extends ClassDynamic
     /**
      * Get the value to validate from either the global request variable or the cached __validvalues array.
      *
-     * @internal
      * @param integer $intDynamicPosition Using the intDynamicPosition parameter, you can get the specific value
      * of a dynamic field.
      * @return string|array|null Returns the submitted field value. If no sumitted value is set,
@@ -331,7 +338,6 @@ class FieldValidator extends ClassDynamic
      * The most important function of ValidForm Builder library.
      *
      * This function handles all the server-side field validation logic.
-     * @internal
      * @param integer $intDynamicPosition Using the intDynamicPosition parameter, you can validate a specific dynamic
      * field, if necessary.
      * @return boolean True if the current field validates, false if not.
@@ -523,7 +529,6 @@ class FieldValidator extends ClassDynamic
      *
      * Use this to set a custom error on a field
      *
-     * @internal
      * @param string $strError Custom error message
      * @param integer $intDynamicPosition
      */
@@ -535,7 +540,6 @@ class FieldValidator extends ClassDynamic
     /**
      * Get error message
      *
-     * @internal
      * @param integer $intDynamicPosition
      * @return string
      */
@@ -552,13 +556,10 @@ class FieldValidator extends ClassDynamic
 
     /**
      * Get the validation rule (regular expression)
-     * @internal
      * @return string
      */
     public function getCheck()
     {
-        $strReturn = "";
-
         if (!empty($this->__validation)) {
             $strReturn = $this->__validation;
         } else {
@@ -570,7 +571,6 @@ class FieldValidator extends ClassDynamic
 
     /**
      * Check if an error has occured
-     * @internal
      * @param integer $intDynamicPosition
      * @return boolean
      */

@@ -40,14 +40,12 @@ class Paragraph extends Base
 
     /**
      * Paragraph header
-     * @internal
      * @var string
      */
     protected $__header;
 
     /**
      * Paragraph body
-     * @internal
      * @var string
      */
     protected $__body;
@@ -55,7 +53,6 @@ class Paragraph extends Base
     /**
      * Construct new Paragraph object
      *
-     * @internal
      * @param string $header Paragraph title
      * @param string $body Paragraph content
      * @param array $meta The meta array
@@ -85,7 +82,6 @@ class Paragraph extends Base
      *
      * See {@link \ValidFormBuilder\Base::toHtml()}
      *
-     * @internal
      * @param boolean $submitted
      * @param boolean $blnSimpleLayout
      * @param boolean $blnLabel
@@ -124,7 +120,6 @@ class Paragraph extends Base
      *
      * See {@link \ValidFormBuilder\Base::toJS()}
      *
-     * @internal
      * @see \ValidFormBuilder\Base::toJS()
      */
     public function toJS($intDynamicPosition = 0)
@@ -145,7 +140,6 @@ class Paragraph extends Base
 
     /**
      *
-     * @internal
      * @return boolean
      */
     public function isValid()
@@ -155,7 +149,6 @@ class Paragraph extends Base
 
     /**
      * Check if element is dynamic
-     * @internal
      * @return boolean
      */
     public function isDynamic()
@@ -165,7 +158,6 @@ class Paragraph extends Base
 
     /**
      * Get element's value
-     * @internal
      * @return NULL
      */
     public function getValue()
@@ -177,7 +169,6 @@ class Paragraph extends Base
      * Check if element has fields.
      *
      * Always returns false for paragraph's
-     * @internal
      * @return boolean
      */
     public function hasFields()
@@ -189,7 +180,6 @@ class Paragraph extends Base
      * Return internal fields collection
      *
      * Always an empty array. Paragraphs don't have fields.
-     * @internal
      * @return array
      */
     public function getFields()
@@ -199,7 +189,6 @@ class Paragraph extends Base
 
     /**
      * For API compatibility, we've added the placeholder method 'getType'
-     * @internal
      * @return number
      */
     public function getType()

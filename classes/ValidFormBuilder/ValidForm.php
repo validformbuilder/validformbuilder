@@ -88,16 +88,17 @@ use Volnix\CSRF\CSRF;
  * @method void setSubmitLabel() setSubmitLabel(string $strSubmitLabel) Overwrites the value of `$__submitlabel`
  * @method array getJsEvents() getJsEvents() Returns the value of `$__jsevents`
  * @method void setJsEvents() setJsEvents(array $arrJsEvents) Overwrites the value of `$__jsevents`.
+ * @method bool getDisplayErrors() getDisplayErrors() Returns the value of `$__displayerrors`
+ * @method void setDisplayErrors() setDisplayErrors(bool $arrJsEvents) Overwrites the value of `$__displayerrors`.
  * **Not recommended** use {@link ValidForm::addJsEvent()} instead.
- * @method \ValidFormBuilder\Collection getElements() getElements() Returns the internal elements collection
+ * @method Collection getElements() getElements() Returns the internal elements collection
  * @method void setElements() setElements(Collection $objCollection) Overwrites the internal elements collection.
  * @method string getName() getName() Returns the name of this ValidForm instance
  * @method void setName() setName(string $strName) Overwrites the name of this ValidForm instance
  * @method string getMainAlert() getMainAlert() Returns the main alertof this ValidForm instance
  * @method void setMainAlert() setMainAlert(string $strMainAlert) Overwrites the main alert of this ValidForm instance
  * @method string getRequiredStyle() getRequiredStyle() Returns the value of `$__requiredstyle`
- * @method void setRequiredStyle() setRequiredStyle(string $strRequiredStyle) Overwrites the
- * value of `$__requiredstyle`.
+ * @method void setRequiredStyle() setRequiredStyle(string $strRequiredStyle) Overwrites the value of `$__requiredstyle`.
  * @method string getNoValuesMessage() getNoValuesMessage() Returns the value of `$__novaluesmessage`
  * @method void setNoValuesMessage() setNoValuesMessage(string $strNoValuesMessage) Overwrites
  * the value of `$__novaluesmessage`.
@@ -247,7 +248,7 @@ class ValidForm extends ClassDynamic
 
     /**
      * Check if this value is empty
-     * @var stringq
+     * @var string
      */
     const VFORM_COMPARISON_EMPTY = "empty";
 
@@ -335,70 +336,60 @@ class ValidForm extends ClassDynamic
 
     /**
      * The form's description paragraph content
-     * @internal
      * @var string
      */
     protected $__description;
 
     /**
      * Form's custom meta like style, classes etc.
-     * @internal
      * @var array
      */
     protected $__meta;
 
     /**
      * Default values array
-     * @internal
      * @var array
      */
     protected $__defaults = array();
 
     /**
      * The HTML <form>-tag's 'action' attribute value
-     * @internal
      * @var string
      */
     protected $__action;
 
     /**
      * Indication wether to protect from CSRF attacks or not.
-     * @internal
      * @var boolean
      */
     protected $__usecsrfprotection = true;
 
     /**
      * The submit button's label
-     * @internal
      * @var string
      */
     protected $__submitlabel;
 
     /**
      * An array of custom javascript events to include in javascript parsing
-     * @internal
      * @var array
      */
     protected $__jsevents = array();
 
     /**
      * The main elements Collection
-     * @internal
      * @var \ValidFormBuilder\Collection
      */
     protected $__elements;
 
     /**
      * The form's name
-     * @internal
      * @var string
      */
     protected $__name;
 
     /**
      * The main alert to be shown when any alert has happened after trying to submit.
-     * @internal
      * @var string
      */
     protected $__mainalert;
@@ -412,7 +403,6 @@ class ValidForm extends ClassDynamic
      *
      * //*** Now when a required field is parsed, it's output will be 'Label *' where the * is the 'required style'.
      * ```
-     * @internal
      * @var string
      */
     protected $__requiredstyle;
@@ -420,7 +410,6 @@ class ValidForm extends ClassDynamic
     /**
      * This message is shown in `valuesAsHtml()` output when for
      * example an area or fieldset don't contain any submitted values.
-     * @internal
      * @var string
      */
     protected $__novaluesmessage;
@@ -436,14 +425,12 @@ class ValidForm extends ClassDynamic
 
     /**
      * The collection of cached fields.
-     * @internal
      * @var \ValidFormBuilder\Collection
      */
     private $__cachedfields = null;
 
     /**
      * A uniquely generated string to identify the form with.
-     * @internal
      * @var string
      */
     private $__uniqueid;
@@ -551,6 +538,7 @@ class ValidForm extends ClassDynamic
      * In this example, we used StaticText to inject the dollar sign before our input field.
      *
      * @param string $html The string or HTML code to inject
+     * @param array $meta
      * @return \ValidFormBuilder\StaticText
      */
     public function addHtml($html, $meta = array())
@@ -824,9 +812,9 @@ class ValidForm extends ClassDynamic
      * See {@link \ValidFormBuilder\Area} for examples
      *
      * @param string $label The title of this area
-     * @param string $active If `true`, the title has a checkbox which can enable or disable all child elements
+     * @param bool $active If `true`, the title has a checkbox which can enable or disable all child elements
      * @param string $name The ID of this area
-     * @param string $checked Use in combination with `$active`; if `true`, the checkbox will be checked by default
+     * @param bool $checked Use in combination with `$active`; if `true`, the checkbox will be checked by default
      * @param array $meta The meta array
      *
      * @return \ValidFormBuilder\Area
@@ -972,8 +960,8 @@ class ValidForm extends ClassDynamic
     /**
      * Generate HTML output - build form
      *
-     * @param string $blnClientSide Render javascript code or not, defaults to true
-     * @param string $blnForceSubmitted This forces the form rendering as if the fields are submitted
+     * @param bool $blnClientSide Render javascript code or not, defaults to true
+     * @param bool $blnForceSubmitted This forces the form rendering as if the fields are submitted
      * @param string $strCustomJs Inject custom javascript to be executed while
      * initializing ValidForm Builder client-side.
      *
@@ -1043,8 +1031,8 @@ class ValidForm extends ClassDynamic
      * for these rare occasions when you only want the rendered fields an not all the meta surrounding the fields
      * like the form tag, description element and form error message.
      *
-     * @param string $blnForceSubmitted This forces the form rendering as if the fields are submitted
-     * @param string $blnNavigation This is a reference returning true if the form contains a navigation element
+     * @param bool $blnForceSubmitted This forces the form rendering as if the fields are submitted
+     * @param bool $blnNavigation This is a reference returning true if the form contains a navigation element
      * @return string Generated HTML output
      */
     public function fieldsToHtml($blnForceSubmitted = false, &$blnNavigation = false)
@@ -1061,6 +1049,7 @@ class ValidForm extends ClassDynamic
 
                     $blnDynamic = $objField->isDynamic();
                     if (! $blnDynamic) {
+                        /* @var $objParent Base */
                         $objParent = $objField->getMeta("parent", null);
                         if (is_object($objParent)) {
                             $blnDynamic = $objParent->isDynamic();
@@ -1189,6 +1178,7 @@ class ValidForm extends ClassDynamic
 
         foreach ($this->__elements as $objFieldset) {
             if ($objFieldset->hasFields()) {
+                /* @var $objField Base */
                 foreach ($objFieldset->getFields() as $objField) {
                     if (is_object($objField)) {
                         if ($objField->hasFields()) {
@@ -1490,7 +1480,6 @@ class ValidForm extends ClassDynamic
     /**
      * Generates HTML output for the given area object and its child elements
      *
-     * @internal
      * @param Area $objField The Area object to parse
      * @param boolean $hideEmpty Set to true to hide empty field values from the overview. Defaults to false.
      * @param integer $intDynamicCount The dynamic counter for the current area being parsed
@@ -1559,7 +1548,6 @@ class ValidForm extends ClassDynamic
     /**
      * Generates HTML output for the given MultiField object and its child elements
      *
-     * @internal
      * @param MultiField $objField The Area object to parse
      * @param boolean $hideEmpty Set to true to hide empty field values from the overview. Defaults to false.
      * @param integer $intDynamicCount The dynamic counter for the current MultiField being parsed
@@ -1620,7 +1608,6 @@ class ValidForm extends ClassDynamic
     /**
      * Generates HTML output for the given field object and its child elements
      *
-     * @internal
      * @param Element $objField The Element class-based object to parse
      * @param boolean $hideEmpty Set to true to hide empty field values from the overview. Defaults to false.
      * @param integer $intDynamicCount The dynamic counter for the current Element being parsed
@@ -1630,7 +1617,6 @@ class ValidForm extends ClassDynamic
     {
         $strReturn = "";
 
-        $strFieldName = $objField->getName();
         $strLabel = $objField->getShortLabel(); // Passing 'true' gets the short label if available.
         $varValue = ($intDynamicCount > 0) ? $objField->getValue($intDynamicCount) : $objField->getValue();
         $strValue = (is_array($varValue)) ? implode(", ", $varValue) : $varValue;
@@ -1707,7 +1693,6 @@ class ValidForm extends ClassDynamic
      *
      * This sets the internal $__uniqueid parameter. Used internally.
      *
-     * @internal
      * @param string $strId Optional unique ID. If not set, a unique ID will be
      * generated with {@link ValidForm::generateId}
      */
@@ -1721,7 +1706,7 @@ class ValidForm extends ClassDynamic
      *
      * @param string $param The parameter to read
      * @param string $replaceEmpty Optional replace value when parameter is not available or empty
-     * @return Ambigous <string, array>
+     * @return string|array
      */
     public static function get($param, $replaceEmpty = "")
     {
@@ -1765,7 +1750,7 @@ class ValidForm extends ClassDynamic
      *
      * @param string $param The parameter to read
      * @param string $varReplaceNotSet Optional replace value when parameter is not set in the body
-     * @return Ambigous <string, array>
+     * @return string|array
      */
     public static function getHttpBodyValue($param, $varReplaceNotSet = null)
     {
@@ -1785,10 +1770,9 @@ class ValidForm extends ClassDynamic
      * time the form is initialized
      * @param array $arrInitArguments Only use this when initializing a custom client-side object. This is a flat array
      * of arguments being passed to the custom client-side object.
-     * @param string $blnRawJs If set to true, the generated javascript will not be wrapped in a <script> element. This
+     * @param bool $blnRawJs If set to true, the generated javascript will not be wrapped in a <script> element. This
      * is particulary useful when generating javascript to be returned to an AJAX response.
      *
-     * @internal
      * @return string Generated javascript code
      */
     protected function __toJS($strCustomJs = "", $arrInitArguments = array(), $blnRawJs = false)
@@ -1864,8 +1848,8 @@ class ValidForm extends ClassDynamic
      * Check if an element should be visible according to an optionally attached "visible" condition.
      *
      * @param Base $objElement
-     * @param $intDynamicCount
-     * @return bool|true
+     * @return bool
+     * @throws \Exception
      */
     protected function elementShouldDisplay(Base $objElement)
     {
@@ -1887,19 +1871,7 @@ class ValidForm extends ClassDynamic
     }
 
     /**
-     * Generate a random number between 10000000 and 90000000.
-     *
-     * @internal
-     * @return int the generated random number
-     */
-    private function __random()
-    {
-        return rand(10000000, 90000000);
-    }
-
-    /**
      * Loops trough all internal elements in the collection and validates each element.
-     * @internal
      * @return boolean True if all elements are valid, false if not.
      */
     private function __validate()
@@ -1918,7 +1890,6 @@ class ValidForm extends ClassDynamic
 
     /**
      * This method converts all key-value pairs in the `$__meta['data']` array to "data-{key}='{value}' attributes
-     * @internal
      * @return string
      */
     private function __metaToData()
@@ -1926,7 +1897,7 @@ class ValidForm extends ClassDynamic
         $strReturn = "";
 
         if (isset($this->__meta["data"]) && is_array($this->__meta["data"])) {
-            foreach ($this->meta["data"] as $strKey => $strValue) {
+            foreach ($this->__meta["data"] as $strKey => $strValue) {
                 $strReturn .= "data-" . strtolower($strKey) . "=\"" . $strValue . "\" ";
             }
         }

@@ -37,34 +37,32 @@ namespace ValidFormBuilder;
  * @author Felix Langfeldt <felix@neverwoods.com>
  * @author Robin van Baalen <robin@cattlea.com>
  * @version 3.0.0
+ *
+ * @method string getHeader() getHeader() Returns the value of `$__header`
+ * @method void setHeader() setHeader(string $value) Overwrites the value of `$__header`
  */
 class Fieldset extends Base
 {
-
     /**
      * Note header
-     * @internal
      * @var string
      */
     protected $__header;
 
     /**
      * Note body
-     * @internal
      * @var string
      */
     protected $__note;
 
     /**
      * Internal fields collection
-     * @internal
      * @var Collection
      */
     protected $__fields;
 
     /**
      * Create a new fieldset
-     * @internal
      * @param string $header Optional fieldset title
      * @param string $noteHeader Optional fieldset note block header
      * @param string $noteBody Optional fieldset note block body
@@ -123,7 +121,6 @@ class Fieldset extends Base
     /**
      * Generate HTML output for this fieldset and all it's children
      *
-     * @internal
      * @param boolean $submitted Define if the area has been submitted and propagate that flag to the child fields
      * @param boolean $blnSimpleLayout Only render in simple layout mode
      * @param boolean $blnLabel
@@ -161,8 +158,7 @@ class Fieldset extends Base
      *
      * See {@link \ValidFormBuilder\Base::toJs()}
      *
-     * @internal
-     * @param $intDynamicPosition The dynamic position counter
+     * @param integer $intDynamicPosition The dynamic position counter
      * @return string Generated javascript code
      */
     public function toJS($intDynamicPosition = 0)
@@ -182,7 +178,6 @@ class Fieldset extends Base
     /**
      * Validate fieldset and it's contents
      *
-     * @internal
      * @return boolean True if valid, false if not
      */
     public function isValid()
@@ -193,7 +188,6 @@ class Fieldset extends Base
     /**
      * Returns if this element contains fields
      *
-     * @internal
      * @return boolean
      */
     public function hasFields()
@@ -204,7 +198,6 @@ class Fieldset extends Base
     /**
      * Get the fields collection
      *
-     * @internal
      * @return \ValidFormBuilder\Collection
      */
     public function getFields()
@@ -215,7 +208,6 @@ class Fieldset extends Base
     /**
      * Check if this element is dynamic or not
      *
-     * @internal
      * @return boolean
      */
     public function isDynamic()
@@ -226,7 +218,6 @@ class Fieldset extends Base
     /**
      * Internal validation method
      *
-     * @internal
      * @return boolean
      */
     private function __validate()
