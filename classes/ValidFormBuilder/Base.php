@@ -213,7 +213,7 @@ class Base extends ClassDynamic
      */
     public function isDynamic()
     {
-        return $this->__dynamic;
+        return $this->__dynamic || is_object($this->__dynamiccounter);
     }
 
     /**
