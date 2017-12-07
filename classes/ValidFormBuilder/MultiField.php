@@ -291,6 +291,7 @@ class MultiField extends Base
                 $this->setMeta('data-dynamic', 'original', true);
             } else {
                 $this->setMeta('data-dynamic', 'clone', true);
+                $this->setMeta("class", "vf__clone");
             }
         }
 
