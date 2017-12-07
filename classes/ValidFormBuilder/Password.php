@@ -102,6 +102,7 @@ class Password extends Element
                     $this->setMeta('data-dynamic', 'original', true);
                 } else {
                     $this->setMeta('data-dynamic', 'clone', true);
+                    $this->setMeta("class", "vf__clone");
                 }
             }
 
@@ -155,6 +156,7 @@ class Password extends Element
                     $this->setMeta('data-dynamic', 'original', true);
                 } else {
                     $this->setMeta('data-dynamic', 'clone', true);
+                    $this->setMeta("class", "vf__clone");
                 }
             }
 
