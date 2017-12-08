@@ -762,6 +762,7 @@ class Base extends ClassDynamic
         $strReturn = "";
 
         if ($this->hasConditions() && (count($this->getConditions()) > 0)) {
+            /* @var $objCondition \ValidFormBuilder\Condition */
             foreach ($this->getConditions() as $objCondition) {
                 $strReturn .= "objForm.addCondition(" . json_encode($objCondition->jsonSerialize($intDynamicPosition)) . ");\n";
             }
