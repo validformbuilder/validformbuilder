@@ -320,8 +320,9 @@ class Condition extends ClassDynamic
             "comparisons" => array()
         );
 
+        /* @var $objComparison \ValidFormBuilder\Comparison */
         foreach ($this->__comparisons as $objComparison) {
-            array_push($arrReturn["comparisons"], $objComparison->jsonSerialize($intDynamicPosition));
+            array_push($arrReturn["comparisons"], $objComparison->jsonSerialize());
         }
 
         return $arrReturn;
