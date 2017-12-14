@@ -37,32 +37,21 @@ namespace ValidFormBuilder;
  */
 class StaticText extends Base
 {
-
     /**
      * Element's ID
-     * @internal
      * @var string
      */
     protected $__id;
 
     /**
      * StaticText contents
-     * @internal
      * @var string
      */
     protected $__body;
 
     /**
-     * Dynamic counter if string or it's parent is dynamic
-     * @internal
-     * @var integer
-     */
-    protected $__dynamiccounter = false;
-
-    /**
      * Create new StaticText instance
      *
-     * @internal
      * @param string $bodyString The string to inject. Can be a simple string or even HTML code.
      * @param array $meta The meta array
      */
@@ -75,7 +64,6 @@ class StaticText extends Base
     /**
      * Render the string's HTML
      *
-     * @internal
      * @param boolean $submitted Force 'submitted' behavior
      * @param boolean $blnSimpleLayout Force simple layout
      */
@@ -86,15 +74,12 @@ class StaticText extends Base
 
     /**
      * Render the string's HTML
-     * @internal
      * @param boolean $submitted Force 'submitted' behavior
      * @param boolean $blnSimpleLayout Force simple layout
      * @return string The generated HTML output
      */
     public function __toHtml($submitted = false, $blnSimpleLayout = false)
     {
-        $strOutput = "";
-
         if (! $blnSimpleLayout) {
             // Call this right before __getMetaString();
             $this->setConditionalMeta();
@@ -110,7 +95,6 @@ class StaticText extends Base
 
     /**
      * Render the string's Javascript
-     * @internal
      * @see \ValidFormBuilder\Base::toJS()
      * @param boolean $submitted Force 'submitted' behavior
      * @param boolean $blnSimpleLayout Force simple layout
@@ -134,7 +118,6 @@ class StaticText extends Base
 
     /**
      * Validate string
-     * @internal
      * @return boolean
      */
     public function isValid()
@@ -146,7 +129,6 @@ class StaticText extends Base
      * Check if string has fields
      *
      * Always returns false, string can't contain fields
-     * @internal
      * @return boolean False
      */
     public function hasFields()
@@ -159,7 +141,6 @@ class StaticText extends Base
      *
      * Return nothing; string has no value.
      *
-     * @internal
      * @return void
      */
     public function getValue()
@@ -171,7 +152,6 @@ class StaticText extends Base
      * Get validator object
      *
      * Always returns null; string has no validator object
-     * @internal
      * @return null
      */
     public function getValidator()
@@ -183,7 +163,6 @@ class StaticText extends Base
      * Get string name
      *
      * StaticText has no name, only an ID
-     * @internal
      * @return void
      */
     public function getName()
@@ -196,7 +175,6 @@ class StaticText extends Base
      *
      * Not applicable for StaticText objects.
      *
-     * @internal
      * @return void
      */
     public function getData($strKey = null)
@@ -207,7 +185,6 @@ class StaticText extends Base
     /**
      * Check if string is dynamic
      *
-     * @internal
      * @return boolean False
      */
     public function isDynamic()

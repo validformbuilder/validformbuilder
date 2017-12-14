@@ -40,7 +40,6 @@ class Hidden extends Element
     /**
      * Create new instance
      *
-     * @internal
      * @param string $name The field's name
      * @param integer $type The type is used to validate the hidden field's value
      * @param array $meta The meta array
@@ -55,7 +54,6 @@ class Hidden extends Element
      *
      * See {@link \ValidFormBuilder\Element::toHtml()}
      *
-     * @internal
      * @see \ValidFormBuilder\Element::toHtml()
      */
     public function toHtml($submitted = false, $blnSimpleLayout = false, $blnLabel = true, $blnDisplayError = true)
@@ -66,8 +64,7 @@ class Hidden extends Element
         $strValue = $this->__getValue($submitted);
         $strValue = htmlspecialchars($strValue, ENT_QUOTES);
 
-        $strOutput .= "<input type=\"hidden\" value=\"{$strValue}\"
-                        name=\"{$this->__name}\" id=\"{$this->__id}\" {$this->__getFieldMetaString()} />\n";
+        $strOutput .= "<input type=\"hidden\" value=\"{$strValue}\" name=\"{$this->__name}\" id=\"{$this->__id}\" {$this->__getFieldMetaString()} />\n";
 
         return $strOutput;
     }
@@ -77,7 +74,6 @@ class Hidden extends Element
      *
      * See {@link \ValidFormBuilder\Element::toJS()}
      *
-     * @internal
      * @see \ValidFormBuilder\Element::toJS()
      */
     public function toJS($intDynamicPosition = 0)
@@ -95,7 +91,6 @@ class Hidden extends Element
      *
      * Always retuns false for Hidden objects
      * See {@link \ValidFormBuilder\Element::hasFields()}
-     * @internal
      * @see \ValidFormBuilder\Element::hasFields()
      */
     public function hasFields()
@@ -107,7 +102,6 @@ class Hidden extends Element
      * Check if this hidden field is a dynamic counter
      *
      * See {@link \ValidFormBuilder\Element::isDynamicCounter()}
-     * @internal
      * @see \ValidFormBuilder\Element::isDynamicCounter()
      */
     public function isDynamicCounter()
@@ -120,7 +114,6 @@ class Hidden extends Element
      *
      * See {@link \ValidFormBuilder\Element::isValid()}
      *
-     * @internal
      * @see \ValidFormBuilder\Element::isValid()
      */
     public function isValid($intCount = null)

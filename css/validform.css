@@ -47,6 +47,7 @@ form.vf__cf:after
 	content: " ";
 	display: table;
 }
+
 form.validform:after,
 form.validform .vf__pagenavigation:after,
 form.validform .vf__multifield:after,
@@ -59,6 +60,7 @@ form.vf__cf:after
 {
 	clear: both;
 }
+
 form.validform,
 form.validform .vf__pagenavigation,
 form.validform .vf__multifield,
@@ -455,4 +457,19 @@ table.validform td.vf__page-header {
 	font-size: 20px;
 	font-weight: bold;
 	padding: 10px 0 5px;
+}
+
+/************************************************************************
+ * Dynamic remove label styling
+ *************************************************************************/
+
+.vf__removeLabel {
+	display: none;
+}
+.vf__clone {
+	position: relative;
+}
+.vf__clone .vf__removeLabel {
+	float: right;
+	display: inline;
 }

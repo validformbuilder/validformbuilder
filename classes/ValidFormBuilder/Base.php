@@ -27,79 +27,100 @@ namespace ValidFormBuilder;
  *
  * @package ValidForm
  * @author Robin van Baalen <robin@cattlea.com>
+ *
+ * @method string getId() getId() Returns the value of `$__id`
+ * @method void setId() setId(string $value) Overwrites the value of `$__id`
+ * @method void setName() setName(string $value) Overwrites the value of `$__name`
+ * @method Base getParent() getParent() Returns the value of `$__parent`
+ * @method void setParent() setParent(Base $value) Overwrites the value of `$__parent`
+ * @method void setConditions() setConditions(array $value) Overwrites the value of `$__conditions`
+ * @method array getTipMeta() getTipMeta() Returns the value of `$__tipmeta`
+ * @method array getDynamicLabelMate() getDynamicLabelMate() Returns the value of `$__dynamiclabelmeta`
+ * @method array getDynamicRemoveLabelMate() getDynamicRemoveLabelMate() Returns the value of `$__dynamicremovelabelmeta`
+ * @method array getMagicMeta() getMagicMeta() Returns the value of `$__magicmeta`
+ * @method array getMagicReservedMeta() getMagicReservedMeta() Returns the value of `$__magicreservedmeta`
+ * @method array getReservedFieldMeta() getReservedFieldMeta() Returns the value of `$__reservedfieldmeta`
+ * @method array getReservedLabelMeta() getReservedLabelMeta() Returns the value of `$__reservedlabelmeta`
+ * @method array getReservedMeta() getReservedMeta() Returns the value of `$__reservedmeta`
+ * @method bool hasFields() hasFields() Returns if this element has any child fields
+ * @method Collection getFields() getFields() Returns a collection of child fields
  */
 class Base extends ClassDynamic
 {
     /**
      * The ID for this instance
-     * @internal
      * @var string
      */
     protected $__id;
 
     /**
      * The name for this object
-     * @internal
      * @var string
      */
     protected $__name;
 
     /**
      * A reference to the parent object
-     * @internal
      * @var Base
      */
     protected $__parent;
 
     /**
      * An array of Condition objects if conditions are added
-     * @internal
      * @var array
      */
     protected $__conditions = array();
 
     /**
      * The meta array
-     * @internal
      * @var array
      */
     protected $__meta = array();
 
     /**
      * Field specific meta array
-     * @internal
      * @var array
      */
     protected $__fieldmeta = array();
 
     /**
      * Label specific meta array
-     * @internal
      * @var array
      */
     protected $__labelmeta = array();
 
     /**
      * Tip specific meta array
-     * @internal
      * @var array
      */
     protected $__tipmeta = array();
 
     /**
+     * Dynamic Label specific meta array
+     * @var array
+     */
+    protected $__dynamiclabelmeta = array();
+
+    /**
+     * Dynamic Remove Label specific meta array
+     * @var array
+     */
+    protected $__dynamicremovelabelmeta = array();
+
+    /**
      * Predefiend magic meta prefixes
-     * @internal
      * @var array
      */
     protected $__magicmeta = array(
         "label",
         "field",
-        "tip"
+        "tip",
+        "dynamicLabel",
+        "dynamicRemoveLabel"
     );
 
     /**
      * Reserved meta keys
-     * @internal
      * @var array
      */
     protected $__magicreservedmeta = array(
@@ -109,7 +130,6 @@ class Base extends ClassDynamic
 
     /**
      * Reserved field meta keys
-     * @internal
      * @var array
      */
     protected $__reservedfieldmeta = array(
@@ -120,14 +140,12 @@ class Base extends ClassDynamic
 
     /**
      * Reserved label meta keys
-     * @internal
      * @var array
      */
     protected $__reservedlabelmeta = array();
 
     /**
      * Reserved general meta keys
-     * @internal
      * @var array
      */
     protected $__reservedmeta = array(
@@ -153,6 +171,11 @@ class Base extends ClassDynamic
         "valueRange",
         "dynamic",
         "dynamicLabel",
+        "dynamicLabelStyle",
+        "dynamicLabelClass",
+        "dynamicRemoveLabel",
+        "dynamicRemoveLabelStyle",
+        "dynamicRemoveLabelClass",
         "matchWith",
         "uniqueId",
         "sanitize",
@@ -160,8 +183,61 @@ class Base extends ClassDynamic
     );
 
     /**
+     * Element dynamic flag
+     * @var boolean
+     */
+    protected $__dynamic = null;
+
+    /**
+     * Element dynamic counter
+     * @var integer
+     */
+    protected $__dynamiccounter = false;
+
+    /**
+     * Element dynamic label
+     * @var string
+     */
+    protected $__dynamicLabel = null;
+
+    /**
+     * The label which a user can click to remove a cloned dynamic area
+     * @var string
+     */
+    protected $__dynamicRemoveLabel;
+
+    /**
+     * Check if the current field is a dynamic field.
+     *
+     * @return boolean True if dynamic, false if not.
+     */
+    public function isDynamic()
+    {
+        return $this->__dynamic || is_object($this->__dynamiccounter);
+    }
+
+    /**
+     * @param $label
+     * @return string
+     */
+    protected function getRemoveLabelHtml($label = null)
+    {
+        $label = (is_null($label)) ? $this->__dynamicRemoveLabel : $label;
+        $strReturn = "<a{$this->__getDynamicRemoveLabelMetaString()} href='#'>" . $label . "</a>";
+
+        return $strReturn;
+    }
+
+    /**
+     * @return bool
+     */
+    protected function isRemovable()
+    {
+        return !is_null($this->__dynamicRemoveLabel);
+    }
+
+    /**
      * Get a collection of fields and look for dynamic counters recursively
-     * @internal
      * @param Collection $objFields
      * @param Collection $objCollection
      * @return Collection
@@ -193,7 +269,7 @@ class Base extends ClassDynamic
      * @param string $strType Define the condition type. This can be either `required`, `visibile` or `enabled`
      * @param boolean $blnValue Define whether this condition activates if the comparison(s) are true or false.
      * @param array $arrComparisons An array of Comparison objects
-     * @param integer $intComparisonType The comparison type.
+     * @param string $intComparisonType The comparison type.
      * Either `ValidForm::VFORM_MATCH_ANY` or `ValidForm::VFORM_MATCH_ALL`. With `VFORM_MATCH_ANY`,
      * as soon as one of the comparisons validates the condition, the condition is enforced.
      * With `ValidForm::VFORM_MATCH_ALL`, all of the comparisons must validate before the condition will be enforced.
@@ -212,7 +288,7 @@ class Base extends ClassDynamic
         }
 
         if (is_array($arrComparisons) && count($arrComparisons) > 0) {
-            /* @var $varComparison Array|Comparison */
+            /* @var $varComparison array|Comparison */
             foreach ($arrComparisons as $varComparison) {
                 if (is_array($varComparison) || get_class($varComparison) === "ValidFormBuilder\\Comparison") {
                     try {
@@ -233,7 +309,6 @@ class Base extends ClassDynamic
 
     /**
      * Get the conditions collection
-     * @internal
      * @return array
      */
     public function getConditions()
@@ -247,7 +322,6 @@ class Base extends ClassDynamic
      * Note: When chaining methods, always use hasCondition() first before chaining
      * for example `getCondition()->isMet()`.
      *
-     * @internal
      * @param string $strProperty Condition type e.g. 'required', 'visibile' and 'enabled'
      * @return Condition|null Found condition or null if no condition is found.
      */
@@ -275,7 +349,6 @@ class Base extends ClassDynamic
      * Only get a condition of a given type if that condition is met. If the condition is not met, this returns null
      * @param string $strProperty Condition type e.g. 'required', 'visibile' and 'enabled'
      *
-     * @internal
      * @return null|Condition
      */
     public function getMetCondition($strProperty)
@@ -303,7 +376,6 @@ class Base extends ClassDynamic
     /**
      * Check if the current field contains a condition object of a specific type
      *
-     * @internal
      * @param string $strProperty Condition type e.g. `required`, `visibile` and `enabled`
      * @return boolean True if element has condition object set, false if not
      */
@@ -323,7 +395,6 @@ class Base extends ClassDynamic
 
     /**
      * Check if the current object contains any conditions at all.
-     * @internal
      * @return boolean True if it contains conditions, false if not.
      */
     public function hasConditions()
@@ -335,7 +406,6 @@ class Base extends ClassDynamic
      * This gets the condition of a given property, just like {@link \ValidFormBuilder\Base::getCondition()}.
      * When no condition is found on the current element, the method searches for a condition in it's parent element.
      *
-     * @internal
      * @param string $strProperty Condition type e.g. `required`, `visibile` and `enabled`
      * @param \ValidFormBuilder\Element $objContext
      * @return \ValidFormBuilder\Condition|null
@@ -365,7 +435,6 @@ class Base extends ClassDynamic
      * This method determines wheter or not to show the 'add extra field' dynamic button
      * based on it's parent's condition state.
      *
-     * @internal
      */
     public function getDynamicButtonMeta()
     {
@@ -393,7 +462,6 @@ class Base extends ClassDynamic
     /**
      * Based on which conditions are met, corresponding metadata is set on the object.
      *
-     * @internal
      */
     public function setConditionalMeta()
     {
@@ -416,7 +484,7 @@ class Base extends ClassDynamic
                             $this->setMeta("style", "display: block;");
                         }
                     }
-                // Continueing to the required property.
+                    // Continueing to the required property.
                 case "required":
                     // This can only be applied on all subjects except for Paragraphs
                     if (get_class($objCondition->getSubject()) !== "ValidFormBuilder\\Paragraph") {
@@ -478,6 +546,7 @@ class Base extends ClassDynamic
      * @param string $property Property name.
      * @param mixed $value Property value.
      * @param boolean $blnOverwrite Optionally use this boolean to force an overwrite of previous property value.
+     * @return array
      */
     public function setMeta($property, $value, $blnOverwrite = false)
     {
@@ -540,6 +609,30 @@ class Base extends ClassDynamic
     public function setTipMeta($property, $value, $blnOverwrite = false)
     {
         return $this->__setMeta("tip" . $property, $value, $blnOverwrite);
+    }
+
+    /**
+     * Set dynamic label specific meta data
+     * @param string $property Property name.
+     * @param mixed $value Property value.
+     * @param boolean $blnOverwrite Optionally use this boolean to force an overwrite of previous property value.
+     * @return mixed The newly set value
+     */
+    public function setDynamicLabelMeta($property, $value, $blnOverwrite = false)
+    {
+        return $this->__setMeta("dynamicLabel" . $property, $value, $blnOverwrite);
+    }
+
+    /**
+     * Set dynamic remove label specific meta data
+     * @param string $property Property name.
+     * @param mixed $value Property value.
+     * @param boolean $blnOverwrite Optionally use this boolean to force an overwrite of previous property value.
+     * @return mixed The newly set value
+     */
+    public function setDynamicRemoveLabelMeta($property, $value, $blnOverwrite = false)
+    {
+        return $this->__setMeta("dynamicRemoveLabel" . $property, $value, $blnOverwrite);
     }
 
     /**
@@ -613,7 +706,6 @@ class Base extends ClassDynamic
 	 *
 	 * When the dynamic count === 0, the return value equals the output of getName()
 	 *
-     * @internal
 	 * @param integer $intCount The dynamic count
 	 * @return string The field name
 	 */
@@ -633,7 +725,6 @@ class Base extends ClassDynamic
      * Use the 'long' (regular)
      * label as a fallback return value.
      *
-     * @internal
      * @return string The short or regular element label
      */
     public function getShortLabel()
@@ -663,7 +754,6 @@ class Base extends ClassDynamic
 
     /**
      * Generates needed javascript initialization code for client-side conditional logic
-     * @internal
      * @param integer $intDynamicPosition Dynamic position
      * @return string Generated javascript code
      */
@@ -671,7 +761,8 @@ class Base extends ClassDynamic
     {
         $strReturn = "";
 
-        if ($this->hasConditions() && (count($this->getConditions() > 0))) {
+        if ($this->hasConditions() && (count($this->getConditions()) > 0)) {
+            /* @var $objCondition \ValidFormBuilder\Condition */
             foreach ($this->getConditions() as $objCondition) {
                 $strReturn .= "objForm.addCondition(" . json_encode($objCondition->jsonSerialize($intDynamicPosition)) . ");\n";
             }
@@ -682,7 +773,6 @@ class Base extends ClassDynamic
 
     /**
      * Generate matchWith javascript code
-     * @internal
      * @param integer $intDynamicPosition
      * @return string Generated javascript
      */
@@ -767,7 +857,6 @@ class Base extends ClassDynamic
 
     /**
      * Generate unique name based on class name
-     * @internal
      * @return string
      */
     protected function __generateName()
@@ -777,7 +866,6 @@ class Base extends ClassDynamic
 
     /**
      * Convert meta array to html attributes+values
-     * @internal
      * @return string
      */
     protected function __getMetaString()
@@ -795,7 +883,6 @@ class Base extends ClassDynamic
 
     /**
      * Convert fieldmeta array to html attributes+values
-     * @internal
      * @return string
      */
     protected function __getFieldMetaString()
@@ -815,7 +902,6 @@ class Base extends ClassDynamic
 
     /**
      * Convert labelmeta array to html attributes+values
-     * @internal
      * @return string
      */
     protected function __getLabelMetaString()
@@ -835,7 +921,6 @@ class Base extends ClassDynamic
 
     /**
      * Convert tipmeta array to html attributes+values
-     * @internal
      * @return string
      */
     protected function __getTipMetaString()
@@ -854,13 +939,50 @@ class Base extends ClassDynamic
     }
 
     /**
+     * Convert dynamiclabelmeta array to html attributes+values
+     * @return string
+     */
+    protected function __getDynamicLabelMetaString()
+    {
+        $strOutput = "";
+
+        if (is_array($this->__dynamiclabelmeta)) {
+            foreach ($this->__dynamiclabelmeta as $key => $value) {
+                if (! in_array($key, $this->__reservedmeta)) {
+                    $strOutput .= " {$key}=\"{$value}\"";
+                }
+            }
+        }
+
+        return $strOutput;
+    }
+
+    /**
+     * Convert dynamicRemoveLabelMeta array to html attributes+values
+     * @return string
+     */
+    protected function __getDynamicRemoveLabelMetaString()
+    {
+        $strOutput = "";
+
+        if (is_array($this->__dynamicremovelabelmeta)) {
+            foreach ($this->__dynamicremovelabelmeta as $key => $value) {
+                if (! in_array($key, $this->__reservedmeta)) {
+                    $strOutput .= " {$key}=\"{$value}\"";
+                }
+            }
+        }
+
+        return $strOutput;
+    }
+
+    /**
      * Filter out special field or label specific meta tags from the main
      * meta array and add them to the designated meta arrays __fieldmeta or __labelmeta.
      * Example: `$meta["labelstyle"] = "width: 20px";` will become `$__fieldmeta["style"] = "width: 20px;"`
      * Any meta key that starts with 'label' or 'field' will be assigned to it's
      * corresponding internal meta array.
      *
-     * @internal
      * @return void
      */
     protected function __initializeMeta()
@@ -874,15 +996,19 @@ class Base extends ClassDynamic
                 $key = "label" . $key;
             }
 
-            $intLength = 5;
-            $strMagicKey = strtolower(substr($key, 0, $intLength));
-            if (!in_array($strMagicKey, $this->__magicmeta)) {
-                $intLength = 3;
-                $strMagicKey = strtolower(substr($key, 0, $intLength));
+            $strMagicKey = null;
+            foreach ($this->__magicmeta as $strMagicMeta) {
+                if (strpos(strtolower($key), strtolower($strMagicMeta)) === 0
+                        && strlen($key) !== strlen($strMagicMeta)) {
+                    $strMagicKey = $strMagicMeta;
+
+                    break;
+                }
             }
-            if (in_array($strMagicKey, $this->__magicmeta) && ! in_array($key, $this->__magicreservedmeta)) {
+
+            if (!is_null($strMagicKey) && !in_array($key, $this->__magicreservedmeta)) {
                 $strMethod = "set" . ucfirst($strMagicKey) . "Meta";
-                $this->$strMethod(strtolower(substr($key, - (strlen($key) - $intLength))), $value);
+                $this->$strMethod(strtolower(substr($key, - (strlen($key) - strlen($strMagicKey)))), $value);
 
                 unset($this->__meta[$key]);
             }
@@ -891,22 +1017,30 @@ class Base extends ClassDynamic
 
     /**
      * Helper method to set meta data
-     * @internal
      * @param string $property The key to set in the meta array
      * @param string $value The corresponding value
      * @param boolean $blnOverwrite If true, overwrite pre-existing key-value pair
-     * @return array
+     * @return array|string|null
      */
     protected function __setMeta($property, $value, $blnOverwrite = false)
     {
         $internalMetaArray = &$this->__meta;
 
-        // *** Re-set internalMetaArray if property has magic key 'label', 'field' or 'tip'
-        $strMagicKey = strtolower(substr($property, 0, 5));
-        if (!in_array($strMagicKey, $this->__magicmeta)) {
-            $strMagicKey = strtolower(substr($property, 0, 3));
+        /**
+         * Re-set internalMetaArray if property has magic key 'label', 'field', 'tip', 'dynamicLabel'
+         * or 'dynamicRemoveLabel'
+         */
+        $strMagicKey = null;
+        foreach ($this->__magicmeta as $strMagicMeta) {
+            if (strpos(strtolower($property), strtolower($strMagicMeta)) === 0
+                    && strlen($property) !== strlen($strMagicMeta)) {
+                $strMagicKey = $strMagicMeta;
+
+                break;
+            }
         }
-        if (in_array($strMagicKey, $this->__magicmeta)) {
+
+        if (!is_null($strMagicKey)) {
             switch ($strMagicKey) {
                 case "field":
                     $internalMetaArray = &$this->__fieldmeta;
@@ -919,6 +1053,14 @@ class Base extends ClassDynamic
                 case "tip":
                     $internalMetaArray = &$this->__tipmeta;
                     $property = strtolower(substr($property, - (strlen($property) - 3)));
+                    break;
+                case "dynamicLabel":
+                    $internalMetaArray = &$this->__dynamiclabelmeta;
+                    $property = strtolower(substr($property, - (strlen($property) - 12)));
+                    break;
+                case "dynamicRemoveLabel":
+                    $internalMetaArray = &$this->__dynamicremovelabelmeta;
+                    $property = strtolower(substr($property, - (strlen($property) - 18)));
                     break;
                 default:
             }
@@ -967,60 +1109,6 @@ class Base extends ClassDynamic
             $internalMetaArray[$property] = $varMeta;
 
             return $varMeta;
-        }
-    }
-
-    /**
-     * Helper method. Replaces meta data.
-     * @internal
-     * @param string $property
-     * @param string $originalValue
-     * @param string $replacement
-     */
-    protected function __replaceMeta($property, $originalValue, $replacement = null)
-    {
-        $internalMetaArray = &$this->__meta;
-
-        // *** Re-set internalMetaArray if property has magic key 'label', 'field' or 'tip'
-        $strMagicKey = strtolower(substr($property, 0, 5));
-        if (!in_array($strMagicKey, $this->__magicmeta)) {
-            $strMagicKey = strtolower(substr($property, 0, 3));
-        }
-        if (in_array($strMagicKey, $this->__magicmeta)) {
-            switch ($strMagicKey) {
-                case "field":
-                    $internalMetaArray = &$this->__fieldmeta;
-                    $property = strtolower(substr($property, - (strlen($property) - 5)));
-                    break;
-                case "label":
-                    $internalMetaArray = &$this->__labelmeta;
-                    $property = strtolower(substr($property, - (strlen($property) - 5)));
-                    break;
-                case "tip":
-                    $internalMetaArray = &$this->__tipmeta;
-                    $property = strtolower(substr($property, - (strlen($property) - 3)));
-                    break;
-                default:
-            }
-        }
-
-        foreach ($internalMetaArray as $prop => $value) {
-            if ($property == $prop) {
-                $varMeta = (isset($internalMetaArray[$property])) ? $internalMetaArray[$property] : "";
-
-                // *** Define delimiter per meta property.
-                switch ($property) {
-                    case "style":
-                        $strDelimiter = ";";
-                        break;
-
-                    default:
-                        $strDelimiter = " ";
-                }
-
-                // *** Add the value to the property string.
-                $arrMeta = explode($strDelimiter, $varMeta);
-            }
         }
     }
 }

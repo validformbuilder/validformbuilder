@@ -29,86 +29,71 @@ namespace ValidFormBuilder;
  * @author Robin van Baalen <robin@cattlea.com>
  * @version Release: 3.0.0
  *
- * @internal
+ * @method string getLabel() getLabel() Returns the value of `$__label`
+ * @method void setLabel() setLabel(string $value) Overwrites the value of `$__label`
+ * @method string getTip() getTip() Returns the value of `$__tip`
+ * @method void setTip() setTip(string $value) Overwrites the value of `$__tip`
+ * @method integer getType() getType() Returns the value of `$__type`
+ * @method void setType() setType(integer $value) Overwrites the value of `$__type`
+ * @method string getHint() getHint() Returns the value of `$__hint`
+ * @method void setHint() setHint(string $value) Overwrites the value of `$__hint`
+ * @method string getRequiredStyle() getRequiredStyle() Returns the value of `$__requiredstyle`
+ * @method void setRequiredStyle() setRequiredStyle(string $value) Overwrites the value of `$__requiredstyle`
+ * @method FieldValidator getValidator() getValidator() Returns the value of `$__validator`
+ * @method void setValidator() setValidator(FieldValidator $value) Overwrites the value of `$__validator`
  */
 class Element extends Base
 {
-
-    /**
-     * Element name
-     * @internal
-     * @var string
-     */
-    protected $__name;
     /**
      * Element label
-     * @internal
      * @var string
      */
     protected $__label;
+
     /**
      * Element tip text
-     * @internal
      * @var string
      */
     protected $__tip = null;
+
     /**
      * Element type
-     * @internal
      * @var integer
      */
     protected $__type;
+
     /**
      * Element hint value
-     * @internal
      * @var string
      */
     protected $__hint = null;
+
     /**
      * Element default value
-     * @internal
      * @var string
      */
     protected $__default = null;
-    /**
-     * Element dynamic flag
-     * @internal
-     * @var boolean
-     */
-    protected $__dynamic = null;
-    /**
-     * Element dynamic counter
-     * @internal
-     * @var integer
-     */
-    protected $__dynamiccounter = false;
-    /**
-     * Element dynamic label
-     * @internal
-     * @var string
-     */
-    protected $__dynamicLabel = null;
+
     /**
      * Element required style
-     * @internal
      * @var string
      */
     protected $__requiredstyle;
+
     /**
      * Element Validator object
-     * @internal
-     * @var Validator
+     * @var FieldValidator
      */
     protected $__validator;
+
     /**
      * Sanitize actions
-     * @internal
      * @var array
      */
     protected $__sanitize;
+
     /**
      * Sanitize actions for display values
-     * @internal
      * @var array
      */
     protected $__displaySanitize;
@@ -116,7 +101,6 @@ class Element extends Base
     /**
      * Create new element
      *
-     * @internal
      * @param string $name Field name
      * @param integer $type Field type
      * @param string $label Field label
@@ -144,6 +128,7 @@ class Element extends Base
         $this->__default = $this->getMeta("default", $this->__default);
         $this->__dynamic = $this->getMeta("dynamic", $this->__dynamic);
         $this->__dynamicLabel = $this->getMeta("dynamicLabel", $this->__dynamicLabel);
+        $this->__dynamicRemoveLabel = $this->getMeta("dynamicRemoveLabel", $this->__dynamicRemoveLabel);
         $this->__dynamiccounter = (! is_null($this->getMeta("dynamicCounter", null))) ? true : $this->__dynamiccounter;
 
         $this->__sanitize = $this->getMeta("sanitize", $this->__sanitize);
@@ -155,7 +140,6 @@ class Element extends Base
 
     /**
      * Checks if this element is a dynamic counter for another element
-     * @internal
      * @return boolean `True` if it is, `false` if not. Default `false`.
      */
     public function isDynamicCounter()
@@ -165,7 +149,6 @@ class Element extends Base
 
     /**
      * Set type class
-     * @internal
      * @param integer $type
      * @param array $meta
      */
@@ -249,7 +232,6 @@ class Element extends Base
     /**
      * Generate HTML output
      *
-     * @internal
      * @param boolean $submitted Force if this field should behave like a submitted field or not (e.g. validate etc.)
      * @param boolean $blnSimpleLayout Force 'simple layout' output -- no labels and wrapping divs.
      * @param boolean $blnLabel Show label. Don't show if false.
@@ -264,7 +246,6 @@ class Element extends Base
     /**
      * Generate HTML output for specific dynamic count
      *
-     * @internal
      * @param boolean $submitted
      * @param boolean $blnSimpleLayout
      * @param boolean $blnLabel
@@ -274,7 +255,7 @@ class Element extends Base
      */
     public function __toHtml($submitted = false, $blnSimpleLayout = false, $blnLabel = true, $blnDisplayErrors = true, $intCount = 0)
     {
-        return $this->toHtml($submitted, $blnSimpleLayout, $blnLabel, $blnDisplayErrors, $intCount);
+        return $this->toHtml($submitted, $blnSimpleLayout, $blnLabel, $blnDisplayErrors);
     }
 
     /**
@@ -317,14 +298,11 @@ class Element extends Base
 
     /**
      * Generate a random ID for a given field name to prevent having two fields with the same name
-     * @internal
      * @param string $name Field name
      * @return string
      */
     public function getRandomId($name)
     {
-        $strReturn = $name;
-
         if (strpos($name, "[]") !== false) {
             $strReturn = str_replace("[]", "_" . rand(100000, 900000), $name);
         } else {
@@ -368,19 +346,9 @@ class Element extends Base
     }
 
     /**
-     * Check if the current field is a dynamic field.
-     *
-     * @internal
-     * @return boolean True if dynamic, false if not.
-     */
-    public function isDynamic()
-    {
-        return $this->__dynamic;
-    }
-
-    /**
      * Get the number of dynamic fields from the dynamic counter field.
-     * @internal
+     *
+     * @param bool $blnParentIsDynamic
      * @return integer The dynamic count of this field
      */
     public function getDynamicCount($blnParentIsDynamic = false)
@@ -395,8 +363,24 @@ class Element extends Base
     }
 
     /**
+     * Render html element needed for dynamic duplication client-side
+     * @return string
+     */
+    protected function getDynamicHtml()
+    {
+        $strReturn = "";
+
+        if ($this->__dynamic && ! empty($this->__dynamicLabel)) {
+            $strReturn = "<div class=\"vf__dynamic\"><a href=\"#\" data-target-id=\"{$this->__id}\" "
+                . "data-target-name=\"{$this->__name}\"{$this->__getDynamicLabelMetaString()}>"
+                . $this->__dynamicLabel . "</a></div>\n";
+        }
+
+        return $strReturn;
+    }
+
+    /**
      * Add a dynamic counter object
-     * @internal
      * @param \ValidFormBuilder\Element $objCounter
      */
     public function setDynamicCounter(&$objCounter)
@@ -466,7 +450,6 @@ class Element extends Base
 
     /**
      * Placeholder function to determine wheter or not a field contains other fields.
-     * @internal
      * @return boolean Return false by default.
      */
     public function hasFields()
@@ -513,7 +496,6 @@ class Element extends Base
      * Get the value of the field.
      * If the value is *valid* then it will return that value, otherwise the invalid value is returned.
      *
-     * @internal
      * @param boolean $submitted Indicate if the form is submitted.
      * @param integer $intDynamicPosition The position of the field in a dynamic field setup.
      * @return string|null

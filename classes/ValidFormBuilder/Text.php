@@ -69,9 +69,7 @@ namespace ValidFormBuilder;
  */
 class Text extends Element
 {
-
     /**
-     * @internal
      * @see \ValidFormBuilder\Element::toHtml()
      */
     public function toHtml($submitted = false, $blnSimpleLayout = false, $blnLabel = true, $blnDisplayErrors = true)
@@ -87,13 +85,10 @@ class Text extends Element
     }
 
     /**
-     * @internal
      * @see \ValidFormBuilder\Element::__toHtml()
      */
     public function __toHtml($submitted = false, $blnSimpleLayout = false, $blnLabel = true, $blnDisplayErrors = true, $intCount = 0)
     {
-        $strOutput = "";
-
         $strName = ($intCount == 0) ? $this->__name : $this->__name . "_" . $intCount;
         $strId = ($intCount == 0) ? $this->__id : $this->__id . "_" . $intCount;
 
@@ -107,6 +102,21 @@ class Text extends Element
                 $this->setMeta("class", "vf__required");
             } else {
                 $this->setMeta("class", "vf__optional");
+            }
+
+            if ($this->isRemovable()) {
+                $this->setMeta("class", "vf__removable");
+            }
+
+            //*** Add data-dynamic="original" or data-dynamic="clone" attributes to dynamic fields
+            if ($this->isDynamic()) {
+                if ($intCount === 0) {
+                    // This is the first, original element. Make sure to define that.
+                    $this->setMeta('data-dynamic', 'original', true);
+                } else {
+                    $this->setMeta('data-dynamic', 'clone', true);
+                    $this->setMeta("class", "vf__clone");
+                }
             }
 
             // *** Set custom meta.
@@ -148,6 +158,21 @@ class Text extends Element
 
             $this->setMeta("class", "vf__multifielditem");
 
+            if ($this->isRemovable()) {
+                $this->setMeta("class", "vf__removable");
+            }
+
+            //*** Add data-dynamic="original" or data-dynamic="clone" attributes to dynamic fields
+            if ($this->isDynamic()) {
+                if ($intCount === 0) {
+                    // This is the first, original element. Make sure to define that.
+                    $this->setMeta('data-dynamic', 'original', true);
+                } else {
+                    $this->setMeta('data-dynamic', 'clone', true);
+                    $this->setMeta("class", "vf__clone");
+                }
+            }
+
             // Call this right before __getMetaString();
             $this->setConditionalMeta();
 
@@ -167,17 +192,22 @@ class Text extends Element
             $strOutput .= "<small class=\"vf__tip\"{$this->__getTipMetaString()}>{$this->__tip}</small>\n";
         }
 
+        if ($this->isRemovable()) {
+            $this->setMeta("dynamicRemoveLabelClass", "vf__removeLabel");
+
+            $strOutput .= $this->getRemoveLabelHtml();
+        }
+
         $strOutput .= "</div>\n";
 
-        if (! $blnSimpleLayout && $this->__dynamic && ! empty($this->__dynamicLabel) && ($intCount == $this->getDynamicCount())) {
-            $strOutput .= "<div class=\"vf__dynamic\"><a href=\"#\" data-target-id=\"{$this->__id}\" data-target-name=\"{$this->__name}\">{$this->__dynamicLabel}</a></div>\n";
+        if (!$blnSimpleLayout && $intCount == $this->getDynamicCount()) {
+            $strOutput .= $this->getDynamicHtml();
         }
 
         return $strOutput;
     }
 
     /**
-     * @internal
      * @see \ValidFormBuilder\Element::toJS()
      */
     public function toJS($intDynamicPosition = false)

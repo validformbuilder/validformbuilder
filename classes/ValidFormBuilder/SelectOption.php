@@ -31,22 +31,20 @@ namespace ValidFormBuilder;
  */
 class SelectOption extends Element
 {
-
     /**
      * The label
-     * @internal
      * @var string
      */
     protected $__label;
+
     /**
      * The value
-     * @internal
      * @var string
      */
     protected $__value;
+
     /**
      * Selected state
-     * @internal
      * @var boolean
      */
     protected $__selected;
@@ -54,7 +52,6 @@ class SelectOption extends Element
     /**
      * Create new SelectOption instance
      *
-     * @internal
      * @param string $label The label
      * @param string $value The value
      * @param string $selected Set this option to be selected by default or not
@@ -77,7 +74,6 @@ class SelectOption extends Element
      *
      * See {@link \ValidFormBuilder\Element::toHtml()}
      *
-     * @internal
      * @see \ValidFormBuilder\Element::toHtml()
      */
     public function toHtmlInternal($value = null)
@@ -99,7 +95,6 @@ class SelectOption extends Element
     /**
      * Get this option's value
      *
-     * @internal
      * @see \ValidFormBuilder\Element::getValue()
      */
     public function getValue($intDynamicPosition = 0)
@@ -108,7 +103,6 @@ class SelectOption extends Element
     }
 
     /**
-     * @internal
      * @see \ValidFormBuilder\Element::__getValue()
      */
     public function __getValue($submitted = false, $intCount = 0)

@@ -34,28 +34,25 @@ class Comparison extends ClassDynamic
 
     /**
      * The comparison subject
-     * @internal
      * @var \ValidFormBuilder\Base
      */
     protected $__subject;
 
     /**
      * The actual comparison type
-     * @internal
      * @var integer
      */
     protected $__comparison;
 
     /**
      * The value to trigger this comparison on
-     * @internal
      * @var mixed
      */
     protected $__value;
 
     /**
      * Create new Comparison
-     * @param \ValidFormBuilder\Base $objSubject The subject to check the value upon
+     * @param Element $objSubject The subject to check the value upon
      * @param integer $varComparison The Comparison type constant
      * @param string $varValue The value to check against
      * @throws \InvalidArgumentException
@@ -82,7 +79,6 @@ class Comparison extends ClassDynamic
     /**
      * Check this comparison
      *
-     * @internal
      * @param integer Dynamic position of the subject to check
      * @return boolean True if Comparison meets requirements, false if not.
      */
@@ -113,9 +109,8 @@ class Comparison extends ClassDynamic
     /**
      * Convert the Comparion's contents to a json string in order to validate this comparison client-side
      *
-     * @internal
      * @param string $intDynamicPosition
-     * @return string The generated JSON
+     * @return array The generated JSON
      */
     public function jsonSerialize($intDynamicPosition = null)
     {
@@ -140,7 +135,6 @@ class Comparison extends ClassDynamic
     /**
      * Verify this comparison against the actual value
      *
-     * @internal
      * @param string $strValue The actual value that is submitted
      * @return boolean True if comparison succeeded, false if not.
      */

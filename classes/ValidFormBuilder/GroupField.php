@@ -34,26 +34,22 @@ class GroupField extends Element
 
     /**
      * The label
-     * @internal
      * @var string
      */
     protected $__label;
     /**
      * The value
-     * @internal
      * @var string
      */
     protected $__value;
     /**
      * Selected state
-     * @internal
      * @var boolean
      */
     protected $__checked;
 
     /**
      * Construct new element
-     * @internal
      * @param string $id
      * @param string $name
      * @param integer $type
@@ -76,13 +72,10 @@ class GroupField extends Element
      *
      * See {@link \ValidFormBuilder\Element::toHtml()}
      *
-     * @internal
      * @see \ValidFormBuilder\Element::toHtml()
      */
     public function toHtmlInternal($value = null, $submitted = false, $intCount = 0)
     {
-        $strChecked = "";
-
         if ($this->__type == ValidForm::VFORM_CHECK_LIST) {
             $strName = ($intCount == 0) ? $this->__name : str_replace("[]", "", $this->__name) . "_" . $intCount . "[]";
         } else {
@@ -141,8 +134,9 @@ class GroupField extends Element
     /**
      * Get the value of this specific checkbox / radio button
      *
-     * @internal
-     * @return string The value
+     * @param bool $submitted
+     * @param int $intCount
+     * @return null|string
      */
     public function __getValue($submitted = false, $intCount = 0)
     {

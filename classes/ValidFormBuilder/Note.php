@@ -33,21 +33,18 @@ class Note extends Base
 {
     /**
      * The note header
-     * @internal
      * @var string
      */
     protected $__header;
 
     /**
      * The note body
-     * @internal
      * @var string
      */
     protected $__body;
 
     /**
      * Create new Note instance
-     * @internal
      * @param string $header The note's header
      * @param string $body The note's body
      * @param array $meta The meta array
@@ -64,11 +61,6 @@ class Note extends Base
     /**
      * Render the Note
      *
-     * @internal
-     * @param boolean $submitted Define if the element has been submitted and propagate that flag to the child fields
-     * @param boolean $blnSimpleLayout Only render in simple layout mode
-     * @param boolean $blnLabel
-     * @param boolean $blnDisplayErrors Display generated errors
      * @return string Rendered Note
      */
     public function toHtml()

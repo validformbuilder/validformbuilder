@@ -54,7 +54,6 @@ class Group extends Element
 {
     /**
      * Internal fields collection
-     * @internal
      * @var \ValidFormBuilder\Collection
      */
     protected $__fields;
@@ -64,7 +63,6 @@ class Group extends Element
      *
      * See {@link \ValidFormBuilder\Base::addField()}
      *
-     * @internal
      * @param string $name
      * @param integer $type
      * @param string $label
@@ -84,7 +82,6 @@ class Group extends Element
      *
      * See {@link \ValidFormBuilder\Element::toHtml()}
      *
-     * @internal
      * @see \ValidFormBuilder\Element::toHtml()
      */
     public function toHtml($submitted = false, $blnSimpleLayout = false, $blnLabel = true, $blnDisplayErrors = true)
@@ -104,13 +101,10 @@ class Group extends Element
      *
      * See {@link \ValidFormBuilder\Element::__toHtml()}
      *
-     * @internal
      * @see \ValidFormBuilder\Element::__toHtml()
      */
     public function __toHtml($submitted = false, $blnSimpleLayout = false, $blnLabel = true, $blnDisplayErrors = true, $intCount = 0)
     {
-        $strOutput = "";
-
         $blnError = ($submitted && ! $this->__validator->validate($intCount) && $blnDisplayErrors) ? true : false;
 
         if (! $blnSimpleLayout) {
@@ -185,12 +179,12 @@ class Group extends Element
      *
      * See {@link \ValidFormBuilder\Element::toJS()}
      *
-     * @internal
      * @see \ValidFormBuilder\Element::toJS()
      */
     public function toJS($intDynamicPosition = 0)
     {
         $strOutput = "";
+
         $strCheck = $this->__sanitizeCheckForJs($this->__validator->getCheck());
         $strRequired = ($this->__validator->getRequired()) ? "true" : "false";
         $intMaxLength = ($this->__validator->getMaxLength() > 0) ? $this->__validator->getMaxLength() : "null";
@@ -207,13 +201,19 @@ class Group extends Element
                     $strRequired = "false";
                 }
 
-                $strOutput .= "objForm.addElement('{$strId}', '{$strName}', {$strCheck}, {$strRequired}, {$intMaxLength}, {$intMinLength}, '" . addslashes($this->__validator->getFieldHint()) . "', '" . addslashes($this->__validator->getTypeError()) . "', '" . addslashes($this->__validator->getRequiredError()) . "', '" . addslashes($this->__validator->getHintError()) . "', '" . addslashes($this->__validator->getMinLengthError()) . "', '" . addslashes($this->__validator->getMaxLengthError()) . "');\n";
+                $strOutput .= "objForm.addElement('{$strId}', '{$strName}', {$strCheck}, {$strRequired}, {$intMaxLength}, {$intMinLength}, '"
+                    . addslashes($this->__validator->getFieldHint()) . "', '" . addslashes($this->__validator->getTypeError()) . "', '"
+                    . addslashes($this->__validator->getRequiredError()) . "', '" . addslashes($this->__validator->getHintError()) . "', '"
+                    . addslashes($this->__validator->getMinLengthError()) . "', '" . addslashes($this->__validator->getMaxLengthError()) . "');\n";
 
                 // *** Render the condition logic per dynamic field.
                 $strOutput .= $this->conditionsToJs($intCount);
             }
         } else {
-            $strOutput = "objForm.addElement('{$this->getId()}', '{$this->getName()}', {$strCheck}, {$strRequired}, {$intMaxLength}, {$intMinLength}, '" . addslashes($this->__validator->getFieldHint()) . "', '" . addslashes($this->__validator->getTypeError()) . "', '" . addslashes($this->__validator->getRequiredError()) . "', '" . addslashes($this->__validator->getHintError()) . "', '" . addslashes($this->__validator->getMinLengthError()) . "', '" . addslashes($this->__validator->getMaxLengthError()) . "');\n";
+            $strOutput = "objForm.addElement('{$this->getId()}', '{$this->getName()}', {$strCheck}, {$strRequired}, {$intMaxLength}, {$intMinLength}, '"
+                . addslashes($this->__validator->getFieldHint()) . "', '" . addslashes($this->__validator->getTypeError()) . "', '"
+                . addslashes($this->__validator->getRequiredError()) . "', '" . addslashes($this->__validator->getHintError()) . "', '"
+                . addslashes($this->__validator->getMinLengthError()) . "', '" . addslashes($this->__validator->getMaxLengthError()) . "');\n";
 
             // *** Condition logic.
             $strOutput .= $this->conditionsToJs();
@@ -245,27 +245,31 @@ class Group extends Element
      */
     public function getName($blnPlain = false)
     {
+        $strReturn = "";
+
         if ($blnPlain) {
-            $name = $this->__name;
+            $strReturn = $this->__name;
         } else {
             switch ($this->__type) {
                 case ValidForm::VFORM_RADIO_LIST:
-                    $name = $this->__name;
+                    $strReturn = $this->__name;
+
                     break;
                 case ValidForm::VFORM_CHECK_LIST:
-                    $name = (strpos($this->__name, "[]") === false) ? $this->__name . "[]" : $this->__name;
+                    $strReturn = (strpos($this->__name, "[]") === false) ? $this->__name . "[]" : $this->__name;
+
                     break;
             }
         }
 
-        return $name;
+        return $strReturn;
     }
 
     /**
      * Add either a radio button or checkbox to the group
      *
      * @param string $label The label
-     * @param value $value The value
+     * @param string $value The value
      * @param boolean $checked Set to true if this item should be checked / selected by default
      * @param array $meta The meta array
      *

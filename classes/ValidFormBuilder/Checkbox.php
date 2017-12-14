@@ -40,7 +40,6 @@ class Checkbox extends Element
     /**
      * Generate HTML output
      *
-     * @internal
      * @see \ValidFormBuilder\Element::toHtml() Element::toHtml() for a full description of this method
      */
     public function toHtml($submitted = false, $blnSimpleLayout = false, $blnLabel = true, $blnDisplayErrors = true)
@@ -120,7 +119,6 @@ class Checkbox extends Element
 
     /**
      * Generate Javascript
-     * @internal
      * @see \ValidFormBuilder\Element::toJS() Element::toJS() for a full description of this method
      */
     public function toJS($intDynamicPosition = 0)
@@ -133,7 +131,10 @@ class Checkbox extends Element
         $intMaxLength = ($this->__validator->getMaxLength() > 0) ? $this->__validator->getMaxLength() : "null";
         $intMinLength = ($this->__validator->getMinLength() > 0) ? $this->__validator->getMinLength() : "null";
 
-        $strOutput .= "objForm.addElement('{$this->__id}', '{$this->__name}', {$strCheck}, {$strRequired}, {$intMaxLength}, {$intMinLength}, '" . addslashes($this->__validator->getFieldHint()) . "', '" . addslashes($this->__validator->getTypeError()) . "', '" . addslashes($this->__validator->getRequiredError()) . "', '" . addslashes($this->__validator->getHintError()) . "', '" . addslashes($this->__validator->getMinLengthError()) . "', '" . addslashes($this->__validator->getMaxLengthError()) . "');\n";
+        $strOutput .= "objForm.addElement('{$this->__id}', '{$this->__name}', {$strCheck}, {$strRequired}, {$intMaxLength}, {$intMinLength}, '"
+            . addslashes($this->__validator->getFieldHint()) . "', '" . addslashes($this->__validator->getTypeError()) . "', '"
+            . addslashes($this->__validator->getRequiredError()) . "', '" . addslashes($this->__validator->getHintError()) . "', '"
+            . addslashes($this->__validator->getMinLengthError()) . "', '" . addslashes($this->__validator->getMaxLengthError()) . "');\n";
 
         // *** Condition logic.
         $strOutput .= $this->conditionsToJs($intDynamicPosition);
@@ -146,7 +147,6 @@ class Checkbox extends Element
      *
      * See {@link \ValidFormBuilder\Element::getValue()}
      *
-     * @internal
      * @see \ValidFormBuilder\Element::getValue()
      */
     public function getValue($intDynamicPosition = 0)
@@ -159,7 +159,6 @@ class Checkbox extends Element
      * Get default value
      * See {@link \ValidFormBuilder\Element::getDefault()}
      *
-     * @internal
      * @see \ValidFormBuilder\Element::getDefault()
      */
     public function getDefault($intDynamicPosition = 0)

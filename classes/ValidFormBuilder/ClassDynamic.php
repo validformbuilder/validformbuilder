@@ -24,7 +24,6 @@ namespace ValidFormBuilder;
  *
  * This class creates a magic get, set and call method. It is extended by all ValidForm Builder classes.
  *
- * @internal
  * @package ValidForm
  * @author Felix Langfeldt <felix@neverwoods.com>
  * @author Robin van Baalen <robin@cattlea.com>
@@ -38,7 +37,6 @@ class ClassDynamic
 
     /**
      * Magic getter method
-     * @internal
      * @param string $property
      * @throws \BadMethodCallException
      */
@@ -57,7 +55,6 @@ class ClassDynamic
 
     /**
      * Magic setter method
-     * @internal
      * @param string $property
      * @param mixed $value
      * @throws \BadMethodCallException
@@ -77,7 +74,6 @@ class ClassDynamic
 
     /**
      * Magic caller method
-     * @internal
      * @param string $method
      * @param mixed $values
      * @throws \BadMethodCallException

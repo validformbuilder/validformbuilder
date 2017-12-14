@@ -67,49 +67,42 @@ class ValidWizard extends ValidForm
 {
     /**
      * The total page count
-     * @internal
      * @var integer
      */
     public $__pagecount = 0;
 
     /**
      * The current page index
-     * @internal
      * @var integer
      */
     protected $__currentpage = 1;
 
     /**
      * The previous button label
-     * @internal
      * @var string
      */
     protected $__previouslabel;
 
     /**
      * The next label button
-     * @internal
      * @var string
      */
     protected $__nextlabel;
 
     /**
      * The previous button class
-     * @internal
      * @var string
      */
     protected $__previousclass;
 
     /**
      * The next button class
-     * @internal
      * @var string
      */
     protected $__nextclass;
 
     /**
      * Flag if wizard has confirm page
-     * @internal
      * @var boolean
      */
     protected $__hasconfirmpage = false;
@@ -406,7 +399,6 @@ class ValidWizard extends ValidForm
      *
      * See {@link \ValidFormBuilder\ValidForm::toJs()}
      *
-     * @internal
      * @param string $strCustomJs Optional custom javascript code to be executed at the same
      * time the form is initialized
      * @param array $arrInitArguments Only use this when initializing a custom client-side object. This is a flat array
@@ -441,40 +433,6 @@ class ValidWizard extends ValidForm
         }
 
         return parent::__toJs($strJs, $arrInitArguments, $blnRawJs);
-    }
-
-    /**
-     * Add hidden fields
-     *
-     * @internal
-     * @return string
-     */
-    private function __addHiddenFields()
-    {
-        $strOutput = "";
-        foreach ($this->getElements() as $objPage) {
-            if (get_class($objPage) == "ValidFormBuilder\\Hidden") {
-                continue;
-            }
-
-            foreach ($objPage->getElements() as $objFieldSet) {
-                foreach ($objFieldSet->getFields() as $objField) {
-                    if ($objField->hasFields()) {
-                        foreach ($objField->getFields() as $objSubField) {
-                            if (get_class($objSubField) == "ValidFormBuilder\\Hidden") {
-                                $strOutput .= $objSubField->toHtml(true);
-                            }
-                        }
-                    } else {
-                        if (get_class($objField) == "ValidFormBuilder\\Hidden") {
-                            $strOutput .= $objField->toHtml(true);
-                        }
-                    }
-                }
-            }
-        }
-
-        return $strOutput;
     }
 
     /**
@@ -565,7 +523,6 @@ class ValidWizard extends ValidForm
     /**
      * getFields creates a flat collection of all form fields.
      *
-     * @internal
      * @param boolean $blnIncludeMultiFields Set this to true if you want to include MultiFields in the collection
      * @return Collection The collection of fields.
      */

@@ -87,41 +87,27 @@ namespace ValidFormBuilder;
  * @author Robin van Baalen <robin@cattlea.com>
  * @version 3.0.0
  *
+ * @method string getLabel() getLabel() Returns the value of `$__label`
+ * @method void setLabel() setLabel(string $value) Overwrites the value of `$__label`
+ * @method string getRequiredStyle() getRequiredStyle() Returns the value of `$__requiredstyle`
+ * @method void setRequiredStyle() setRequiredStyle(string $value) Overwrites the value of `$__requiredstyle`
  */
 class MultiField extends Base
 {
-
     /**
      * Field label
-     * @internal
      * @var string
      */
     protected $__label;
 
     /**
-     * Dynamic flag
-     * @internal
-     * @var boolean
-     */
-    protected $__dynamic;
-
-    /**
-     * Dynamic label
-     * @internal
-     * @var string
-     */
-    protected $__dynamicLabel;
-
-    /**
      * Required style
-     * @internal
      * @var string
      */
     protected $__requiredstyle;
 
     /**
      * Fields collection
-     * @internal
      * @var \ValidFormBuilder\Collection
      */
     protected $__fields;
@@ -131,7 +117,6 @@ class MultiField extends Base
      *
      * See {@link \ValidFormBuilder\MultiField top of this page} for examples
      *
-     * @internal
      * @param string $label The multifield's label
      * @param array $meta The meta array
      */
@@ -147,6 +132,7 @@ class MultiField extends Base
 
         $this->__dynamic = $this->getMeta("dynamic", $this->__dynamic);
         $this->__dynamicLabel = $this->getMeta("dynamicLabel", $this->__dynamicLabel);
+        $this->__dynamicRemoveLabel = $this->getMeta("dynamicRemoveLabel", $this->__dynamicRemoveLabel);
     }
 
     /**
@@ -165,15 +151,13 @@ class MultiField extends Base
     public function addField($name, $type, $validationRules = array(), $errorHandlers = array(), $meta = array())
     {
         // Creating dynamic fields inside a multifield is not supported.
-        if (array_key_exists("dynamic", $meta)) {
-            unset($meta["dynamic"]);
+        foreach(['dynamic', 'dynamicLabel', 'dynamicRemoveLabel'] as $metaKey) {
+            if (array_key_exists($metaKey, $meta)) {
+                unset($meta[$metaKey]);
+            }
         }
 
-        if (array_key_exists("dynamicLabel", $meta)) {
-            unset($meta["dynamicLabel"]);
-        }
-
-            // Render the field and add it to the multifield field collection.
+        // Render the field and add it to the multifield field collection.
         $objField = ValidForm::renderField($name, "", $type, $validationRules, $errorHandlers, $meta);
 
         // *** Set the parent for the new field.
@@ -219,7 +203,6 @@ class MultiField extends Base
     /**
      * See {@link \ValidFormBuilder\Base::toHtml()}
      *
-     * @internal
      * @param boolean $submitted
      * @param boolean $blnSimpleLayout
      * @param boolean $blnLabel
@@ -231,7 +214,7 @@ class MultiField extends Base
         $strOutput = "";
 
         $intDynamicCount = $this->getDynamicCount();
-        for ($intCount = 0; $intCount <= $intDynamicCount; $intCount ++) {
+        for ($intCount = 0; $intCount <= $intDynamicCount; $intCount++) {
             $strOutput .= $this->__toHtml($submitted, $blnSimpleLayout, $blnLabel, $blnDisplayError, $intCount);
         }
 
@@ -241,7 +224,6 @@ class MultiField extends Base
     /**
      * See {@link \ValidFormBuilder\Base::__toHtml()}
      *
-     * @internal
      * @param boolean $submitted
      * @param boolean $blnSimpleLayout
      * @param boolean $blnLabel
@@ -262,9 +244,9 @@ class MultiField extends Base
         $blnError = false;
         $arrError = array();
 
-        $strId = "";
         $blnRequired = false;
 
+        /* @var $field Element */
         foreach ($this->__fields as $field) {
             $objValidator = $field->getValidator();
             if (is_object($objValidator)) {
@@ -298,6 +280,21 @@ class MultiField extends Base
 
         $this->setMeta("class", "vf__multifield");
 
+        if ($this->isRemovable()) {
+            $this->setMeta("class", "vf__removable");
+        }
+
+        //*** Add data-dynamic="original" or data-dynamic="clone" attributes to dynamic fields
+        if ($this->isDynamic()) {
+            if ($intCount === 0) {
+                // This is the first, original element. Make sure to define that.
+                $this->setMeta('data-dynamic', 'original', true);
+            } else {
+                $this->setMeta('data-dynamic', 'clone', true);
+                $this->setMeta("class", "vf__clone");
+            }
+        }
+
         $strId = ($intCount == 0) ? $this->getId() : $this->getId() . "_{$intCount}";
         $strOutput = "<div{$this->__getMetaString()} id=\"{$strId}\">\n";
 
@@ -323,10 +320,16 @@ class MultiField extends Base
             $strOutput .= "<small class=\"vf__tip\"{$this->__getTipMetaString()}>{$this->__tip}</small>\n";
         }
 
+        if ($this->isRemovable()) {
+            $this->setMeta("dynamicRemoveLabelClass", "vf__removeLabel");
+
+            $strOutput .= $this->getRemoveLabelHtml();
+        }
+
         $strOutput .= "</div>\n";
 
         if ($intCount == $this->getDynamicCount()) {
-            $strOutput .= $this->__addDynamicHtml();
+            $strOutput .= $this->getDynamicHtml();
         }
 
         return $strOutput;
@@ -334,14 +337,13 @@ class MultiField extends Base
 
     /**
      * Generate dynamic HTML for client-side field duplication
-     * @internal
      * @return string
      */
-    protected function __addDynamicHtml()
+    protected function getDynamicHtml()
     {
         $strReturn = "";
 
-        if ($this->__dynamic && ! empty($this->__dynamicLabel)) {
+        if ($this->__dynamic && !empty($this->__dynamicLabel)) {
             $arrFields = array();
             // Generate an array of field id's
             foreach ($this->__fields as $field) {
@@ -349,11 +351,16 @@ class MultiField extends Base
                 if ((get_class($field) == "ValidFormBuilder\\Hidden") && $field->isDynamicCounter()) {
                     continue;
                 }
-                $arrFields[$field->getId()] = $field->getName();
+
+                if (!empty($field->getName())) {
+                    $arrFields[$field->getId()] = $field->getName();
+                }
             }
 
             $strReturn .= "<div class=\"vf__dynamic\">";
-            $strReturn .= "<a href=\"#\" data-target-id=\"" . implode("|", array_keys($arrFields)) . "\" data-target-name=\"" . implode("|", array_values($arrFields)) . "\">{$this->__dynamicLabel}</a>";
+            $strReturn .= "<a href=\"#\" data-target-id=\"" . implode("|", array_keys($arrFields))
+                . "\" data-target-name=\"" . implode("|", array_values($arrFields))
+                . "\"{$this->__getDynamicLabelMetaString()}>{$this->__dynamicLabel}</a>";
             $strReturn .= "</div>";
         }
 
@@ -364,7 +371,6 @@ class MultiField extends Base
      * Generate Javascript
      * See {@\ValidFormBuilder\Base::toJS()}
      *
-     * @internal
      * @see \ValidFormBuilder\Base::toJS()
      */
     public function toJS($intDynamicPosition = 0)
@@ -377,7 +383,8 @@ class MultiField extends Base
 
         // *** Condition logic.
         if ($this->__dynamic || $intDynamicPosition) {
-            $intDynamicCount = $this->getDynamicCount($intDynamicPosition);
+            $intDynamicCount = $this->getDynamicCount();
+
             for ($intCount = 0; $intCount <= $intDynamicCount; $intCount ++) {
                 // *** Render the condition logic per dynamic field.
                 $strOutput .= $this->conditionsToJs($intCount);
@@ -392,11 +399,12 @@ class MultiField extends Base
 
     /**
      * Validate internal fields
-     * @internal
      * @return boolean
      */
     public function isValid()
     {
+        $blnReturn = true;
+
         $intDynamicCount = $this->getDynamicCount();
 
         for ($intCount = 0; $intCount <= $intDynamicCount; $intCount ++) {
@@ -412,7 +420,6 @@ class MultiField extends Base
 
     /**
      * Check if multifield is dynamic
-     * @internal
      * @return boolean
      */
     public function isDynamic()
@@ -422,7 +429,6 @@ class MultiField extends Base
 
     /**
      * Get the dynamic count of this multifield
-     * @internal
      * @return integer
      */
     public function getDynamicCount()
@@ -452,7 +458,6 @@ class MultiField extends Base
 
     /**
      * Get Fields collection
-     * @internal
      * @return \ValidFormBuilder\Collection
      */
     public function getFields()
@@ -462,7 +467,6 @@ class MultiField extends Base
 
     /**
      * Get value - placeholder
-     * @internal
      * @return boolean
      */
     public function getValue()
@@ -472,7 +476,6 @@ class MultiField extends Base
 
     /**
      * Get MultiField ID
-     * @internal
      * @return string
      */
     public function getId()
@@ -482,7 +485,6 @@ class MultiField extends Base
 
     /**
      * Get field type - placeholder to overwrite default logic
-     * @internal
      * @return integer
      */
     public function getType()
@@ -493,7 +495,6 @@ class MultiField extends Base
     /**
      * Loop through all child fields and check their values. If one value is not empty, the MultiField has content.
      *
-     * @internal
      * @param integer $intCount The current dynamic count.
      * @return boolean True if multifield has content, false if not.
      */
@@ -501,6 +502,7 @@ class MultiField extends Base
     {
         $blnReturn = false;
 
+        /* @var $objField Element */
         foreach ($this->__fields as $objField) {
             if (get_class($objField) !== "ValidFormBuilder\\Hidden") {
                 $objValidator = $objField->getValidator();
@@ -521,7 +523,6 @@ class MultiField extends Base
 
     /**
      * Check if MultiField has internal fields in it's collection
-     * @internal
      * @return boolean
      */
     public function hasFields()
@@ -540,7 +541,6 @@ class MultiField extends Base
      */
     public function setData($strKey = null, $varValue = null)
     {
-        $varReturn = false;
         $this->__meta["data"] = (isset($this->__meta["data"])) ? $this->__meta["data"] : array();
 
         if (isset($this->__meta["data"])) {
@@ -580,7 +580,6 @@ class MultiField extends Base
 
     /**
      * Validate the fields in the collection
-     * @internal
      * @param integer $intCount Dynamic counter
      * @return boolean True if all fields are valid, false if not.
      */

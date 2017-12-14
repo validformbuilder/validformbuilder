@@ -85,14 +85,12 @@ class Condition extends ClassDynamic
 
     /**
      * The field element to apply the condition on. Can be any element from paragraph to textarea.
-     * @internal
      * @var \ValidFormBuilder\Base
      */
     protected $__subject;
 
     /**
      * The property to trigger on the subject; 'enabled', 'visible' or 'required'
-     * @internal
      * @var string
      */
     protected $__property;
@@ -100,14 +98,12 @@ class Condition extends ClassDynamic
     /**
      * The boolean to set the property with. E.g. when property is 'required' and 'value' is false, the field will
      * become optional when the condition is met.
-     * @internal
      * @var boolean
      */
     protected $__value;
 
     /**
      * An array of \ValidFormBuilder\Comparison objects or arrays
-     * @internal
      * @var array
      */
     protected $__comparisons = array();
@@ -115,14 +111,12 @@ class Condition extends ClassDynamic
     /**
      * Define if all comparisons should be met, `ValidForm::VFORM_MATCH_ALL`, or trigger condition if any of the
      * comparisons is met, `ValidForm::VFORM_MATCH_ANY` (default)
-     * @internal
      * @var string
      */
     protected $__comparisontype;
 
     /**
      * Predefined condition properties
-     * @internal
      * @var array
      */
     private $__conditionProperties = array(
@@ -168,7 +162,6 @@ class Condition extends ClassDynamic
 
     /**
      * Get subject value
-     * @internal
      * @return \ValidFormBuilder\Base Subject element
      */
     public function getSubject()
@@ -178,7 +171,6 @@ class Condition extends ClassDynamic
 
     /**
      * Get Property
-     * @internal
      * @return string
      */
     public function getProperty()
@@ -188,7 +180,6 @@ class Condition extends ClassDynamic
 
     /**
      * Get value
-     * @internal
      * @return boolean
      */
     public function getValue()
@@ -198,7 +189,6 @@ class Condition extends ClassDynamic
 
     /**
      * Get comparisons collection
-     * @internal
      * @return array
      */
     public function getComparisons()
@@ -208,8 +198,7 @@ class Condition extends ClassDynamic
 
     /**
      * Get comparison type
-     * @internal
-     * @return
+     * @return string
      */
     public function getComparisonType()
     {
@@ -219,7 +208,6 @@ class Condition extends ClassDynamic
     /**
      * Add new comparison to Condition
      *
-     * @internal
      * @param Comparison|array $varComparison Comparison array or Comparison object
      * @throws \Exception if Reflection couldn't initialize new Comparison object
      * @throws \InvalidArgumentException if no valid Comparison data is supplied
@@ -258,9 +246,9 @@ class Condition extends ClassDynamic
     /**
      * Verify if the condition is met
      *
-     * @internal
-     * @param number $intDynamicPosition Dynamic position of the field to verify
-     * @return boolean True if it is met, false if not
+     * @param int $intDynamicPosition Dynamic position of the field to verify
+     * @return bool True if it is met, false if not
+     * @throws \Exception
      */
     public function isMet($intDynamicPosition = 0)
     {
@@ -305,9 +293,10 @@ class Condition extends ClassDynamic
      * (http://php.net/manual/en/class.jsonserializable.php). Since this is only
      * supported in PHP >= 5.4, we now use our own implementation.
      *
-     * @internal
+     * @param integer|null $intDynamicPosition
      * @return array An array representation of this object and it's comparisons.
      */
+
     public function jsonSerialize($intDynamicPosition = null)
     {
         if (get_class($this->__subject) == "ValidFormBuilder\\GroupField"
@@ -331,8 +320,9 @@ class Condition extends ClassDynamic
             "comparisons" => array()
         );
 
+        /* @var $objComparison \ValidFormBuilder\Comparison */
         foreach ($this->__comparisons as $objComparison) {
-            array_push($arrReturn["comparisons"], $objComparison->jsonSerialize($intDynamicPosition));
+            array_push($arrReturn["comparisons"], $objComparison->jsonSerialize());
         }
 
         return $arrReturn;
