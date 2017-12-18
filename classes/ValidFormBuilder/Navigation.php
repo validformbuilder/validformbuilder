@@ -48,6 +48,8 @@ class Navigation extends Base
         $this->__initializeMeta();
 
         $this->__fields = new Collection();
+
+        $this->setMeta("id", $this->getName());
     }
 
     /**
@@ -98,6 +100,7 @@ class Navigation extends Base
         $this->setConditionalMeta();
 
         $this->setMeta("class", "vf__navigation");
+
         $strReturn = "<div{$this->__getMetaString()}>\n";
 
         foreach ($this->__fields as $field) {
@@ -123,6 +126,15 @@ class Navigation extends Base
 
         foreach ($this->__fields as $field) {
             $strReturn .= $field->toJS($intDynamicPosition);
+        }
+
+        if ($this->getMeta("id")) {
+            $strId = $this->getMeta("id");
+
+            $strReturn .= "objForm.addElement('{$strId}', '{$strId}');\n";
+
+            // *** Condition logic.
+            $strReturn .= $this->conditionsToJs($intDynamicPosition);
         }
 
         return $strReturn;
