@@ -1278,6 +1278,9 @@ ValidFormComparison.prototype.check = function () {
         case "in_array":
             blnReturn = (self.value.indexOf(strValue) > -1);
             break;
+        case "not_in_array":
+            blnReturn = (self.value.indexOf(strValue) === -1);
+            break;
     }
 
     self.isMet = blnReturn;
