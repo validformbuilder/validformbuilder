@@ -185,6 +185,9 @@ class Comparison extends ClassDynamic
             case ValidForm::VFORM_COMPARISON_IN_ARRAY:
                 $blnReturn = in_array($strValue, $this->__value);
                 break;
+            case ValidForm::VFORM_COMPARISON_NOT_IN_ARRAY:
+                $blnReturn = !in_array($strValue, $this->__value);
+                break;
         }
 
         return $blnReturn;
