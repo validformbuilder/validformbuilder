@@ -1107,6 +1107,46 @@ class ValidForm extends ClassDynamic
     }
 
     /**
+     * Generate the Javascript output only for the fields and conditions.
+     *
+     * This is particulary useful when using ValidForm Builder in combination with AJAX form handling. You can inject
+     * new fields and field logic into an existing ValidForm and all validation will be handled by that "parent" form.
+     *
+     * @param boolean $blnRawJs Return javascript without the surrounding <script> tags.
+     * @return string
+     */
+    public function elementsToJs($blnRawJs = false)
+    {
+        $strReturn = "";
+
+        $strJs = "";
+
+        // *** Loop through all form elements and get their javascript code.
+        foreach ($this->__elements as $element) {
+            $strJs .= $element->toJS();
+        }
+
+        // Indent javascript
+        $strJs = str_replace("\n", "\n\t", $strJs);
+
+        if (! $blnRawJs) {
+            $strReturn .= "<script type=\"text/javascript\">\n";
+            $strReturn .= "// <![CDATA[\n";
+        }
+
+        $strReturn .= "\tvar objForm = $(\"#{$this->__name}\").data(\"vf__formElement\");\n\t";
+        $strReturn .= $strJs;
+        $strReturn .= "objForm.initialize();\n";
+
+        if (! $blnRawJs) {
+            $strReturn .= "// ]]>\n";
+            $strReturn .= "</script>\n";
+        }
+
+        return $strReturn;
+    }
+
+    /**
      * Serialize, compress and encode the entire form including it's values
      *
      * @param boolean $blnSubmittedValues
