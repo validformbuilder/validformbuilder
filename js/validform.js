@@ -70,7 +70,7 @@ ValidForm.prototype._init = function() {
     // This is where the magic happens: onSubmit; validate form.
     jQuery("#" + self.id).bind("submit", function(){
         jQuery("#" + this.id).trigger("VF_BeforeSubmit", [{ValidForm: self}]);
-        if (typeof self.events.beforeSubmit == "function") {
+        if (typeof self.events.beforeSubmit === "function") {
             self.events.beforeSubmit(self);
         }
 
@@ -2005,10 +2005,10 @@ ValidFormFieldValidator.prototype.validate = function(value) {
             }
 
             //*** Check specific types using regular expression.
-            if(typeof this.check != "function" && typeof this.check != "object") {
+            if(typeof this.check !== "function" && typeof this.check !== "object") {
                 return true;
             } else {
-                if (this.required && value !== "") {
+                if (value !== "") {
                     blnReturn = this.check.test(value);
 
                     if (blnReturn === false) {
