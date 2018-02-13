@@ -4,7 +4,7 @@
     "description": "The easiest tool for generating XHTML 1.0 valid and CSS enabled webforms.",
     "keywords": ["form", "validation", "building"],
     "homepage": "http://www.validformbuilder.org/",
-    "license": "GNU GPL v2",
+    "license": "LGPL-2.0",
     "authors": [
         {
             "name": "Felix Langfeldt",
