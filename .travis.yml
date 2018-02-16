@@ -1,7 +1,6 @@
 language: php
 php:
 - 5.6
-#- 7.0 # Use multiple PHP versions once we start running tests. For now, one version is sufficient.
 before_script:
 - composer install
 - export PATH=./vendor/bin/:$PATH
@@ -11,7 +10,7 @@ script:
 - bash .travis-generate-docs.sh
 notifications:
   slack:
-    secure: mWZfvX4NA+B7ec0r4oEhYcTmjgeVb7AyQ/F50St6/padNvstSLSuzrdVAHpF6+xHcib5/qwkTUrS/RNzuqGWdehJqX7jmLnVBwGiMyW3+1cI72qnH7dZrmgy2jX354y3NTo+fvjjtSVniMta28CvqwXH+G+sNo1VIidxxxcXAzU=
+    secure: hZn8msOcBV96Z+YKNZ5yt6/rv0CtD8yj5KEsdZAIbKlSoCB4QBh+RNlyfuBUJ1SbodxBU4v4Yyln8VbavysZ1l4INZEEcNRto+/vjQDLHNLWwSJ4u1tg0vNE29CNIQsaJ4Vd/ZplC6yX9H7S8SEF81Zuz57wTcmRMhY6371kezg=
 env:
   global:
   - secure: ZCoO8vC5W3k+V3vb7uxsZtROjdikHCxNbvE1ptTvRWjq9tJS9LV5gQVM6f+FNylgPgcQL9qzhd4krrh8fNuriuRotqWd35XH9FW1ISzSMpkADpwDM2t/az/dhucRKc43eDqW8d/XrrvrmqsTYe694jd+lrvcimGeFw0WEfXIHBk=
