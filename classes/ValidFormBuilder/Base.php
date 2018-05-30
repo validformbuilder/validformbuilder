@@ -488,7 +488,6 @@ class Base extends ClassDynamic
                 case "required":
                     // This can only be applied on all subjects except for Paragraphs
                     if (get_class($objCondition->getSubject()) !== "ValidFormBuilder\\Paragraph") {
-
                         if ($blnResult) {
                             if ($objCondition->getValue()) {
                                 if (get_class($this) !== "ValidFormBuilder\\Fieldset") {
@@ -515,12 +514,12 @@ class Base extends ClassDynamic
                             }
                         }
                     }
+
                     break;
-
                 case "enabled":
-                    // This can only be applied on all subjects except for Paragraphs
-                    if (get_class($objCondition->getSubject()) !== "ValidFormBuilder\\Paragraph") {
-
+                    // This can only be applied on all subjects except for Paragraphs and Groups
+                    if (get_class($objCondition->getSubject()) !== "ValidFormBuilder\\Paragraph"
+                            && get_class($objCondition->getSubject()) !== "ValidFormBuilder\\Group") {
                         if ($blnResult) {
                             if ($objCondition->getValue()) {
                                 $this->setFieldMeta("disabled", "", true);
@@ -535,6 +534,7 @@ class Base extends ClassDynamic
                             }
                         }
                     }
+
                     break;
             }
         }
