@@ -280,6 +280,9 @@ class FieldValidator extends ClassDynamic
             //if ($this->__type !== ValidForm::VFORM_FILE) {
                 // Default value
                 $varValidValue = $this->__field->getDefault();
+                if (is_array($varValidValue) && isset($varValidValue[$intDynamicPosition])) {
+                    $varValidValue = $varValidValue[$intDynamicPosition];
+                }
 
                 // Get cached value if set
                 if (isset($this->__validvalues[$intDynamicPosition])) {
