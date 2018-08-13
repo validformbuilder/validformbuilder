@@ -120,10 +120,11 @@ class MultiField extends Base
      * @param string $label The multifield's label
      * @param array $meta The meta array
      */
-    public function __construct($label, $meta = array())
+    public function __construct($label, $meta = array(), $name = null)
     {
         $this->__label = $label;
         $this->__meta = $meta;
+        $this->__name = $name;
 
         // *** Set label & field specific meta
         $this->__initializeMeta();

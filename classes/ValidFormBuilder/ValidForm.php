@@ -913,7 +913,8 @@ class ValidForm extends ClassDynamic
      */
     public function addMultiField($label = null, $meta = array())
     {
-        $objField = new MultiField($label, $meta);
+        $strName = (isset($meta["name"])) ? $meta["name"] : null;
+        $objField = new MultiField($label, $meta, $strName);
 
         $objField->setRequiredStyle($this->__requiredstyle);
 
