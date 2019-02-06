@@ -41,6 +41,7 @@ namespace ValidFormBuilder;
  * @method void setRequiredStyle() setRequiredStyle(string $value) Overwrites the value of `$__requiredstyle`
  * @method FieldValidator getValidator() getValidator() Returns the value of `$__validator`
  * @method void setValidator() setValidator(FieldValidator $value) Overwrites the value of `$__validator`
+ * @method \ValidFormBuilder\Element addField() addField($name, $type, $validationRules = array(), $errorHandlers = array(), $meta = array()) Adds another field to this field if this field is a `container`
  */
 class Element extends Base
 {
