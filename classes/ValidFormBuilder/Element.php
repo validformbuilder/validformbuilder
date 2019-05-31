@@ -108,8 +108,9 @@ class Element extends Base
      * @param array $validationRules Validation rules
      * @param array $errorHandlers Error rules
      * @param array $meta The meta array
+     * @param boolean $preSanitize Sanitize value previous to validation
      */
-    public function __construct($name, $type, $label = "", $validationRules = array(), $errorHandlers = array(), $meta = array())
+    public function __construct($name, $type, $label = "", $validationRules = array(), $errorHandlers = array(), $meta = array(), $preSanitize = true)
     {
         // Set meta class
         $this->setClass($type, $meta);
@@ -136,7 +137,7 @@ class Element extends Base
         $this->__displaySanitize = $this->getMeta("displaySanitize", $this->__displaySanitize);
 
         // $this->__validator = new FieldValidator($name, $type, $validationRules, $errorHandlers, $this->__hint);
-        $this->__validator = new FieldValidator($this, $validationRules, $errorHandlers);
+        $this->__validator = new FieldValidator($this, $validationRules, $errorHandlers, $preSanitize);
     }
 
     /**

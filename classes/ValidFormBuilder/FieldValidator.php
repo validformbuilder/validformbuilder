@@ -214,8 +214,9 @@ class FieldValidator extends ClassDynamic
      * @param Element $objField
      * @param array $arrValidationRules
      * @param array $arrErrorHandlers
+     * @param boolean $preSanitize
      */
-    public function __construct(Element $objField, Array $arrValidationRules = array(), Array $arrErrorHandlers = array())
+    public function __construct(Element $objField, Array $arrValidationRules = array(), Array $arrErrorHandlers = array(), $preSanitize = true)
     {
         foreach ($arrValidationRules as $key => $value) {
             $property = strtolower("__" . $key);
@@ -239,6 +240,8 @@ class FieldValidator extends ClassDynamic
         // Store the default required state in a seperate property.
         // This way, we're able to reset back to default settings at any given time.
         $this->__defaultRequired = $this->__required;
+        //sanitize value previous to validation
+        $this->__preSanatize = $preSanitize;
     }
 
     /**
@@ -312,9 +315,23 @@ class FieldValidator extends ClassDynamic
             // $varReturn = $_FILES[$strFieldName];
             // }
             // }
+
+            /*** return sanitized value **/
+            if ($this->__preSanatize) {
+                $varReturn = $this->preSanitize($varReturn);
+            }
         }
 
         return $varReturn;
+    }
+
+    /**
+     * Pre Sanitize element before being validated
+     * @param string|array|null Returns the submitted field value.  $value
+     */
+    public function preSanitize($value)
+    {
+        return trim($value);
     }
 
     /**

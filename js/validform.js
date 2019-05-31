@@ -1935,6 +1935,19 @@ function ValidFormFieldValidator(strElementId, strElementName) {
 }
 
 /**
+ * Element sanitizer previous to validation
+ * @param value
+ * @returns {*|jQuery|string}
+ */
+ValidFormFieldValidator.prototype.preSanitize = function(value) {
+    if (value !== "") {
+        value = value.trim();
+    }
+
+    return value;
+}
+
+/**
  * Element validator
  * @param  {mixed} value Value of the element
  * @return {boolean}       True if value is valid, false if not.
@@ -1942,6 +1955,8 @@ function ValidFormFieldValidator(strElementId, strElementName) {
 ValidFormFieldValidator.prototype.validate = function(value) {
     var objElement = jQuery("#" + this.id);
     var value = objElement.val();
+
+    value = this.preSanitize(value);
 
     this.removeAlert();
 

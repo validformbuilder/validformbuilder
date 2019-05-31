@@ -639,10 +639,11 @@ class ValidForm extends ClassDynamic
      * @param array $validationRules Optional.Custom validation rules array
      * @param array $errorHandlers Custom error handling array
      * @param array $meta Optional. Meta data array
+     * @param boolean $preSanitize Optional. Sanitize value previus validation
      *
      * @return \ValidFormBuilder\Element Returns null when no valid type is defined
      */
-    public static function renderField($name, $label, $type, $validationRules, $errorHandlers, $meta)
+    public static function renderField($name, $label, $type, $validationRules, $errorHandlers, $meta, $preSanitize = true)
     {
         $objField = null;
         switch ($type) {
@@ -656,7 +657,7 @@ class ValidForm extends ClassDynamic
             case static::VFORM_DATE:
             case static::VFORM_NUMERIC:
             case static::VFORM_INTEGER:
-                $objField = new Text($name, $type, $label, $validationRules, $errorHandlers, $meta);
+                $objField = new Text($name, $type, $label, $validationRules, $errorHandlers, $meta, $preSanitize);
                 break;
             case static::VFORM_PASSWORD:
                 $objField = new Password($name, $type, $label, $validationRules, $errorHandlers, $meta);
@@ -718,6 +719,7 @@ class ValidForm extends ClassDynamic
      * @param array $meta Optional. Meta data array
      * @param boolean $blnJustRender When true, the element is not added to the internal elements collection.
      * `addField()` with `$blnJustRender` set to true is exactly the same as calling `ValidForm::renderField()`
+     * @param boolean $preSanitize When true, the element is sanitize previous validation.
      *
      * @return \ValidFormBuilder\Element Returns null when no valid type is defined
      */
@@ -728,9 +730,10 @@ class ValidForm extends ClassDynamic
         $validationRules = array(),
         $errorHandlers = array(),
         $meta = array(),
-        $blnJustRender = false
+        $blnJustRender = false,
+        $preSanitize = true
     ) {
-        $objField = static::renderField($name, $label, $type, $validationRules, $errorHandlers, $meta);
+        $objField = static::renderField($name, $label, $type, $validationRules, $errorHandlers, $meta, $preSanitize);
 
         $objField->setRequiredStyle($this->__requiredstyle);
 
