@@ -207,6 +207,11 @@ class FieldValidator extends ClassDynamic
      * @var array
      */
     protected $__errors = array();
+    /**
+     * Presanatize
+     * @var array
+     */
+    protected $__presanatize = array();
 
     /**
      * Construct new validation object
@@ -240,8 +245,9 @@ class FieldValidator extends ClassDynamic
         // Store the default required state in a seperate property.
         // This way, we're able to reset back to default settings at any given time.
         $this->__defaultRequired = $this->__required;
+
         //sanitize value previous to validation
-        $this->__preSanatize = $preSanitize;
+        $this->__presanatize = $preSanitize;
     }
 
     /**
@@ -317,7 +323,7 @@ class FieldValidator extends ClassDynamic
             // }
 
             /*** return sanitized value **/
-            if ($this->__preSanatize) {
+            if ($this->__presanatize) {
                 $varReturn = $this->preSanitize($varReturn);
             }
         }
@@ -327,7 +333,8 @@ class FieldValidator extends ClassDynamic
 
     /**
      * Pre Sanitize element before being validated
-     * @param string|array|null Returns the submitted field value.  $value
+     * @param string|array|null field value.  $value
+     * @return string
      */
     public function preSanitize($value)
     {
