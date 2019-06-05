@@ -895,8 +895,9 @@ ValidForm.prototype.addElement = function() {
         var minLengthError  = "";
         var maxLength       = null;
         var maxLengthError  = "";
-        var strElementId = null;
-        var strValidation = null;
+        var sanitizations   = null;
+        var strElementId    = null;
+        var strValidation   = null;
 
         if (arguments.length > 0) {
             strElementId = arguments[0];
@@ -952,6 +953,10 @@ ValidForm.prototype.addElement = function() {
             maxLengthError = arguments[11];
         }
 
+        if (arguments.length > 12) {
+            sanitizations = arguments[12];
+        }
+
         objAddedElement = this.elements[strElementName] = new ValidFormElement(
             this.id,
             this,
@@ -966,7 +971,8 @@ ValidForm.prototype.addElement = function() {
             requiredError,
             hintError,
             minLengthError,
-            maxLengthError
+            maxLengthError,
+            sanitizations
         );
     }
 
@@ -1617,6 +1623,10 @@ function ValidFormElement(strFormId, formObject, strElementName, strElementId, s
         this.validator.maxLengthError = arguments[13];
     }
 
+    if (arguments.length > 14) {
+        this.validator.sanitizations = arguments[14];
+    }
+
     // Keep the original values in a local cache for future reference.
     this._defaultstate = {
         "required": this.validator.required,
@@ -1932,14 +1942,18 @@ function ValidFormFieldValidator(strElementId, strElementName) {
      * @type {String}
      */
     this.maxLengthError     = "";
+    /**
+     * Maximum input length error
+     * @type {String}
+     */
+    this.sanitizations      = null;
 }
 
 /**
  * Element validator
- * @param  {mixed} value Value of the element
  * @return {boolean}       True if value is valid, false if not.
  */
-ValidFormFieldValidator.prototype.validate = function(value) {
+ValidFormFieldValidator.prototype.validate = function() {
     var objElement = jQuery("#" + this.id);
     var value = objElement.val();
 
@@ -1951,6 +1965,8 @@ ValidFormFieldValidator.prototype.validate = function(value) {
 
 
     if (!this.disabled) {
+        var sanitizedValue = this.sanitize(value);
+
         try {
             var objDOMElement = objElement.get(0);
             /*** Redirect to error handler if a checkbox or radio is found.
@@ -1963,7 +1979,7 @@ ValidFormFieldValidator.prototype.validate = function(value) {
             }
 
             //*** Required, but empty is not good.
-            if (this.required && value === "") {
+            if (this.required && sanitizedValue === "") {
                 this.showAlert(this.requiredError);
                 return false;
             }
@@ -1971,7 +1987,7 @@ ValidFormFieldValidator.prototype.validate = function(value) {
             //*** Check if there is a matchWith field to validate against
             if (typeof this.matchWith === "object") {
                 if (this.matchWith.validate()) {
-                    if (jQuery("#" + this.matchWith.id).val() != value) {
+                    if (jQuery("#" + this.matchWith.id).val() != sanitizedValue) {
                         this.matchWith.validator.showAlert(this.matchError);
                         this.showAlert(this.matchError);
                         return false;
@@ -1980,20 +1996,20 @@ ValidFormFieldValidator.prototype.validate = function(value) {
             }
 
             //*** Value is the same as hint value.
-            if (this.hint && value == this.hint && this.required) {
+            if (this.hint && sanitizedValue == this.hint && this.required) {
                 this.showAlert(this.hintError);
                 return false;
             }
 
             //*** Check if the length of the value is within the range.
-            if (this.minLength > 0 && value.length < this.minLength) {
-                if (this.required || (!this.required && value !== "")) {
+            if (this.minLength > 0 && sanitizedValue.length < this.minLength) {
+                if (this.required || (!this.required && sanitizedValue !== "")) {
                     this.showAlert(sprintf(this.minLengthError, this.minLength));
                     return false;
                 }
             }
 
-            if (this.maxLength > 0 && value.length > this.maxLength) {
+            if (this.maxLength > 0 && sanitizedValue.length > this.maxLength) {
                 this.showAlert(sprintf(this.maxLengthError, this.maxLength));
                 return false;
             }
@@ -2002,8 +2018,8 @@ ValidFormFieldValidator.prototype.validate = function(value) {
             if(typeof this.check !== "function" && typeof this.check !== "object") {
                 return true;
             } else {
-                if (value !== "") {
-                    blnReturn = this.check.test(value);
+                if (sanitizedValue !== "") {
+                    blnReturn = this.check.test(sanitizedValue);
 
                     if (blnReturn === false) {
                         this.showAlert(this.typeError);
@@ -2063,6 +2079,23 @@ ValidFormFieldValidator.prototype.validate = function(value) {
         return true;
     }
 
+};
+
+ValidFormFieldValidator.prototype.sanitize = function(value) {
+    var sanitized = value;
+
+    if (Array.isArray(this.sanitizations)) {
+        for (var sanitization in this.sanitizations) {
+            switch (this.sanitizations[sanitization]) {
+                case "trim":
+                    sanitized = value.trim();
+
+                    break;
+            }
+        }
+    }
+
+    return sanitized;
 };
 
 ValidFormFieldValidator.prototype.removeAlert = function() {
