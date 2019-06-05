@@ -37,16 +37,46 @@ This feature is as new as it is powerful. Since *ValidForm Builder 2.0 public be
 1) Create two regular fields
 
 ```
-$objFirstName = $objForm->addField("name", "Your name", VFORM_STRING, array("required" => true), array("required" => "This field is required"));
-$objLastName = $objForm->addField("lastname", "Last name", VFORM_STRING, array("required" => true), array("required" => "This field is required for almost everyone..")); // not required
+$objFirstName = $objForm->addField(
+    "name", 
+    "Your name", 
+    VFORM_STRING, 
+    [
+        "required" => true
+    ], 
+    [
+        "required" => "This field is required"
+    ]
+);
+
+$objLastName = $objForm->addField(
+    "lastname", 
+    "Last name", 
+    VFORM_STRING, 
+    [
+        "required" => true // not required for robin ;-)
+    ], 
+    [
+        "required" => "This field is required"
+    ]
+);
 ```
 
 2) Now, add a condition to the `lastname` field. For example, we want it to become optional when `name` is `Robin`. After all, we all know that Robin's last name is 'Hood'. So the way we'll write that out in plain text would be: lastname-field's property `required` will become `false` when name-field's `value` will be `Robin`. Here's how the condition will look in PHP:
 
 ```
-$objLastName->addCondition("required", false, array(
-    new VF_Comparison($objFirstName, VFORM_COMPARISON_EQUAL, "robin") // Comparison values are case insensitive.
-), VFORM_MATCH_ANY);
+$objLastName->addCondition(
+    "required", 
+    false, 
+    [
+        new VF_Comparison(
+            $objFirstName, 
+            VFORM_COMPARISON_EQUAL, 
+            "robin" // Comparison values are case insensitive.
+         )
+    ], 
+    VFORM_MATCH_ANY
+);
 ```
 
 3) When you run this example and type in 'Robin' in the name field, last name will become optional. As always with ValidForm Builder: this validates both client-side and server-side!
