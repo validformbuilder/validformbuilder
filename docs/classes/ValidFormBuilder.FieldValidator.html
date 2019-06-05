@@ -114,7 +114,7 @@
                         <ul class="dropdown-menu">
                             <li>
                                 <a href="../reports/errors.html">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <i class="icon-list-alt"></i>&#160;Errors <span class="label label-info pull-right">109</span>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <i class="icon-list-alt"></i>&#160;Errors <span class="label label-info pull-right">113</span>
                                 </a>
                             </li>
                             <li>
@@ -144,19 +144,19 @@
                                 <div class="accordion" style="margin-bottom: 0">
         <div class="accordion-group">
             <div class="accordion-heading">
-                                    <a class="accordion-toggle " data-toggle="collapse" data-target="#namespace-257609388"></a>
+                                    <a class="accordion-toggle " data-toggle="collapse" data-target="#namespace-431382976"></a>
                                 <a href="../namespaces/default.html" style="margin-left: 30px; padding-left: 0">\</a>
             </div>
-            <div id="namespace-257609388" class="accordion-body collapse in">
+            <div id="namespace-431382976" class="accordion-body collapse in">
                 <div class="accordion-inner">
 
                                                     <div class="accordion" style="margin-bottom: 0">
         <div class="accordion-group">
             <div class="accordion-heading">
-                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-914034508"></a>
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-966039382"></a>
                                 <a href="../namespaces/ValidFormBuilder.html" style="margin-left: 30px; padding-left: 0">ValidFormBuilder</a>
             </div>
-            <div id="namespace-914034508" class="accordion-body collapse ">
+            <div id="namespace-966039382" class="accordion-body collapse ">
                 <div class="accordion-inner">
 
                     
@@ -245,6 +245,8 @@
                                                                     <a href="../classes/ValidFormBuilder.FieldValidator.html#method_setRequired" class="">setRequired()</a><br />
                                                                     <a href="../classes/ValidFormBuilder.FieldValidator.html#method_getRequired" class="">getRequired()</a><br />
                                                                     <a href="../classes/ValidFormBuilder.FieldValidator.html#method_validate" class="">validate()</a><br />
+                                                                    <a href="../classes/ValidFormBuilder.FieldValidator.html#method_sanitize" class="">sanitize()</a><br />
+                                                                    <a href="../classes/ValidFormBuilder.FieldValidator.html#method_preSanitize" class="">preSanitize()</a><br />
                                                                     <a href="../classes/ValidFormBuilder.FieldValidator.html#method_setError" class="">setError()</a><br />
                                                                     <a href="../classes/ValidFormBuilder.FieldValidator.html#method_getError" class="">getError()</a><br />
                                                                     <a href="../classes/ValidFormBuilder.FieldValidator.html#method_getCheck" class="">getCheck()</a><br />
@@ -284,6 +286,8 @@
                                                                     <a href="../classes/ValidFormBuilder.FieldValidator.html#method_setTypeError" class="">setTypeError()</a><br />
                                                                     <a href="../classes/ValidFormBuilder.FieldValidator.html#method_getHintError" class="">getHintError()</a><br />
                                                                     <a href="../classes/ValidFormBuilder.FieldValidator.html#method_setHintError" class="">setHintError()</a><br />
+                                                                    <a href="../classes/ValidFormBuilder.FieldValidator.html#method_getSanitisers" class="">getSanitisers()</a><br />
+                                                                    <a href="../classes/ValidFormBuilder.FieldValidator.html#method_setSanitisers" class="">setSanitisers()</a><br />
                                                             </section>
                             <section class="span4">
                                                                     <em>No public properties found</em>
@@ -506,7 +510,7 @@
             <article class="method">
                 <h3 class="public ">__construct()</h3>
                 <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
-                <pre class="signature" style="margin-right: 54px;">__construct(\ValidFormBuilder\Element  <span class="argument">$objField</span>, array  <span class="argument">$arrValidationRules = array()</span>, array  <span class="argument">$arrErrorHandlers = array()</span>) </pre>
+                <pre class="signature" style="margin-right: 54px;">__construct(\ValidFormBuilder\Element  <span class="argument">$objField</span>, array  <span class="argument">$arrValidationRules = array()</span>, array  <span class="argument">$arrErrorHandlers = array()</span>, array  <span class="argument">$arrSanitizationRules = null</span>) </pre>
                 <p><em>Construct new validation object</em></p>
                 
 
@@ -525,6 +529,11 @@
                                                     <tr>
                                 <td>array</td>
                                 <td>$arrErrorHandlers </td>
+                                <td></td>
+                            </tr>
+                                                    <tr>
+                                <td>array</td>
+                                <td>$arrSanitizationRules </td>
                                 <td></td>
                             </tr>
                                             </table>
@@ -725,6 +734,92 @@ field, if necessary.</p></td>
                                     <h4>Returns</h4>
                     boolean
                                             &mdash; <p>True if the current field validates, false if not.</p>
+                                    
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                    <dt>Inherited from</dt>
+                    <dd><a href="../classes/ValidFormBuilder.FieldValidator.html"><div class="path-wrapper">\ValidFormBuilder\FieldValidator</div></a></dd>
+                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_sanitize" name="method_sanitize" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">sanitize()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">sanitize(  <span class="argument">$varValue</span>, null|array  <span class="argument">$arrSanitisers = null</span>) : string</pre>
+                <p><em>Sanitize a value according to preset rules.</em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td></td>
+                                <td>$varValue </td>
+                                <td></td>
+                            </tr>
+                                                    <tr>
+                                <td>null|array</td>
+                                <td>$arrSanitisers </td>
+                                <td></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    string
+                                    
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                    <dt>Inherited from</dt>
+                    <dd><a href="../classes/ValidFormBuilder.FieldValidator.html"><div class="path-wrapper">\ValidFormBuilder\FieldValidator</div></a></dd>
+                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_preSanitize" name="method_preSanitize" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">preSanitize()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">preSanitize(  <span class="argument">$varValue</span>, null|array  <span class="argument">$arrSanitisers = null</span>) : string</pre>
+                <p><em>Pre-sanitize a value using a given set of sanitisers or the preset list already available.</em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td></td>
+                                <td>$varValue </td>
+                                <td></td>
+                            </tr>
+                                                    <tr>
+                                <td>null|array</td>
+                                <td>$arrSanitisers </td>
+                                <td></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    string
                                     
                             </article>
         </div>
@@ -2038,6 +2133,72 @@ field, if necessary.</p></td>
         </aside>
     </div>
 
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_getSanitisers" name="method_getSanitisers" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">getSanitisers()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">getSanitisers() : array|null</pre>
+                <p><em></em></p>
+                <p>Returns the value of <code>$__sanitisers</code></p>
+
+                
+                
+                                    <h4>Returns</h4>
+                    array|null
+                                    
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                    <dt>Inherited from</dt>
+                    <dd><a href="../classes/ValidFormBuilder.FieldValidator.html"><div class="path-wrapper">\ValidFormBuilder\FieldValidator</div></a></dd>
+                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_setSanitisers" name="method_setSanitisers" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">setSanitisers()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">setSanitisers(array  <span class="argument">$value</span>) : void</pre>
+                <p><em></em></p>
+                <p>Overwrites the value of <code>$__sanitisers</code></p>
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>array</td>
+                                <td>$value </td>
+                                <td></td>
+                            </tr>
+                                            </table>
+                
+                
+                
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                    <dt>Inherited from</dt>
+                    <dd><a href="../classes/ValidFormBuilder.FieldValidator.html"><div class="path-wrapper">\ValidFormBuilder\FieldValidator</div></a></dd>
+                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
                                                                     </div>
     </section>
 
@@ -2088,7 +2249,7 @@ field, if necessary.</p></td>
                 <section class="span10 offset1">
                     <hr />
                     Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor </a> and authored
-                    on June 28th, 2018 at 10:03.
+                    on June 5th, 2019 at 16:10.
                 </section>
             </section>
         </section>
