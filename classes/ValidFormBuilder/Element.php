@@ -88,12 +88,6 @@ class Element extends Base
     protected $__validator;
 
     /**
-     * Sanitize actions
-     * @var array
-     */
-    protected $__sanitize;
-
-    /**
      * Sanitize actions for display values
      * @var array
      */
@@ -132,11 +126,14 @@ class Element extends Base
         $this->__dynamicRemoveLabel = $this->getMeta("dynamicRemoveLabel", $this->__dynamicRemoveLabel);
         $this->__dynamiccounter = (! is_null($this->getMeta("dynamicCounter", null))) ? true : $this->__dynamiccounter;
 
-        $this->__sanitize = $this->getMeta("sanitize", $this->__sanitize);
         $this->__displaySanitize = $this->getMeta("displaySanitize", $this->__displaySanitize);
 
-        // $this->__validator = new FieldValidator($name, $type, $validationRules, $errorHandlers, $this->__hint);
-        $this->__validator = new FieldValidator($this, $validationRules, $errorHandlers);
+        $this->__validator = new FieldValidator(
+            $this,
+            $validationRules,
+            $errorHandlers,
+            $this->getMeta("sanitize", null)
+        );
     }
 
     /**
@@ -409,42 +406,7 @@ class Element extends Base
         }
 
         //*** Sanitize the value before returning.
-        $varValue = $this->sanitize($varValue, $this->__sanitize);
-
-        return $varValue;
-    }
-
-    /**
-     * Sanitize a value according to the order of actions in a sanitize array.
-     *
-     * @param mixed $varValue
-     * @param null|array $sanitizations
-     * @return mixed|string
-     */
-    protected function sanitize($varValue, $sanitizations)
-    {
-        if (is_array($sanitizations)) {
-            foreach ($sanitizations as $value) {
-                try {
-                    if (is_string($value)) {
-                        switch ($value) {
-                            case "trim":
-                                $varValue = trim($varValue);
-
-                                break;
-                            case "clear":
-                                $varValue = "";
-
-                                break;
-                        }
-                    } elseif (is_callable($value)) {
-                        $varValue = $value($varValue);
-                    }
-                } catch (\Exception $ex) {
-                    //*** Sanitisation failed. Continue silently.
-                }
-            }
-        }
+        $varValue = $this->__validator->sanitize($varValue);
 
         return $varValue;
     }
@@ -535,7 +497,7 @@ class Element extends Base
         }
 
         //*** Sanitize the value before returning.
-        $varReturn = $this->sanitize($varReturn, $this->__displaySanitize);
+        $varReturn = $this->__validator->sanitize($varReturn, $this->__displaySanitize);
 
         return $varReturn;
     }

@@ -65,6 +65,8 @@ namespace ValidFormBuilder;
  * @method void setTypeError() setTypeError(string $value) Overwrites the value of `$__typeerror`
  * @method string getHintError() getHintError() Returns the value of `$__hinterror`
  * @method void setHintError() setHintError(string $value) Overwrites the value of `$__hinterror`
+ * @method array|null getSanitisers() getSanitisers() Returns the value of `$__sanitisers`
+ * @method void setSanitisers() setSanitisers(array $value) Overwrites the value of `$__sanitisers`
  */
 class FieldValidator extends ClassDynamic
 {
@@ -209,14 +211,24 @@ class FieldValidator extends ClassDynamic
     protected $__errors = array();
 
     /**
+     * Sanitization rules.
+     * @var array|null
+     */
+    protected $__sanitisers = null;
+
+    /**
      * Construct new validation object
      *
      * @param Element $objField
      * @param array $arrValidationRules
      * @param array $arrErrorHandlers
      */
-    public function __construct(Element $objField, Array $arrValidationRules = array(), Array $arrErrorHandlers = array())
-    {
+    public function __construct(
+        Element $objField,
+        array $arrValidationRules = array(),
+        array $arrErrorHandlers = array(),
+        array $arrSanitizationRules = null
+    ) {
         foreach ($arrValidationRules as $key => $value) {
             $property = strtolower("__" . $key);
             if (property_exists($this, $property)) {
@@ -235,6 +247,7 @@ class FieldValidator extends ClassDynamic
         $this->__type = $objField->getType();
         $this->__fieldname = str_replace("[]", "", $objField->getName());
         $this->__fieldhint = $objField->getHint();
+        $this->__sanitisers = $arrSanitizationRules;
 
         // Store the default required state in a seperate property.
         // This way, we're able to reset back to default settings at any given time.
@@ -353,6 +366,8 @@ class FieldValidator extends ClassDynamic
         // *** Get the value to validate from either the global request variable or the cached __validvalues array.
         $value = $this->getValue($intDynamicPosition);
 
+        $sanitizedValue = $this->preSanitize($value);
+
         // *** Get required an visible states from condition and overwrite values for validation purposes
         $objCondition = $this->__field->getConditionRecursive("required");
         if (is_object($objCondition)) {
@@ -391,11 +406,11 @@ class FieldValidator extends ClassDynamic
         }
 
         // *** Check "required" option.
-        if (is_array($value)) {
+        if (is_array($sanitizedValue)) {
             $blnEmpty = true;
             $intCount = 0;
 
-            foreach ($value as $valueItem) {
+            foreach ($sanitizedValue as $valueItem) {
                 if (strlen($valueItem) > 0) {
                     $blnEmpty = false;
                     break;
@@ -413,7 +428,7 @@ class FieldValidator extends ClassDynamic
                     return true;
                 }
             }
-        } elseif (strlen($value) == 0) {
+        } elseif (strlen($sanitizedValue) == 0) {
             if (($this->__required && $intDynamicPosition == 0) || !!$this->__field->getMeta('dynamicRemoveLabel', false)) {
                 // *** Only the first dynamic field has a required check. We asume by design that "real" dynamic fields are not required.
                 unset($this->__validvalues[$intDynamicPosition]);
@@ -428,15 +443,15 @@ class FieldValidator extends ClassDynamic
         }
 
         // *** Check if value is_null and not required. No other checks needed.
-        if (! $this->__required && is_null($value)) {
+        if (! $this->__required && is_null($sanitizedValue)) {
             return true;
         }
 
         // *** Check if value is hint value.
         if (! $this->__hasError($intDynamicPosition)) {
             $strHint = $this->__field->getHint();
-            if (! empty($strHint) && ! is_array($value)) {
-                if ($strHint == $value) {
+            if (! empty($strHint) && ! is_array($sanitizedValue)) {
+                if ($strHint == $sanitizedValue) {
                     if ($this->__required) {
                         // *** If required then it's an error.
                         unset($this->__validvalues[$intDynamicPosition]);
@@ -452,12 +467,12 @@ class FieldValidator extends ClassDynamic
 
         // *** Check minimum input length.
         if (! $this->__hasError($intDynamicPosition)) {
-            if ($this->__minlength > 0 && is_array($value)) {
-                if (count($value) < $this->__minlength) {
+            if ($this->__minlength > 0 && is_array($sanitizedValue)) {
+                if (count($sanitizedValue) < $this->__minlength) {
                     unset($this->__validvalues[$intDynamicPosition]);
                     $this->__errors[$intDynamicPosition] = sprintf($this->__minlengtherror, $this->__minlength);
                 }
-            } elseif ($this->__minlength > 0 && strlen($value) < $this->__minlength) {
+            } elseif ($this->__minlength > 0 && strlen($sanitizedValue) < $this->__minlength) {
                 unset($this->__validvalues[$intDynamicPosition]);
                 $this->__errors[$intDynamicPosition] = sprintf($this->__minlengtherror, $this->__minlength);
             }
@@ -465,12 +480,12 @@ class FieldValidator extends ClassDynamic
 
         // *** Check maximum input length.
         if (! $this->__hasError($intDynamicPosition)) {
-            if ($this->__maxlength > 0 && is_array($value)) {
-                if (count($value) > $this->__maxlength) {
+            if ($this->__maxlength > 0 && is_array($sanitizedValue)) {
+                if (count($sanitizedValue) > $this->__maxlength) {
                     unset($this->__validvalues[$intDynamicPosition]);
                     $this->__errors[$intDynamicPosition] = sprintf($this->__maxlengtherror, $this->__maxlength);
                 }
-            } elseif ($this->__maxlength > 0 && strlen($value) > $this->__maxlength) {
+            } elseif ($this->__maxlength > 0 && strlen($sanitizedValue) > $this->__maxlength) {
                 unset($this->__validvalues[$intDynamicPosition]);
                 $this->__errors[$intDynamicPosition] = sprintf($this->__maxlengtherror, $this->__maxlength);
             }
@@ -484,14 +499,14 @@ class FieldValidator extends ClassDynamic
                     $matchValue = null;
                 }
 
-                if (empty($value)) {
-                    $value = null;
+                if (empty($sanitizedValue)) {
+                    $sanitizedValue = null;
                 }
 
-                if ($matchValue !== $value) {
+                if ($matchValue !== $sanitizedValue) {
                     unset($this->__validvalues[$intDynamicPosition]);
                     $this->__errors[$intDynamicPosition] = $this->__matchwitherror;
-                } elseif (is_null($value)) {
+                } elseif (is_null($sanitizedValue)) {
                     return true;
                 }
             }
@@ -500,20 +515,20 @@ class FieldValidator extends ClassDynamic
         // *** Check specific types.
         if (! $this->__hasError($intDynamicPosition)) {
             if (!empty($this->__validation)) {
-                $blnValidType = Validator::validate($this->__validation, $value);
+                $blnValidType = Validator::validate($this->__validation, $sanitizedValue);
             } else {
-                $blnValidType = Validator::validate($this->__field->getType(), $value);
+                $blnValidType = Validator::validate($this->__field->getType(), $sanitizedValue);
             }
 
             if (! $blnValidType) {
                 unset($this->__validvalues[$intDynamicPosition]);
                 $this->__errors[$intDynamicPosition] = $this->__typeerror;
             } else {
-                if (is_array($value) && is_array($value[0])) {
+                if (is_array($sanitizedValue) && is_array($sanitizedValue[0])) {
                     //*** Set the value directly when the value is a nested array.
-                    $this->__validvalues = $value;
+                    $this->__validvalues = $sanitizedValue;
                 } else {
-                    $this->__validvalues[$intDynamicPosition] = $value;
+                    $this->__validvalues[$intDynamicPosition] = $sanitizedValue;
                 }
             }
         }
@@ -525,6 +540,76 @@ class FieldValidator extends ClassDynamic
         }
 
         return (!isset($this->__validvalues[$intDynamicPosition])) ? false : true;
+    }
+
+    /**
+     * Sanitize a value according to preset rules.
+     *
+     * @param $varValue
+     * @param null|array $arrSanitisers
+     * @return string
+     */
+    public function sanitize($varValue, $arrSanitisers = null)
+    {
+        //*** Use either the provided value or the locally preset value for sanitization.
+        $arrSanitisers = (!is_null($arrSanitisers)) ? $arrSanitisers : $this->__sanitisers;
+
+        if (is_array($arrSanitisers)) {
+            foreach ($arrSanitisers as $sanitiser) {
+                try {
+                    if (is_string($sanitiser)) {
+                        switch ($sanitiser) {
+                            case "trim":
+                                $varValue = trim($varValue);
+
+                                break;
+                            case "clear":
+                                $varValue = "";
+
+                                break;
+                        }
+                    } elseif (is_callable($sanitiser)) {
+                        $varValue = $sanitiser($varValue);
+                    }
+                } catch (\Exception $ex) {
+                    //*** Sanitization failed. Continue silently.
+                }
+            }
+        }
+
+        return $varValue;
+    }
+
+    /**
+     * Pre-sanitize a value using a given set of sanitisers or the preset list already available.
+     *
+     * @param $varValue
+     * @param null|array $arrSanitisers
+     * @return string
+     */
+    public function preSanitize($varValue, $arrSanitisers = null)
+    {
+        //*** We only support a limited set of sanitisers for pre-sanitization.
+        $arrSanitiserWhitelist = ["trim"];
+
+        //*** Use either the provided value or the locally preset value for sanitization.
+        $arrSanitisers = (!is_null($arrSanitisers)) ? $arrSanitisers : $this->__sanitisers;
+
+        if (is_array($arrSanitisers)) {
+            //*** Make sure we only have white listed sanitisers.
+            $arrWhitelisted = [];
+            foreach ($arrSanitisers as $varSanitiser) {
+                if (is_string($varSanitiser) && in_array($varSanitiser, $arrSanitiserWhitelist)) {
+                    $arrWhitelisted[] = $varSanitiser;
+                }
+            }
+
+            if (count($arrWhitelisted) > 0) {
+                $varValue = $this->sanitize($varValue, $arrWhitelisted);
+            }
+        }
+
+        return $varValue;
     }
 
     /**
