@@ -36,7 +36,7 @@ This feature is as new as it is powerful. Since *ValidForm Builder 2.0 public be
 
 1) Create two regular fields
 
-```
+```php
 $objFirstName = $objForm->addField(
     "name", 
     "Your name", 
@@ -64,7 +64,7 @@ $objLastName = $objForm->addField(
 
 2) Now, add a condition to the `lastname` field. For example, we want it to become optional when `name` is `Robin`. After all, we all know that Robin's last name is 'Hood'. So the way we'll write that out in plain text would be: lastname-field's property `required` will become `false` when name-field's `value` will be `Robin`. Here's how the condition will look in PHP:
 
-```
+```php
 $objLastName->addCondition(
     "required", 
     false, 
