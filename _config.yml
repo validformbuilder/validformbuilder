@@ -1,0 +1,8 @@
+title: ValidForm Builder
+description: Easy and safe XHTML 1.0 strict forms with client and server-side validation!
+google_analytics: UA-15677034-1
+show_downloads: true
+theme: jekyll-theme-hacker
+
+gems:
+  - jekyll-mentions
