@@ -166,7 +166,9 @@ class Group extends Element
         $strOutput .= "</fieldset>\n";
 
         if (! empty($this->__tip)) {
-            $strOutput .= "<small class=\"vf__tip\"{$this->__getTipMetaString()}>{$this->__tip}</small>\n";
+            $this->setTipMeta("class", "vf__tip");
+
+            $strOutput .= "<small{$this->__getTipMetaString()}>{$this->__tip}</small>\n";
         }
 
         $strOutput .= "</div>\n";

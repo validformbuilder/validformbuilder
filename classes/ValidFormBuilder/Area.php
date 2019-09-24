@@ -414,7 +414,7 @@ class Area extends Base
                     default:
                         // Skip the hidden dynamic counter fields.
                         if ((get_class($field) == "ValidFormBuilder\\Hidden") && $field->isDynamicCounter()) {
-                            continue;
+                            continue 2;
                         }
 
                         if (!empty($field->getName())) {
