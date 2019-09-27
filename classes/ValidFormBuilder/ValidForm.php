@@ -1554,8 +1554,8 @@ class ValidForm extends ClassDynamic
 
                             // Support nested dynamic fields.
                             if ($objSubField->isDynamic()) {
-                                $intDynamicCount = $objSubField->getDynamicCount();
-                                for ($intCount = 1; $intCount <= $intDynamicCount; $intCount ++) {
+                                $intSubDynamicCount = $objSubField->getDynamicCount();
+                                for ($intCount = 1; $intCount <= $intSubDynamicCount; $intCount ++) {
                                     $strSet .= $this->fieldAsHtml($objSubField, $hideEmpty, $intCount);
                                 }
                             }
