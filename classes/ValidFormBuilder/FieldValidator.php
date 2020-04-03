@@ -425,7 +425,12 @@ class FieldValidator extends ClassDynamic
                     $this->__errors[$intDynamicPosition] = $this->__requirederror;
                 } else {
                     $this->__validvalues[$intDynamicPosition] = "";
-                    return true;
+
+                    if ($this->checkOverrideErrors($intDynamicPosition)) {
+                        return false;
+                    } else {
+                        return true;
+                    }
                 }
             }
         } elseif (strlen($sanitizedValue) == 0) {
@@ -437,14 +442,22 @@ class FieldValidator extends ClassDynamic
                 unset($this->__validvalues[$intDynamicPosition]);
 
                 if (empty($this->__matchwith)) {
-                    return true;
+                    if ($this->checkOverrideErrors($intDynamicPosition)) {
+                        return false;
+                    } else {
+                        return true;
+                    }
                 }
             }
         }
 
         // *** Check if value is_null and not required. No other checks needed.
         if (! $this->__required && is_null($sanitizedValue)) {
-            return true;
+            if ($this->checkOverrideErrors($intDynamicPosition)) {
+                return false;
+            } else {
+                return true;
+            }
         }
 
         // *** Check if value is hint value.
@@ -459,7 +472,12 @@ class FieldValidator extends ClassDynamic
                     } else {
                         // *** If optional then empty value and return true.
                         unset($this->__validvalues[$intDynamicPosition]);
-                        return true;
+
+                        if ($this->checkOverrideErrors($intDynamicPosition)) {
+                            return false;
+                        } else {
+                            return true;
+                        }
                     }
                 }
             }
@@ -507,7 +525,11 @@ class FieldValidator extends ClassDynamic
                     unset($this->__validvalues[$intDynamicPosition]);
                     $this->__errors[$intDynamicPosition] = $this->__matchwitherror;
                 } elseif (is_null($sanitizedValue)) {
-                    return true;
+                    if ($this->checkOverrideErrors($intDynamicPosition)) {
+                        return false;
+                    } else {
+                        return true;
+                    }
                 }
             }
         }
@@ -534,12 +556,24 @@ class FieldValidator extends ClassDynamic
         }
 
         // *** Override error.
-        if (isset($this->__overrideerrors[$intDynamicPosition]) && ! empty($this->__overrideerrors[$intDynamicPosition])) {
+        if ($this->checkOverrideErrors($intDynamicPosition)) {
             unset($this->__validvalues[$intDynamicPosition]);
-            $this->__errors[$intDynamicPosition] = $this->__overrideerrors[$intDynamicPosition];
         }
 
         return (!isset($this->__validvalues[$intDynamicPosition])) ? false : true;
+    }
+
+    protected function checkOverrideErrors($intDynamicPosition)
+    {
+        $blnReturn = false;
+
+        if (isset($this->__overrideerrors[$intDynamicPosition]) && !empty($this->__overrideerrors[$intDynamicPosition])) {
+            $this->__errors[$intDynamicPosition] = $this->__overrideerrors[$intDynamicPosition];
+
+            $blnReturn = true;
+        }
+
+        return $blnReturn;
     }
 
     /**
