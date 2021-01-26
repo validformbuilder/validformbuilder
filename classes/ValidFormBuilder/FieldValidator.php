@@ -67,6 +67,10 @@ namespace ValidFormBuilder;
  * @method void setHintError() setHintError(string $value) Overwrites the value of `$__hinterror`
  * @method array|null getSanitisers() getSanitisers() Returns the value of `$__sanitisers`
  * @method void setSanitisers() setSanitisers(array $value) Overwrites the value of `$__sanitisers`
+ * @method array|null getExternalValidation() getExternalValidation() Returns the value of `$__externalvalidation`
+ * @method void setExternalValidation() setExternalValidation(array $value) Overwrites the value of `$__externalvalidation`
+ * @method string getExternalValidationError() getExternalValidationError() Returns the value of `$__externalvalidationerror`
+ * @method void setExternalValidationError() setExternalValidationError(string $value) Overwrites the value of `$__externalvalidationerror`
  */
 class FieldValidator extends ClassDynamic
 {
@@ -215,6 +219,18 @@ class FieldValidator extends ClassDynamic
      * @var array|null
      */
     protected $__sanitisers = null;
+
+    /**
+     * External validation check.
+     * @var array|null
+     */
+    protected $__externalvalidation = null;
+
+    /**
+     * External validation error
+     * @var string
+     */
+    protected $__externalvalidationerror = "The external validation error.";
 
     /**
      * Construct new validation object
@@ -551,6 +567,25 @@ class FieldValidator extends ClassDynamic
                     $this->__validvalues = $sanitizedValue;
                 } else {
                     $this->__validvalues[$intDynamicPosition] = $sanitizedValue;
+                }
+            }
+        }
+
+        // *** Check external validation.
+        if (! $this->__hasError($intDynamicPosition)) {
+            if (is_array($this->__externalvalidation) && isset($this->__externalvalidation['php'])) {
+                $callback = $this->__externalvalidation['php'][0] ?? null;
+                $arrArguments = $this->__externalvalidation['php'][1] ?? [];
+
+                array_unshift($arrArguments, $sanitizedValue);
+
+                if (is_callable($callback)) {
+                    $blnResult = call_user_func_array($callback, $arrArguments);
+
+                    if (!$blnResult) {
+                        unset($this->__validvalues[$intDynamicPosition]);
+                        $this->__errors[$intDynamicPosition] = sprintf($this->__externalvalidationerror, $this->__externalvalidation);
+                    }
                 }
             }
         }

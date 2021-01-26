@@ -898,6 +898,8 @@ ValidForm.prototype.addElement = function() {
         var sanitizations   = null;
         var strElementId    = null;
         var strValidation   = null;
+        var externalValidation = null;
+        var externalValidationError  = "";
 
         if (arguments.length > 0) {
             strElementId = arguments[0];
@@ -957,6 +959,14 @@ ValidForm.prototype.addElement = function() {
             sanitizations = arguments[12];
         }
 
+        if (arguments.length > 13) {
+            externalValidation = arguments[13];
+        }
+
+        if (arguments.length > 14) {
+            externalValidationError = arguments[14];
+        }
+
         objAddedElement = this.elements[strElementName] = new ValidFormElement(
             this.id,
             this,
@@ -972,7 +982,9 @@ ValidForm.prototype.addElement = function() {
             hintError,
             minLengthError,
             maxLengthError,
-            sanitizations
+            sanitizations,
+            externalValidation,
+            externalValidationError
         );
     }
 
@@ -1627,6 +1639,14 @@ function ValidFormElement(strFormId, formObject, strElementName, strElementId, s
         this.validator.sanitizations = arguments[14];
     }
 
+    if (arguments.length > 15) {
+        this.validator.externalValidation = arguments[15];
+    }
+
+    if (arguments.length > 16) {
+        this.validator.externalValidationError = arguments[16];
+    }
+
     // Keep the original values in a local cache for future reference.
     this._defaultstate = {
         "required": this.validator.required,
@@ -2012,6 +2032,29 @@ ValidFormFieldValidator.prototype.validate = function() {
             if (this.maxLength > 0 && sanitizedValue.length > this.maxLength) {
                 this.showAlert(sprintf(this.maxLengthError, this.maxLength));
                 return false;
+            }
+
+            // *** Check external validation.
+            if (this.externalValidation != null && this.externalValidation.length > 0 ) {
+                var strFnPath = this.externalValidation[0];
+                var context = window;
+                var arrArgs = this.externalValidation[1];
+
+                var arrNamespaces = strFnPath.split(".");
+                var strFn = arrNamespaces.pop();
+
+                for(var i = 0; i < arrNamespaces.length; i++) {
+                    context = context[arrNamespaces[i]];
+                }
+
+                if (typeof context == 'function' && typeof context[strFn] == 'function') {
+                    blnReturn = context[strFn](sanitizedValue, arrArgs);
+
+                    if (!blnReturn) {
+                        this.showAlert(sprintf(this.externalValidationError, this.externalValidation));
+                        return false;
+                    }
+                }
             }
 
             //*** Check specific types using regular expression.

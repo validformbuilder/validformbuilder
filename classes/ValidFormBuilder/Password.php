@@ -207,6 +207,17 @@ class Password extends Element
         $intMaxLength = ($this->__validator->getMaxLength() > 0) ? $this->__validator->getMaxLength() : "null";
         $intMinLength = ($this->__validator->getMinLength() > 0) ? $this->__validator->getMinLength() : "null";
 
+        $strSanitize = "null";
+
+        $strExternalValidation = "null";
+        if (is_array($this->__validator->getExternalValidation())) {
+            $arrExternalValidation = $this->__validator->getExternalValidation();
+
+            if (isset($arrExternalValidation['javascript'])) {
+                $strExternalValidation = json_encode($arrExternalValidation['javascript']);
+            }
+        }
+
         if ($this->__dynamic || $intDynamicPosition) {
             $intDynamicCount = $this->getDynamicCount($intDynamicPosition);
             for ($intCount = 0; $intCount <= $intDynamicCount; $intCount ++) {
@@ -218,7 +229,16 @@ class Password extends Element
                     $strRequired = "false";
                 }
 
-                $strOutput .= "objForm.addElement('{$strId}', '{$strName}', {$strCheck}, {$strRequired}, {$intMaxLength}, {$intMinLength}, '" . addslashes($this->__validator->getFieldHint()) . "', '" . addslashes($this->__validator->getTypeError()) . "', '" . addslashes($this->__validator->getRequiredError()) . "', '" . addslashes($this->__validator->getHintError()) . "', '" . addslashes($this->__validator->getMinLengthError()) . "', '" . addslashes($this->__validator->getMaxLengthError()) . "');\n";
+                $strOutput .= "objForm.addElement('{$strId}', '{$strName}', {$strCheck}, {$strRequired}, {$intMaxLength}, {$intMinLength}, '"
+                    . addslashes($this->__validator->getFieldHint()) . "', '"
+                    . addslashes($this->__validator->getTypeError()) . "', '"
+                    . addslashes($this->__validator->getRequiredError()) . "', '"
+                    . addslashes($this->__validator->getHintError()) . "', '"
+                    . addslashes($this->__validator->getMinLengthError()) . "', '"
+                    . addslashes($this->__validator->getMaxLengthError()) . "', "
+                    . $strSanitize . ", "
+                    . $strExternalValidation . ", '"
+                    . addslashes($this->__validator->getExternalValidationError()) . "');\n";
 
                 // *** Render the matchWith logic per dynamic field.
                 $strOutput .= $this->matchWithToJs($intCount);
@@ -227,7 +247,16 @@ class Password extends Element
                 $strOutput .= $this->conditionsToJs($intCount);
             }
         } else {
-            $strOutput = "objForm.addElement('{$this->__id}', '{$this->__name}', {$strCheck}, {$strRequired}, {$intMaxLength}, {$intMinLength}, '" . addslashes($this->__validator->getFieldHint()) . "', '" . addslashes($this->__validator->getTypeError()) . "', '" . addslashes($this->__validator->getRequiredError()) . "', '" . addslashes($this->__validator->getHintError()) . "', '" . addslashes($this->__validator->getMinLengthError()) . "', '" . addslashes($this->__validator->getMaxLengthError()) . "');\n";
+            $strOutput = "objForm.addElement('{$this->__id}', '{$this->__name}', {$strCheck}, {$strRequired}, {$intMaxLength}, {$intMinLength}, '"
+                . addslashes($this->__validator->getFieldHint()) . "', '"
+                . addslashes($this->__validator->getTypeError()) . "', '"
+                . addslashes($this->__validator->getRequiredError()) . "', '"
+                . addslashes($this->__validator->getHintError()) . "', '"
+                . addslashes($this->__validator->getMinLengthError()) . "', '"
+                . addslashes($this->__validator->getMaxLengthError()) . "', "
+                . $strSanitize . ", "
+                . $strExternalValidation . ", '"
+                . addslashes($this->__validator->getExternalValidationError()) . "');\n";
 
             // *** MatchWith logic.
             $strOutput .= $this->matchWithToJs();
