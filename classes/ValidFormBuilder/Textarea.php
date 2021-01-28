@@ -224,6 +224,15 @@ class Textarea extends Element
             $strSanitize = json_encode($this->__validator->getSanitisers());
         }
 
+        $strExternalValidation = "null";
+        if (is_array($this->__validator->getExternalValidation())) {
+            $arrExternalValidation = $this->__validator->getExternalValidation();
+
+            if (isset($arrExternalValidation['javascript'])) {
+                $strExternalValidation = json_encode($arrExternalValidation['javascript']);
+            }
+        }
+
         if ($this->__dynamic || $intDynamicPosition) {
             $intDynamicCount = $this->getDynamicCount($intDynamicPosition);
             for ($intCount = 0; $intCount <= $intDynamicCount; $intCount ++) {
@@ -242,7 +251,9 @@ class Textarea extends Element
                     . addslashes($this->__validator->getHintError()) . "', '"
                     . addslashes($this->__validator->getMinLengthError()) . "', '"
                     . addslashes($this->__validator->getMaxLengthError()) . "', "
-                    . $strSanitize . ");\n";
+                    . $strSanitize . ", "
+                    . $strExternalValidation . ", '"
+                    . addslashes($this->__validator->getExternalValidationError()) . "');\n";
 
                 // *** Render the condition logic per dynamic field.
                 $strOutput .= $this->conditionsToJs($intCount);
@@ -255,7 +266,9 @@ class Textarea extends Element
                 . addslashes($this->__validator->getHintError()) . "', '" 
                 . addslashes($this->__validator->getMinLengthError()) . "', '" 
                 . addslashes($this->__validator->getMaxLengthError()) . "', "
-                    . $strSanitize . ");\n";
+                . $strSanitize . ", "
+                . $strExternalValidation . ", '"
+                . addslashes($this->__validator->getExternalValidationError()) . "');\n";
 
             // *** Condition logic.
             $strOutput .= $this->conditionsToJs();
