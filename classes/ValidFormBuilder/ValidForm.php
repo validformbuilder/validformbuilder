@@ -1967,4 +1967,15 @@ class ValidForm extends ClassDynamic
 
         return $classname;
     }
+
+    /**
+     * Adds stashed values, they will be picked-up like post values.
+     *
+     * @param $arrValues
+     * @return void
+     */
+    public function addStash($arrValues)
+    {
+        $_REQUEST = $arrValues;
+    }
 }
