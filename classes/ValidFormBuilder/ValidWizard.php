@@ -428,7 +428,7 @@ class ValidWizard extends ValidForm
         	$strJs .= "objForm.setClass('previous', '" . $this->__previousclass . "');\n\t";
         }
 
-        if (strlen($strCustomJs) > 0) {
+        if (strlen((string)$strCustomJs) > 0) {
             $strJs .= $strCustomJs;
         }
 

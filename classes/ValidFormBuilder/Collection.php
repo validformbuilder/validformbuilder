@@ -21,6 +21,8 @@
 
 namespace ValidFormBuilder;
 
+use ReturnTypeWillChange;
+
 /**
  * Create an iterable collection
  *
@@ -169,7 +171,7 @@ class Collection implements \Iterator
      * Get the current item from the collection.
      * @return mixed The current item
      */
-    public function current()
+    public function current(): mixed
     {
         return current($this->collection);
     }
@@ -178,7 +180,8 @@ class Collection implements \Iterator
      * Place the pointer one item forward and return the item.
      * @return mixed The next item
      */
-    public function next()
+    #[\ReturnTypeWillChange]
+    public function next(): mixed
     {
         return next($this->collection);
     }
@@ -194,12 +197,12 @@ class Collection implements \Iterator
 
     /**
      * Get the current position of the pointer.
-     * @return mixed|null The key function simply returns the
+     * @return mixed The key function simply returns the
      * key of the array element that's currently being pointed to by the internal pointer. It does not move the
      * pointer in any way. If the internal pointer points beyond the end of the elements list or the array is empty,
      * key returns `null`.
      */
-    public function key()
+    public function key(): mixed
     {
         return key($this->collection);
     }
@@ -277,9 +280,9 @@ class Collection implements \Iterator
 
     /**
      * Test if the requested item is valid.
-     * @return boolean True if its valid, false if not.
+     * @return bool True if its valid, false if not.
      */
-    public function valid()
+    public function valid(): bool
     {
         return $this->current() !== false;
     }
@@ -288,7 +291,8 @@ class Collection implements \Iterator
      * Reset the internal pointer of the collection to the first item.
      * @return Collection Returns itself after the internal pointer is reset.
      */
-    public function rewind()
+    #[\ReturnTypeWillChange]
+    public function rewind(): Collection
     {
         if (! $this->isSeek) {
             reset($this->collection);

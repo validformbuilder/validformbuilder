@@ -732,7 +732,7 @@ class Base extends ClassDynamic
         $strReturn = $this->getLabel();
         $strShortLabel = $this->getMeta("summaryLabel", null);
 
-        if (! is_null($strShortLabel) && strlen($strShortLabel) > 0) {
+        if (! is_null($strShortLabel) && strlen((string)$strShortLabel) > 0) {
             $strReturn = $strShortLabel;
         }
 
@@ -999,7 +999,7 @@ class Base extends ClassDynamic
             $strMagicKey = null;
             foreach ($this->__magicmeta as $strMagicMeta) {
                 if (strpos(strtolower($key), strtolower($strMagicMeta)) === 0
-                        && strlen($key) !== strlen($strMagicMeta)) {
+                        && strlen((string)$key) !== strlen((string)$strMagicMeta)) {
                     $strMagicKey = $strMagicMeta;
 
                     break;
@@ -1008,7 +1008,7 @@ class Base extends ClassDynamic
 
             if (!is_null($strMagicKey) && !in_array($key, $this->__magicreservedmeta)) {
                 $strMethod = "set" . ucfirst($strMagicKey) . "Meta";
-                $this->$strMethod(strtolower(substr($key, - (strlen($key) - strlen($strMagicKey)))), $value);
+                $this->$strMethod(strtolower(substr($key, - (strlen((string)$key) - strlen((string)$strMagicKey)))), $value);
 
                 unset($this->__meta[$key]);
             }
@@ -1033,7 +1033,7 @@ class Base extends ClassDynamic
         $strMagicKey = null;
         foreach ($this->__magicmeta as $strMagicMeta) {
             if (strpos(strtolower($property), strtolower($strMagicMeta)) === 0
-                    && strlen($property) !== strlen($strMagicMeta)) {
+                    && strlen((string)$property) !== strlen((string)$strMagicMeta)) {
                 $strMagicKey = $strMagicMeta;
 
                 break;
@@ -1044,23 +1044,23 @@ class Base extends ClassDynamic
             switch ($strMagicKey) {
                 case "field":
                     $internalMetaArray = &$this->__fieldmeta;
-                    $property = strtolower(substr($property, - (strlen($property) - 5)));
+                    $property = strtolower(substr($property, - (strlen((string)$property) - 5)));
                     break;
                 case "label":
                     $internalMetaArray = &$this->__labelmeta;
-                    $property = strtolower(substr($property, - (strlen($property) - 5)));
+                    $property = strtolower(substr($property, - (strlen((string)$property) - 5)));
                     break;
                 case "tip":
                     $internalMetaArray = &$this->__tipmeta;
-                    $property = strtolower(substr($property, - (strlen($property) - 3)));
+                    $property = strtolower(substr($property, - (strlen((string)$property) - 3)));
                     break;
                 case "dynamicLabel":
                     $internalMetaArray = &$this->__dynamiclabelmeta;
-                    $property = strtolower(substr($property, - (strlen($property) - 12)));
+                    $property = strtolower(substr($property, - (strlen((string)$property) - 12)));
                     break;
                 case "dynamicRemoveLabel":
                     $internalMetaArray = &$this->__dynamicremovelabelmeta;
-                    $property = strtolower(substr($property, - (strlen($property) - 18)));
+                    $property = strtolower(substr($property, - (strlen((string)$property) - 18)));
                     break;
                 default:
             }

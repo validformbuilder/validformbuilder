@@ -1628,11 +1628,11 @@ class ValidForm extends ClassDynamic
                     $strValue .= ($objSubFields->count() > $intCount) ? " " : "";
                 }
 
-                $strValue = trim($strValue);
+                $strValue = trim((string)$strValue);
                 $strLabel = $objField->getShortLabel();
 
                 if ((! empty($strValue) && $hideEmpty) || (! $hideEmpty && ! empty($strValue))) {
-                    $strValue = htmlspecialchars($strValue, ENT_QUOTES);
+                    $strValue = htmlspecialchars((string)$strValue, ENT_QUOTES);
                     $strValue = nl2br($strValue);
 
                     $strReturn .= "<tr class=\"vf__field_value\">";
@@ -1687,7 +1687,7 @@ class ValidForm extends ClassDynamic
                 if (empty($strLabel) && empty($strValue)) {
                     // *** Skip the field.
                 } else {
-                    $strValue = htmlspecialchars($strValue, ENT_QUOTES);
+                    $strValue = htmlspecialchars((string)$strValue, ENT_QUOTES);
                     $strValue = nl2br($strValue);
 
                     $strReturn .= "<tr class=\"vf__field_value\">";
@@ -1715,11 +1715,11 @@ class ValidForm extends ClassDynamic
         $strChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
         $strReturn = '';
 
-        srand((double) microtime() * 1000000);
+        mt_srand((double) microtime() * 1000000);
 
         for ($i = 1; $i <= $intLength; $i ++) {
-            $intNum = rand() % (strlen($strChars) - 1);
-            $strTmp = substr($strChars, $intNum, 1);
+            $intNum = mt_rand() % (strlen((string)$strChars) - 1);
+            $strTmp = $strChars[$intNum];
             $strReturn .= $strTmp;
         }
 

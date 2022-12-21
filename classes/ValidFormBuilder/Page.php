@@ -213,7 +213,7 @@ class Page extends Base
         $strReturn = $this->getHeader();
         $strShortLabel = $this->getMeta("summaryLabel", null);
 
-        if (strlen($strShortLabel) > 0) {
+        if (strlen((string)$strShortLabel) > 0) {
             $strReturn = $strShortLabel;
         }
 
