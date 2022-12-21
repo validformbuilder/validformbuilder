@@ -62,7 +62,7 @@ class Hidden extends Element
         $this->setConditionalMeta();
 
         $strValue = $this->__getValue($submitted);
-        $strValue = htmlspecialchars($strValue, ENT_QUOTES);
+        $strValue = htmlspecialchars((string)$strValue, ENT_QUOTES);
 
         $strOutput .= "<input type=\"hidden\" value=\"{$strValue}\" name=\"{$this->__name}\" id=\"{$this->__id}\" {$this->__getFieldMetaString()} />\n";
 

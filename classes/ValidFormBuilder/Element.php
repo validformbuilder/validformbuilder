@@ -477,16 +477,16 @@ class Element extends Base
             if (is_array($this->__default)) {
                 if ($this->isDynamic()) {
                     if (isset($this->__default[$intDynamicPosition])
-                            && strlen($this->__default[$intDynamicPosition]) > 0) {
+                            && strlen((string)$this->__default[$intDynamicPosition]) > 0) {
                         $varReturn = $this->__default[$intDynamicPosition];
                     }
                 } else {
                     $varReturn = $this->__default;
                 }
             } else {
-                if (strlen($this->__default) > 0) {
+                if (strlen((string)$this->__default) > 0) {
                     $varReturn = $this->__default;
-                } elseif (strlen($this->__hint) > 0) {
+                } elseif (strlen((string)$this->__hint) > 0) {
                     $varReturn = $this->__hint;
                 }
             }

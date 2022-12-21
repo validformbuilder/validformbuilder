@@ -427,7 +427,7 @@ class FieldValidator extends ClassDynamic
             $intCount = 0;
 
             foreach ($sanitizedValue as $valueItem) {
-                if (strlen($valueItem) > 0) {
+                if (strlen((string)$valueItem) > 0) {
                     $blnEmpty = false;
                     break;
                 }
@@ -449,7 +449,7 @@ class FieldValidator extends ClassDynamic
                     }
                 }
             }
-        } elseif (strlen($sanitizedValue) == 0) {
+        } elseif (strlen((string)$sanitizedValue) == 0) {
             if (($this->__required && $intDynamicPosition == 0) || !!$this->__field->getMeta('dynamicRemoveLabel', false)) {
                 // *** Only the first dynamic field has a required check. We asume by design that "real" dynamic fields are not required.
                 unset($this->__validvalues[$intDynamicPosition]);
@@ -506,7 +506,7 @@ class FieldValidator extends ClassDynamic
                     unset($this->__validvalues[$intDynamicPosition]);
                     $this->__errors[$intDynamicPosition] = sprintf($this->__minlengtherror, $this->__minlength);
                 }
-            } elseif ($this->__minlength > 0 && strlen($sanitizedValue) < $this->__minlength) {
+            } elseif ($this->__minlength > 0 && strlen((string)$sanitizedValue) < $this->__minlength) {
                 unset($this->__validvalues[$intDynamicPosition]);
                 $this->__errors[$intDynamicPosition] = sprintf($this->__minlengtherror, $this->__minlength);
             }
@@ -519,7 +519,7 @@ class FieldValidator extends ClassDynamic
                     unset($this->__validvalues[$intDynamicPosition]);
                     $this->__errors[$intDynamicPosition] = sprintf($this->__maxlengtherror, $this->__maxlength);
                 }
-            } elseif ($this->__maxlength > 0 && strlen($sanitizedValue) > $this->__maxlength) {
+            } elseif ($this->__maxlength > 0 && strlen((string)$sanitizedValue) > $this->__maxlength) {
                 unset($this->__validvalues[$intDynamicPosition]);
                 $this->__errors[$intDynamicPosition] = sprintf($this->__maxlengtherror, $this->__maxlength);
             }
@@ -629,7 +629,7 @@ class FieldValidator extends ClassDynamic
                     if (is_string($sanitiser)) {
                         switch ($sanitiser) {
                             case "trim":
-                                $varValue = trim($varValue);
+                                $varValue = trim((string)$varValue);
 
                                 break;
                             case "clear":

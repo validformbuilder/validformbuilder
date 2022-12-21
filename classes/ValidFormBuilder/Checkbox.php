@@ -134,9 +134,9 @@ class Checkbox extends Element
         $intMinLength = ($this->__validator->getMinLength() > 0) ? $this->__validator->getMinLength() : "null";
 
         $strOutput .= "objForm.addElement('{$this->__id}', '{$this->__name}', {$strCheck}, {$strRequired}, {$intMaxLength}, {$intMinLength}, '"
-            . addslashes($this->__validator->getFieldHint()) . "', '" . addslashes($this->__validator->getTypeError()) . "', '"
-            . addslashes($this->__validator->getRequiredError()) . "', '" . addslashes($this->__validator->getHintError()) . "', '"
-            . addslashes($this->__validator->getMinLengthError()) . "', '" . addslashes($this->__validator->getMaxLengthError()) . "');\n";
+            . addslashes((string)$this->__validator->getFieldHint()) . "', '" . addslashes((string)$this->__validator->getTypeError()) . "', '"
+            . addslashes((string)$this->__validator->getRequiredError()) . "', '" . addslashes((string)$this->__validator->getHintError()) . "', '"
+            . addslashes((string)$this->__validator->getMinLengthError()) . "', '" . addslashes((string)$this->__validator->getMaxLengthError()) . "');\n";
 
         // *** Condition logic.
         $strOutput .= $this->conditionsToJs($intDynamicPosition);
@@ -154,7 +154,7 @@ class Checkbox extends Element
     public function getValue($intDynamicPosition = 0)
     {
         $varValue = parent::getValue($intDynamicPosition);
-        return (strlen($varValue) > 0 && $varValue !== 0) ? true : false;
+        return (strlen((string)$varValue) > 0 && $varValue !== 0) ? true : false;
     }
 
     /**
@@ -165,6 +165,6 @@ class Checkbox extends Element
      */
     public function getDefault($intDynamicPosition = 0)
     {
-        return (strlen($this->__default) > 0 && $this->getValue($intDynamicPosition)) ? "on" : null;
+        return (strlen((string)$this->__default) > 0 && $this->getValue($intDynamicPosition)) ? "on" : null;
     }
 }

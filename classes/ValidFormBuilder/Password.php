@@ -171,7 +171,7 @@ class Password extends Element
             $this->setFieldMeta("maxlength", $this->__validator->getMaxLength());
         }
 
-        $varValue = htmlspecialchars($varValue, ENT_QUOTES);
+        $varValue = htmlspecialchars((string)$varValue, ENT_QUOTES);
 
         $strOutput .= "<input type=\"password\" value=\"{$varValue}\" name=\"{$strName}\" id=\"{$strId}\"{$this->__getFieldMetaString()} autocomplete=\"off\" />\n";
 
@@ -230,15 +230,15 @@ class Password extends Element
                 }
 
                 $strOutput .= "objForm.addElement('{$strId}', '{$strName}', {$strCheck}, {$strRequired}, {$intMaxLength}, {$intMinLength}, '"
-                    . addslashes($this->__validator->getFieldHint()) . "', '"
-                    . addslashes($this->__validator->getTypeError()) . "', '"
-                    . addslashes($this->__validator->getRequiredError()) . "', '"
-                    . addslashes($this->__validator->getHintError()) . "', '"
-                    . addslashes($this->__validator->getMinLengthError()) . "', '"
-                    . addslashes($this->__validator->getMaxLengthError()) . "', "
+                    . addslashes((string)$this->__validator->getFieldHint()) . "', '"
+                    . addslashes((string)$this->__validator->getTypeError()) . "', '"
+                    . addslashes((string)$this->__validator->getRequiredError()) . "', '"
+                    . addslashes((string)$this->__validator->getHintError()) . "', '"
+                    . addslashes((string)$this->__validator->getMinLengthError()) . "', '"
+                    . addslashes((string)$this->__validator->getMaxLengthError()) . "', "
                     . $strSanitize . ", "
                     . $strExternalValidation . ", '"
-                    . addslashes($this->__validator->getExternalValidationError()) . "');\n";
+                    . addslashes((string)$this->__validator->getExternalValidationError()) . "');\n";
 
                 // *** Render the matchWith logic per dynamic field.
                 $strOutput .= $this->matchWithToJs($intCount);
@@ -248,15 +248,15 @@ class Password extends Element
             }
         } else {
             $strOutput = "objForm.addElement('{$this->__id}', '{$this->__name}', {$strCheck}, {$strRequired}, {$intMaxLength}, {$intMinLength}, '"
-                . addslashes($this->__validator->getFieldHint()) . "', '"
-                . addslashes($this->__validator->getTypeError()) . "', '"
-                . addslashes($this->__validator->getRequiredError()) . "', '"
-                . addslashes($this->__validator->getHintError()) . "', '"
-                . addslashes($this->__validator->getMinLengthError()) . "', '"
-                . addslashes($this->__validator->getMaxLengthError()) . "', "
+                . addslashes((string)$this->__validator->getFieldHint()) . "', '"
+                . addslashes((string)$this->__validator->getTypeError()) . "', '"
+                . addslashes((string)$this->__validator->getRequiredError()) . "', '"
+                . addslashes((string)$this->__validator->getHintError()) . "', '"
+                . addslashes((string)$this->__validator->getMinLengthError()) . "', '"
+                . addslashes((string)$this->__validator->getMaxLengthError()) . "', "
                 . $strSanitize . ", "
                 . $strExternalValidation . ", '"
-                . addslashes($this->__validator->getExternalValidationError()) . "');\n";
+                . addslashes((string)$this->__validator->getExternalValidationError()) . "');\n";
 
             // *** MatchWith logic.
             $strOutput .= $this->matchWithToJs();

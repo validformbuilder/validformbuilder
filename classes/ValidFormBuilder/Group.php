@@ -204,18 +204,18 @@ class Group extends Element
                 }
 
                 $strOutput .= "objForm.addElement('{$strId}', '{$strName}', {$strCheck}, {$strRequired}, {$intMaxLength}, {$intMinLength}, '"
-                    . addslashes($this->__validator->getFieldHint()) . "', '" . addslashes($this->__validator->getTypeError()) . "', '"
-                    . addslashes($this->__validator->getRequiredError()) . "', '" . addslashes($this->__validator->getHintError()) . "', '"
-                    . addslashes($this->__validator->getMinLengthError()) . "', '" . addslashes($this->__validator->getMaxLengthError()) . "');\n";
+                    . addslashes((string)$this->__validator->getFieldHint()) . "', '" . addslashes((string)$this->__validator->getTypeError()) . "', '"
+                    . addslashes((string)$this->__validator->getRequiredError()) . "', '" . addslashes((string)$this->__validator->getHintError()) . "', '"
+                    . addslashes((string)$this->__validator->getMinLengthError()) . "', '" . addslashes((string)$this->__validator->getMaxLengthError()) . "');\n";
 
                 // *** Render the condition logic per dynamic field.
                 $strOutput .= $this->conditionsToJs($intCount);
             }
         } else {
             $strOutput = "objForm.addElement('{$this->getId()}', '{$this->getName()}', {$strCheck}, {$strRequired}, {$intMaxLength}, {$intMinLength}, '"
-                . addslashes($this->__validator->getFieldHint()) . "', '" . addslashes($this->__validator->getTypeError()) . "', '"
-                . addslashes($this->__validator->getRequiredError()) . "', '" . addslashes($this->__validator->getHintError()) . "', '"
-                . addslashes($this->__validator->getMinLengthError()) . "', '" . addslashes($this->__validator->getMaxLengthError()) . "');\n";
+                . addslashes((string)$this->__validator->getFieldHint()) . "', '" . addslashes((string)$this->__validator->getTypeError()) . "', '"
+                . addslashes((string)$this->__validator->getRequiredError()) . "', '" . addslashes((string)$this->__validator->getHintError()) . "', '"
+                . addslashes((string)$this->__validator->getMinLengthError()) . "', '" . addslashes((string)$this->__validator->getMaxLengthError()) . "');\n";
 
             // *** Condition logic.
             $strOutput .= $this->conditionsToJs();

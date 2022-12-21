@@ -174,7 +174,7 @@ class Comparison extends ClassDynamic
                 $blnReturn = (strpos($strLowerValue, $strCompareAgainst) === 0);
                 break;
             case ValidForm::VFORM_COMPARISON_ENDS_WITH:
-                $blnReturn = (substr($strLowerValue, - strlen($strCompareAgainst)) === $strCompareAgainst);
+                $blnReturn = (substr($strLowerValue, - strlen((string)$strCompareAgainst)) === $strCompareAgainst);
                 break;
             case ValidForm::VFORM_COMPARISON_CONTAINS:
                 $blnReturn = (strpos($strLowerValue, $strCompareAgainst) !== false);

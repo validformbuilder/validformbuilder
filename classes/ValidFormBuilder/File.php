@@ -135,13 +135,13 @@ class File extends Element
         $arrValues = [];
         $strValue = $this->__getValue($submitted, $intCount);
         if (!is_array($strValue)) {
-            $strValue = htmlspecialchars($strValue, ENT_QUOTES);
+            $strValue = htmlspecialchars((string)$strValue, ENT_QUOTES);
             if (!empty($strValue)) {
                 $arrValues = [$strValue];
             }
         } else {
             foreach ($strValue as $value) {
-                $value = htmlspecialchars($value, ENT_QUOTES);
+                $value = htmlspecialchars((string)$value, ENT_QUOTES);
                 $arrValues[] = $value;
             }
         }
@@ -199,18 +199,18 @@ class File extends Element
                 }
 
                 $strOutput .= "objForm.addElement('{$strId}', '{$strName}', {$strCheck}, {$strRequired}, {$intMaxLength}, {$intMinLength}, '"
-                    . addslashes($this->__validator->getFieldHint()) . "', '" . addslashes($this->__validator->getTypeError()) . "', '"
-                    . addslashes($this->__validator->getRequiredError()) . "', '" . addslashes($this->__validator->getHintError()) . "', '"
-                    . addslashes($this->__validator->getMinLengthError()) . "', '" . addslashes($this->__validator->getMaxLengthError()) . "');\n";
+                    . addslashes((string)$this->__validator->getFieldHint()) . "', '" . addslashes((string)$this->__validator->getTypeError()) . "', '"
+                    . addslashes((string)$this->__validator->getRequiredError()) . "', '" . addslashes((string)$this->__validator->getHintError()) . "', '"
+                    . addslashes((string)$this->__validator->getMinLengthError()) . "', '" . addslashes((string)$this->__validator->getMaxLengthError()) . "');\n";
 
                 // *** Condition logicper dynamic field.
                 $strOutput .= $this->conditionsToJs($intCount);
             }
         } else {
             $strOutput = "objForm.addElement('{$this->__id}', '{$this->__name}', {$strCheck}, {$strRequired}, {$intMaxLength}, {$intMinLength}, '"
-                . addslashes($this->__validator->getFieldHint()) . "', '" . addslashes($this->__validator->getTypeError()) . "', '"
-                . addslashes($this->__validator->getRequiredError()) . "', '" . addslashes($this->__validator->getHintError()) . "', '"
-                . addslashes($this->__validator->getMinLengthError()) . "', '" . addslashes($this->__validator->getMaxLengthError()) . "');\n";
+                . addslashes((string)$this->__validator->getFieldHint()) . "', '" . addslashes((string)$this->__validator->getTypeError()) . "', '"
+                . addslashes((string)$this->__validator->getRequiredError()) . "', '" . addslashes((string)$this->__validator->getHintError()) . "', '"
+                . addslashes((string)$this->__validator->getMinLengthError()) . "', '" . addslashes((string)$this->__validator->getMaxLengthError()) . "');\n";
 
             // *** Condition logic.
             $strOutput .= $this->conditionsToJs();
