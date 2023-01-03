@@ -1715,10 +1715,10 @@ class ValidForm extends ClassDynamic
         $strChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
         $strReturn = '';
 
-        mt_srand((double) microtime() * 1000000);
+        mt_srand((float) microtime(true) * 1000000);
 
         for ($i = 1; $i <= $intLength; $i ++) {
-            $intNum = mt_rand() % (strlen((string)$strChars) - 1);
+            $intNum = mt_rand() % (strlen((string) $strChars) - 1);
             $strTmp = $strChars[$intNum];
             $strReturn .= $strTmp;
         }
