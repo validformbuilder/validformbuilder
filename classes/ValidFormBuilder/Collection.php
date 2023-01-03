@@ -171,7 +171,7 @@ class Collection implements \Iterator
      * Get the current item from the collection.
      * @return mixed The current item
      */
-    public function current()
+    public function current(): mixed
     {
         return current($this->collection);
     }
@@ -181,7 +181,7 @@ class Collection implements \Iterator
      * @return mixed The next item
      */
     #[\ReturnTypeWillChange]
-    public function next()
+    public function next(): mixed
     {
         return next($this->collection);
     }
@@ -202,7 +202,7 @@ class Collection implements \Iterator
      * pointer in any way. If the internal pointer points beyond the end of the elements list or the array is empty,
      * key returns `null`.
      */
-    public function key()
+    public function key(): mixed
     {
         return key($this->collection);
     }
