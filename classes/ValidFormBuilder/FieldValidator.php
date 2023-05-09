@@ -39,8 +39,10 @@ namespace ValidFormBuilder;
  * @method void setFieldHint() setFieldHint(string $value) Overwrites the value of `$__fieldhint`
  * @method integer getMinLength() getMinLength() Returns the value of `$__minlength`
  * @method void setMinLength() setMinLength(integer $value) Overwrites the value of `$__minlength`
- * @method integer getMaxLength() getMaxLength() Returns the value of `$__minlength`
- * @method void setMaxLength() setMaxLength(integer $value) Overwrites the value of `$__minlength`
+ * @method integer getMaxLength() getMaxLength() Returns the value of `$__maxlength`
+ * @method void setMaxLength() setMaxLength(integer $value) Overwrites the value of `$__maxlength`
+ * @method integer getOnlyListItems() getOnlyListItems() Returns the value of `$__onlylistitems`
+ * @method void setOnlyListItems() setOnlyListItems(bool $value) Overwrites the value of `$__onlylistitems`
  * @method Element getMatchWith() getMatchWith() Returns the value of `$__matchwith`
  * @method void setMatchWith() setMatchWith(Element $value) Overwrites the value of `$__matchwith`
  * @method integer getMaxFiles() getMaxFiles() Returns the value of `$__maxfiles`
@@ -57,7 +59,9 @@ namespace ValidFormBuilder;
  * @method void setMinLengthError() setMinLengthError(string $value) Overwrites the value of `$__minlengtherror`
  * @method string getMaxLengthError() getMaxLengthError() Returns the value of `$__maxlengtherror`
  * @method void setMaxLengthError() setMaxLengthError(string $value) Overwrites the value of `$__maxlengtherror`
- * @method string getMatchWithError() getMatchWithError() Returns the value of `$__matchwitherror`
+ * @method string getOnlyListItemsError() getOnlyListItemsError() Returns the value of `$__onlylisterror`
+ * @method void setOnlyListItemsError() setOnlyListItemsError(string $value) Overwrites the value of `$__onlylistitemserror`
+ * @method string getMatchWithError() getMatchWithError() Returns the value of `$__onlylistitemserror`
  * @method void setMatchWithError() setMatchWithError(string $value) Overwrites the value of `$__matchwitherror`
  * @method string getRequiredError() getRequiredError() Returns the value of `$__requirederror`
  * @method void setRequiredError() setRequiredError(string $value) Overwrites the value of `$__requirederror`
@@ -123,6 +127,12 @@ class FieldValidator extends ClassDynamic
     protected $__matchwith;
 
     /**
+     * Valdiation rule onlyListItems
+     * @var Element
+     */
+    protected $__onlylistitems = false;
+
+    /**
      * Validation rule required
      * @var boolean
      */
@@ -168,6 +178,11 @@ class FieldValidator extends ClassDynamic
      * @var string
      */
     protected $__maxlengtherror = "The input is too long. The maximum is %s characters.";
+    /**
+     * Only list items error
+     * @var string
+     */
+    protected $__onlylistitemserror = "The input is not in the list of possible values.";
     /**
      * Match with error
      * @var string
@@ -567,6 +582,42 @@ class FieldValidator extends ClassDynamic
                     $this->__validvalues = $sanitizedValue;
                 } else {
                     $this->__validvalues[$intDynamicPosition] = $sanitizedValue;
+                }
+            }
+        }
+
+        // *** Check list type values.
+        if (! $this->__hasError($intDynamicPosition)) {
+            $blnFieldHasFixedValues = in_array(
+                $this->__field->getType(),
+                [ValidForm::VFORM_SELECT_LIST, ValidForm::VFORM_RADIO_LIST, ValidForm::VFORM_CHECK_LIST]
+            );
+
+            if ($blnFieldHasFixedValues && $this->__onlylistitems) {
+                $arrFixedValues = [];
+
+                switch ($this->__field->getType()) {
+                    case ValidForm::VFORM_SELECT_LIST:
+                        $arrFixedValueFields = $this->__field->getOptions();
+
+                        /** @var SelectOption $objValueField */
+                        foreach ($arrFixedValueFields as $objValueField) {
+                            $arrFixedValues[] = $objValueField->getValue($intDynamicPosition);
+                        }
+
+                        break;
+                    default:
+                        $arrFixedValueFields = $this->__field->getFields();
+
+                        /** @var GroupField $objValueField */
+                        foreach ($arrFixedValueFields as $objValueField) {
+                            $arrFixedValues[] = $objValueField->__getValue(false, $intDynamicPosition);
+                        }
+                }
+
+                if (! in_array($sanitizedValue, $arrFixedValues)) {
+                    unset($this->__validvalues[$intDynamicPosition]);
+                    $this->__errors[$intDynamicPosition] = $this->__onlylistitemserror;
                 }
             }
         }
