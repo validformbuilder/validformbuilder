@@ -421,7 +421,7 @@ class Base extends ClassDynamic
             // Go look for a condition at this element's parent.
             $objParent = $objContext->getMeta("parent", null);
 
-            if (! is_null($objParent)) {
+            if (! is_null($objParent) && !$objParent instanceof ValidForm) {
                 $objReturn = $objContext->getConditionRecursive($strProperty, $objParent);
             }
         } else {
@@ -484,7 +484,7 @@ class Base extends ClassDynamic
                             $this->setMeta("style", "display: block;");
                         }
                     }
-                    // Continueing to the required property.
+                // Continueing to the required property.
                 case "required":
                     // This can only be applied on all subjects except for Paragraphs
                     if (get_class($objCondition->getSubject()) !== "ValidFormBuilder\\Paragraph") {
@@ -519,7 +519,7 @@ class Base extends ClassDynamic
                 case "enabled":
                     // This can only be applied on all subjects except for Paragraphs and Groups
                     if (get_class($objCondition->getSubject()) !== "ValidFormBuilder\\Paragraph"
-                            && get_class($objCondition->getSubject()) !== "ValidFormBuilder\\Group") {
+                        && get_class($objCondition->getSubject()) !== "ValidFormBuilder\\Group") {
                         if ($blnResult) {
                             if ($objCondition->getValue()) {
                                 $this->setFieldMeta("disabled", "", true);
@@ -684,41 +684,41 @@ class Base extends ClassDynamic
         return $varReturn;
     }
 
-	/**
-	 * Return the (original) name of the current field.
-	 *
-	 * Use getDynamicName() to get the field name + dynamic count
-	 *
-	 * @return string The original field name
-	 */
-	public function getName()
-	{
-		$strName = parent::getName();
-		if (empty($strName)) {
-			$strName = $this->__name = $this->__generateName();
-		}
+    /**
+     * Return the (original) name of the current field.
+     *
+     * Use getDynamicName() to get the field name + dynamic count
+     *
+     * @return string The original field name
+     */
+    public function getName()
+    {
+        $strName = parent::getName();
+        if (empty($strName)) {
+            $strName = $this->__name = $this->__generateName();
+        }
 
-		return $strName;
-	}
+        return $strName;
+    }
 
-	/**
-	 * Same as getName() except getDynamicName adds the current dynamic count to the fieldname as a suffix (_1, _2 etc)
-	 *
-	 * When the dynamic count === 0, the return value equals the output of getName()
-	 *
-	 * @param integer $intCount The dynamic count
-	 * @return string The field name
-	 */
-	public function getDynamicName($intCount = 0)
-	{
-	    $strName = $this->getName();
+    /**
+     * Same as getName() except getDynamicName adds the current dynamic count to the fieldname as a suffix (_1, _2 etc)
+     *
+     * When the dynamic count === 0, the return value equals the output of getName()
+     *
+     * @param integer $intCount The dynamic count
+     * @return string The field name
+     */
+    public function getDynamicName($intCount = 0)
+    {
+        $strName = $this->getName();
 
-	    if ($intCount > 0) {
-	        $strName = $strName . "_" . $intCount;
-	    }
+        if ($intCount > 0) {
+            $strName = $strName . "_" . $intCount;
+        }
 
-	    return $strName;
-	}
+        return $strName;
+    }
 
     /**
      * Get the short label (meta 'summaryLabel') if available.
@@ -999,7 +999,7 @@ class Base extends ClassDynamic
             $strMagicKey = null;
             foreach ($this->__magicmeta as $strMagicMeta) {
                 if (strpos(strtolower($key), strtolower($strMagicMeta)) === 0
-                        && strlen((string)$key) !== strlen((string)$strMagicMeta)) {
+                    && strlen((string)$key) !== strlen((string)$strMagicMeta)) {
                     $strMagicKey = $strMagicMeta;
 
                     break;
@@ -1033,7 +1033,7 @@ class Base extends ClassDynamic
         $strMagicKey = null;
         foreach ($this->__magicmeta as $strMagicMeta) {
             if (strpos(strtolower($property), strtolower($strMagicMeta)) === 0
-                    && strlen((string)$property) !== strlen((string)$strMagicMeta)) {
+                && strlen((string)$property) !== strlen((string)$strMagicMeta)) {
                 $strMagicKey = $strMagicMeta;
 
                 break;

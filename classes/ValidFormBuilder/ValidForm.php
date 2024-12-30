@@ -550,6 +550,8 @@ class ValidForm extends ClassDynamic
     public function addHtml($html, $meta = array())
     {
         $objString = new StaticText($html, $meta);
+        $objString->setMeta("parent", $this, true);
+
         $this->__elements->addObject($objString);
 
         return $objString;
@@ -564,6 +566,8 @@ class ValidForm extends ClassDynamic
     public function addNavigation($meta = array())
     {
         $objNavigation = new Navigation($meta);
+        $objNavigation->setMeta("parent", $this, true);
+
         $this->__elements->addObject($objNavigation);
 
         return $objNavigation;
@@ -586,9 +590,28 @@ class ValidForm extends ClassDynamic
     public function addFieldset($header = null, $noteHeader = null, $noteBody = null, $meta = array())
     {
         $objFieldSet = new Fieldset($header, $noteHeader, $noteBody, $meta);
+        $objFieldSet->setMeta("parent", $this, true);
+
         $this->__elements->addObject($objFieldSet);
 
         return $objFieldSet;
+    }
+
+    /**
+     * Retrieve the last fieldset from the form elements.
+     *
+     * If no fieldset exists or the last element is not a valid object, a new fieldset is created and returned.
+     *
+     * @return Fieldset
+     */
+    public function getLastFieldset(): Fieldset
+    {
+        $objReturn = $this->__elements->getLast("ValidFormBuilder\\Fieldset");
+        if ($this->__elements->count() === 0 || ! is_object($objReturn)) {
+            $objReturn = $this->addFieldset();
+        }
+
+        return $objReturn;
     }
 
     /**
@@ -613,15 +636,8 @@ class ValidForm extends ClassDynamic
         $objField = new Hidden($name, $type, $meta);
 
         if (! $blnJustRender) {
-            // *** Fieldset already defined?
-            $objFieldset = $this->__elements->getLast("ValidFormBuilder\\Fieldset");
-            if ($this->__elements->count() == 0 || ! is_object($objFieldset)) {
-                $objFieldset = $this->addFieldset();
-            }
-
-            $objField->setMeta("parent", $objFieldset, true);
-
             // *** Add field to the fieldset.
+            $objFieldset = $this->getLastFieldset();
             $objFieldset->addField($objField);
         }
 
@@ -735,15 +751,8 @@ class ValidForm extends ClassDynamic
         $objField->setRequiredStyle($this->__requiredstyle);
 
         if (! $blnJustRender) {
-            // *** Fieldset already defined?
-            $objFieldset = $this->__elements->getLast("ValidFormBuilder\\Fieldset");
-            if ($this->__elements->count() == 0 || ! is_object($objFieldset)) {
-                $objFieldset = $this->addFieldset();
-            }
-
-            $objField->setMeta("parent", $objFieldset, true);
-
             // *** Add field to the fieldset.
+            $objFieldset = $this->getLastFieldset();
             $objFieldset->addField($objField);
         }
 
@@ -771,15 +780,8 @@ class ValidForm extends ClassDynamic
     {
         $objParagraph = new Paragraph($strHeader, $strBody, $meta);
 
-        // *** Fieldset already defined?
-        $objFieldset = $this->__elements->getLast("ValidFormBuilder\\Fieldset");
-        if ($this->__elements->count() == 0 || ! is_object($objFieldset)) {
-            $objFieldset = $this->addFieldset();
-        }
-
-        $objParagraph->setMeta("parent", $objFieldset, true);
-
         // *** Add field to the fieldset.
+        $objFieldset = $this->getLastFieldset();
         $objFieldset->addField($objParagraph);
 
         return $objParagraph;
@@ -798,15 +800,8 @@ class ValidForm extends ClassDynamic
     {
         $objButton = new Button($strLabel, $arrMeta);
 
-        // *** Fieldset already defined?
-        $objFieldset = $this->__elements->getLast("ValidFormBuilder\\Fieldset");
-        if ($this->__elements->count() == 0 || ! is_object($objFieldset)) {
-            $objFieldset = $this->addFieldset();
-        }
-
-        $objButton->setMeta("parent", $objFieldset, true);
-
         // *** Add field to the fieldset.
+        $objFieldset = $this->getLastFieldset();
         $objFieldset->addField($objButton);
 
         return $objButton;
@@ -831,16 +826,8 @@ class ValidForm extends ClassDynamic
 
         $objArea->setRequiredStyle($this->__requiredstyle);
 
-        // *** Fieldset already defined?
-        $objFieldset = $this->__elements->getLast("ValidFormBuilder\\Fieldset");
-        if ($this->__elements->count() == 0 || ! is_object($objFieldset)) {
-            // No fieldset found in the elements collection, add a fieldset.
-            $objFieldset = $this->addFieldset();
-        }
-
-        $objArea->setMeta("parent", $objFieldset, true);
-
         // *** Add field to the fieldset.
+        $objFieldset = $this->getLastFieldset();
         $objFieldset->addField($objArea);
 
         return $objArea;
@@ -918,15 +905,8 @@ class ValidForm extends ClassDynamic
 
         $objField->setRequiredStyle($this->__requiredstyle);
 
-        // *** Fieldset already defined?
-        $objFieldset = $this->__elements->getLast("ValidFormBuilder\\Fieldset");
-        if ($this->__elements->count() == 0 || ! is_object($objFieldset)) {
-            $objFieldset = $this->addFieldset();
-        }
-
-        $objField->setMeta("parent", $objFieldset, true);
-
         // *** Add field to the fieldset.
+        $objFieldset = $this->getLastFieldset();
         $objFieldset->addField($objField);
 
         return $objField;
@@ -1058,7 +1038,7 @@ class ValidForm extends ClassDynamic
                     if (! $blnDynamic) {
                         /* @var $objParent Base */
                         $objParent = $objField->getMeta("parent", null);
-                        if (is_object($objParent)) {
+                        if (is_object($objParent) && !$objField instanceof self) {
                             $blnDynamic = $objParent->isDynamic();
                         }
                     }
@@ -1452,7 +1432,7 @@ class ValidForm extends ClassDynamic
     public function fieldsetAsHtml($objFieldset, &$strSet, $hideEmpty = false)
     {
         $strTableOutput = "";
-        
+
         // If this fieldset was rendered invisible due to conditions,
         // don't show it on the valuesAsHtml overview either.
         if (!$this->elementShouldDisplay($objFieldset)) {
@@ -1536,7 +1516,7 @@ class ValidForm extends ClassDynamic
     {
         $strReturn = "";
         $strSet = "";
-        
+
         // If this area was rendered invisible due to conditions,
         // don't show it on the valuesAsHtml overview either.
         $blnShouldDisplay = $this->elementShouldDisplay($objField);
@@ -1603,7 +1583,7 @@ class ValidForm extends ClassDynamic
     protected function multiFieldAsHtml($objField, $hideEmpty = false, $intDynamicCount = 0)
     {
         $strReturn = "";
-        
+
         // If this multi field was rendered invisible due to conditions,
         // don't show it on the valuesAsHtml overview either.
         if (!$this->elementShouldDisplay($objField)) {
@@ -1667,7 +1647,7 @@ class ValidForm extends ClassDynamic
         $strLabel = $objField->getShortLabel(); // Passing 'true' gets the short label if available.
         $varValue = ($intDynamicCount > 0) ? $objField->getValue($intDynamicCount) : $objField->getValue();
         $strValue = (is_array($varValue)) ? implode(", ", $varValue) : $varValue;
-        
+
         // If this field was rendered invisible due to conditions,
         // don't show it on the valuesAsHtml overview either.
         if (!$this->elementShouldDisplay($objField)) {
