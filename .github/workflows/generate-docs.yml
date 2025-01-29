@@ -17,18 +17,8 @@ jobs:
         run: |
           docker run --rm -v "$(pwd):/data" phpdoc/phpdoc:3
 
-      - name: Deploy to gh-pages
-        run: |
-          git config --global user.name "Bili Generator"
-          git config --global user.email "bili-generator@example.com"
-
-          git checkout gh-pages || git checkout -b gh-pages
-          git pull origin gh-pages
-
-          cp -r docs/* .  # Ensure docs are copied to root (optional)
-
-          git add docs
-          git commit -m "Update documentation [skip ci]" || echo "No changes to commit"
-          git push origin gh-pages
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs
