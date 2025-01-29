@@ -1,6 +1,7 @@
 {
     "name": "validformbuilder/validformbuilder",
     "type": "library",
+    "version": "5.3.0",
     "description": "The easiest tool for generating XHTML 1.0 valid and CSS enabled webforms.",
     "keywords": ["form", "validation", "building"],
     "homepage": "http://www.validformbuilder.org/",
@@ -21,14 +22,5 @@
     },
     "autoload": {
         "psr-0": {"ValidFormBuilder": "classes/"}
-    },
-    "require-dev": {
-        "phpdocumentor/phpdocumentor": "dev-master"
-    },
-    "repositories": [
-        {
-            "url": "https://github.com/validformbuilder/phpdocumentor2.git",
-            "type": "vcs"
-        }
-    ]
+    }
 }
