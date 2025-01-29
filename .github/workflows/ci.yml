@@ -1,0 +1,32 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Set up PHP 8.2
+        uses: shivammathur/setup-php@2.32.0
+        with:
+          php-version: '8.2'
+
+      - name: Install Composer dependencies
+        run: composer install
+
+      - name: Install Travis CLI
+        run: gem install travis
+
+      - name: Validate Travis install
+        run: travis --version
+
+      - name: Run tests
+        run: vendor/bin/phpunit
