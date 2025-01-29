@@ -41,6 +41,10 @@ namespace ValidFormBuilder;
  * @method void setMinLength() setMinLength(integer $value) Overwrites the value of `$__minlength`
  * @method integer getMaxLength() getMaxLength() Returns the value of `$__maxlength`
  * @method void setMaxLength() setMaxLength(integer $value) Overwrites the value of `$__maxlength`
+ * @method integer getMinValue() getMinValue() Returns the value of `$__minvalue`
+ * @method void setMinValue() setMinValue(float $value) Overwrites the value of `$__minvalue`
+ * @method integer getMaxValue() getMaxValue() Returns the value of `$__maxvalue`
+ * @method void setMaxValue() setMaxValue(float $value) Overwrites the value of `$__maxvalue`
  * @method integer getOnlyListItems() getOnlyListItems() Returns the value of `$__onlylistitems`
  * @method void setOnlyListItems() setOnlyListItems(bool $value) Overwrites the value of `$__onlylistitems`
  * @method Element getMatchWith() getMatchWith() Returns the value of `$__matchwith`
@@ -59,6 +63,10 @@ namespace ValidFormBuilder;
  * @method void setMinLengthError() setMinLengthError(string $value) Overwrites the value of `$__minlengtherror`
  * @method string getMaxLengthError() getMaxLengthError() Returns the value of `$__maxlengtherror`
  * @method void setMaxLengthError() setMaxLengthError(string $value) Overwrites the value of `$__maxlengtherror`
+ * @method string getMinValueError() getMinValueError() Returns the value of `$__minvalueerror`
+ * @method void setMinValueError() setMinValueError(string $value) Overwrites the value of `$__minvalueerror`
+ * @method string getMaxValueError() getMaxValueError() Returns the value of `$__maxvalueerror`
+ * @method void setMaxValueError() setMaxValueError(string $value) Overwrites the value of `$__maxvalueerror`
  * @method string getOnlyListItemsError() getOnlyListItemsError() Returns the value of `$__onlylisterror`
  * @method void setOnlyListItemsError() setOnlyListItemsError(string $value) Overwrites the value of `$__onlylistitemserror`
  * @method string getMatchWithError() getMatchWithError() Returns the value of `$__onlylistitemserror`
@@ -121,6 +129,18 @@ class FieldValidator extends ClassDynamic
     protected $__maxlength;
 
     /**
+     * Validation rule minimum input size, when dealing with floats or integers
+     * @var int|float
+     */
+    protected $__minvalue;
+
+    /**
+     * Validation rule maximum input size, when dealing with floats or integers
+     * @var int|float
+     */
+    protected $__maxvalue;
+
+    /**
      * Valdiation rule matchWith
      * @var Element
      */
@@ -178,6 +198,16 @@ class FieldValidator extends ClassDynamic
      * @var string
      */
     protected $__maxlengtherror = "The input is too long. The maximum is %s characters.";
+    /**
+     * Min size error
+     * @var string
+     */
+    protected $__minvalueerror = "The input value is too small. The minimum is %s.";
+    /**
+     * Max size error
+     * @var string
+     */
+    protected $__maxvalueerror = "The input value is too large. The maximum is %s.";
     /**
      * Only list items error
      * @var string
@@ -321,41 +351,32 @@ class FieldValidator extends ClassDynamic
         } else {
             $strFieldName = ($intDynamicPosition > 0) ? $this->__fieldname . "_" . $intDynamicPosition : $this->__fieldname;
 
-            //if ($this->__type !== ValidForm::VFORM_FILE) {
-                // Default value
-                $varValidValue = $this->__field->getDefault();
-                if (is_array($varValidValue) && isset($varValidValue[$intDynamicPosition])) {
-                    $varValidValue = $varValidValue[$intDynamicPosition];
-                }
+            $varValidValue = $this->__field->getDefault();
+            if (is_array($varValidValue) && isset($varValidValue[$intDynamicPosition])) {
+                $varValidValue = $varValidValue[$intDynamicPosition];
+            }
 
-                // Get cached value if set
-                if (isset($this->__validvalues[$intDynamicPosition])) {
-                    $varValidValue = $this->__validvalues[$intDynamicPosition];
-                }
+            // Get cached value if set
+            if (isset($this->__validvalues[$intDynamicPosition])) {
+                $varValidValue = $this->__validvalues[$intDynamicPosition];
+            }
 
-                // Overwrite cached value with value from REQUEST array if available
-                if (ValidForm::getIsSet($strFieldName)) {
-                    $varValue = ValidForm::get($strFieldName);
+            // Overwrite cached value with value from REQUEST array if available
+            if (ValidForm::getIsSet($strFieldName)) {
+                $varValue = ValidForm::get($strFieldName);
 
-                    if (is_array($varValue)) {
-                        $varReturn = [];
+                if (is_array($varValue)) {
+                    $varReturn = [];
 
-                        foreach ($varValue as $key => $value) {
-                            $varReturn[$key] = $value; // NEVER return unsanitized output
-                        }
-                    } else {
-                        $varReturn = $varValue; // NEVER return unsanitized output
+                    foreach ($varValue as $key => $value) {
+                        $varReturn[$key] = $value; // NEVER return unsanitized output
                     }
                 } else {
-                    $varReturn = $varValidValue;
+                    $varReturn = $varValue; // NEVER return unsanitized output
                 }
-            //}
-            // *** Not ready for implementation yet.
-            // else {
-            // if (isset($_FILES[$strFieldName]) && isset($_FILES[$strFieldName])) {
-            // $varReturn = $_FILES[$strFieldName];
-            // }
-            // }
+            } else {
+                $varReturn = $varValidValue;
+            }
         }
 
         return $varReturn;
@@ -622,6 +643,22 @@ class FieldValidator extends ClassDynamic
             }
         }
 
+        // *** Check minimum input value.
+        if (! $this->__hasError($intDynamicPosition)) {
+            if (isset($this->__minvalue) && self::toFloat($sanitizedValue) < $this->__minvalue) {
+                unset($this->__validvalues[$intDynamicPosition]);
+                $this->__errors[$intDynamicPosition] = sprintf($this->__minvalueerror, $this->__minvalue);
+            }
+        }
+
+        // *** Check maximum input value.
+        if (! $this->__hasError($intDynamicPosition)) {
+            if (isset($this->__maxvalue) && self::toFloat($sanitizedValue) > $this->__maxvalue) {
+                unset($this->__validvalues[$intDynamicPosition]);
+                $this->__errors[$intDynamicPosition] = sprintf($this->__maxvalueerror, $this->__maxvalue);
+            }
+        }
+
         // *** Check external validation.
         if (! $this->__hasError($intDynamicPosition)) {
             if (is_array($this->__externalvalidation) && isset($this->__externalvalidation['php'])) {
@@ -775,6 +812,23 @@ class FieldValidator extends ClassDynamic
         }
 
         return $strReturn;
+    }
+
+    /**
+     * Convert a value to float, considering different values for the decimal and thousand separators.
+     *
+     * @param float|int|string|null $strValue
+     * @return float
+     */
+    protected static function toFloat(float|int|string|null $strValue): float
+    {
+        if (strpos((string) $strValue, ".") < strpos((string) $strValue, ",")) {
+            $strValue = str_replace(array(".", ","), array("", "."), (string)$strValue);
+        } else {
+            $strValue = str_replace(",", "", (string) $strValue);
+        }
+
+        return (float) $strValue;
     }
 
     /**

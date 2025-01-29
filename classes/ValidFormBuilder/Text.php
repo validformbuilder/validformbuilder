@@ -234,6 +234,9 @@ class Text extends Element
             }
         }
 
+        $fltMinValue = (is_null($this->__validator->getMinValue())) ? "null" : $this->__validator->getMinValue();
+        $fltMaxValue = (is_null($this->__validator->getMaxValue())) ? "null" : $this->__validator->getMaxValue();
+
         if ($this->__dynamic || $intDynamicPosition) {
             $intDynamicCount = $this->getDynamicCount($intDynamicPosition);
             for ($intCount = 0; $intCount <= $intDynamicCount; $intCount ++) {
@@ -254,7 +257,11 @@ class Text extends Element
                     . addslashes((string)$this->__validator->getMaxLengthError()) . "', "
                     . $strSanitize . ", "
                     . $strExternalValidation . ", '"
-                    . addslashes((string)$this->__validator->getExternalValidationError()) . "');\n";
+                    . addslashes((string)$this->__validator->getExternalValidationError()) . "', "
+                    . $fltMinValue . ", '"
+                    . addslashes((string)$this->__validator->getMinValueError()) . "', "
+                    . $fltMaxValue . ", '"
+                    . addslashes((string)$this->__validator->getMaxValueError()) . "');\n";
 
                 // *** MatchWith logic per dynamic field.
                 $strOutput .= $this->matchWithToJs($intCount);
@@ -272,7 +279,11 @@ class Text extends Element
                 . addslashes((string)$this->__validator->getMaxLengthError()) . "', "
                 . $strSanitize . ", "
                 . $strExternalValidation . ", '"
-                . addslashes((string)$this->__validator->getExternalValidationError()) . "');\n";
+                . addslashes((string)$this->__validator->getExternalValidationError()) . "', "
+                . $fltMinValue . ", '"
+                . addslashes((string)$this->__validator->getMinValueError()) . "', "
+                . $fltMaxValue . ", '"
+                . addslashes((string)$this->__validator->getMaxValueError()) . "');\n";
 
             // *** MatchWith logic.
             $strOutput .= $this->matchWithToJs();

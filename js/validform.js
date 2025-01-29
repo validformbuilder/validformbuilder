@@ -46,7 +46,8 @@ function ValidForm(strFormId, strMainAlert) {
                                         "afterDynamicAdd",
                                         "beforeDynamicRemove",
                                         "afterDynamicRemove",
-                                        "afterValidate"
+                                        "afterValidate",
+                                        "afterInitialize"
                                     ];
 	    this.labels                 = {};
 	    this.classes                = {};
@@ -68,7 +69,7 @@ ValidForm.prototype._init = function() {
     this.traverseDisabledElements();
 
     // This is where the magic happens: onSubmit; validate form.
-    jQuery("#" + self.id).bind("submit", function(){
+    jQuery("#" + self.id).on("submit", function(){
         jQuery("#" + this.id).trigger("VF_BeforeSubmit", [{ValidForm: self}]);
         if (typeof self.events.beforeSubmit === "function") {
             self.events.beforeSubmit(self);
@@ -95,6 +96,10 @@ ValidForm.prototype.initialize = function () {
     }
 
     self.initializing = false;
+
+    if (typeof self.events.afterInitialize === "function") {
+        self.events.afterInitialize(self);
+    }
 };
 
 ValidForm.prototype.addCondition = function (objCondition) {
@@ -183,10 +188,10 @@ ValidForm.prototype.traverseDisabledElements = function () {
     jQuery("#" + this.id + " fieldset.vf__disabled").each(function(){
         var fieldset = this;
 
-        jQuery("input, select, textarea", fieldset).attr("disabled", "disabled");
+        jQuery("input, select, textarea", fieldset).prop("disabled", true);
         jQuery(".vf__dynamic a", fieldset).addClass("vf__disabled");
         jQuery("legend input", fieldset)
-            .removeAttr("disabled");
+            .prop("disabled", false);
     });
 
     jQuery("#" + this.id + " .vf__area > legend input[type='radio'], #" + this.id + " .vf__area > legend input[type='checkbox']").each(function(){
@@ -396,7 +401,7 @@ ValidForm.prototype.dynamicDuplication = function () {
     };
 
     // Bind click event to duplicate button
-    jQuery(".vf__dynamic a").bind("click", function() {
+    jQuery(".vf__dynamic a").on("click", function() {
         var $anchor = jQuery(this);
         var $dynamicDuplicationWrap = $anchor.closest("div.vf__dynamic");
 
@@ -551,7 +556,7 @@ ValidForm.prototype.dynamicDuplication = function () {
                             .prev("label").attr("for", ids[index] + "_" + counter.val());
 
                         $field
-                            .bind("focus.validform-hint", function() {
+                            .on("focus.validform-hint", function() {
                                 if ($field.val() == objOriginalElement.validator.hint) {
                                     $field.val("");
                                     $field
@@ -559,7 +564,7 @@ ValidForm.prototype.dynamicDuplication = function () {
                                         .removeClass("vf__hint");
                                 }
                             })
-                            .bind("blur.validform-hint", function() {
+                            .on("blur.validform-hint", function() {
                                 if (objOriginalElement.validator.hint && $field.val() === "") {
                                     $field.val(objOriginalElement.validator.hint);
                                     $field.parent().addClass("vf__hint");
@@ -765,7 +770,7 @@ ValidForm.prototype.attachAreaEvents = function(objActiveTrigger) {
     var __this = this,
         inputNames = [];
 
-    objActiveTrigger.unbind("change").bind("change", function(){
+    objActiveTrigger.off("change").on("change", function(){
         var self = this;
 
         var fieldsets = jQuery("input[name='" + jQuery(this).attr("name") + "']").closest(".vf__area");
@@ -777,7 +782,7 @@ ValidForm.prototype.attachAreaEvents = function(objActiveTrigger) {
             if (fieldset[0] == currentFieldset[0]) {
                 if (self.checked) {
                     // Enable active area
-                    jQuery("input, select, textarea", currentFieldset).removeAttr("disabled");
+                    jQuery("input, select, textarea", currentFieldset).prop("disabled", false);
                     jQuery(".vf__dynamic a", currentFieldset).removeClass("vf__disabled");
                     jQuery(currentFieldset).removeClass("vf__disabled");
 
@@ -810,13 +815,13 @@ ValidForm.prototype.attachAreaEvents = function(objActiveTrigger) {
                     inputNames = [];
 
                     jQuery("div > input, select, textarea", currentFieldset)
-                        .attr("disabled", "disabled")
+                        .prop("disabled", true)
                         .each(function () {
                             inputNames.push($(this).attr("name"));
                         });
 
                     jQuery(".vf__dynamic a", currentFieldset).addClass("vf__disabled");
-                    jQuery("legend input", currentFieldset).removeAttr("disabled");
+                    jQuery("legend input", currentFieldset).prop("disabled", false);
                     jQuery(currentFieldset).addClass("vf__disabled");
 
                     // Get the dynamic trigger, if available
@@ -840,13 +845,13 @@ ValidForm.prototype.attachAreaEvents = function(objActiveTrigger) {
                 inputNames = [];
 
                 jQuery("div > input, select, textarea", fieldset)
-                    .attr("disabled", "disabled")
+                    .prop("disabled", true)
                     .each(function () {
                         inputNames.push($(this).attr("name"));
                     });
 
                 jQuery(".vf__dynamic a", fieldset).addClass("vf__disabled");
-                jQuery("legend input", fieldset).removeAttr("disabled");
+                jQuery("legend input", fieldset).prop("disabled", false);
                 jQuery(fieldset).addClass("vf__disabled");
 
                 // Get the dynamic trigger, if available
@@ -895,6 +900,10 @@ ValidForm.prototype.addElement = function() {
         var minLengthError  = "";
         var maxLength       = null;
         var maxLengthError  = "";
+        var minValue        = null;
+        var minValueError   = "";
+        var maxValue        = null;
+        var maxValueError   = "";
         var sanitizations   = null;
         var strElementId    = null;
         var strValidation   = null;
@@ -967,6 +976,22 @@ ValidForm.prototype.addElement = function() {
             externalValidationError = arguments[14];
         }
 
+        if (arguments.length > 15) {
+            minValue = arguments[15];
+        }
+
+        if (arguments.length > 16) {
+            minValueError = arguments[16];
+        }
+
+        if (arguments.length > 17) {
+            maxValue = arguments[17];
+        }
+
+        if (arguments.length > 18) {
+            maxValueError = arguments[18];
+        }
+
         objAddedElement = this.elements[strElementName] = new ValidFormElement(
             this.id,
             this,
@@ -984,7 +1009,11 @@ ValidForm.prototype.addElement = function() {
             maxLengthError,
             sanitizations,
             externalValidation,
-            externalValidationError
+            externalValidationError,
+            minValue,
+            minValueError,
+            maxValue,
+            maxValueError
         );
     }
 
@@ -1024,7 +1053,7 @@ ValidForm.prototype.addEvent = function(strEvent, callback){
             }
         }
     } else {
-        jQuery("#" + this.id).bind(strEvent, callback);
+        jQuery("#" + this.id).on(strEvent, callback);
     }
 };
 
@@ -1058,11 +1087,11 @@ ValidForm.prototype.validate = function(strSelector) {
     try {
         objDOMForm = jQuery("#" + this.id);
     } catch(e) {
-        alert("An error occured while calling the Form.\nMessage: " + e.message);
+        alert("An error occurred while calling the Form.\nMessage: " + e.message);
         this.valid = false;
     }
 
-    if (objDOMForm) {
+    if (objDOMForm && objDOMForm.length > 0) {
         //*** Reset main error notifications.
         this.validator.removeMain();
         this.validator.removePage();
@@ -1118,6 +1147,41 @@ ValidForm.prototype.validate = function(strSelector) {
     }
 
     return blnReturn;
+};
+
+ValidFormFieldValidator.prototype.stringToFloat = function (strInput) {
+    if (strInput == null) {
+        // Handle null or undefined values
+        return NaN;
+    }
+
+    // Convert the input to a string
+    let strValue = strInput.toString().trim();
+
+    // Determine the separator logic
+    const hasDot = strValue.indexOf('.') !== -1;
+    const hasComma = strValue.indexOf(',') !== -1;
+
+    if (hasDot && hasComma) {
+        // Both separators exist, determine which is the decimal separator
+        if (strValue.indexOf('.') < strValue.indexOf(',')) {
+            // Dot is a group separator, comma is the decimal
+            strValue = strValue.replace(/\./g, '').replace(',', '.');
+        } else {
+            // Comma is a group separator, dot is the decimal
+            strValue = strValue.replace(/,/g, '');
+        }
+    } else if (hasComma) {
+        // Only comma exists, treat it as the decimal separator
+        strValue = strValue.replace(',', '.');
+    }
+    // If only a dot exists, it’s already valid
+
+    // Convert the sanitized string to a float
+    const result = parseFloat(strValue);
+
+    // Handle cases where parsing fails
+    return isNaN(result) ? NaN : result;
 };
 
 function ValidFormComparison (objForm, subject, comparison, value) {
@@ -1579,6 +1643,8 @@ function ValidFormElement(strFormId, formObject, strElementName, strElementId, s
     this.validator.required     = false;
     this.validator.minLength    = null;
     this.validator.maxLength    = null;
+    this.validator.minValue     = null;
+    this.validator.maxValue     = null;
 
     if (arguments.length > 5) {
         this.validator.required = arguments[5];
@@ -1598,13 +1664,13 @@ function ValidFormElement(strFormId, formObject, strElementName, strElementId, s
         var __this = this;
         if (this.validator.hint !== "") {
             jQuery("#" + this.id)
-                .bind("focus", function(){
+                .on("focus", function(){
                     if (jQuery(this).val() == __this.validator.hint) {
                         jQuery(this).val("");
                         jQuery(this).closest(".vf__hint").removeClass("vf__hint");
                     }
                 })
-                .bind("blur", function(){
+                .on("blur", function(){
                     if (jQuery(this).val() === "") {
                         jQuery(this).val(__this.validator.hint);
                         jQuery(this).parent().addClass("vf__hint");
@@ -1647,6 +1713,22 @@ function ValidFormElement(strFormId, formObject, strElementName, strElementId, s
         this.validator.externalValidationError = arguments[16];
     }
 
+    if (arguments.length > 17) {
+        this.validator.minValue = arguments[17];
+    }
+
+    if (arguments.length > 18) {
+        this.validator.minValueError = arguments[18];
+    }
+
+    if (arguments.length > 19) {
+        this.validator.maxValue = arguments[19];
+    }
+
+    if (arguments.length > 20) {
+        this.validator.maxValueError = arguments[20];
+    }
+
     // Keep the original values in a local cache for future reference.
     this._defaultstate = {
         "required": this.validator.required,
@@ -1678,10 +1760,10 @@ ValidFormElement.prototype.setValue = function (value, $element) {
     if ($element.is("select")) {
         $element
             .find('option')
-            .removeAttr('selected')
+            .prop('selected', false)
             .closest('select')
             .find('option[value="' + value + '"]')
-            .attr('selected', 'selected');
+            .prop('selected', true);
     } else {
         // input || textarea
         $("#" + this.id).val(value);
@@ -1963,6 +2045,31 @@ function ValidFormFieldValidator(strElementId, strElementName) {
      */
     this.maxLengthError     = "";
     /**
+     * Minimum input size, when dealing with floats or integers
+     * @type {float}
+     */
+    this.minValue          = null;
+    /**
+     * Minimum input size error
+     * @type {String}
+     */
+    this.minValueError     = "";
+    /**
+     * Maximum input size, when dealing with floats or integers
+     * @type {float}
+     */
+    this.maxValue          = null;
+    /**
+     * Maximum input size error
+     * @type {String}
+     */
+    this.maxValueError     = "";
+    /**
+     * Match with another element
+     * @type {String}
+     */
+    this.matchWith          = null;
+    /**
      * Maximum input length error
      * @type {String}
      */
@@ -1974,6 +2081,7 @@ function ValidFormFieldValidator(strElementId, strElementName) {
  * @return {boolean}       True if value is valid, false if not.
  */
 ValidFormFieldValidator.prototype.validate = function() {
+    var self = this;
     var objElement = jQuery("#" + this.id);
     var value = objElement.val();
 
@@ -2005,7 +2113,7 @@ ValidFormFieldValidator.prototype.validate = function() {
             }
 
             //*** Check if there is a matchWith field to validate against
-            if (typeof this.matchWith === "object") {
+            if (this.matchWith != null && typeof this.matchWith === "object") {
                 if (this.matchWith.validate()) {
                     if (jQuery("#" + this.matchWith.id).val() != sanitizedValue) {
                         this.matchWith.validator.showAlert(this.matchError);
@@ -2034,6 +2142,26 @@ ValidFormFieldValidator.prototype.validate = function() {
                 return false;
             }
 
+            //*** Check specific types using regular expression.
+            if (
+                (typeof this.check === "function" || typeof this.check === "object")
+                && sanitizedValue !== "" && this.check.test(sanitizedValue) === false
+            ) {
+                this.showAlert(this.typeError);
+                return false;
+            }
+
+            //*** Check if the size of the value is within the range.
+            if (this.minValue != null && self.stringToFloat(sanitizedValue) < this.minValue) {
+                this.showAlert(sprintf(this.minValueError, this.minValue));
+                return false;
+            }
+
+            if (this.maxValue != null && self.stringToFloat(sanitizedValue) > this.maxValue) {
+                this.showAlert(sprintf(this.maxValueError, this.maxValue));
+                return false;
+            }
+
             // *** Check external validation.
             if (this.externalValidation != null && this.externalValidation.length > 0 ) {
                 var strFnPath = this.externalValidation[0];
@@ -2057,22 +2185,7 @@ ValidFormFieldValidator.prototype.validate = function() {
                 }
             }
 
-            //*** Check specific types using regular expression.
-            if(typeof this.check !== "function" && typeof this.check !== "object") {
-                return true;
-            } else {
-                if (sanitizedValue !== "") {
-                    blnReturn = this.check.test(sanitizedValue);
-
-                    if (blnReturn === false) {
-                        this.showAlert(this.typeError);
-                    }
-
-                    return blnReturn;
-                } else {
-                    return true;
-                }
-            }
+            return true;
         } catch(err) {
             var objElements = jQuery("input[name='" + this.name + "']");
             if (objElements.length > 0) {
