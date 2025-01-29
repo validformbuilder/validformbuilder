@@ -30,11 +30,5 @@ jobs:
         env:
           COMPOSER_AUTH: '{"github-oauth": {"github.com": "${{ secrets.PAT }}"} }'
 
-      - name: Install Travis CLI
-        run: gem install travis
-
-      - name: Validate Travis install
-        run: travis --version
-
       - name: Run tests
         run: vendor/bin/phpunit
