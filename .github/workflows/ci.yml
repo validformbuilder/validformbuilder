@@ -30,5 +30,8 @@ jobs:
         env:
           COMPOSER_AUTH: '{"github-oauth": {"github.com": "${{ secrets.PAT }}"} }'
 
-      - name: Run tests
-        run: vendor/bin/phpunit
+      - name: Update path
+        run: export PATH=./vendor/bin/:$PATH
+
+      - name: Check path
+        run: echo $PATH
