@@ -6,6 +6,9 @@ on:
   pull_request:
     branches: [ master ]
 
+env:
+  PHP_VERSION: '8.2'
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -14,13 +17,23 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v4
 
-      - name: Set up PHP 8.2
-        uses: shivammathur/setup-php@2.32.0
+      - name: Cache Composer dependencies
+        uses: actions/cache@v3
         with:
-          php-version: '8.2'
+          path: /tmp/composer-cache
+          key: ${{ runner.os }}-${{ hashFiles('**/composer.lock') }}
+
+      - name: Set up PHP 8.2
+        uses: shivammathur/setup-php@2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
 
       - name: Install Composer dependencies
-        run: composer install
+        uses: php-actions/composer@v6
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+        env:
+          COMPOSER_AUTH: '{"github-oauth": {"github.com": "${{ secrets.PAT }}"} }'
 
       - name: Install Travis CLI
         run: gem install travis
