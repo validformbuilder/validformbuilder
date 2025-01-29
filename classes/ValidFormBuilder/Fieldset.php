@@ -12,11 +12,12 @@
  * This software is released under the GNU GPL v2 License <http://www.gnu.org/licenses/old-licenses/gpl-2.0.html>
  *
  * @package ValidForm
- * @author Felix Langfeldt <felix@neverwoods.com>, Robin van Baalen <robin@cattlea.com>
+ * @author Felix Langfeldt <felix@neverwoods.com>
+ * @author Robin van Baalen <robin@cattlea.com>
  * @copyright 2009-2017 Neverwoods Internet Technology - http://neverwoods.com
  * @license http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU GPL v2
  * @link http://validformbuilder.org
- * @version 3.0.0
+ * @version 5.3.0
  */
 
 namespace ValidFormBuilder;
@@ -36,7 +37,7 @@ namespace ValidFormBuilder;
  * @package ValidForm
  * @author Felix Langfeldt <felix@neverwoods.com>
  * @author Robin van Baalen <robin@cattlea.com>
- * @version 3.0.0
+ * @version 5.3.0
  *
  * @method string getHeader() getHeader() Returns the value of `$__header`
  * @method void setHeader() setHeader(string $value) Overwrites the value of `$__header`
