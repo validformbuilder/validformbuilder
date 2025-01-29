@@ -26,7 +26,7 @@ jobs:
       - name: Install Composer dependencies
         uses: php-actions/composer@v6
         with:
-          php-version: ${{ env.PHP_VERSION }}
+          php_version: ${{ env.PHP_VERSION }}
         env:
           COMPOSER_AUTH: '{"github-oauth": {"github.com": "${{ secrets.PAT }}"} }'
 
