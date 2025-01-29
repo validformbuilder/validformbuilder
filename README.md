@@ -32,11 +32,11 @@ The ValidForm Builder is a PHP and JavaScript library that simplifies the often 
 
 Installation
 ------------
-You're free to download the source and [get started](https://github.com/neverwoods/validformbuilder/blob/master/docs/documentation.md#installing-validform-builder-in-your-project) but we highly recommend that you use [Composer](https://getcomposer.org/) to install ValidForm Builder. Add the following to your project's `composer.json` file:
+You're free to download the source and [get started](https://github.com/validformbuilder/validformbuilder/blob/master/docs/documentation.md#installing-validform-builder-in-your-project) but we highly recommend that you use [Composer](https://getcomposer.org/) to install ValidForm Builder. Add the following to your project's `composer.json` file:
 ```
 {
     "require": {
-        "neverwoods/validformbuilder": "~4"
+        "validformbuilder/validformbuilder": "~4"
     }
 }
 ```
