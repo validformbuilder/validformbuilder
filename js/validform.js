@@ -8,8 +8,8 @@
  *
  * @author     Felix Langfeldt <felix@neverwoods.com>
  * @author     Robin van Baalen <robin@neverwoods.com>
- * @license    https://github.com/neverwoods/validformbuilder/blob/master/LICENSE
- * @link       https://github.com/neverwoods/validformbuilder
+ * @license    https://github.com/validformbuilder/validformbuilder/blob/master/LICENSE
+ * @link       https://github.com/validformbuilder/validformbuilder
  ***************************/
 
 /**

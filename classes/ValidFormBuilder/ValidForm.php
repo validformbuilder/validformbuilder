@@ -454,7 +454,7 @@ class ValidForm extends ClassDynamic
      *
      * @param string $name The form's name. This will also be the value of the name attribute in the generated HTML.
      * **Note**: At this moment, it is mandatory to enter a name even though the API states that it is optional. Check
-     * [issue 8](https://github.com/neverwoods/validformbuilder/issues/8) for more details.
+     * [issue 8](https://github.com/validformbuilder/validformbuilder/issues/8) for more details.
      * @param string $description Optional. A descriptive text shown above the form fields.
      * @param string $action The generated form element's `action` attribute.
      * @param array $meta Custom form meta array
