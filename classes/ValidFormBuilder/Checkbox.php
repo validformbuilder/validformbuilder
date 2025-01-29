@@ -12,7 +12,8 @@
  * This software is released under the GNU GPL v2 License <http://www.gnu.org/licenses/old-licenses/gpl-2.0.html>
  *
  * @package ValidForm
- * @author Felix Langfeldt <felix@neverwoods.com>, Robin van Baalen <robin@cattlea.com>
+ * @author Felix Langfeldt <felix@neverwoods.com>
+ * @author Robin van Baalen <robin@cattlea.com>
  * @copyright 2009-2017 Neverwoods Internet Technology - http://neverwoods.com
  * @license http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU GPL v2
  * @link http://validformbuilder.org
@@ -32,7 +33,7 @@ namespace ValidFormBuilder;
  * @package ValidForm
  * @author Felix Langfeldt <felix@neverwoods.com>
  * @author Robin van Baalen <robin@cattlea.com>
- * @version Release: 3.0.0
+ * @version 5.3.0
  */
 class Checkbox extends Element
 {
@@ -110,7 +111,7 @@ class Checkbox extends Element
 
         if (! empty($this->__tip)) {
             $this->setTipMeta("class", "vf__tip");
-            
+
             $strOutput .= "<small{$this->__getTipMetaString()}>{$this->__tip}</small>\n";
         }
 

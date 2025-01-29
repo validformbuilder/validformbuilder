@@ -29,7 +29,7 @@ use ReturnTypeWillChange;
  * @package ValidForm
  * @author Felix Langfeldt <felix@neverwoods.com>
  * @author Robin van Baalen <robin@cattlea.com>
- * @version Release: 3.0.0
+ * @version 5.3.0
  */
 class Collection implements \Iterator
 {
