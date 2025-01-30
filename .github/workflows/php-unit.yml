@@ -8,6 +8,9 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v4
 
+      - name: Install dependencies
+        uses: php-actions/composer@v6
+
       - name: PHPUnit tests
         uses: php-actions/phpunit@v4
         with:
