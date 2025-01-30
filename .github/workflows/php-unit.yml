@@ -7,6 +7,6 @@ jobs:
     steps:
       - name: Check out code
         uses: actions/checkout@v4
-        
+
       - name: PHPUnit tests
         uses: php-actions/phpunit@v4
