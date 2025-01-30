@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/validformbuilder/validformbuilder.svg?branch=master)](https://travis-ci.org/validformbuilder/validformbuilder)
+[![Documentation status](https://github.com/validformbuilder/validformbuilder/actions/workflows/generate-docs.yml/badge.svg)](https://travis-ci.org/validformbuilder/validformbuilder)
 [![Latest Stable Version](https://poser.pugx.org/validformbuilder/validformbuilder/v/stable.svg)](https://packagist.org/packages/validformbuilder/validformbuilder)
 [![License](https://poser.pugx.org/validformbuilder/validformbuilder/license.svg)](https://packagist.org/packages/validformbuilder/validformbuilder)
 [![A project by Neverwoods](http://img.shields.io/badge/project_by-Neverwoods-blue.svg)](http://neverwoods.com)
