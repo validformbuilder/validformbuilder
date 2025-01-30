@@ -161,4 +161,11 @@ class AreaTest extends TestCase
     {
         $this->assertFalse($this->area->hasFields());
     }
+
+    public function testHasFieldsWithFields(): void
+    {
+        $this->assertFalse($this->area->hasFields());
+        $this->area->addField("test-field", "Test Field", ValidForm::VFORM_STRING);
+        $this->assertTrue($this->area->hasFields());
+    }
 }
