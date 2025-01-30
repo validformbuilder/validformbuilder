@@ -1,4 +1,4 @@
-name: Generate PHP Documentation
+name: Generate Documentation
 
 on:
   push:
