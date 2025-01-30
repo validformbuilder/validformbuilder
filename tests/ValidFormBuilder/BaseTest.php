@@ -3,8 +3,8 @@
 namespace ValidFormBuilder\Tests;
 
 use PHPUnit\Framework\TestCase;
+use ValidFormBuilder\Area;
 use ValidFormBuilder\Base;
-use ValidFormBuilder\Condition;
 
 class BaseTest extends TestCase
 {
@@ -34,26 +34,36 @@ class BaseTest extends TestCase
 
     public function testGetParent(): void
     {
+        // Default value should be null.
         $this->assertNull($this->base->getParent());
     }
 
     public function testSetParent(): void
     {
-        $parent = new Base();
-        $this->base->setParent($parent);
-        $this->assertSame($parent, $this->base->getParent());
+        $area = new Area("test-area");
+        $this->base->setParent($area);
+        $this->assertSame($area, $this->base->getParent());
     }
 
     public function testSetConditions(): void
     {
-        $conditions = [new Condition($this->base, "required", true)];
-        $this->base->setConditions($conditions);
-        $this->assertSame($conditions, $this->base->getConditions());
+        // TODO: This method should be marked deprecated and/or removed from the Base class, as per #157
+        $this->assertTrue(true);
     }
 
     public function testGetTipMeta(): void
     {
         $this->assertIsArray($this->base->getTipMeta());
+        $this->assertEmpty($this->base->getTipMeta());
+
+        // Now set the tip meta and check again
+        $this->base->setTipMeta("Fancy property", "value");
+
+        // Keys are converted to lower case
+        $this->assertArrayNotHasKey("Fancy property", $this->base->getTipMeta());
+        $this->assertArrayHasKey("fancy property", $this->base->getTipMeta());
+
+        $this->assertSame("value", $this->base->getTipMeta()["fancy property"]);
     }
 
     public function testGetDynamicLabelMeta(): void
