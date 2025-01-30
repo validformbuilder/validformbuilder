@@ -22,8 +22,15 @@ class BaseTest extends TestCase
 
     public function testSetId(): void
     {
+        $this->assertNull($this->base->getId());
         $this->base->setId("test-id");
         $this->assertSame("test-id", $this->base->getId());
+    }
+
+    public function testGetName(): void
+    {
+        // Assert the default name follows this pattern: base_{random number}
+        $this->assertMatchesRegularExpression("/^base_[0-9]+$/", $this->base->getName());
     }
 
     public function testSetName(): void
