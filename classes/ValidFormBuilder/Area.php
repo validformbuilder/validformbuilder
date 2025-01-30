@@ -110,7 +110,7 @@ class Area extends Base
      * $this->setRequiredStyle('%s *'); // First show the label, %s, then show an asterix after the label.
      * @var string
      */
-    protected $__requiredstyle;
+    protected $__requiredstyle; // TODO: Set the default value to an empty string
 
     /**
      * The child fields collection
