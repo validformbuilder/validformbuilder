@@ -1,0 +1,6 @@
+on: [push]
+
+jobs:
+  phpunit:
+    - name: PHPUnit tests
+      uses: php-actions/phpunit@v3
