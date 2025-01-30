@@ -17,6 +17,7 @@ class BaseTest extends TestCase
 
     public function testGetId(): void
     {
+        // Default value is null
         $this->assertNull($this->base->getId());
     }
 
@@ -85,27 +86,90 @@ class BaseTest extends TestCase
 
     public function testGetMagicMeta(): void
     {
-        $this->assertIsArray($this->base->getMagicMeta());
+        $magicMetaList = ["label", "field", "tip", "dynamicLabel", "dynamicRemoveLabel"];
+        $magicMeta = $this->base->getMagicMeta();
+        $this->assertIsArray($magicMeta);
+
+        foreach ($magicMetaList as $metaKey) {
+            $this->assertContains($metaKey, $magicMeta, "Missing expected meta key: $metaKey");
+        }
     }
 
     public function testGetMagicReservedMeta(): void
     {
-        $this->assertIsArray($this->base->getMagicReservedMeta());
+        $reservedMetaList = ["labelRange", "tip"];
+        $reservedMeta = $this->base->getMagicReservedMeta();
+        $this->assertIsArray($reservedMeta);
+
+        foreach ($reservedMetaList as $metaKey) {
+            $this->assertContains($metaKey, $reservedMeta, "Missing expected meta key: $metaKey");
+        }
     }
 
     public function testGetReservedFieldMeta(): void
     {
-        $this->assertIsArray($this->base->getReservedFieldMeta());
+        $reservedMetaList = ["multiple", "rows", "cols"];
+        $reservedMeta = $this->base->getReservedFieldMeta();
+        $this->assertIsArray($reservedMeta);
+
+        foreach ($reservedMetaList as $metaKey) {
+            $this->assertContains($metaKey, $reservedMeta, "Missing expected meta key: $metaKey");
+        }
     }
 
     public function testGetReservedLabelMeta(): void
     {
-        $this->assertIsArray($this->base->getReservedLabelMeta());
+        $reservedMetaList = [];
+        $reservedMeta = $this->base->getReservedLabelMeta();
+        $this->assertIsArray($reservedMeta);
+
+        foreach ($reservedMetaList as $metaKey) {
+            $this->assertContains($metaKey, $reservedMeta, "Missing expected meta key: $metaKey");
+        }
     }
 
     public function testGetReservedMeta(): void
     {
-        $this->assertIsArray($this->base->getReservedMeta());
+        $reservedMetaList = [
+            "parent",
+            "data",
+            "dynamicCounter",
+            "tip",
+            "hint",
+            "default",
+            "width",
+            "height",
+            "length",
+            "start",
+            "end",
+            "path",
+            "labelStyle",
+            "labelClass",
+            "labelRange",
+            "fieldStyle",
+            "fieldClass",
+            "tipStyle",
+            "tipClass",
+            "valueRange",
+            "dynamic",
+            "dynamicLabel",
+            "dynamicLabelStyle",
+            "dynamicLabelClass",
+            "dynamicRemoveLabel",
+            "dynamicRemoveLabelStyle",
+            "dynamicRemoveLabelClass",
+            "matchWith",
+            "uniqueId",
+            "sanitize",
+            "displaySanitize"
+        ];
+
+        $reservedMeta = $this->base->getReservedMeta();
+        $this->assertIsArray($reservedMeta);
+
+        foreach ($reservedMetaList as $metaKey) {
+            $this->assertContains($metaKey, $reservedMeta, "Missing expected meta key: $metaKey");
+        }
     }
 
     public function testHasFields(): void
