@@ -6,4 +6,4 @@ jobs:
 
     steps:
       - name: PHPUnit tests
-        uses: php-actions/phpunit@v3
+        uses: php-actions/phpunit@v4
