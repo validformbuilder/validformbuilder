@@ -42,8 +42,6 @@ namespace ValidFormBuilder;
  * @method array getReservedFieldMeta() getReservedFieldMeta() Returns the value of `$__reservedfieldmeta`
  * @method array getReservedLabelMeta() getReservedLabelMeta() Returns the value of `$__reservedlabelmeta`
  * @method array getReservedMeta() getReservedMeta() Returns the value of `$__reservedmeta`
- * @method bool hasFields() hasFields() Returns if this element has any child fields
- * @method Collection getFields() getFields() Returns a collection of child fields
  */
 class Base extends ClassDynamic
 {
