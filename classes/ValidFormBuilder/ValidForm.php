@@ -2,7 +2,7 @@
 /**
  * ValidForm Builder - build valid and secure web forms quickly
  *
- * Copyright (c) 2009-2017 Neverwoods Internet Technology - http://neverwoods.com
+ * Copyright (c) 2009-2025 Neverwoods Internet Technology - http://neverwoods.com
  *
  * Felix Langfeldt <felix@neverwoods.com>
  * Robin van Baalen <robin@stylr.nl>
@@ -14,7 +14,7 @@
  * @package ValidForm
  * @author Felix Langfeldt <felix@neverwoods.com>
  * @author Robin van Baalen <robin@stylr.nl>
- * @copyright 2009-2017 Neverwoods Internet Technology - http://neverwoods.com
+ * @copyright 2009-2025 Neverwoods Internet Technology - http://neverwoods.com
  * @license http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU GPL v2
  * @link http://validformbuilder.org
  * @version 5.3.0
