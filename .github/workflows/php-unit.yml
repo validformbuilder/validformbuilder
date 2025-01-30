@@ -10,3 +10,7 @@ jobs:
 
       - name: PHPUnit tests
         uses: php-actions/phpunit@v4
+        with:
+          php_version: '8.2'
+          configuration: 'phpunit.xml'
+
