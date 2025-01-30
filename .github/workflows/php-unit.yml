@@ -1,6 +1,9 @@
 on: [push]
 
 jobs:
-  phpunit:
-    - name: PHPUnit tests
-      uses: php-actions/phpunit@v3
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: PHPUnit tests
+        uses: php-actions/phpunit@v3
