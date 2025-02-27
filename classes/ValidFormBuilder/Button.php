@@ -143,7 +143,7 @@ class Button extends Base
 
     /**
      * Generate a unique ID based on the class name and a random integer.
-     * @return string The generted Unique ID
+     * @return string The generated Unique ID
      */
     private function __generateId()
     {
