@@ -74,12 +74,19 @@ class Button extends Base
      * Create a new Button instance
      * @param string $label The button's label
      * @param array $meta The meta array
+     * @throws \InvalidArgumentException If no valid button type meta is supplied
      */
     public function __construct($label, $meta = array())
     {
         $this->__label = $label;
         $this->__meta = $meta;
-        $this->__type = (isset($meta["type"])) ? $meta["type"] : "submit";
+
+        // Ensure the button type is one of the allowed values
+        $buttonType = $meta["type"] ?? "submit";
+        if (!in_array($buttonType, ["submit", "button", "reset"], true)) {
+            throw new \InvalidArgumentException("Invalid button type '{$buttonType}'. Allowed types are: 'submit', 'button', 'reset'.");
+        }
+        $this->__type = $buttonType;
         $this->__id = $this->__generateId();
 
         $this->setFieldMeta("class", "vf__button");
