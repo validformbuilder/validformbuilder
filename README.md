@@ -1,7 +1,9 @@
-[![Documentation status](https://github.com/validformbuilder/validformbuilder/actions/workflows/generate-docs.yml/badge.svg)](https://travis-ci.org/validformbuilder/validformbuilder)
-[![Latest Stable Version](https://poser.pugx.org/validformbuilder/validformbuilder/v/stable.svg)](https://packagist.org/packages/validformbuilder/validformbuilder)
 [![License](https://poser.pugx.org/validformbuilder/validformbuilder/license.svg)](https://packagist.org/packages/validformbuilder/validformbuilder)
-[![A project by Neverwoods](http://img.shields.io/badge/project_by-Neverwoods-blue.svg)](http://neverwoods.com)
+[![A project by Neverwoods](http://img.shields.io/badge/project_by-Neverwoods-blue.svg)](http://neverwoods.com)<br>
+[![Latest Stable Version](https://poser.pugx.org/validformbuilder/validformbuilder/v/stable.svg)](https://packagist.org/packages/validformbuilder/validformbuilder)
+![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/validformbuilder/validformbuilder/php-unit.yml?label=tests)
+![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/validformbuilder/validformbuilder/generate-docs.yml?label=generate%20docs)
+![Packagist Downloads](https://img.shields.io/packagist/dt/validformbuilder/validformbuilder)
 
 Quick links:
 ------------
