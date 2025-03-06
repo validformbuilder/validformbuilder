@@ -1,3 +1,5 @@
+name: PHPUnit tests
+
 on: [push]
 
 jobs:
