@@ -67,7 +67,7 @@ namespace ValidFormBuilder;
  * $objArea->addField("first-name", "First name", ValidForm::VFORM_STRING);
  * ```
  *
- * #### Example 3; Addding a paragraph to the Area
+ * #### Example 3; Adding a paragraph to the Area
  * ```php
  * $objArea->addParagraph(
  *     "Cool paragraph with lots of text in it. It's an absolute must-read.",
@@ -110,7 +110,7 @@ class Area extends Base
      * $this->setRequiredStyle('%s *'); // First show the label, %s, then show an asterix after the label.
      * @var string
      */
-    protected $__requiredstyle;
+    protected $__requiredstyle; // TODO: Set the default value to an empty string
 
     /**
      * The child fields collection
