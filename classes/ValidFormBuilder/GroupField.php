@@ -23,7 +23,7 @@ namespace ValidFormBuilder;
 /**
  * Adds a Checkbox or Radio button to Group element
  *
- * See {@link \ValidFormBuilder\Group} for examples and usage.
+ * See {@see \ValidFormBuilder\Group} for examples and usage.
  *
  * @package ValidForm
  * @author Felix Langfeldt <felix@neverwoods.com>
@@ -71,7 +71,7 @@ class GroupField extends Element
     /**
      * Generate HTML output
      *
-     * See {@link \ValidFormBuilder\Element::toHtml()}
+     * See {@see \ValidFormBuilder\Element::toHtml()}
      *
      * @see \ValidFormBuilder\Element::toHtml()
      */

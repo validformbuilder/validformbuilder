@@ -152,7 +152,7 @@ class Area extends Base
     /**
      * Add a field to the Area.
      *
-     * See {@link \ValidFormBuilder\Area top of the page} for an example
+     * See {@see \ValidFormBuilder\Area} near the top of the page for an example
      *
      * @param string $name
      * @param string $label
@@ -297,7 +297,7 @@ class Area extends Base
     }
 
     /**
-     * Same as {@link \ValidFormBuilder\Area::toHtml()} but with dynamic counter as extra parameter
+     * Same as {@see \ValidFormBuilder\Area::toHtml()} but with a dynamic counter as an extra parameter
      *
      * @param boolean $submitted Define if the area has been submitted and propagate that flag to the child fields
      * @param boolean $blnSimpleLayout Only render in simple layout mode
@@ -445,7 +445,7 @@ class Area extends Base
     /**
      * Generate Javascript code.
      *
-     * See {@link \ValidFormBuilder\Base::toJs() Base::toJs()}
+     * See {@see \ValidFormBuilder\Base::toJS()}
      *
      * @param integer $intDynamicPosition The dynamic position counter
      * @return string Generated javascript code

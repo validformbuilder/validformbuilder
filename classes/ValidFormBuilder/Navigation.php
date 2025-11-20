@@ -116,7 +116,7 @@ class Navigation extends Base
     /**
      * Generate Javascript code.
      *
-     * See {@link \ValidFormBuilder\Base::toJs() Base::toJs()}
+     * See {@see \ValidFormBuilder\Base::toJS()}
      *
      * @param integer $intDynamicPosition The dynamic position counter
      * @return string Generated javascript code

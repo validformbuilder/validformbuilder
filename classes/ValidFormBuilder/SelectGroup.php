@@ -23,7 +23,7 @@ namespace ValidFormBuilder;
 /**
  * Adds a SelectGroup (<optgroup>) to Select object
  *
- * See {@link \ValidFormBuilder\Select} for examples and usage.
+ * See {@see \ValidFormBuilder\Select} for examples and usage.
  *
  * @package ValidForm
  * @author Felix Langfeldt <felix@neverwoods.com>

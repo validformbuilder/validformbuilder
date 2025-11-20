@@ -263,7 +263,7 @@ class Base extends ClassDynamic
     /**
      * Add a new condition to the current field
      *
-     * For examples, check {@link \ValidFormBuilder\Condition}
+     * For examples, check {@see \ValidFormBuilder\Condition}
      *
      * @param string $strType Define the condition type. This can be either `required`, `visibile` or `enabled`
      * @param boolean $blnValue Define whether this condition activates if the comparison(s) are true or false.
@@ -402,7 +402,7 @@ class Base extends ClassDynamic
     }
 
     /**
-     * This gets the condition of a given property, just like {@link \ValidFormBuilder\Base::getCondition()}.
+     * This gets the condition of a given property, just like {@see \ValidFormBuilder\Base::getCondition()}.
      * When no condition is found on the current element, the method searches for a condition in it's parent element.
      *
      * @param string $strProperty Condition type e.g. `required`, `visibile` and `enabled`

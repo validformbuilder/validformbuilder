@@ -54,7 +54,7 @@ class File extends Element
     /**
      * Generate HTML
      *
-     * See {@link \ValidFormBuilder\Element::toHtml()}
+     * See {@see \ValidFormBuilder\Element::toHtml()} for a full description of this renderer.
      *
      * @see \ValidFormBuilder\Element::toHtml()
      */
@@ -73,7 +73,7 @@ class File extends Element
     /**
      * Generate HTML
      *
-     * See {@link \ValidFormBuilder\Element::__toHtml()}
+     * See {@see \ValidFormBuilder\Element::__toHtml()} for details about the base implementation.
      *
      * @see \ValidFormBuilder\Element::__toHtml()
      */
@@ -172,7 +172,7 @@ class File extends Element
     /**
      * Generate Javascript
      *
-     * See {@link \ValidFormBuilder\Element::toJS()}
+     * See {@see \ValidFormBuilder\Element::toJS()} for the base Javascript generation logic.
      *
      * @see \ValidFormBuilder\Element::toJS()
      */
