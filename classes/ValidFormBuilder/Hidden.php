@@ -24,7 +24,7 @@ namespace ValidFormBuilder;
 /**
  * Hidden Class
  *
- * See {@link \ValidFormBuilder\ValidForm::addHiddenField()}
+ * See {@see \ValidFormBuilder\ValidForm::addHiddenField()}
  *
  * #### Example; Add a hidden field to the form
  * ```php
@@ -53,7 +53,7 @@ class Hidden extends Element
     /**
      * Generate HTML
      *
-     * See {@link \ValidFormBuilder\Element::toHtml()}
+     * See {@see \ValidFormBuilder\Element::toHtml()}
      *
      * @see \ValidFormBuilder\Element::toHtml()
      */
@@ -73,7 +73,7 @@ class Hidden extends Element
     /**
      * Generate Javascript
      *
-     * See {@link \ValidFormBuilder\Element::toJS()}
+     * See {@see \ValidFormBuilder\Element::toJS()}
      *
      * @see \ValidFormBuilder\Element::toJS()
      */
@@ -91,7 +91,7 @@ class Hidden extends Element
      * Check if field contains child elements
      *
      * Always retuns false for Hidden objects
-     * See {@link \ValidFormBuilder\Element::hasFields()}
+     * See {@see \ValidFormBuilder\Element::hasFields()}
      * @see \ValidFormBuilder\Element::hasFields()
      */
     public function hasFields()
@@ -102,7 +102,7 @@ class Hidden extends Element
     /**
      * Check if this hidden field is a dynamic counter
      *
-     * See {@link \ValidFormBuilder\Element::isDynamicCounter()}
+     * See {@see \ValidFormBuilder\Element::isDynamicCounter()}
      * @see \ValidFormBuilder\Element::isDynamicCounter()
      */
     public function isDynamicCounter()
@@ -113,7 +113,7 @@ class Hidden extends Element
     /**
      * Validate this field
      *
-     * See {@link \ValidFormBuilder\Element::isValid()}
+     * See {@see \ValidFormBuilder\Element::isValid()}
      *
      * @see \ValidFormBuilder\Element::isValid()
      */

@@ -23,7 +23,7 @@ namespace ValidFormBuilder;
 /**
  * Adds a SelectOption (<option>) to Select object
  *
- * See {@link \ValidFormBuilder\Select} for examples and usage.
+ * See {@see \ValidFormBuilder\Select} for examples and usage.
  *
  * @package ValidForm
  * @author Felix Langfeldt <felix@neverwoods.com>
@@ -73,7 +73,7 @@ class SelectOption extends Element
     /**
      * Generate HTMl output
      *
-     * See {@link \ValidFormBuilder\Element::toHtml()}
+     * See {@see \ValidFormBuilder\Element::toHtml()}
      *
      * @see \ValidFormBuilder\Element::toHtml()
      */

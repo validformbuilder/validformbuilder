@@ -22,5 +22,16 @@
     },
     "autoload": {
         "psr-0": {"ValidFormBuilder": "classes/"}
+    },
+    "require-dev": {
+        "phpdocumentor/shim": "^3.8"
+    },
+    "config": {
+        "allow-plugins": {
+            "phpdocumentor/shim": true
+        },
+        "platform": {
+            "php": "8.0.0"
+        }
     }
 }

@@ -12,7 +12,7 @@
         <extensions>
             <extension>php</extension>
         </extensions>
-        <visibility></visibility>
+        <visibility>public</visibility>
     </parser>
     <files>
         <directory>./classes/ValidFormBuilder</directory>
