@@ -96,15 +96,15 @@
 
             <p class="phpdocumentor-summary">ValidForm Builder - build valid and secure web forms quickly</p>
 
-
-    <section class="phpdocumentor-description"><p>Copyright (c) 2009-2025 Neverwoods Internet Technology - http://neverwoods.com</p>
+        
+            <section class="phpdocumentor-description"><p>Copyright (c) 2009-2025 Neverwoods Internet Technology - http://neverwoods.com</p>
 <p>Felix Langfeldt <a href="mailto:felix@neverwoods.com">felix@neverwoods.com</a>
 Robin van Baalen <a href="mailto:robin@stylr.nl">robin@stylr.nl</a></p>
 <p>All rights reserved.</p>
 <p>This software is released under the GNU GPL v2 License <a href="http://www.gnu.org/licenses/old-licenses/gpl-2.0.html">http://www.gnu.org/licenses/old-licenses/gpl-2.0.html</a></p>
 </section>
 
-
+        
     <h5 class="phpdocumentor-tag-list__heading" id="tags">
         Tags
         <a href="files/classes-validformbuilder-page.html#tags" class="headerlink"><i class="fas fa-link"></i></a>
@@ -157,15 +157,12 @@ Robin van Baalen <a href="mailto:robin@stylr.nl">robin@stylr.nl</a></p>
                         </dl>
 
 
-
-
-
+        
 <h3 id="toc">
     Table of Contents
     <a href="files/classes-validformbuilder-page.html#toc" class="headerlink"><i class="fas fa-link"></i></a>
 
 </h3>
-
 
 
 
@@ -218,6 +215,8 @@ Robin van Baalen <a href="mailto:robin@stylr.nl">robin@stylr.nl</a></p>
                         if (xhr.status < 400 && xhr.responseText) {
                             code.textContent = xhr.responseText;
                             Prism.highlightElement(code);
+                            d=document.getElementsByClassName("line-numbers");
+                            d[0].scrollTop = d[0].children[1].offsetTop;
                             return;
                         }
 

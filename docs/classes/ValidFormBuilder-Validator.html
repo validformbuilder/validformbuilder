@@ -176,15 +176,222 @@
 
 
 
+<h4 id="toc-properties">
+    Properties
+    <a href="classes/ValidFormBuilder-Validator.html#toc-properties" class="headerlink"><i class="fas fa-link"></i></a>
 
+</h4>
+<dl class="phpdocumentor-table-of-contents">
+            <dt class="phpdocumentor-table-of-contents__entry -property -public">
+    <a class="" href="classes/ValidFormBuilder-Validator.html#property_checks">$checks</a>
+    <span>
+                        &nbsp;: array&lt;string|int, mixed&gt;            </span>
+</dt>
+<dd>Static array of validation types</dd>
+
+    </dl>
+
+<h4 id="toc-methods">
+    Methods
+    <a href="classes/ValidFormBuilder-Validator.html#toc-methods" class="headerlink"><i class="fas fa-link"></i></a>
+
+</h4>
+<dl class="phpdocumentor-table-of-contents">
+            <dt class="phpdocumentor-table-of-contents__entry -method -public">
+    <a class="" href="classes/ValidFormBuilder-Validator.html#method_getCheck">getCheck()</a>
+    <span>
+                                &nbsp;: string    </span>
+</dt>
+<dd>Get the regular expression that is used by the given field type</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -method -public">
+    <a class="" href="classes/ValidFormBuilder-Validator.html#method_validate">validate()</a>
+    <span>
+                                &nbsp;: bool    </span>
+</dt>
+<dd>Validate input against regular expression</dd>
+
+    </dl>
 
 
 
         
 
         
+    <section class="phpdocumentor-properties">
+        <h3 class="phpdocumentor-elements__header" id="properties">
+            Properties
+            <a href="classes/ValidFormBuilder-Validator.html#properties" class="headerlink"><i class="fas fa-link"></i></a>
 
-        
+        </h3>
+                    <article
+        class="
+            phpdocumentor-element
+            -property
+            -public
+            -static                                                        "
+>
+    <h4 class="phpdocumentor-element__name" id="property_checks">
+        $checks
+        <a href="classes/ValidFormBuilder-Validator.html#property_checks" class="headerlink"><i class="fas fa-link"></i></a>
+
+        <span class="phpdocumentor-element__modifiers">
+                                            </span>
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="classes/ValidFormBuilder/Validator.php"><a href="files/classes-validformbuilder-validator.html"><abbr title="classes/ValidFormBuilder/Validator.php">Validator.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">37</span>
+
+    </aside>
+
+        <p class="phpdocumentor-summary">Static array of validation types</p>
+
+    
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+        <span class="phpdocumentor-signature__visibility">public</span>
+        <span class="phpdocumentor-signature__static">static</span>    <span class="phpdocumentor-signature__type">array&lt;string|int, mixed&gt;</span>
+    <span class="phpdocumentor-signature__name">$checks</span>
+     = <span class="phpdocumentor-signature__default-value">array(\ValidFormBuilder\ValidForm::VFORM_STRING =&gt; &#039;/^[-a-zàáâãäåāæçèéêẽëēìíîïĩīðñòóôõöōøùúûũüūýß€0-9%\s*.\&#039;+\/&quot;,_–!?#@:;()|&amp; =]*$/iu&#039;, \ValidFormBuilder\ValidForm::VFORM_TEXT =&gt; &#039;/^[-a-zàáâãäåāæçèéêẽëēìíîïĩīðñòóôõöōøùúûũüūýß€0-9%\s*.\&#039;+\’\/&quot;_–,?#@:;^*!&amp;() =]*$/iu&#039;, \ValidFormBuilder\ValidForm::VFORM_HTML =&gt; &#039;/^[-a-zàáâãäåāæçèéêẽëēìíîïĩīðñòóôõöōøùúûũüūýß€0-9%\s*.\&#039;\’\/&quot;_–,?#@;^*!&amp;() &lt;:&gt;=]*$/iu&#039;, \ValidFormBuilder\ValidForm::VFORM_NUMERIC =&gt; &#039;/^[-]*[0-9,\.]*$/i&#039;, \ValidFormBuilder\ValidForm::VFORM_INTEGER =&gt; &#039;/^[0-9]*$/i&#039;, \ValidFormBuilder\ValidForm::VFORM_WORD =&gt; &#039;/^[-a-zàáâãäåāæçèéêẽëēìíîïĩīðñòóôõöōøùúûũüūýß€0-9%_–]*$/iu&#039;, \ValidFormBuilder\ValidForm::VFORM_EMAIL =&gt; &#039;/^[^@\s]+@([-a-z0-9]+\.)+[a-z]{2,}$/i&#039;, \ValidFormBuilder\ValidForm::VFORM_PASSWORD =&gt; &#039;&#039;, \ValidFormBuilder\ValidForm::VFORM_SIMPLEURL =&gt; &#039;/^[-A-Z0-9]+\.[-A-Z0-9]+/i&#039;, \ValidFormBuilder\ValidForm::VFORM_URL =&gt; &#039;/^(http(s)?:\/\/)*[a-z0-9-]+(.[a-z0-9-]+)*(:[0-9]+)?(\/.*)?$/i&#039;, \ValidFormBuilder\ValidForm::VFORM_FILE =&gt; &#039;/^[-a-zàáâãäåāæçèéêẽëēìíîïĩīðñòóôõöōøùúûũüūýß0-9.\&#039;:&quot;\\\\_–\/ ]*$/iu&#039;, \ValidFormBuilder\ValidForm::VFORM_BOOLEAN =&gt; &#039;/^[on]*$/i&#039;, \ValidFormBuilder\ValidForm::VFORM_RADIO_LIST =&gt; &#039;&#039;, \ValidFormBuilder\ValidForm::VFORM_CHECK_LIST =&gt; &#039;&#039;, \ValidFormBuilder\ValidForm::VFORM_SELECT_LIST =&gt; &#039;&#039;, \ValidFormBuilder\ValidForm::VFORM_PARAGRAPH =&gt; &#039;&#039;, \ValidFormBuilder\ValidForm::VFORM_CURRENCY =&gt; &#039;&#039;, \ValidFormBuilder\ValidForm::VFORM_HIDDEN =&gt; &#039;&#039;, \ValidFormBuilder\ValidForm::VFORM_DATE =&gt; &#039;/^(\d{2}[-|\/|\\\\|\.]\d{2}[-|\/|\\\\|\.]\d{4})$/i&#039;)</span></code>
+
+    
+    
+    
+
+    
+
+    
+
+</article>
+            </section>
+
+            <section class="phpdocumentor-methods">
+        <h3 class="phpdocumentor-elements__header" id="methods">
+            Methods
+            <a href="classes/ValidFormBuilder-Validator.html#methods" class="headerlink"><i class="fas fa-link"></i></a>
+
+        </h3>
+                    <article
+        class="phpdocumentor-element
+            -method
+            -public
+                                    -static                    "
+>
+    <h4 class="phpdocumentor-element__name" id="method_getCheck">
+        getCheck()
+        <a href="classes/ValidFormBuilder-Validator.html#method_getCheck" class="headerlink"><i class="fas fa-link"></i></a>
+
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="classes/ValidFormBuilder/Validator.php"><a href="files/classes-validformbuilder-validator.html"><abbr title="classes/ValidFormBuilder/Validator.php">Validator.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">104</span>
+
+    </aside>
+
+        <p class="phpdocumentor-summary">Get the regular expression that is used by the given field type</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility">public</span>
+            <span class="phpdocumentor-signature__static">static</span>        <span class="phpdocumentor-signature__name">getCheck</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">int&nbsp;</span><span class="phpdocumentor-signature__argument__name">$checkType</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">string</span></code>
+
+    <div class="phpdocumentor-label-line">
+        </div>
+    
+    
+        <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+    <dl class="phpdocumentor-argument-list">
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-signature__argument__name">$checkType</span>
+                : <span class="phpdocumentor-signature__argument__return-type">int</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>Field type</p>
+</section>
+
+            </dd>
+            </dl>
+
+    
+
+    
+
+            <section>
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+        <span class="phpdocumentor-signature__response_type">string</span>
+                    &mdash;
+                <section class="phpdocumentor-description"><p>The matching regular expression</p>
+</section>
+
+            </section>
+
+</article>
+                    <article
+        class="phpdocumentor-element
+            -method
+            -public
+                                    -static                    "
+>
+    <h4 class="phpdocumentor-element__name" id="method_validate">
+        validate()
+        <a href="classes/ValidFormBuilder-Validator.html#method_validate" class="headerlink"><i class="fas fa-link"></i></a>
+
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="classes/ValidFormBuilder/Validator.php"><a href="files/classes-validformbuilder-validator.html"><abbr title="classes/ValidFormBuilder/Validator.php">Validator.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">66</span>
+
+    </aside>
+
+        <p class="phpdocumentor-summary">Validate input against regular expression</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility">public</span>
+            <span class="phpdocumentor-signature__static">static</span>        <span class="phpdocumentor-signature__name">validate</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__return-type">int&nbsp;</span><span class="phpdocumentor-signature__argument__name">$checkType</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__return-type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$value</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">bool</span></code>
+
+    <div class="phpdocumentor-label-line">
+        </div>
+    
+    
+        <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+    <dl class="phpdocumentor-argument-list">
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-signature__argument__name">$checkType</span>
+                : <span class="phpdocumentor-signature__argument__return-type">int</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>The type to check for</p>
+</section>
+
+            </dd>
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-signature__argument__name">$value</span>
+                : <span class="phpdocumentor-signature__argument__return-type">string</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>The value to validate</p>
+</section>
+
+            </dd>
+            </dl>
+
+    
+
+    
+
+            <section>
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+        <span class="phpdocumentor-signature__response_type">bool</span>
+                    &mdash;
+                <section class="phpdocumentor-description"><p>True if valid, false if not.</p>
+</section>
+
+            </section>
+
+</article>
+            </section>
+
         <div class="phpdocumentor-modal" id="source-view">
     <div class="phpdocumentor-modal-bg" data-exit-button></div>
     <div class="phpdocumentor-modal-container">
@@ -221,6 +428,8 @@
                         if (xhr.status < 400 && xhr.responseText) {
                             code.textContent = xhr.responseText;
                             Prism.highlightElement(code);
+                            d=document.getElementsByClassName("line-numbers");
+                            d[0].scrollTop = d[0].children[1].offsetTop;
                             return;
                         }
 
@@ -288,10 +497,25 @@
             <li class="phpdocumentor-on-this-page-section__title">Table Of Contents</li>
             <li>
                 <ul class="phpdocumentor-list -clean">
-                                                                            </ul>
+                                                            <li><a href="classes/ValidFormBuilder-Validator.html#toc-properties">Properties</a></li>
+                                                            <li><a href="classes/ValidFormBuilder-Validator.html#toc-methods">Methods</a></li>
+                                    </ul>
             </li>
             
+                            <li class="phpdocumentor-on-this-page-section__title">Properties</li>
+                <li>
+                    <ul class="phpdocumentor-list -clean">
+                                                    <li class=""><a href="classes/ValidFormBuilder-Validator.html#property_checks">$checks</a></li>
+                                            </ul>
+                </li>
             
+                        <li class="phpdocumentor-on-this-page-section__title">Methods</li>
+            <li>
+                <ul class="phpdocumentor-list -clean">
+                                            <li class=""><a href="classes/ValidFormBuilder-Validator.html#method_getCheck">getCheck()</a></li>
+                                            <li class=""><a href="classes/ValidFormBuilder-Validator.html#method_validate">validate()</a></li>
+                                    </ul>
+            </li>
                     </ul>
     </section>
 
