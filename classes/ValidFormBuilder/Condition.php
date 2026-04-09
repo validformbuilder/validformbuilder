@@ -208,7 +208,20 @@ class Condition extends ClassDynamic
     /**
      * Add new comparison to Condition
      *
-     * @param Comparison|array $varComparison Comparison array or Comparison object
+     * Accepts either a pre-built {@link \ValidFormBuilder\Comparison} instance or
+     * an array of constructor arguments that will be forwarded to the Comparison
+     * constructor via reflection. Both positional and associative arrays (keyed by
+     * `subject`, `comparison`, `value`) are supported.
+     *
+     * ```php
+     * // Object form
+     * $condition->addComparison(new Comparison($field, ValidForm::VFORM_COMPARISON_EQUAL, 'yes'));
+     *
+     * // Array (positional) form
+     * $condition->addComparison([$field, ValidForm::VFORM_COMPARISON_EQUAL, 'yes']);
+     * ```
+     *
+     * @param Comparison|array $varComparison Comparison object or array of constructor arguments
      * @throws \Exception if Reflection couldn't initialize new Comparison object
      * @throws \InvalidArgumentException if no valid Comparison data is supplied
      */
@@ -217,15 +230,19 @@ class Condition extends ClassDynamic
         $objComparison = null;
 
         if (is_array($varComparison)) {
-            $varArguments = array_keys($varComparison);
-            if (isset($varComparison["subject"])) {
-                // Apparently, this is an associative array
-                $varArguments = array_values($varComparison);
-            }
+            // array_values() normalizes both positional and associative arrays
+            // to a 0-indexed list that ReflectionClass::newInstanceArgs() can forward
+            // to the Comparison constructor positionally. Using array_keys() here
+            // would pass the integer keys ([0, 1, 2]) as constructor arguments.
+            // See https://github.com/validformbuilder/validformbuilder/issues/196
+            $varArguments = array_values($varComparison);
 
             try {
-                // @todo Replace Reflection with call_user_func_array()
-                $objReflection = new \ReflectionClass("Comparison");
+                // Use the fully qualified class name — an unqualified string
+                // (e.g. "Comparison") would be resolved against the global namespace
+                // by ReflectionClass and fail with "Class 'Comparison' does not exist".
+                // See https://github.com/validformbuilder/validformbuilder/issues/196
+                $objReflection = new \ReflectionClass(Comparison::class);
                 $objComparison = $objReflection->newInstanceArgs($varArguments);
             } catch (\Exception $e) {
                 throw new \Exception("Failed to add Comparison: " . $e->getMessage(), 1);
