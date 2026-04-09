@@ -4,305 +4,505 @@ namespace ValidFormBuilder;
 
 use PHPUnit\Framework\TestCase;
 
+/**
+ * Comprehensive coverage for {@link \ValidFormBuilder\Collection}.
+ *
+ * Surface covered:
+ * - Constructor (with and without initial array)
+ * - Add operations: addObject, addObject(toBeginning), addObjectAtPosition, addObjects
+ * - Retrieval: getFirst, getLast, getLast($type), random, count, end
+ * - Iterator interface: current, next, previous, key, valid, rewind, foreach
+ * - Pointer inspection: isFirst, isLast
+ * - Collection manipulation: merge, reverse, rebuild, randomize
+ * - Search / removal: inCollection (value + class + returnKey), remove, removeRecursive
+ * - Seek pointer advance
+ */
 class CollectionTest extends TestCase
 {
-    protected Collection $collection;
+    private Collection $collection;
 
     protected function setUp(): void
     {
         $this->collection = new Collection();
     }
 
-    public function testConstructWithArray(): void
+    // --------------------------------------------------------------
+    // Constructor
+    // --------------------------------------------------------------
+
+    public function testConstructorCreatesEmptyCollectionByDefault(): void
     {
-        $initialItems = ['item1', 'item2', 'item3'];
-        $collection = new Collection($initialItems);
-        
-        $this->assertCount(3, $collection);
-        $this->assertSame('item1', $collection->getFirst());
-        $this->assertSame('item3', $collection->getLast());
+        $collection = new Collection();
+
+        $this->assertSame(0, $collection->count());
     }
 
-    public function testAddObject(): void
+    public function testConstructorAcceptsInitialArray(): void
     {
-        $this->collection->addObject('item1');
-        $this->collection->addObject('item2');
-        
-        $this->assertCount(2, $this->collection);
-        $this->assertSame('item1', $this->collection->getFirst());
-        $this->assertSame('item2', $this->collection->getLast());
+        $collection = new Collection(['a', 'b', 'c']);
+
+        $this->assertSame(3, $collection->count());
+        $this->assertSame('a', $collection->getFirst());
+        $this->assertSame('c', $collection->getLast());
     }
 
-    public function testAddObjectToBeginning(): void
+    public function testConstructorIgnoresNonArrayArgument(): void
     {
-        $this->collection->addObject('item1');
-        $this->collection->addObject('item2', true); // Add to beginning
-        
-        $this->assertCount(2, $this->collection);
-        $this->assertSame('item2', $this->collection->getFirst());
-        $this->assertSame('item1', $this->collection->getLast());
+        // Passing something that isn't an array should not populate the collection.
+        $collection = new Collection('not an array');
+
+        $this->assertSame(0, $collection->count());
     }
 
-    public function testAddObjectAtPosition(): void
+    // --------------------------------------------------------------
+    // addObject / addObjects / addObjectAtPosition
+    // --------------------------------------------------------------
+
+    public function testAddObjectAppendsToEnd(): void
     {
-        $this->collection->addObject('item1');
-        $this->collection->addObject('item3');
-        $this->collection->addObjectAtPosition('item2', 1);
-        
-        $this->assertCount(3, $this->collection);
-        
-        $expected = ['item1', 'item2', 'item3'];
-        $actual = [];
-        
-        foreach ($this->collection as $item) {
-            $actual[] = $item;
-        }
-        
-        $this->assertSame($expected, $actual);
+        $this->collection->addObject('a');
+        $this->collection->addObject('b');
+
+        $this->assertSame(2, $this->collection->count());
+        $this->assertSame('a', $this->collection->getFirst());
+        $this->assertSame('b', $this->collection->getLast());
     }
 
-    public function testAddObjectAtPositionBeyondEnd(): void
+    public function testAddObjectWithBeginningFlagPrependsToStart(): void
     {
-        $this->collection->addObject('item1');
-        $this->collection->addObjectAtPosition('item2', 5); // Position beyond end
-        
-        $this->assertCount(2, $this->collection);
-        $this->assertSame('item1', $this->collection->getFirst());
-        $this->assertSame('item2', $this->collection->getLast());
+        $this->collection->addObject('a');
+        $this->collection->addObject('b', true);
+
+        $this->assertSame('b', $this->collection->getFirst());
+        $this->assertSame('a', $this->collection->getLast());
     }
 
-    public function testAddObjects(): void
+    public function testAddObjectsAppendsAllItems(): void
     {
-        $objects = ['item1', 'item2', 'item3'];
-        $this->collection->addObjects($objects);
-        
-        $this->assertCount(3, $this->collection);
-        $this->assertSame('item1', $this->collection->getFirst());
-        $this->assertSame('item3', $this->collection->getLast());
+        $this->collection->addObjects(['a', 'b', 'c']);
+
+        $this->assertSame(3, $this->collection->count());
+        $this->assertSame('a', $this->collection->getFirst());
+        $this->assertSame('c', $this->collection->getLast());
     }
 
-    public function testSeek(): void
+    public function testAddObjectAtPositionInsertsInMiddle(): void
     {
-        $this->collection->addObjects(['item1', 'item2', 'item3']);
-        
-        // The seek method doesn't actually change the internal pointer value as expected
-        // Just test if it sets the isSeek flag
-        $reflectionProperty = new \ReflectionProperty(Collection::class, 'isSeek');
-        $reflectionProperty->setAccessible(true);
-        
-        $this->collection->seek(1);
-        $this->assertTrue($reflectionProperty->getValue($this->collection));
+        $this->collection->addObjects(['a', 'c']);
+        $this->collection->addObjectAtPosition('b', 1);
+
+        $this->assertSame(['a', 'b', 'c'], $this->drain());
     }
 
-    public function testRandomReturnsItemFromCollection(): void
+    public function testAddObjectAtPositionZeroInsertsAtStart(): void
     {
-        $items = ['item1', 'item2', 'item3'];
-        $this->collection->addObjects($items);
-        
-        $random = $this->collection->random();
-        $this->assertContains($random, $items);
+        $this->collection->addObjects(['b', 'c']);
+        $this->collection->addObjectAtPosition('a', 0);
+
+        $this->assertSame(['a', 'b', 'c'], $this->drain());
     }
 
-    public function testRandomOnEmptyCollection(): void
+    public function testAddObjectAtPositionBeyondEndAppends(): void
     {
-        $this->assertNull($this->collection->random());
+        $this->collection->addObject('a');
+        $this->collection->addObjectAtPosition('b', 42);
+
+        $this->assertSame(['a', 'b'], $this->drain());
     }
 
-    public function testRandomize(): void
+    public function testAddObjectAtPositionEqualToCountAppends(): void
     {
-        // This is tricky to test definitively since randomization might
-        // theoretically result in the same order, but we'll do our best
-        $items = range(1, 100); // Large enough to make same order very unlikely
-        $this->collection = new Collection($items);
-        
-        $originalOrder = [];
-        foreach ($this->collection as $item) {
-            $originalOrder[] = $item;
-        }
-        
-        $this->collection->randomize();
-        
-        $newOrder = [];
-        foreach ($this->collection as $item) {
-            $newOrder[] = $item;
-        }
-        
-        // Test that items are preserved but order has changed
-        $this->assertCount(100, $newOrder);
-        $this->assertNotSame($originalOrder, $newOrder);
+        $this->collection->addObjects(['a', 'b']);
+        // Position == count() → falls into the "append" branch (>= count).
+        $this->collection->addObjectAtPosition('c', 2);
+
+        $this->assertSame(['a', 'b', 'c'], $this->drain());
     }
 
-    public function testCount(): void
-    {
-        $this->assertCount(0, $this->collection);
-        
-        $this->collection->addObject('item1');
-        $this->assertCount(1, $this->collection);
-        
-        $this->collection->addObject('item2');
-        $this->assertCount(2, $this->collection);
-    }
+    // --------------------------------------------------------------
+    // Retrieval: getFirst / getLast / random / count / end
+    // --------------------------------------------------------------
 
-    public function testIterator(): void
-    {
-        $items = ['item1', 'item2', 'item3'];
-        $this->collection->addObjects($items);
-        
-        $result = [];
-        foreach ($this->collection as $key => $value) {
-            $result[$key] = $value;
-        }
-        
-        $this->assertSame($items, $result);
-    }
-
-    public function testIsFirstAndIsLast(): void
-    {
-        $this->collection->addObjects(['item1', 'item2', 'item3']);
-        
-        $this->collection->rewind();
-        $this->assertTrue($this->collection->isFirst());
-        $this->assertFalse($this->collection->isLast());
-        
-        $this->collection->next();
-        $this->assertFalse($this->collection->isFirst());
-        $this->assertFalse($this->collection->isLast());
-        
-        $this->collection->next();
-        $this->assertFalse($this->collection->isFirst());
-        $this->assertTrue($this->collection->isLast());
-    }
-
-    public function testGetFirstAndGetLast(): void
-    {
-        $this->collection->addObjects(['item1', 'item2', 'item3']);
-        
-        $this->assertSame('item1', $this->collection->getFirst());
-        $this->assertSame('item3', $this->collection->getLast());
-    }
-
-    public function testGetFirstAndGetLastWithEmptyCollection(): void
+    public function testGetFirstAndGetLastReturnNullWhenEmpty(): void
     {
         $this->assertNull($this->collection->getFirst());
         $this->assertNull($this->collection->getLast());
     }
 
-    public function testGetLastWithType(): void
+    public function testGetLastWithTypeFiltersByClass(): void
     {
-        $obj1 = new \stdClass();
-        $obj2 = new Collection();
-        $obj3 = new \stdClass();
-        
-        $this->collection->addObjects([$obj1, $obj2, $obj3]);
-        
-        $lastStdClass = $this->collection->getLast(\stdClass::class);
-        $lastCollection = $this->collection->getLast(Collection::class);
-        
-        $this->assertSame($obj3, $lastStdClass);
-        $this->assertSame($obj2, $lastCollection);
+        $a = new \stdClass();
+        $b = new Collection();
+        $c = new \stdClass();
+
+        $this->collection->addObjects([$a, $b, $c]);
+
+        $this->assertSame($c, $this->collection->getLast(\stdClass::class));
+        $this->assertSame($b, $this->collection->getLast(Collection::class));
     }
 
-    public function testMerge(): void
+    public function testGetLastWithTypeReturnsNullWhenNoMatch(): void
     {
-        $this->collection->addObjects(['item1', 'item2']);
-        
-        $collection2 = new Collection(['item3', 'item4']);
-        $this->collection->merge($collection2);
-        
-        $this->assertCount(4, $this->collection);
-        $this->assertSame('item1', $this->collection->getFirst());
-        $this->assertSame('item4', $this->collection->getLast());
+        $this->collection->addObjects([new \stdClass(), new \stdClass()]);
+
+        $this->assertNull($this->collection->getLast(\DateTime::class));
     }
 
-    public function testReverse(): void
+    public function testRandomReturnsItemFromCollection(): void
     {
-        $this->collection->addObjects(['item1', 'item2', 'item3']);
-        
-        $this->collection->reverse();
-        
-        $result = [];
-        foreach ($this->collection as $item) {
-            $result[] = $item;
-        }
-        
-        $this->assertSame(['item3', 'item2', 'item1'], $result);
+        $items = ['a', 'b', 'c'];
+        $this->collection->addObjects($items);
+
+        $this->assertContains($this->collection->random(), $items);
     }
 
-    public function testEnd(): void
+    public function testRandomReturnsNullForEmptyCollection(): void
     {
-        $this->collection->addObjects(['item1', 'item2', 'item3']);
-        
-        $this->assertSame('item3', $this->collection->end());
-        // Check that pointer is at the end
+        $this->assertNull($this->collection->random());
+    }
+
+    public function testCountReflectsNumberOfItems(): void
+    {
+        $this->assertSame(0, $this->collection->count());
+
+        $this->collection->addObject('a');
+        $this->assertSame(1, $this->collection->count());
+
+        $this->collection->addObject('b');
+        $this->assertSame(2, $this->collection->count());
+    }
+
+    public function testEndReturnsLastItemAndAdvancesPointer(): void
+    {
+        $this->collection->addObjects(['a', 'b', 'c']);
+
+        $this->assertSame('c', $this->collection->end());
         $this->assertTrue($this->collection->isLast());
     }
 
-    public function testRebuild(): void
+    // --------------------------------------------------------------
+    // Iterator interface
+    // --------------------------------------------------------------
+
+    public function testForeachYieldsItemsInOrder(): void
     {
-        $this->collection->addObjects(['item1', 'item2', 'item3']);
-        
-        // Create a gap in the keys
-        $reflectionProperty = new \ReflectionProperty(Collection::class, 'collection');
-        $reflectionProperty->setAccessible(true);
-        $arr = $reflectionProperty->getValue($this->collection);
-        unset($arr[1]);
-        $reflectionProperty->setValue($this->collection, $arr);
-        
-        $this->collection->rebuild();
-        
-        $result = [];
-        foreach ($this->collection as $key => $item) {
-            $result[$key] = $item;
-        }
-        
-        // Keys should now be sequential again
-        $this->assertSame([0 => 'item1', 1 => 'item3'], $result);
+        $this->collection->addObjects(['a', 'b', 'c']);
+
+        $this->assertSame(['a', 'b', 'c'], $this->drain());
     }
 
-    public function testInCollection(): void
+    public function testCurrentNextPreviousKey(): void
     {
-        $obj1 = new \stdClass();
-        $obj2 = new Collection();
-        
-        $this->collection->addObjects([$obj1, $obj2]);
-        
-        $this->assertTrue($this->collection->inCollection($obj1));
-        $this->assertTrue($this->collection->inCollection($obj2));
-        $this->assertTrue($this->collection->inCollection(Collection::class));
+        $this->collection->addObjects(['a', 'b', 'c']);
+
+        $this->collection->rewind();
+        $this->assertSame('a', $this->collection->current());
+        $this->assertSame(0, $this->collection->key());
+
+        $this->assertSame('b', $this->collection->next());
+        $this->assertSame(1, $this->collection->key());
+
+        $this->assertSame('a', $this->collection->previous());
+        $this->assertSame(0, $this->collection->key());
+    }
+
+    public function testValidReturnsFalseWhenPointerPastEnd(): void
+    {
+        $this->collection->addObjects(['a', 'b']);
+        $this->collection->rewind();
+
+        $this->assertTrue($this->collection->valid());
+        $this->collection->next();
+        $this->assertTrue($this->collection->valid());
+        $this->collection->next();
+        $this->assertFalse($this->collection->valid());
+    }
+
+    public function testRewindReturnsCollection(): void
+    {
+        $result = $this->collection->rewind();
+
+        $this->assertSame($this->collection, $result);
+    }
+
+    // --------------------------------------------------------------
+    // Pointer inspection
+    // --------------------------------------------------------------
+
+    public function testIsFirstAndIsLastReflectPointerPosition(): void
+    {
+        $this->collection->addObjects(['a', 'b', 'c']);
+        $this->collection->rewind();
+
+        $this->assertTrue($this->collection->isFirst());
+        $this->assertFalse($this->collection->isLast());
+
+        $this->collection->next();
+        $this->assertFalse($this->collection->isFirst());
+        $this->assertFalse($this->collection->isLast());
+
+        $this->collection->next();
+        $this->assertFalse($this->collection->isFirst());
+        $this->assertTrue($this->collection->isLast());
+    }
+
+    // --------------------------------------------------------------
+    // merge / reverse / rebuild / randomize
+    // --------------------------------------------------------------
+
+    public function testMergeAppendsAnotherCollection(): void
+    {
+        $this->collection->addObjects(['a', 'b']);
+        $other = new Collection(['c', 'd']);
+
+        $this->collection->merge($other);
+
+        $this->assertSame(['a', 'b', 'c', 'd'], $this->drain());
+    }
+
+    public function testMergeWithEmptyCollectionLeavesOriginalUnchanged(): void
+    {
+        $this->collection->addObjects(['a', 'b']);
+        $this->collection->merge(new Collection());
+
+        $this->assertSame(['a', 'b'], $this->drain());
+    }
+
+    public function testMergeWithNonObjectIsIgnored(): void
+    {
+        $this->collection->addObjects(['a', 'b']);
+        $this->collection->merge('not a collection');
+
+        $this->assertSame(['a', 'b'], $this->drain());
+    }
+
+    public function testReverseFlipsOrderAndReturnsCollection(): void
+    {
+        $this->collection->addObjects(['a', 'b', 'c']);
+        $result = $this->collection->reverse();
+
+        $this->assertSame($this->collection, $result);
+        $this->assertSame(['c', 'b', 'a'], $this->drain());
+    }
+
+    public function testRebuildRenumbersAfterGaps(): void
+    {
+        $this->collection->addObjects(['a', 'b', 'c']);
+
+        // Punch a hole in the internal array directly via reflection.
+        $ref = new \ReflectionProperty(Collection::class, 'collection');
+        $ref->setAccessible(true);
+        $internal = $ref->getValue($this->collection);
+        unset($internal[1]);
+        $ref->setValue($this->collection, $internal);
+
+        $this->collection->rebuild();
+
+        $this->assertSame([0 => 'a', 1 => 'c'], $this->drainWithKeys());
+    }
+
+    public function testRandomizePreservesItemsButMayReorder(): void
+    {
+        $items = range(1, 100);
+        $collection = new Collection($items);
+
+        $collection->randomize();
+
+        $drained = [];
+        foreach ($collection as $item) {
+            $drained[] = $item;
+        }
+
+        $this->assertCount(100, $drained);
+        $this->assertEqualsCanonicalizing($items, $drained);
+    }
+
+    // --------------------------------------------------------------
+    // seek
+    // --------------------------------------------------------------
+
+    public function testSeekAdvancesInternalPointer(): void
+    {
+        $this->collection->addObjects(['a', 'b', 'c', 'd']);
+
+        $this->collection->seek(2);
+
+        $this->assertSame('c', $this->collection->current());
+        $this->assertSame(2, $this->collection->key());
+    }
+
+    public function testSeekIgnoresNonNumericArgument(): void
+    {
+        $this->collection->addObjects(['a', 'b', 'c']);
+        $this->collection->rewind();
+
+        $this->collection->seek('not a number');
+
+        // Pointer should remain at the start.
+        $this->assertSame('a', $this->collection->current());
+    }
+
+    // --------------------------------------------------------------
+    // inCollection / remove / removeRecursive
+    // --------------------------------------------------------------
+
+    public function testInCollectionReturnsTrueWhenObjectFound(): void
+    {
+        $obj = (object) ['id' => 2];
+        $this->collection->addObjects([
+            (object) ['id' => 1],
+            $obj,
+            (object) ['id' => 3],
+        ]);
+
+        $this->assertTrue($this->collection->inCollection($obj));
+    }
+
+    public function testInCollectionReturnsFalseWhenObjectAbsent(): void
+    {
+        $this->collection->addObject((object) ['id' => 1]);
+
         $this->assertFalse($this->collection->inCollection(new \DateTime()));
     }
 
-    public function testInCollectionWithReturnKey(): void
+    public function testInCollectionMatchesByClassName(): void
     {
-        $obj1 = new \stdClass();
-        $obj2 = new \stdClass();
-        
-        $this->collection->addObjects([$obj1, $obj2]);
-        
-        $this->assertSame(0, $this->collection->inCollection($obj1, true));
+        $this->collection->addObjects([new \stdClass(), new Collection()]);
+
+        $this->assertTrue($this->collection->inCollection(Collection::class));
     }
 
-    public function testRemove(): void
+    public function testInCollectionWithReturnKeyYieldsFirstMatchAtPositionZero(): void
     {
-        $obj1 = new \stdClass();
-        $obj2 = new \stdClass();
-        $obj3 = new \stdClass();
-        
-        $this->collection->addObjects([$obj1, $obj2, $obj3]);
-        
-        $this->assertCount(3, $this->collection);
-        
-        $this->collection->remove($obj2);
-        
-        // Since in the real method the element may have already been removed through the call to inCollection
-        // We won't check the exact count, just that remove() works without errors
-        $this->assertLessThan(4, $this->collection->count());
+        $obj = (object) ['id' => 1];
+        $this->collection->addObjects([$obj, (object) ['id' => 2]]);
+
+        $this->assertSame(0, $this->collection->inCollection($obj, true));
     }
 
-    public function testRemoveRecursive(): void
+    public function testInCollectionWithReturnKeyYieldsCorrectPositionForLaterItem(): void
     {
-        // Skip this test as it requires a specific implementation
-        // of the Base class and is complex to mock properly
-        $this->markTestSkipped('This test requires complex mocking of the Base class');
+        $target = (object) ['id' => 3];
+        $this->collection->addObjects([
+            (object) ['id' => 1],
+            (object) ['id' => 2],
+            $target,
+        ]);
+
+        $this->assertSame(2, $this->collection->inCollection($target, true));
+    }
+
+    public function testInCollectionWithReturnKeyReturnsFalseWhenAbsent(): void
+    {
+        $this->collection->addObject((object) ['id' => 1]);
+
+        $this->assertFalse($this->collection->inCollection(new \DateTime(), true));
+    }
+
+    public function testRemoveDeletesTheObjectAndRebuildsIndex(): void
+    {
+        // Use stdClass with distinguishing properties — Collection compares with
+        // loose equality (==), so empty stdClass instances would all be equal.
+        $a = (object) ['id' => 1];
+        $b = (object) ['id' => 2];
+        $c = (object) ['id' => 3];
+        $this->collection->addObjects([$a, $b, $c]);
+
+        $this->collection->remove($b);
+
+        $this->assertSame(2, $this->collection->count());
+        $this->assertSame($a, $this->collection->getFirst());
+        $this->assertSame($c, $this->collection->getLast());
+    }
+
+    public function testRemoveNonExistentObjectLeavesCollectionIntact(): void
+    {
+        $this->collection->addObjects([
+            (object) ['id' => 1],
+            (object) ['id' => 2],
+        ]);
+        $countBefore = $this->collection->count();
+
+        $this->collection->remove((object) ['id' => 999]);
+
+        $this->assertSame($countBefore, $this->collection->count());
+    }
+
+    public function testRemoveRecursiveDropsTopLevelMatchingElementByName(): void
+    {
+        $form = new ValidForm('test-form');
+        $first = $form->addField('first', 'First', ValidForm::VFORM_STRING);
+        $second = $form->addField('second', 'Second', ValidForm::VFORM_STRING);
+
+        $collection = new Collection();
+        $collection->addObjects([$first, $second]);
+
+        $collection->removeRecursive($first);
+
+        // removeRecursive does not rebuild the index, so drain via foreach which
+        // skips holes produced by unset().
+        $remaining = [];
+        foreach ($collection as $item) {
+            $remaining[] = $item->getName();
+        }
+
+        $this->assertSame(['second'], $remaining);
+    }
+
+    public function testRemoveRecursiveDescendsIntoFieldset(): void
+    {
+        $form = new ValidForm('test-form');
+        $fieldset = $form->addFieldset('Contact');
+        $name = $form->addField('name', 'Name', ValidForm::VFORM_STRING);
+        $email = $form->addField('email', 'Email', ValidForm::VFORM_EMAIL);
+
+        // `addField` on a form places fields into the last fieldset, so both
+        // name and email now live inside `$fieldset`.
+        $this->assertTrue($fieldset->hasFields());
+        $this->assertSame(2, $fieldset->getFields()->count());
+
+        // Put the fieldset in a fresh Collection and recursively remove a nested field.
+        $collection = new Collection();
+        $collection->addObject($fieldset);
+
+        $collection->removeRecursive($name);
+
+        // Fieldset should now contain only the email field.
+        $remainingNames = [];
+        foreach ($fieldset->getFields() as $item) {
+            $remainingNames[] = $item->getName();
+        }
+
+        $this->assertSame(['email'], $remainingNames);
+    }
+
+    // --------------------------------------------------------------
+    // Helpers
+    // --------------------------------------------------------------
+
+    /**
+     * Drain the collection into a plain indexed array.
+     * @return array<int, mixed>
+     */
+    private function drain(): array
+    {
+        $out = [];
+        foreach ($this->collection as $item) {
+            $out[] = $item;
+        }
+        return $out;
+    }
+
+    /**
+     * Drain the collection preserving keys.
+     * @return array<int|string, mixed>
+     */
+    private function drainWithKeys(): array
+    {
+        $out = [];
+        foreach ($this->collection as $key => $item) {
+            $out[$key] = $item;
+        }
+        return $out;
     }
 }
