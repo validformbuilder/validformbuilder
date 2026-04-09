@@ -18,7 +18,8 @@
     ],
     "require": {
         "php": ">=8.0",
-        "volnix/csrf": "~1.0"
+        "volnix/csrf": "~1.0",
+        "ext-mbstring": "*"
     },
     "autoload": {
         "psr-0": {"ValidFormBuilder": "classes/"}

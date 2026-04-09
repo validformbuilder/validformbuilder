@@ -849,7 +849,12 @@ class Base extends ClassDynamic
     protected function __sanitizeCheckForJs($strCheck)
     {
         $strCheck = (empty($strCheck)) ? "''" : str_replace("'", "\\'", $strCheck);
-        $strCheck = (mb_substr($strCheck, -1) == "u") ? mb_substr($strCheck, 0, -1) : $strCheck;
+
+        //*** Strip the PCRE-only /u flag, but keep it when the pattern uses
+        //*** Unicode property escapes (\p{...}) which require /u in JavaScript.
+        if (!str_contains($strCheck, '\\p{') && mb_strtolower(mb_substr($strCheck, -1)) === "u") {
+            $strCheck = mb_substr($strCheck, 0, -1);
+        }
 
         return $strCheck;
     }
