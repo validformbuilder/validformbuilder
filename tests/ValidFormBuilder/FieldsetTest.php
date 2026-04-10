@@ -3,6 +3,7 @@
 namespace ValidFormBuilder;
 
 use PHPUnit\Framework\TestCase;
+use ValidFormBuilder\Tests\HtmlAssertionsTrait;
 
 /**
  * Comprehensive coverage for {@link \ValidFormBuilder\Fieldset}.
@@ -20,6 +21,8 @@ use PHPUnit\Framework\TestCase;
  */
 class FieldsetTest extends TestCase
 {
+    use HtmlAssertionsTrait;
+
     // --------------------------------------------------------------
     // Constructor
     // --------------------------------------------------------------
@@ -418,34 +421,6 @@ class FieldsetTest extends TestCase
         $fieldset = new Fieldset();
 
         $this->assertSame('', $fieldset->toJS());
-    }
-
-    // --------------------------------------------------------------
-    // Helpers
-    // --------------------------------------------------------------
-
-    /**
-     * Parse a Fieldset HTML fragment into a DOMXPath instance.
-     *
-     * The fragment is wrapped in a minimal HTML5 document with a UTF-8
-     * meta charset so DOMDocument parses it as HTML5 instead of falling
-     * back to ISO-8859-1. libxml errors are swallowed because the
-     * fragment is HTML5 (self-closed inputs etc.) rather than strict XML.
-     * XPath queries use // (descendant-anywhere) so the implicit
-     * <html>/<body> wrap is irrelevant.
-     */
-    private function parseHtml(string $html): \DOMXPath
-    {
-        $previous = libxml_use_internal_errors(true);
-        $doc = new \DOMDocument();
-        $doc->loadHTML(
-            '<!DOCTYPE html><html><head><meta charset="utf-8"></head><body>' . $html . '</body></html>',
-            LIBXML_NOERROR | LIBXML_NOWARNING
-        );
-        libxml_clear_errors();
-        libxml_use_internal_errors($previous);
-
-        return new \DOMXPath($doc);
     }
 
     // --------------------------------------------------------------
