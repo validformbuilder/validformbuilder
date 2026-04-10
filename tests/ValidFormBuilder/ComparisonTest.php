@@ -510,11 +510,11 @@ class ComparisonTest extends TestCase
             'red'
         );
 
-        $data = $comparison->jsonSerialize(5);
-
-        // GroupField branch uses getId() and ignores dynamic position.
-        $this->assertSame($redOption->getId(), $data['subject']);
-        $this->assertStringNotContainsString('_5', $data['subject']);
+        // GroupField branch uses getId() and ignores any dynamic position argument,
+        // so the subject must match getId() verbatim regardless of position.
+        $this->assertSame($redOption->getId(), $comparison->jsonSerialize()['subject']);
+        $this->assertSame($redOption->getId(), $comparison->jsonSerialize(5)['subject']);
+        $this->assertSame($redOption->getId(), $comparison->jsonSerialize(42)['subject']);
     }
 
     // --------------------------------------------------------------
