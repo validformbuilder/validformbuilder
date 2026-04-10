@@ -2,6 +2,7 @@
 
 namespace ValidFormBuilder\Tests;
 
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use ValidFormBuilder\Area;
 use ValidFormBuilder\Collection;
@@ -19,49 +20,57 @@ class AreaTest extends TestCase
         $this->area = new Area("Test Area", true, "test-area", false, []);
     }
 
-    public function testGetLabel(): void
+    #[Test]
+    public function getLabel(): void
     {
         $this->assertSame("Test Area", $this->area->getLabel());
     }
 
-    public function testSetLabel(): void
+    #[Test]
+    public function setLabel(): void
     {
         $this->area->setLabel("New Label");
         $this->assertSame("New Label", $this->area->getLabel());
     }
 
-    public function testGetRequiredStyle(): void
+    #[Test]
+    public function getRequiredStyle(): void
     {
         // TODO: Make $__requiredstyle a string type and set the default value to "".
         //   Now it defaults to null which could be unexpected, since the type is softly defined as non-nullable string.
         $this->assertNull($this->area->getRequiredStyle());
     }
 
-    public function testSetRequiredStyle(): void
+    #[Test]
+    public function setRequiredStyle(): void
     {
         $this->area->setRequiredStyle("%s *");
         $this->assertSame("%s *", $this->area->getRequiredStyle());
     }
 
-    public function testAddField(): void
+    #[Test]
+    public function addField(): void
     {
         $field = $this->area->addField("test-field", "Test Field", ValidForm::VFORM_STRING);
         $this->assertInstanceOf(Element::class, $field);
     }
 
-    public function testAddParagraph(): void
+    #[Test]
+    public function addParagraph(): void
     {
         $paragraph = $this->area->addParagraph("This is a test paragraph.", "Test Header");
         $this->assertInstanceOf(Paragraph::class, $paragraph);
     }
 
-    public function testAddMultiField(): void
+    #[Test]
+    public function addMultiField(): void
     {
         $multiField = $this->area->addMultiField("MultiField Test");
         $this->assertInstanceOf(MultiField::class, $multiField);
     }
 
-    public function testToHtml(): void
+    #[Test]
+    public function toHtml(): void
     {
         /**
          * The default $this->area is an active area with a default checked value of true.
@@ -96,12 +105,14 @@ class AreaTest extends TestCase
         $this->assertStringContainsString("<legend>Test Area</legend>", $htmlOutput);
     }
 
-    public function testHasContent(): void
+    #[Test]
+    public function hasContent(): void
     {
         $this->assertFalse($this->area->hasContent());
     }
 
-    public function testIsActive(): void
+    #[Test]
+    public function isActive(): void
     {
         $area = new Area("Test Area", true, "test-area", false, []);
         $this->assertTrue($area->isActive());
@@ -113,17 +124,20 @@ class AreaTest extends TestCase
         $this->assertFalse($area->isActive());
     }
 
-    public function testIsValid(): void
+    #[Test]
+    public function isValid(): void
     {
         $this->assertTrue($this->area->isValid());
     }
 
-    public function testGetDynamicCount(): void
+    #[Test]
+    public function getDynamicCount(): void
     {
         $this->assertSame(0, $this->area->getDynamicCount());
     }
 
-    public function testGetFields(): void
+    #[Test]
+    public function getFields(): void
     {
         $fields = $this->area->getFields();
         $this->assertInstanceOf(Collection::class, $fields);
@@ -133,7 +147,8 @@ class AreaTest extends TestCase
      * If this is an active Area, getValue returns the value of the Checkbox.
      * @return void
      */
-    public function testGetValue(): void
+    #[Test]
+    public function getValue(): void
     {
         $area = new Area("Test Area", true, "test-area_wrapper", false, []);
         $this->assertFalse($area->getValue());
@@ -147,22 +162,26 @@ class AreaTest extends TestCase
         $this->assertTrue($area->getValue());
     }
 
-    public function testGetId(): void
+    #[Test]
+    public function getId(): void
     {
         $this->assertSame("test-area_wrapper", $this->area->getId());
     }
 
-    public function testGetType(): void
+    #[Test]
+    public function getType(): void
     {
         $this->assertSame(0, $this->area->getType());
     }
 
-    public function testHasFields(): void
+    #[Test]
+    public function hasFields(): void
     {
         $this->assertFalse($this->area->hasFields());
     }
 
-    public function testHasFieldsWithFields(): void
+    #[Test]
+    public function hasFieldsWithFields(): void
     {
         $this->assertFalse($this->area->hasFields());
         $this->area->addField("test-field", "Test Field", ValidForm::VFORM_STRING);

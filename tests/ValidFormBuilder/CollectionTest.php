@@ -1,8 +1,11 @@
 <?php
 
-namespace ValidFormBuilder;
+namespace ValidFormBuilder\Tests;
 
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
+use ValidFormBuilder\Collection;
+use ValidFormBuilder\ValidForm;
 
 /**
  * Comprehensive coverage for {@link \ValidFormBuilder\Collection}.
@@ -30,14 +33,16 @@ class CollectionTest extends TestCase
     // Constructor
     // --------------------------------------------------------------
 
-    public function testConstructorCreatesEmptyCollectionByDefault(): void
+    #[Test]
+    public function constructorCreatesEmptyCollectionByDefault(): void
     {
         $collection = new Collection();
 
         $this->assertSame(0, $collection->count());
     }
 
-    public function testConstructorAcceptsInitialArray(): void
+    #[Test]
+    public function constructorAcceptsInitialArray(): void
     {
         $collection = new Collection(['a', 'b', 'c']);
 
@@ -46,7 +51,8 @@ class CollectionTest extends TestCase
         $this->assertSame('c', $collection->getLast());
     }
 
-    public function testConstructorIgnoresNonArrayArgument(): void
+    #[Test]
+    public function constructorIgnoresNonArrayArgument(): void
     {
         // Passing something that isn't an array should not populate the collection.
         $collection = new Collection('not an array');
@@ -58,7 +64,8 @@ class CollectionTest extends TestCase
     // addObject / addObjects / addObjectAtPosition
     // --------------------------------------------------------------
 
-    public function testAddObjectAppendsToEnd(): void
+    #[Test]
+    public function addObjectAppendsToEnd(): void
     {
         $this->collection->addObject('a');
         $this->collection->addObject('b');
@@ -68,7 +75,8 @@ class CollectionTest extends TestCase
         $this->assertSame('b', $this->collection->getLast());
     }
 
-    public function testAddObjectWithBeginningFlagPrependsToStart(): void
+    #[Test]
+    public function addObjectWithBeginningFlagPrependsToStart(): void
     {
         $this->collection->addObject('a');
         $this->collection->addObject('b', true);
@@ -77,7 +85,8 @@ class CollectionTest extends TestCase
         $this->assertSame('a', $this->collection->getLast());
     }
 
-    public function testAddObjectsAppendsAllItems(): void
+    #[Test]
+    public function addObjectsAppendsAllItems(): void
     {
         $this->collection->addObjects(['a', 'b', 'c']);
 
@@ -86,7 +95,8 @@ class CollectionTest extends TestCase
         $this->assertSame('c', $this->collection->getLast());
     }
 
-    public function testAddObjectAtPositionInsertsInMiddle(): void
+    #[Test]
+    public function addObjectAtPositionInsertsInMiddle(): void
     {
         $this->collection->addObjects(['a', 'c']);
         $this->collection->addObjectAtPosition('b', 1);
@@ -94,7 +104,8 @@ class CollectionTest extends TestCase
         $this->assertSame(['a', 'b', 'c'], $this->drain());
     }
 
-    public function testAddObjectAtPositionZeroInsertsAtStart(): void
+    #[Test]
+    public function addObjectAtPositionZeroInsertsAtStart(): void
     {
         $this->collection->addObjects(['b', 'c']);
         $this->collection->addObjectAtPosition('a', 0);
@@ -102,7 +113,8 @@ class CollectionTest extends TestCase
         $this->assertSame(['a', 'b', 'c'], $this->drain());
     }
 
-    public function testAddObjectAtPositionBeyondEndAppends(): void
+    #[Test]
+    public function addObjectAtPositionBeyondEndAppends(): void
     {
         $this->collection->addObject('a');
         $this->collection->addObjectAtPosition('b', 42);
@@ -110,7 +122,8 @@ class CollectionTest extends TestCase
         $this->assertSame(['a', 'b'], $this->drain());
     }
 
-    public function testAddObjectAtPositionEqualToCountAppends(): void
+    #[Test]
+    public function addObjectAtPositionEqualToCountAppends(): void
     {
         $this->collection->addObjects(['a', 'b']);
         // Position == count() → falls into the "append" branch (>= count).
@@ -123,13 +136,15 @@ class CollectionTest extends TestCase
     // Retrieval: getFirst / getLast / random / count / end
     // --------------------------------------------------------------
 
-    public function testGetFirstAndGetLastReturnNullWhenEmpty(): void
+    #[Test]
+    public function getFirstAndGetLastReturnNullWhenEmpty(): void
     {
         $this->assertNull($this->collection->getFirst());
         $this->assertNull($this->collection->getLast());
     }
 
-    public function testGetLastWithTypeFiltersByClass(): void
+    #[Test]
+    public function getLastWithTypeFiltersByClass(): void
     {
         $a = new \stdClass();
         $b = new Collection();
@@ -141,14 +156,16 @@ class CollectionTest extends TestCase
         $this->assertSame($b, $this->collection->getLast(Collection::class));
     }
 
-    public function testGetLastWithTypeReturnsNullWhenNoMatch(): void
+    #[Test]
+    public function getLastWithTypeReturnsNullWhenNoMatch(): void
     {
         $this->collection->addObjects([new \stdClass(), new \stdClass()]);
 
         $this->assertNull($this->collection->getLast(\DateTime::class));
     }
 
-    public function testRandomReturnsItemFromCollection(): void
+    #[Test]
+    public function randomReturnsItemFromCollection(): void
     {
         $items = ['a', 'b', 'c'];
         $this->collection->addObjects($items);
@@ -156,12 +173,14 @@ class CollectionTest extends TestCase
         $this->assertContains($this->collection->random(), $items);
     }
 
-    public function testRandomReturnsNullForEmptyCollection(): void
+    #[Test]
+    public function randomReturnsNullForEmptyCollection(): void
     {
         $this->assertNull($this->collection->random());
     }
 
-    public function testCountReflectsNumberOfItems(): void
+    #[Test]
+    public function countReflectsNumberOfItems(): void
     {
         $this->assertSame(0, $this->collection->count());
 
@@ -172,7 +191,8 @@ class CollectionTest extends TestCase
         $this->assertSame(2, $this->collection->count());
     }
 
-    public function testEndReturnsLastItemAndAdvancesPointer(): void
+    #[Test]
+    public function endReturnsLastItemAndAdvancesPointer(): void
     {
         $this->collection->addObjects(['a', 'b', 'c']);
 
@@ -184,14 +204,16 @@ class CollectionTest extends TestCase
     // Iterator interface
     // --------------------------------------------------------------
 
-    public function testForeachYieldsItemsInOrder(): void
+    #[Test]
+    public function foreachYieldsItemsInOrder(): void
     {
         $this->collection->addObjects(['a', 'b', 'c']);
 
         $this->assertSame(['a', 'b', 'c'], $this->drain());
     }
 
-    public function testCurrentNextPreviousKey(): void
+    #[Test]
+    public function currentNextPreviousKey(): void
     {
         $this->collection->addObjects(['a', 'b', 'c']);
 
@@ -206,7 +228,8 @@ class CollectionTest extends TestCase
         $this->assertSame(0, $this->collection->key());
     }
 
-    public function testValidReturnsFalseWhenPointerPastEnd(): void
+    #[Test]
+    public function validReturnsFalseWhenPointerPastEnd(): void
     {
         $this->collection->addObjects(['a', 'b']);
         $this->collection->rewind();
@@ -218,7 +241,8 @@ class CollectionTest extends TestCase
         $this->assertFalse($this->collection->valid());
     }
 
-    public function testRewindReturnsCollection(): void
+    #[Test]
+    public function rewindReturnsCollection(): void
     {
         $result = $this->collection->rewind();
 
@@ -229,7 +253,8 @@ class CollectionTest extends TestCase
     // Pointer inspection
     // --------------------------------------------------------------
 
-    public function testIsFirstAndIsLastReflectPointerPosition(): void
+    #[Test]
+    public function isFirstAndIsLastReflectPointerPosition(): void
     {
         $this->collection->addObjects(['a', 'b', 'c']);
         $this->collection->rewind();
@@ -250,7 +275,8 @@ class CollectionTest extends TestCase
     // merge / reverse / rebuild / randomize
     // --------------------------------------------------------------
 
-    public function testMergeAppendsAnotherCollection(): void
+    #[Test]
+    public function mergeAppendsAnotherCollection(): void
     {
         $this->collection->addObjects(['a', 'b']);
         $other = new Collection(['c', 'd']);
@@ -260,7 +286,8 @@ class CollectionTest extends TestCase
         $this->assertSame(['a', 'b', 'c', 'd'], $this->drain());
     }
 
-    public function testMergeWithEmptyCollectionLeavesOriginalUnchanged(): void
+    #[Test]
+    public function mergeWithEmptyCollectionLeavesOriginalUnchanged(): void
     {
         $this->collection->addObjects(['a', 'b']);
         $this->collection->merge(new Collection());
@@ -268,7 +295,8 @@ class CollectionTest extends TestCase
         $this->assertSame(['a', 'b'], $this->drain());
     }
 
-    public function testMergeWithNonObjectIsIgnored(): void
+    #[Test]
+    public function mergeWithNonObjectIsIgnored(): void
     {
         $this->collection->addObjects(['a', 'b']);
         $this->collection->merge('not a collection');
@@ -276,7 +304,8 @@ class CollectionTest extends TestCase
         $this->assertSame(['a', 'b'], $this->drain());
     }
 
-    public function testReverseFlipsOrderAndReturnsCollection(): void
+    #[Test]
+    public function reverseFlipsOrderAndReturnsCollection(): void
     {
         $this->collection->addObjects(['a', 'b', 'c']);
         $result = $this->collection->reverse();
@@ -285,7 +314,8 @@ class CollectionTest extends TestCase
         $this->assertSame(['c', 'b', 'a'], $this->drain());
     }
 
-    public function testRebuildRenumbersAfterGaps(): void
+    #[Test]
+    public function rebuildRenumbersAfterGaps(): void
     {
         $this->collection->addObjects(['a', 'b', 'c']);
 
@@ -301,7 +331,8 @@ class CollectionTest extends TestCase
         $this->assertSame([0 => 'a', 1 => 'c'], $this->drainWithKeys());
     }
 
-    public function testRandomizePreservesItemsButMayReorder(): void
+    #[Test]
+    public function randomizePreservesItemsButMayReorder(): void
     {
         $items = range(1, 100);
         $collection = new Collection($items);
@@ -321,7 +352,8 @@ class CollectionTest extends TestCase
     // seek
     // --------------------------------------------------------------
 
-    public function testSeekAdvancesInternalPointer(): void
+    #[Test]
+    public function seekAdvancesInternalPointer(): void
     {
         $this->collection->addObjects(['a', 'b', 'c', 'd']);
 
@@ -331,7 +363,8 @@ class CollectionTest extends TestCase
         $this->assertSame(2, $this->collection->key());
     }
 
-    public function testSeekIgnoresNonNumericArgument(): void
+    #[Test]
+    public function seekIgnoresNonNumericArgument(): void
     {
         $this->collection->addObjects(['a', 'b', 'c']);
         $this->collection->rewind();
@@ -346,7 +379,8 @@ class CollectionTest extends TestCase
     // inCollection / remove / removeRecursive
     // --------------------------------------------------------------
 
-    public function testInCollectionReturnsTrueWhenObjectFound(): void
+    #[Test]
+    public function inCollectionReturnsTrueWhenObjectFound(): void
     {
         $obj = (object) ['id' => 2];
         $this->collection->addObjects([
@@ -358,21 +392,24 @@ class CollectionTest extends TestCase
         $this->assertTrue($this->collection->inCollection($obj));
     }
 
-    public function testInCollectionReturnsFalseWhenObjectAbsent(): void
+    #[Test]
+    public function inCollectionReturnsFalseWhenObjectAbsent(): void
     {
         $this->collection->addObject((object) ['id' => 1]);
 
         $this->assertFalse($this->collection->inCollection(new \DateTime()));
     }
 
-    public function testInCollectionMatchesByClassName(): void
+    #[Test]
+    public function inCollectionMatchesByClassName(): void
     {
         $this->collection->addObjects([new \stdClass(), new Collection()]);
 
         $this->assertTrue($this->collection->inCollection(Collection::class));
     }
 
-    public function testInCollectionWithReturnKeyYieldsFirstMatchAtPositionZero(): void
+    #[Test]
+    public function inCollectionWithReturnKeyYieldsFirstMatchAtPositionZero(): void
     {
         $obj = (object) ['id' => 1];
         $this->collection->addObjects([$obj, (object) ['id' => 2]]);
@@ -380,7 +417,8 @@ class CollectionTest extends TestCase
         $this->assertSame(0, $this->collection->inCollection($obj, true));
     }
 
-    public function testInCollectionWithReturnKeyYieldsCorrectPositionForLaterItem(): void
+    #[Test]
+    public function inCollectionWithReturnKeyYieldsCorrectPositionForLaterItem(): void
     {
         $target = (object) ['id' => 3];
         $this->collection->addObjects([
@@ -392,14 +430,16 @@ class CollectionTest extends TestCase
         $this->assertSame(2, $this->collection->inCollection($target, true));
     }
 
-    public function testInCollectionWithReturnKeyReturnsFalseWhenAbsent(): void
+    #[Test]
+    public function inCollectionWithReturnKeyReturnsFalseWhenAbsent(): void
     {
         $this->collection->addObject((object) ['id' => 1]);
 
         $this->assertFalse($this->collection->inCollection(new \DateTime(), true));
     }
 
-    public function testRemoveDeletesTheObjectAndRebuildsIndex(): void
+    #[Test]
+    public function removeDeletesTheObjectAndRebuildsIndex(): void
     {
         // Use stdClass with distinguishing properties — Collection compares with
         // loose equality (==), so empty stdClass instances would all be equal.
@@ -415,7 +455,8 @@ class CollectionTest extends TestCase
         $this->assertSame($c, $this->collection->getLast());
     }
 
-    public function testRemoveNonExistentObjectLeavesCollectionIntact(): void
+    #[Test]
+    public function removeNonExistentObjectLeavesCollectionIntact(): void
     {
         $this->collection->addObjects([
             (object) ['id' => 1],
@@ -428,7 +469,8 @@ class CollectionTest extends TestCase
         $this->assertSame($countBefore, $this->collection->count());
     }
 
-    public function testRemoveRecursiveDropsTopLevelMatchingElementByName(): void
+    #[Test]
+    public function removeRecursiveDropsTopLevelMatchingElementByName(): void
     {
         $form = new ValidForm('test-form');
         $first = $form->addField('first', 'First', ValidForm::VFORM_STRING);
@@ -449,7 +491,8 @@ class CollectionTest extends TestCase
         $this->assertSame(['second'], $remaining);
     }
 
-    public function testRemoveRecursiveDescendsIntoFieldset(): void
+    #[Test]
+    public function removeRecursiveDescendsIntoFieldset(): void
     {
         $form = new ValidForm('test-form');
         $fieldset = $form->addFieldset('Contact');

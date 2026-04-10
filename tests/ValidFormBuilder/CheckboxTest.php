@@ -1,8 +1,11 @@
 <?php
 
-namespace ValidFormBuilder;
+namespace ValidFormBuilder\Tests;
 
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
+use ValidFormBuilder\Checkbox;
+use ValidFormBuilder\ValidForm;
 
 class CheckboxTest extends TestCase
 {
@@ -22,7 +25,8 @@ class CheckboxTest extends TestCase
         );
     }
 
-    public function testConstruct(): void
+    #[Test]
+    public function construct(): void
     {
         // Test default construction
         $this->assertInstanceOf(Checkbox::class, $this->checkbox);
@@ -46,7 +50,8 @@ class CheckboxTest extends TestCase
         $this->assertEquals('custom-class', $checkbox->getMeta('class'));
     }
 
-    public function testGetValue(): void
+    #[Test]
+    public function getValue(): void
     {
         // Setup a checkbox with default value set through meta
         $value = 'on';
@@ -67,7 +72,8 @@ class CheckboxTest extends TestCase
             "Expected false because the checkbox's default value isn't properly recognized");
     }
 
-    public function testGetValueWithSubmission(): void
+    #[Test]
+    public function getValueWithSubmission(): void
     {
         // Create a checkbox with a name we'll use for submission
         $checkbox = new Checkbox(
@@ -102,7 +108,8 @@ class CheckboxTest extends TestCase
             "Required checkbox should not show an error when checked in the submission");
     }
 
-    public function testGetDefault(): void
+    #[Test]
+    public function getDefault(): void
     {
         // Setup a checkbox with default value
         $value = 'on';
@@ -124,7 +131,8 @@ class CheckboxTest extends TestCase
         $this->assertNull($unchecked->getDefault());
     }
 
-    public function testToHtml(): void
+    #[Test]
+    public function toHtml(): void
     {
         $html = $this->checkbox->toHtml();
 
@@ -149,7 +157,8 @@ class CheckboxTest extends TestCase
             "Checkbox should be checked when the value is in the REQUEST");
     }
 
-    public function testToHtmlWithTip(): void
+    #[Test]
+    public function toHtmlWithTip(): void
     {
         $checkbox = new Checkbox(
             'tip-checkbox',
@@ -167,7 +176,8 @@ class CheckboxTest extends TestCase
         $this->assertStringContainsString('vf__tip', $html);
     }
 
-    public function testToHtmlRequired(): void
+    #[Test]
+    public function toHtmlRequired(): void
     {
         // Create required checkbox
         $required = new Checkbox(
@@ -183,7 +193,8 @@ class CheckboxTest extends TestCase
         $this->assertStringContainsString('vf__required', $html);
     }
 
-    public function testToHtmlWithError(): void
+    #[Test]
+    public function toHtmlWithError(): void
     {
         // Create a required checkbox and simulate submission
         $required = new Checkbox(
@@ -200,7 +211,8 @@ class CheckboxTest extends TestCase
         $this->assertStringContainsString('vf__error', $html);
     }
 
-    public function testToJS(): void
+    #[Test]
+    public function toJS(): void
     {
         $checkbox = new Checkbox(
             'js-checkbox',
@@ -219,7 +231,8 @@ class CheckboxTest extends TestCase
         $this->assertStringContainsString(', true,', $js);
     }
 
-    public function testMetaProperties(): void
+    #[Test]
+    public function metaProperties(): void
     {
         // Test setting and getting meta properties
         $checkbox = new Checkbox(

@@ -7,6 +7,7 @@ use ValidFormBuilder\Condition;
 use ValidFormBuilder\Element;
 use ValidFormBuilder\ValidForm;
 use PHPUnit\Framework\Attributes\Depends;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
 class ConditionTest extends TestCase
@@ -64,7 +65,8 @@ class ConditionTest extends TestCase
         }
     }
 
-    public function testConditionConstruct(): void
+    #[Test]
+    public function conditionConstruct(): void
     {
         $condition = new Condition(
             $this->textField,
@@ -82,7 +84,8 @@ class ConditionTest extends TestCase
         $this->assertEquals(ValidForm::VFORM_MATCH_ANY, $data['comparisonType']);
     }
 
-    public function testInvalidConditionProperty(): void
+    #[Test]
+    public function invalidConditionProperty(): void
     {
         $this->expectException(\InvalidArgumentException::class);
 
@@ -93,7 +96,8 @@ class ConditionTest extends TestCase
         );
     }
 
-    public function testAddComparisonToCondition(): void
+    #[Test]
+    public function addComparisonToCondition(): void
     {
         $condition = new Condition(
             $this->textField,
@@ -125,7 +129,8 @@ class ConditionTest extends TestCase
         $this->assertEquals($this->numericField->getName(), $data['comparisons'][1]['subject']);
     }
 
-    public function testAddInvalidComparison(): void
+    #[Test]
+    public function addInvalidComparison(): void
     {
         $condition = new Condition(
             $this->textField,
@@ -138,7 +143,8 @@ class ConditionTest extends TestCase
         $condition->addComparison("not a valid comparison");
     }
 
-    public function testIsMetWithMatchAny(): void
+    #[Test]
+    public function isMetWithMatchAny(): void
     {
         // Set up request data
         $_REQUEST['email-field'] = 'test@example.com';
@@ -168,7 +174,8 @@ class ConditionTest extends TestCase
         $this->assertTrue($condition->isMet());
     }
 
-    public function testIsMetWithMatchAll(): void
+    #[Test]
+    public function isMetWithMatchAll(): void
     {
         // Set up request data
         $_REQUEST['email-field'] = 'test@example.com';
@@ -202,7 +209,8 @@ class ConditionTest extends TestCase
         $this->assertTrue($condition->isMet());
     }
 
-    public function testGetters(): void
+    #[Test]
+    public function getters(): void
     {
         $condition = new Condition(
             $this->textField,
@@ -215,7 +223,8 @@ class ConditionTest extends TestCase
         $this->assertTrue($condition->getValue());
     }
 
-    public function testGetComparisons(): void
+    #[Test]
+    public function getComparisons(): void
     {
         $condition = new Condition(
             $this->textField,
@@ -235,7 +244,8 @@ class ConditionTest extends TestCase
         $this->assertSame($comparison, $comparisons[0]);
     }
 
-    public function testGetComparisonType(): void
+    #[Test]
+    public function getComparisonType(): void
     {
         $condition = new Condition(
             $this->textField,
@@ -247,7 +257,8 @@ class ConditionTest extends TestCase
         $this->assertEquals(ValidForm::VFORM_MATCH_ALL, $condition->getComparisonType());
     }
 
-    public function testIsMetWithDynamicPosition(): void
+    #[Test]
+    public function isMetWithDynamicPosition(): void
     {
         // Set up request data for dynamic fields
         $_REQUEST['email-field_1'] = 'test@example.com';
@@ -271,7 +282,8 @@ class ConditionTest extends TestCase
         $this->assertFalse($condition->isMet(2));
     }
 
-    public function testJsonSerialize(): array
+    #[Test]
+    public function jsonSerialize(): array
     {
         $condition = new Condition(
             $this->textField,
@@ -297,8 +309,9 @@ class ConditionTest extends TestCase
         return $result;
     }
 
-    #[Depends('testJsonSerialize')]
-    public function testJsonSerializeStructure(array $result): void
+    #[Test]
+    #[Depends('jsonSerialize')]
+    public function jsonSerializeStructure(array $result): void
     {
         $this->assertEquals('text-field', $result['subject']);
         $this->assertEquals('enabled', $result['property']);

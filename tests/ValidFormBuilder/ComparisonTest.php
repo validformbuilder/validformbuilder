@@ -1,8 +1,12 @@
 <?php
 
-namespace ValidFormBuilder;
+namespace ValidFormBuilder\Tests;
 
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
+use ValidFormBuilder\Comparison;
+use ValidFormBuilder\Element;
+use ValidFormBuilder\ValidForm;
 
 /**
  * Comprehensive coverage for {@link \ValidFormBuilder\Comparison}.
@@ -56,7 +60,8 @@ class ComparisonTest extends TestCase
     // Constructor
     // --------------------------------------------------------------
 
-    public function testConstructorStoresSubjectComparisonAndValue(): void
+    #[Test]
+    public function constructorStoresSubjectComparisonAndValue(): void
     {
         $comparison = new Comparison(
             $this->textField,
@@ -70,35 +75,40 @@ class ComparisonTest extends TestCase
         $this->assertSame('hello', $comparison->getValue());
     }
 
-    public function testConstructorAllowsNullValueForEmptyComparison(): void
+    #[Test]
+    public function constructorAllowsNullValueForEmptyComparison(): void
     {
         $comparison = new Comparison($this->textField, ValidForm::VFORM_COMPARISON_EMPTY);
 
         $this->assertNull($comparison->getValue());
     }
 
-    public function testConstructorAllowsNullValueForNotEmptyComparison(): void
+    #[Test]
+    public function constructorAllowsNullValueForNotEmptyComparison(): void
     {
         $comparison = new Comparison($this->textField, ValidForm::VFORM_COMPARISON_NOT_EMPTY);
 
         $this->assertNull($comparison->getValue());
     }
 
-    public function testConstructorThrowsWhenValueIsNullForEqualComparison(): void
+    #[Test]
+    public function constructorThrowsWhenValueIsNullForEqualComparison(): void
     {
         $this->expectException(\InvalidArgumentException::class);
 
         new Comparison($this->textField, ValidForm::VFORM_COMPARISON_EQUAL);
     }
 
-    public function testConstructorThrowsWhenValueIsNullForContainsComparison(): void
+    #[Test]
+    public function constructorThrowsWhenValueIsNullForContainsComparison(): void
     {
         $this->expectException(\InvalidArgumentException::class);
 
         new Comparison($this->textField, ValidForm::VFORM_COMPARISON_CONTAINS);
     }
 
-    public function testConstructorThrowsWhenEmptyComparisonAppliedToRequiredField(): void
+    #[Test]
+    public function constructorThrowsWhenEmptyComparisonAppliedToRequiredField(): void
     {
         $requiredField = $this->form->addField(
             'required-field',
@@ -112,7 +122,8 @@ class ComparisonTest extends TestCase
         new Comparison($requiredField, ValidForm::VFORM_COMPARISON_EMPTY);
     }
 
-    public function testConstructorAllowsNotEmptyComparisonOnRequiredField(): void
+    #[Test]
+    public function constructorAllowsNotEmptyComparisonOnRequiredField(): void
     {
         $requiredField = $this->form->addField(
             'required-field-ok',
@@ -130,7 +141,8 @@ class ComparisonTest extends TestCase
     // check() — subject validation
     // --------------------------------------------------------------
 
-    public function testCheckThrowsWhenSubjectIsNotElement(): void
+    #[Test]
+    public function checkThrowsWhenSubjectIsNotElement(): void
     {
         $comparison = new Comparison($this->textField, ValidForm::VFORM_COMPARISON_NOT_EMPTY);
 
@@ -143,7 +155,8 @@ class ComparisonTest extends TestCase
         $comparison->check();
     }
 
-    public function testCheckReturnsFalseWhenSubjectValueIsNull(): void
+    #[Test]
+    public function checkReturnsFalseWhenSubjectValueIsNull(): void
     {
         // No $_REQUEST, no default set → field value resolves to null → check() returns false.
         $comparison = new Comparison(
@@ -159,7 +172,8 @@ class ComparisonTest extends TestCase
     // __verify() — one test per comparison type, via check()
     // --------------------------------------------------------------
 
-    public function testEqualComparisonMatches(): void
+    #[Test]
+    public function equalComparisonMatches(): void
     {
         $_REQUEST['text-field'] = 'hello';
         $comparison = new Comparison($this->textField, ValidForm::VFORM_COMPARISON_EQUAL, 'hello');
@@ -167,7 +181,8 @@ class ComparisonTest extends TestCase
         $this->assertTrue($comparison->check());
     }
 
-    public function testEqualComparisonDoesNotMatchDifferentValue(): void
+    #[Test]
+    public function equalComparisonDoesNotMatchDifferentValue(): void
     {
         $_REQUEST['text-field'] = 'hello';
         $comparison = new Comparison($this->textField, ValidForm::VFORM_COMPARISON_EQUAL, 'world');
@@ -175,7 +190,8 @@ class ComparisonTest extends TestCase
         $this->assertFalse($comparison->check());
     }
 
-    public function testEqualComparisonIsCaseInsensitive(): void
+    #[Test]
+    public function equalComparisonIsCaseInsensitive(): void
     {
         $_REQUEST['text-field'] = 'HelLo';
         $comparison = new Comparison($this->textField, ValidForm::VFORM_COMPARISON_EQUAL, 'hello');
@@ -183,7 +199,8 @@ class ComparisonTest extends TestCase
         $this->assertTrue($comparison->check());
     }
 
-    public function testNotEqualComparisonMatchesWhenDifferent(): void
+    #[Test]
+    public function notEqualComparisonMatchesWhenDifferent(): void
     {
         $_REQUEST['text-field'] = 'hello';
         $comparison = new Comparison($this->textField, ValidForm::VFORM_COMPARISON_NOT_EQUAL, 'world');
@@ -191,7 +208,8 @@ class ComparisonTest extends TestCase
         $this->assertTrue($comparison->check());
     }
 
-    public function testNotEqualComparisonDoesNotMatchWhenEqual(): void
+    #[Test]
+    public function notEqualComparisonDoesNotMatchWhenEqual(): void
     {
         $_REQUEST['text-field'] = 'hello';
         $comparison = new Comparison($this->textField, ValidForm::VFORM_COMPARISON_NOT_EQUAL, 'hello');
@@ -199,7 +217,8 @@ class ComparisonTest extends TestCase
         $this->assertFalse($comparison->check());
     }
 
-    public function testLessThanComparisonTrueWhenValueIsSmaller(): void
+    #[Test]
+    public function lessThanComparisonTrueWhenValueIsSmaller(): void
     {
         $_REQUEST['numeric-field'] = '5';
         $comparison = new Comparison($this->numericField, ValidForm::VFORM_COMPARISON_LESS_THAN, 10);
@@ -207,7 +226,8 @@ class ComparisonTest extends TestCase
         $this->assertTrue($comparison->check());
     }
 
-    public function testLessThanComparisonFalseWhenValueIsLarger(): void
+    #[Test]
+    public function lessThanComparisonFalseWhenValueIsLarger(): void
     {
         $_REQUEST['numeric-field'] = '15';
         $comparison = new Comparison($this->numericField, ValidForm::VFORM_COMPARISON_LESS_THAN, 10);
@@ -215,7 +235,8 @@ class ComparisonTest extends TestCase
         $this->assertFalse($comparison->check());
     }
 
-    public function testGreaterThanComparisonTrueWhenValueIsLarger(): void
+    #[Test]
+    public function greaterThanComparisonTrueWhenValueIsLarger(): void
     {
         $_REQUEST['numeric-field'] = '15';
         $comparison = new Comparison($this->numericField, ValidForm::VFORM_COMPARISON_GREATER_THAN, 10);
@@ -223,7 +244,8 @@ class ComparisonTest extends TestCase
         $this->assertTrue($comparison->check());
     }
 
-    public function testGreaterThanComparisonFalseWhenValueIsSmaller(): void
+    #[Test]
+    public function greaterThanComparisonFalseWhenValueIsSmaller(): void
     {
         $_REQUEST['numeric-field'] = '5';
         $comparison = new Comparison($this->numericField, ValidForm::VFORM_COMPARISON_GREATER_THAN, 10);
@@ -231,7 +253,8 @@ class ComparisonTest extends TestCase
         $this->assertFalse($comparison->check());
     }
 
-    public function testLessThanOrEqualComparisonTrueOnEquality(): void
+    #[Test]
+    public function lessThanOrEqualComparisonTrueOnEquality(): void
     {
         $_REQUEST['numeric-field'] = '10';
         $comparison = new Comparison($this->numericField, ValidForm::VFORM_COMPARISON_LESS_THAN_OR_EQUAL, 10);
@@ -239,7 +262,8 @@ class ComparisonTest extends TestCase
         $this->assertTrue($comparison->check());
     }
 
-    public function testLessThanOrEqualComparisonFalseWhenAbove(): void
+    #[Test]
+    public function lessThanOrEqualComparisonFalseWhenAbove(): void
     {
         $_REQUEST['numeric-field'] = '11';
         $comparison = new Comparison($this->numericField, ValidForm::VFORM_COMPARISON_LESS_THAN_OR_EQUAL, 10);
@@ -247,7 +271,8 @@ class ComparisonTest extends TestCase
         $this->assertFalse($comparison->check());
     }
 
-    public function testGreaterThanOrEqualComparisonTrueOnEquality(): void
+    #[Test]
+    public function greaterThanOrEqualComparisonTrueOnEquality(): void
     {
         $_REQUEST['numeric-field'] = '10';
         $comparison = new Comparison($this->numericField, ValidForm::VFORM_COMPARISON_GREATER_THAN_OR_EQUAL, 10);
@@ -255,7 +280,8 @@ class ComparisonTest extends TestCase
         $this->assertTrue($comparison->check());
     }
 
-    public function testGreaterThanOrEqualComparisonFalseWhenBelow(): void
+    #[Test]
+    public function greaterThanOrEqualComparisonFalseWhenBelow(): void
     {
         $_REQUEST['numeric-field'] = '9';
         $comparison = new Comparison($this->numericField, ValidForm::VFORM_COMPARISON_GREATER_THAN_OR_EQUAL, 10);
@@ -263,7 +289,8 @@ class ComparisonTest extends TestCase
         $this->assertFalse($comparison->check());
     }
 
-    public function testNotEmptyComparisonTrueForNonEmptyString(): void
+    #[Test]
+    public function notEmptyComparisonTrueForNonEmptyString(): void
     {
         $_REQUEST['text-field'] = 'hello';
         $comparison = new Comparison($this->textField, ValidForm::VFORM_COMPARISON_NOT_EMPTY);
@@ -271,7 +298,8 @@ class ComparisonTest extends TestCase
         $this->assertTrue($comparison->check());
     }
 
-    public function testStartsWithComparisonMatches(): void
+    #[Test]
+    public function startsWithComparisonMatches(): void
     {
         $_REQUEST['text-field'] = 'hello world';
         $comparison = new Comparison($this->textField, ValidForm::VFORM_COMPARISON_STARTS_WITH, 'hello');
@@ -279,7 +307,8 @@ class ComparisonTest extends TestCase
         $this->assertTrue($comparison->check());
     }
 
-    public function testStartsWithComparisonDoesNotMatch(): void
+    #[Test]
+    public function startsWithComparisonDoesNotMatch(): void
     {
         $_REQUEST['text-field'] = 'hello world';
         $comparison = new Comparison($this->textField, ValidForm::VFORM_COMPARISON_STARTS_WITH, 'world');
@@ -287,7 +316,8 @@ class ComparisonTest extends TestCase
         $this->assertFalse($comparison->check());
     }
 
-    public function testStartsWithComparisonIsCaseInsensitive(): void
+    #[Test]
+    public function startsWithComparisonIsCaseInsensitive(): void
     {
         $_REQUEST['text-field'] = 'Hello World';
         $comparison = new Comparison($this->textField, ValidForm::VFORM_COMPARISON_STARTS_WITH, 'hello');
@@ -295,7 +325,8 @@ class ComparisonTest extends TestCase
         $this->assertTrue($comparison->check());
     }
 
-    public function testEndsWithComparisonMatches(): void
+    #[Test]
+    public function endsWithComparisonMatches(): void
     {
         $_REQUEST['text-field'] = 'hello world';
         $comparison = new Comparison($this->textField, ValidForm::VFORM_COMPARISON_ENDS_WITH, 'world');
@@ -303,7 +334,8 @@ class ComparisonTest extends TestCase
         $this->assertTrue($comparison->check());
     }
 
-    public function testEndsWithComparisonDoesNotMatch(): void
+    #[Test]
+    public function endsWithComparisonDoesNotMatch(): void
     {
         $_REQUEST['text-field'] = 'hello world';
         $comparison = new Comparison($this->textField, ValidForm::VFORM_COMPARISON_ENDS_WITH, 'hello');
@@ -311,7 +343,8 @@ class ComparisonTest extends TestCase
         $this->assertFalse($comparison->check());
     }
 
-    public function testEndsWithComparisonIsCaseInsensitive(): void
+    #[Test]
+    public function endsWithComparisonIsCaseInsensitive(): void
     {
         $_REQUEST['text-field'] = 'Hello World';
         $comparison = new Comparison($this->textField, ValidForm::VFORM_COMPARISON_ENDS_WITH, 'WORLD');
@@ -319,7 +352,8 @@ class ComparisonTest extends TestCase
         $this->assertTrue($comparison->check());
     }
 
-    public function testContainsComparisonMatches(): void
+    #[Test]
+    public function containsComparisonMatches(): void
     {
         $_REQUEST['text-field'] = 'hello world';
         $comparison = new Comparison($this->textField, ValidForm::VFORM_COMPARISON_CONTAINS, 'lo wo');
@@ -327,7 +361,8 @@ class ComparisonTest extends TestCase
         $this->assertTrue($comparison->check());
     }
 
-    public function testContainsComparisonDoesNotMatch(): void
+    #[Test]
+    public function containsComparisonDoesNotMatch(): void
     {
         $_REQUEST['text-field'] = 'hello world';
         $comparison = new Comparison($this->textField, ValidForm::VFORM_COMPARISON_CONTAINS, 'xyz');
@@ -335,7 +370,8 @@ class ComparisonTest extends TestCase
         $this->assertFalse($comparison->check());
     }
 
-    public function testContainsComparisonIsCaseInsensitive(): void
+    #[Test]
+    public function containsComparisonIsCaseInsensitive(): void
     {
         $_REQUEST['text-field'] = 'Hello World';
         $comparison = new Comparison($this->textField, ValidForm::VFORM_COMPARISON_CONTAINS, 'LO WO');
@@ -343,7 +379,8 @@ class ComparisonTest extends TestCase
         $this->assertTrue($comparison->check());
     }
 
-    public function testDoesNotContainComparisonTrueWhenSubstringAbsent(): void
+    #[Test]
+    public function doesNotContainComparisonTrueWhenSubstringAbsent(): void
     {
         $_REQUEST['text-field'] = 'hello world';
         $comparison = new Comparison($this->textField, ValidForm::VFORM_COMPARISON_DOES_NOT_CONTAIN, 'xyz');
@@ -351,7 +388,8 @@ class ComparisonTest extends TestCase
         $this->assertTrue($comparison->check());
     }
 
-    public function testDoesNotContainComparisonFalseWhenSubstringPresent(): void
+    #[Test]
+    public function doesNotContainComparisonFalseWhenSubstringPresent(): void
     {
         $_REQUEST['text-field'] = 'hello world';
         $comparison = new Comparison($this->textField, ValidForm::VFORM_COMPARISON_DOES_NOT_CONTAIN, 'lo wo');
@@ -359,7 +397,8 @@ class ComparisonTest extends TestCase
         $this->assertFalse($comparison->check());
     }
 
-    public function testDoesNotContainComparisonIsCaseInsensitive(): void
+    #[Test]
+    public function doesNotContainComparisonIsCaseInsensitive(): void
     {
         $_REQUEST['text-field'] = 'Hello World';
         $comparison = new Comparison($this->textField, ValidForm::VFORM_COMPARISON_DOES_NOT_CONTAIN, 'HELLO');
@@ -367,7 +406,8 @@ class ComparisonTest extends TestCase
         $this->assertFalse($comparison->check());
     }
 
-    public function testRegexComparisonMatches(): void
+    #[Test]
+    public function regexComparisonMatches(): void
     {
         $_REQUEST['text-field'] = 'abc123';
         $comparison = new Comparison($this->textField, ValidForm::VFORM_COMPARISON_REGEX, '/^[a-z]+[0-9]+$/');
@@ -375,7 +415,8 @@ class ComparisonTest extends TestCase
         $this->assertTrue($comparison->check());
     }
 
-    public function testRegexComparisonDoesNotMatch(): void
+    #[Test]
+    public function regexComparisonDoesNotMatch(): void
     {
         $_REQUEST['text-field'] = 'ABC123';
         $comparison = new Comparison($this->textField, ValidForm::VFORM_COMPARISON_REGEX, '/^[a-z]+[0-9]+$/');
@@ -383,7 +424,8 @@ class ComparisonTest extends TestCase
         $this->assertFalse($comparison->check());
     }
 
-    public function testInArrayComparisonTrueWhenValuePresent(): void
+    #[Test]
+    public function inArrayComparisonTrueWhenValuePresent(): void
     {
         $_REQUEST['text-field'] = 'blue';
         $comparison = new Comparison(
@@ -395,7 +437,8 @@ class ComparisonTest extends TestCase
         $this->assertTrue($comparison->check());
     }
 
-    public function testInArrayComparisonFalseWhenValueAbsent(): void
+    #[Test]
+    public function inArrayComparisonFalseWhenValueAbsent(): void
     {
         $_REQUEST['text-field'] = 'yellow';
         $comparison = new Comparison(
@@ -407,7 +450,8 @@ class ComparisonTest extends TestCase
         $this->assertFalse($comparison->check());
     }
 
-    public function testNotInArrayComparisonTrueWhenValueAbsent(): void
+    #[Test]
+    public function notInArrayComparisonTrueWhenValueAbsent(): void
     {
         $_REQUEST['text-field'] = 'yellow';
         $comparison = new Comparison(
@@ -419,7 +463,8 @@ class ComparisonTest extends TestCase
         $this->assertTrue($comparison->check());
     }
 
-    public function testNotInArrayComparisonFalseWhenValuePresent(): void
+    #[Test]
+    public function notInArrayComparisonFalseWhenValuePresent(): void
     {
         $_REQUEST['text-field'] = 'blue';
         $comparison = new Comparison(
@@ -435,7 +480,8 @@ class ComparisonTest extends TestCase
     // Dynamic position
     // --------------------------------------------------------------
 
-    public function testCheckHonoursDynamicPosition(): void
+    #[Test]
+    public function checkHonoursDynamicPosition(): void
     {
         // Dynamic fields are addressed as fieldname_{position} in $_REQUEST.
         $_REQUEST['text-field_1'] = 'first';
@@ -454,7 +500,8 @@ class ComparisonTest extends TestCase
     // jsonSerialize()
     // --------------------------------------------------------------
 
-    public function testJsonSerializeReturnsStructuredArrayForElement(): void
+    #[Test]
+    public function jsonSerializeReturnsStructuredArrayForElement(): void
     {
         $comparison = new Comparison(
             $this->textField,
@@ -473,7 +520,8 @@ class ComparisonTest extends TestCase
         $this->assertSame('hello', $data['value']);
     }
 
-    public function testJsonSerializeAppendsDynamicPositionToElementSubject(): void
+    #[Test]
+    public function jsonSerializeAppendsDynamicPositionToElementSubject(): void
     {
         $comparison = new Comparison(
             $this->textField,
@@ -486,7 +534,8 @@ class ComparisonTest extends TestCase
         $this->assertSame('text-field_2', $data['subject']);
     }
 
-    public function testJsonSerializeDoesNotAppendDynamicPositionZero(): void
+    #[Test]
+    public function jsonSerializeDoesNotAppendDynamicPositionZero(): void
     {
         $comparison = new Comparison(
             $this->textField,
@@ -499,7 +548,8 @@ class ComparisonTest extends TestCase
         $this->assertSame('text-field', $data['subject']);
     }
 
-    public function testJsonSerializeUsesGroupFieldIdAsSubject(): void
+    #[Test]
+    public function jsonSerializeUsesGroupFieldIdAsSubject(): void
     {
         $radio = $this->form->addField('color', 'Color', ValidForm::VFORM_RADIO_LIST);
         $redOption = $radio->addField('Red', 'red');
@@ -521,7 +571,8 @@ class ComparisonTest extends TestCase
     // check() smoke tests for other element types
     // --------------------------------------------------------------
 
-    public function testCheckWorksWithEmailField(): void
+    #[Test]
+    public function checkWorksWithEmailField(): void
     {
         $_REQUEST['email-field'] = 'user@example.com';
         $comparison = new Comparison($this->emailField, ValidForm::VFORM_COMPARISON_NOT_EMPTY);
@@ -529,7 +580,8 @@ class ComparisonTest extends TestCase
         $this->assertTrue($comparison->check());
     }
 
-    public function testCheckWorksWithNumericField(): void
+    #[Test]
+    public function checkWorksWithNumericField(): void
     {
         $_REQUEST['numeric-field'] = '42';
         $comparison = new Comparison($this->numericField, ValidForm::VFORM_COMPARISON_EQUAL, '42');

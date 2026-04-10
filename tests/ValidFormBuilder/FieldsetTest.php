@@ -1,9 +1,17 @@
 <?php
 
-namespace ValidFormBuilder;
+namespace ValidFormBuilder\Tests;
 
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
-use ValidFormBuilder\Tests\HtmlAssertionsTrait;
+use ValidFormBuilder\Area;
+use ValidFormBuilder\Collection;
+use ValidFormBuilder\Fieldset;
+use ValidFormBuilder\Hidden;
+use ValidFormBuilder\MultiField;
+use ValidFormBuilder\Note;
+use ValidFormBuilder\Text;
+use ValidFormBuilder\ValidForm;
 
 /**
  * Comprehensive coverage for {@link \ValidFormBuilder\Fieldset}.
@@ -27,7 +35,8 @@ class FieldsetTest extends TestCase
     // Constructor
     // --------------------------------------------------------------
 
-    public function testConstructorAcceptsNoArguments(): void
+    #[Test]
+    public function constructorAcceptsNoArguments(): void
     {
         $fieldset = new Fieldset();
 
@@ -36,14 +45,16 @@ class FieldsetTest extends TestCase
         $this->assertSame(0, $fieldset->getFields()->count());
     }
 
-    public function testConstructorStoresHeader(): void
+    #[Test]
+    public function constructorStoresHeader(): void
     {
         $fieldset = new Fieldset('Section Title');
 
         $this->assertSame('Section Title', $fieldset->getHeader());
     }
 
-    public function testConstructorCreatesNoteWhenNoteHeaderProvided(): void
+    #[Test]
+    public function constructorCreatesNoteWhenNoteHeaderProvided(): void
     {
         $fieldset = new Fieldset('Title', 'Heads up', null);
 
@@ -54,7 +65,8 @@ class FieldsetTest extends TestCase
         $this->assertInstanceOf(Note::class, $ref->getValue($fieldset));
     }
 
-    public function testConstructorCreatesNoteWhenNoteBodyProvided(): void
+    #[Test]
+    public function constructorCreatesNoteWhenNoteBodyProvided(): void
     {
         $fieldset = new Fieldset('Title', null, 'Note body text');
 
@@ -64,7 +76,8 @@ class FieldsetTest extends TestCase
         $this->assertInstanceOf(Note::class, $ref->getValue($fieldset));
     }
 
-    public function testConstructorDoesNotCreateNoteWhenBothNoteArgsEmpty(): void
+    #[Test]
+    public function constructorDoesNotCreateNoteWhenBothNoteArgsEmpty(): void
     {
         $fieldset = new Fieldset('Title', null, null);
 
@@ -74,7 +87,8 @@ class FieldsetTest extends TestCase
         $this->assertNull($ref->getValue($fieldset));
     }
 
-    public function testConstructorStoresMetaArray(): void
+    #[Test]
+    public function constructorStoresMetaArray(): void
     {
         $fieldset = new Fieldset('Title', null, null, ['class' => 'my-fieldset']);
 
@@ -85,7 +99,8 @@ class FieldsetTest extends TestCase
     // addField()
     // --------------------------------------------------------------
 
-    public function testAddFieldAppendsToFieldsCollection(): void
+    #[Test]
+    public function addFieldAppendsToFieldsCollection(): void
     {
         $fieldset = new Fieldset();
         $field = new Text('name', ValidForm::VFORM_STRING, 'Name');
@@ -96,7 +111,8 @@ class FieldsetTest extends TestCase
         $this->assertSame($field, $fieldset->getFields()->getFirst());
     }
 
-    public function testAddFieldSetsFieldsetAsParent(): void
+    #[Test]
+    public function addFieldSetsFieldsetAsParent(): void
     {
         $fieldset = new Fieldset();
         $field = new Text('name', ValidForm::VFORM_STRING, 'Name');
@@ -106,7 +122,8 @@ class FieldsetTest extends TestCase
         $this->assertSame($fieldset, $field->getMeta('parent'));
     }
 
-    public function testAddFieldThrowsForNonBaseObject(): void
+    #[Test]
+    public function addFieldThrowsForNonBaseObject(): void
     {
         $fieldset = new Fieldset();
 
@@ -116,7 +133,8 @@ class FieldsetTest extends TestCase
         $fieldset->addField(new \stdClass());
     }
 
-    public function testAddFieldInjectsHiddenCounterForDynamicField(): void
+    #[Test]
+    public function addFieldInjectsHiddenCounterForDynamicField(): void
     {
         $fieldset = new Fieldset();
         $field = new Text(
@@ -144,7 +162,8 @@ class FieldsetTest extends TestCase
         $this->assertSame($field->getId() . '_dynamic', $items[1]->getName());
     }
 
-    public function testAddFieldDoesNotInjectCounterForMultiField(): void
+    #[Test]
+    public function addFieldDoesNotInjectCounterForMultiField(): void
     {
         $fieldset = new Fieldset();
         $multi = new MultiField(
@@ -158,7 +177,8 @@ class FieldsetTest extends TestCase
         $this->assertSame(1, $fieldset->getFields()->count());
     }
 
-    public function testAddFieldDoesNotInjectCounterForArea(): void
+    #[Test]
+    public function addFieldDoesNotInjectCounterForArea(): void
     {
         $fieldset = new Fieldset();
         $area = new Area(
@@ -175,7 +195,8 @@ class FieldsetTest extends TestCase
         $this->assertSame(1, $fieldset->getFields()->count());
     }
 
-    public function testAddFieldDoesNotInjectCounterForNonDynamicField(): void
+    #[Test]
+    public function addFieldDoesNotInjectCounterForNonDynamicField(): void
     {
         $fieldset = new Fieldset();
         $field = new Text('name', ValidForm::VFORM_STRING, 'Name');
@@ -190,14 +211,16 @@ class FieldsetTest extends TestCase
     // hasFields / isDynamic / getFields
     // --------------------------------------------------------------
 
-    public function testHasFieldsReturnsTrue(): void
+    #[Test]
+    public function hasFieldsReturnsTrue(): void
     {
         $fieldset = new Fieldset();
 
         $this->assertTrue($fieldset->hasFields());
     }
 
-    public function testIsDynamicReturnsFalseEvenWithDynamicChildren(): void
+    #[Test]
+    public function isDynamicReturnsFalseEvenWithDynamicChildren(): void
     {
         $fieldset = new Fieldset();
         $dynamicField = new Text(
@@ -214,7 +237,8 @@ class FieldsetTest extends TestCase
         $this->assertFalse($fieldset->isDynamic());
     }
 
-    public function testGetFieldsReturnsTheInternalCollection(): void
+    #[Test]
+    public function getFieldsReturnsTheInternalCollection(): void
     {
         $fieldset = new Fieldset();
 
@@ -225,14 +249,16 @@ class FieldsetTest extends TestCase
     // isValid / __validate
     // --------------------------------------------------------------
 
-    public function testIsValidReturnsTrueForEmptyFieldset(): void
+    #[Test]
+    public function isValidReturnsTrueForEmptyFieldset(): void
     {
         $fieldset = new Fieldset();
 
         $this->assertTrue($fieldset->isValid());
     }
 
-    public function testIsValidReturnsTrueWhenAllChildrenValid(): void
+    #[Test]
+    public function isValidReturnsTrueWhenAllChildrenValid(): void
     {
         $fieldset = new Fieldset();
         $fieldset->addField(new Text('a', ValidForm::VFORM_STRING, 'A'));
@@ -241,7 +267,8 @@ class FieldsetTest extends TestCase
         $this->assertTrue($fieldset->isValid());
     }
 
-    public function testIsValidReturnsFalseWhenAChildIsInvalid(): void
+    #[Test]
+    public function isValidReturnsFalseWhenAChildIsInvalid(): void
     {
         $fieldset = new Fieldset();
         $fieldset->addField(new Text('a', ValidForm::VFORM_STRING, 'A'));
@@ -260,7 +287,8 @@ class FieldsetTest extends TestCase
     // toHtml — structural assertions via DOMXPath
     // --------------------------------------------------------------
 
-    public function testToHtmlRendersExactlyOneFieldsetElement(): void
+    #[Test]
+    public function toHtmlRendersExactlyOneFieldsetElement(): void
     {
         $fieldset = new Fieldset();
 
@@ -269,7 +297,8 @@ class FieldsetTest extends TestCase
         $this->assertSame(1, $xpath->query('//fieldset')->length);
     }
 
-    public function testToHtmlFieldsetCarriesGeneratedIdAttribute(): void
+    #[Test]
+    public function toHtmlFieldsetCarriesGeneratedIdAttribute(): void
     {
         $fieldset = new Fieldset();
 
@@ -281,7 +310,8 @@ class FieldsetTest extends TestCase
         $this->assertStringStartsWith('fieldset_', $node->getAttribute('id'));
     }
 
-    public function testToHtmlRendersLegendWithHeaderAsChildOfFieldset(): void
+    #[Test]
+    public function toHtmlRendersLegendWithHeaderAsChildOfFieldset(): void
     {
         $fieldset = new Fieldset('Personal Information');
 
@@ -296,7 +326,8 @@ class FieldsetTest extends TestCase
         $this->assertSame('Personal Information', $span->textContent);
     }
 
-    public function testToHtmlDoesNotRenderLegendWhenHeaderIsMissing(): void
+    #[Test]
+    public function toHtmlDoesNotRenderLegendWhenHeaderIsMissing(): void
     {
         $fieldset = new Fieldset();
 
@@ -305,7 +336,8 @@ class FieldsetTest extends TestCase
         $this->assertSame(0, $xpath->query('//fieldset/legend')->length);
     }
 
-    public function testToHtmlEmbedsNoteAsChildOfFieldsetWithCorrectStructure(): void
+    #[Test]
+    public function toHtmlEmbedsNoteAsChildOfFieldsetWithCorrectStructure(): void
     {
         $fieldset = new Fieldset('Title', 'Note Header', 'Note body');
 
@@ -324,7 +356,8 @@ class FieldsetTest extends TestCase
         $this->assertSame('Note body', $p->textContent);
     }
 
-    public function testToHtmlDoesNotEmbedNoteWhenNoteArgsAreEmpty(): void
+    #[Test]
+    public function toHtmlDoesNotEmbedNoteWhenNoteArgsAreEmpty(): void
     {
         $fieldset = new Fieldset('Title');
 
@@ -336,7 +369,8 @@ class FieldsetTest extends TestCase
         );
     }
 
-    public function testToHtmlRendersEachChildFieldAsInputDescendantOfFieldset(): void
+    #[Test]
+    public function toHtmlRendersEachChildFieldAsInputDescendantOfFieldset(): void
     {
         $fieldset = new Fieldset();
         $fieldset->addField(new Text('marker-one', ValidForm::VFORM_STRING, 'One'));
@@ -354,7 +388,8 @@ class FieldsetTest extends TestCase
         $this->assertSame('marker-two', $inputs->item(1)->getAttribute('id'));
     }
 
-    public function testToHtmlPreservesChildOrder(): void
+    #[Test]
+    public function toHtmlPreservesChildOrder(): void
     {
         $fieldset = new Fieldset();
         $fieldset->addField(new Text('first', ValidForm::VFORM_STRING, 'First'));
@@ -372,7 +407,8 @@ class FieldsetTest extends TestCase
         ]);
     }
 
-    public function testToHtmlRendersChildLabelsLinkedToInputs(): void
+    #[Test]
+    public function toHtmlRendersChildLabelsLinkedToInputs(): void
     {
         $fieldset = new Fieldset();
         $fieldset->addField(new Text('email', ValidForm::VFORM_EMAIL, 'Email Address'));
@@ -388,7 +424,8 @@ class FieldsetTest extends TestCase
     // toJS
     // --------------------------------------------------------------
 
-    public function testToJsEmitsAddElementCallForEachChild(): void
+    #[Test]
+    public function toJsEmitsAddElementCallForEachChild(): void
     {
         $fieldset = new Fieldset();
         $fieldset->addField(new Text('alpha', ValidForm::VFORM_STRING, 'Alpha'));
@@ -401,7 +438,8 @@ class FieldsetTest extends TestCase
         $this->assertSame(1, substr_count($js, "objForm.addElement('beta'"));
     }
 
-    public function testToJsPreservesChildOrder(): void
+    #[Test]
+    public function toJsPreservesChildOrder(): void
     {
         $fieldset = new Fieldset();
         $fieldset->addField(new Text('alpha', ValidForm::VFORM_STRING, 'Alpha'));
@@ -416,7 +454,8 @@ class FieldsetTest extends TestCase
         );
     }
 
-    public function testToJsForEmptyFieldsetReturnsEmptyString(): void
+    #[Test]
+    public function toJsForEmptyFieldsetReturnsEmptyString(): void
     {
         $fieldset = new Fieldset();
 
@@ -427,7 +466,8 @@ class FieldsetTest extends TestCase
     // getHeader / setHeader (magic via ClassDynamic)
     // --------------------------------------------------------------
 
-    public function testHeaderRoundTripsViaMagicAccessors(): void
+    #[Test]
+    public function headerRoundTripsViaMagicAccessors(): void
     {
         $fieldset = new Fieldset('Original');
 

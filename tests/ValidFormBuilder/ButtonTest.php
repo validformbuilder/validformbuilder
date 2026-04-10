@@ -1,8 +1,10 @@
 <?php
 
-namespace ValidFormBuilder;
+namespace ValidFormBuilder\Tests;
 
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
+use ValidFormBuilder\Button;
 
 class ButtonTest extends TestCase
 {
@@ -14,17 +16,20 @@ class ButtonTest extends TestCase
         $this->button = new Button("Test Button");
     }
 
-    public function testGetLabel(): void
+    #[Test]
+    public function getLabel(): void
     {
         $this->assertSame("Test Button", $this->button->getLabel());
     }
 
-    public function testDefaultTypeIsSubmit(): void
+    #[Test]
+    public function defaultTypeIsSubmit(): void
     {
         $this->assertSame("submit", $this->button->getType());
     }
 
-    public function testGetType(): void
+    #[Test]
+    public function getType(): void
     {
         // Use a button with a custom type
         $customButton = new Button("Test Button", [
@@ -36,7 +41,8 @@ class ButtonTest extends TestCase
         $this->assertStringContainsString('type="button"', $html);
     }
 
-    public function testSetId(): void
+    #[Test]
+    public function setId(): void
     {
         $customId = "custom-id";
         $this->button->setId($customId);
@@ -54,40 +60,47 @@ class ButtonTest extends TestCase
         $this->assertStringContainsString('value="Test Button"', $html);
     }
 
-    public function testGetId(): void
+    #[Test]
+    public function getId(): void
     {
         $this->assertNotEmpty($this->button->getId());
     }
 
-    public function testSetLabel(): void
+    #[Test]
+    public function setLabel(): void
     {
         $newLabel = "New Label";
         $this->button->setLabel($newLabel);
         $this->assertSame($newLabel, $this->button->getLabel());
     }
 
-    public function testSetType(): void
+    #[Test]
+    public function setType(): void
     {
         $this->button->setType("button");
         $this->assertSame("button", $this->button->getType());
     }
 
-    public function testIsValid(): void
+    #[Test]
+    public function isValid(): void
     {
         $this->assertTrue($this->button->isValid());
     }
 
-    public function testIsDynamic(): void
+    #[Test]
+    public function isDynamic(): void
     {
         $this->assertFalse($this->button->isDynamic());
     }
 
-    public function testHasFields(): void
+    #[Test]
+    public function hasFields(): void
     {
         $this->assertFalse($this->button->hasFields());
     }
 
-    public function testToHtml(): void
+    #[Test]
+    public function toHtml(): void
     {
         $customButton = new Button("My Button", [
             "type" => "button"

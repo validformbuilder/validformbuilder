@@ -1,9 +1,13 @@
 <?php
 
-namespace ValidFormBuilder;
+namespace ValidFormBuilder\Tests;
 
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
+use ValidFormBuilder\Element;
+use ValidFormBuilder\FieldValidator;
+use ValidFormBuilder\ValidForm;
 
 /**
  * Comprehensive coverage for {@link \ValidFormBuilder\Element}.
@@ -48,7 +52,8 @@ class ElementTest extends TestCase
     // Constructor
     // --------------------------------------------------------------
 
-    public function testConstructorStoresNameLabelAndType(): void
+    #[Test]
+    public function constructorStoresNameLabelAndType(): void
     {
         $field = $this->form->addField(
             'text-field',
@@ -61,14 +66,16 @@ class ElementTest extends TestCase
         $this->assertSame(ValidForm::VFORM_STRING, $field->getType());
     }
 
-    public function testConstructorUsesNameAsIdWhenNoBracketSuffix(): void
+    #[Test]
+    public function constructorUsesNameAsIdWhenNoBracketSuffix(): void
     {
         $field = $this->form->addField('plain-name', 'Label', ValidForm::VFORM_STRING);
 
         $this->assertSame('plain-name', $field->getId());
     }
 
-    public function testConstructorGeneratesRandomIdForArrayStyleName(): void
+    #[Test]
+    public function constructorGeneratesRandomIdForArrayStyleName(): void
     {
         $field = $this->form->addField('checks[]', 'Checks', ValidForm::VFORM_STRING);
 
@@ -77,7 +84,8 @@ class ElementTest extends TestCase
         $this->assertDoesNotMatchRegularExpression('/\[\]/', $field->getId());
     }
 
-    public function testConstructorResolvesMetaKeysOntoFieldProperties(): void
+    #[Test]
+    public function constructorResolvesMetaKeysOntoFieldProperties(): void
     {
         $field = $this->form->addField(
             'meta-field',
@@ -97,7 +105,8 @@ class ElementTest extends TestCase
         $this->assertSame('Hello default', $field->getDefault());
     }
 
-    public function testConstructorCreatesFieldValidatorInstance(): void
+    #[Test]
+    public function constructorCreatesFieldValidatorInstance(): void
     {
         $field = $this->form->addField('validator-field', 'Label', ValidForm::VFORM_STRING);
 
@@ -109,7 +118,8 @@ class ElementTest extends TestCase
     // --------------------------------------------------------------
 
     #[DataProvider('cssClassTypeProvider')]
-    public function testSetClassAppliesTypeSpecificCssClasses(int $type, array $expectedClassTokens): void
+    #[Test]
+    public function setClassAppliesTypeSpecificCssClasses(int $type, array $expectedClassTokens): void
     {
         $field = $this->form->addField('css-field', 'Label', $type);
 
@@ -136,7 +146,8 @@ class ElementTest extends TestCase
         ];
     }
 
-    public function testSelectListWithoutMultipleUsesOneClass(): void
+    #[Test]
+    public function selectListWithoutMultipleUsesOneClass(): void
     {
         $field = $this->form->addField('single-select', 'Single Select', ValidForm::VFORM_SELECT_LIST);
 
@@ -145,7 +156,8 @@ class ElementTest extends TestCase
         $this->assertContains('vf__select', $tokens);
     }
 
-    public function testSelectListWithMultipleUsesMultipleClass(): void
+    #[Test]
+    public function selectListWithMultipleUsesMultipleClass(): void
     {
         $field = $this->form->addField(
             'multi-select',
@@ -165,7 +177,8 @@ class ElementTest extends TestCase
     // Magic getters / setters (from ClassDynamic)
     // --------------------------------------------------------------
 
-    public function testMagicSettersAndGettersForLabelTipHintType(): void
+    #[Test]
+    public function magicSettersAndGettersForLabelTipHintType(): void
     {
         $field = $this->form->addField('magic-field', 'Original', ValidForm::VFORM_STRING);
 
@@ -184,7 +197,8 @@ class ElementTest extends TestCase
     // getRandomId
     // --------------------------------------------------------------
 
-    public function testGetRandomIdForSimpleName(): void
+    #[Test]
+    public function getRandomIdForSimpleName(): void
     {
         $field = $this->form->addField('anchor', 'Anchor', ValidForm::VFORM_STRING);
 
@@ -193,7 +207,8 @@ class ElementTest extends TestCase
         $this->assertMatchesRegularExpression('/^some-name_\d{6}$/', $id);
     }
 
-    public function testGetRandomIdForBracketName(): void
+    #[Test]
+    public function getRandomIdForBracketName(): void
     {
         $field = $this->form->addField('anchor', 'Anchor', ValidForm::VFORM_STRING);
 
@@ -203,7 +218,8 @@ class ElementTest extends TestCase
         $this->assertMatchesRegularExpression('/^items_\d{6}$/', $id);
     }
 
-    public function testGetRandomIdProducesDifferentValuesAcrossCalls(): void
+    #[Test]
+    public function getRandomIdProducesDifferentValuesAcrossCalls(): void
     {
         $field = $this->form->addField('anchor', 'Anchor', ValidForm::VFORM_STRING);
 
@@ -220,21 +236,24 @@ class ElementTest extends TestCase
     // Default flags: isDynamicCounter / hasFields / isDynamic
     // --------------------------------------------------------------
 
-    public function testIsDynamicCounterDefaultsToFalse(): void
+    #[Test]
+    public function isDynamicCounterDefaultsToFalse(): void
     {
         $field = $this->form->addField('field', 'Label', ValidForm::VFORM_STRING);
 
         $this->assertFalse($field->isDynamicCounter());
     }
 
-    public function testHasFieldsDefaultsToFalseForPlainElement(): void
+    #[Test]
+    public function hasFieldsDefaultsToFalseForPlainElement(): void
     {
         $field = $this->form->addField('field', 'Label', ValidForm::VFORM_STRING);
 
         $this->assertFalse($field->hasFields());
     }
 
-    public function testIsDynamicDefaultsToFalse(): void
+    #[Test]
+    public function isDynamicDefaultsToFalse(): void
     {
         $field = $this->form->addField('field', 'Label', ValidForm::VFORM_STRING);
 
@@ -245,7 +264,8 @@ class ElementTest extends TestCase
     // getDefault / setDefault
     // --------------------------------------------------------------
 
-    public function testSetAndGetDefaultRoundTrip(): void
+    #[Test]
+    public function setAndGetDefaultRoundTrip(): void
     {
         $field = $this->form->addField('default-field', 'Label', ValidForm::VFORM_STRING);
 
@@ -254,7 +274,8 @@ class ElementTest extends TestCase
         $this->assertSame('round-trip value', $field->getDefault());
     }
 
-    public function testSetAndGetDefaultAcceptsArray(): void
+    #[Test]
+    public function setAndGetDefaultAcceptsArray(): void
     {
         $field = $this->form->addField('default-field', 'Label', ValidForm::VFORM_STRING);
 
@@ -267,7 +288,8 @@ class ElementTest extends TestCase
     // setName propagates to validator
     // --------------------------------------------------------------
 
-    public function testSetNameUpdatesFieldAndValidatorFieldName(): void
+    #[Test]
+    public function setNameUpdatesFieldAndValidatorFieldName(): void
     {
         $field = $this->form->addField('old-name', 'Label', ValidForm::VFORM_STRING);
 
@@ -285,7 +307,8 @@ class ElementTest extends TestCase
     // setError delegates to validator
     // --------------------------------------------------------------
 
-    public function testSetErrorDelegatesToValidator(): void
+    #[Test]
+    public function setErrorDelegatesToValidator(): void
     {
         $field = $this->form->addField('error-field', 'Label', ValidForm::VFORM_STRING);
 
@@ -298,7 +321,8 @@ class ElementTest extends TestCase
         $this->assertSame('Custom error message', $overrides[0]);
     }
 
-    public function testSetErrorAtDynamicPosition(): void
+    #[Test]
+    public function setErrorAtDynamicPosition(): void
     {
         $field = $this->form->addField('error-field', 'Label', ValidForm::VFORM_STRING);
 
@@ -315,14 +339,16 @@ class ElementTest extends TestCase
     // isValid
     // --------------------------------------------------------------
 
-    public function testIsValidForOptionalFieldWithoutInputReturnsTrue(): void
+    #[Test]
+    public function isValidForOptionalFieldWithoutInputReturnsTrue(): void
     {
         $field = $this->form->addField('text-field', 'Label', ValidForm::VFORM_STRING);
 
         $this->assertTrue($field->isValid());
     }
 
-    public function testIsValidForRequiredFieldWithoutInputReturnsFalse(): void
+    #[Test]
+    public function isValidForRequiredFieldWithoutInputReturnsFalse(): void
     {
         $field = $this->form->addField(
             'required-field',
@@ -334,7 +360,8 @@ class ElementTest extends TestCase
         $this->assertFalse($field->isValid());
     }
 
-    public function testIsValidForRequiredFieldWithInputReturnsTrue(): void
+    #[Test]
+    public function isValidForRequiredFieldWithInputReturnsTrue(): void
     {
         $field = $this->form->addField(
             'required-field',
@@ -351,7 +378,8 @@ class ElementTest extends TestCase
     // getValue / __getValue
     // --------------------------------------------------------------
 
-    public function testGetValueReturnsNullBeforeValidation(): void
+    #[Test]
+    public function getValueReturnsNullBeforeValidation(): void
     {
         $field = $this->form->addField('text-field', 'Label', ValidForm::VFORM_STRING);
         $_REQUEST['text-field'] = 'hello';
@@ -361,7 +389,8 @@ class ElementTest extends TestCase
         $this->assertNull($field->getValue());
     }
 
-    public function testGetValueReturnsValidValueAfterValidation(): void
+    #[Test]
+    public function getValueReturnsValidValueAfterValidation(): void
     {
         $field = $this->form->addField('text-field', 'Label', ValidForm::VFORM_STRING);
         $_REQUEST['text-field'] = 'hello';
@@ -371,7 +400,8 @@ class ElementTest extends TestCase
         $this->assertSame('hello', $field->getValue());
     }
 
-    public function testPrivateGetValueNotSubmittedReturnsDefault(): void
+    #[Test]
+    public function privateGetValueNotSubmittedReturnsDefault(): void
     {
         $field = $this->form->addField(
             'default-field',
@@ -385,7 +415,8 @@ class ElementTest extends TestCase
         $this->assertSame('default value', $field->__getValue(false));
     }
 
-    public function testPrivateGetValueNotSubmittedFallsBackToHintWhenNoDefault(): void
+    #[Test]
+    public function privateGetValueNotSubmittedFallsBackToHintWhenNoDefault(): void
     {
         $field = $this->form->addField(
             'hint-field',
@@ -399,14 +430,16 @@ class ElementTest extends TestCase
         $this->assertSame('fallback hint', $field->__getValue(false));
     }
 
-    public function testPrivateGetValueReturnsNullWithNoDefaultNoHintNoSubmission(): void
+    #[Test]
+    public function privateGetValueReturnsNullWithNoDefaultNoHintNoSubmission(): void
     {
         $field = $this->form->addField('text-field', 'Label', ValidForm::VFORM_STRING);
 
         $this->assertNull($field->__getValue(false));
     }
 
-    public function testPrivateGetValueSubmittedReadsFromRequest(): void
+    #[Test]
+    public function privateGetValueSubmittedReadsFromRequest(): void
     {
         $field = $this->form->addField('text-field', 'Label', ValidForm::VFORM_STRING);
         $_REQUEST['text-field'] = 'submitted value';
@@ -418,7 +451,8 @@ class ElementTest extends TestCase
     // getDynamicCount
     // --------------------------------------------------------------
 
-    public function testGetDynamicCountForNonDynamicFieldIsZero(): void
+    #[Test]
+    public function getDynamicCountForNonDynamicFieldIsZero(): void
     {
         $field = $this->form->addField('text-field', 'Label', ValidForm::VFORM_STRING);
 
@@ -429,7 +463,8 @@ class ElementTest extends TestCase
     // Placeholder toHtml / toJS (via bare Element)
     // --------------------------------------------------------------
 
-    public function testBareElementToHtmlReturnsPlaceholder(): void
+    #[Test]
+    public function bareElementToHtmlReturnsPlaceholder(): void
     {
         // Use an unknown type so Base / ValidForm::renderField() would not map
         // to a concrete subclass. We build Element directly for this test.
@@ -438,7 +473,8 @@ class ElementTest extends TestCase
         $this->assertSame('Field type not defined.', $element->toHtml());
     }
 
-    public function testBareElementToJsReturnsPlaceholder(): void
+    #[Test]
+    public function bareElementToJsReturnsPlaceholder(): void
     {
         $element = new Element('bare', ValidForm::VFORM_STRING, 'Label');
 
