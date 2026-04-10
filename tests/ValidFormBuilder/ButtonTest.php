@@ -37,6 +37,7 @@ class ButtonTest extends TestCase
         $this->assertSame("button", $customButton->getType());
 
         $xpath = $this->parseHtml($customButton->toHtml());
+        // `//input` — Button::toHtml() renders exactly one <input> element; grab it directly.
         $input = $xpath->query('//input')->item(0);
 
         $this->assertNotNull($input);
@@ -58,12 +59,17 @@ class ButtonTest extends TestCase
         $this->assertNotEmpty($this->button->getId());
 
         $xpath = $this->parseHtml($this->button->toHtml());
+        // `//input` — the single <input> element produced by Button::toHtml().
         $input = $xpath->query('//input')->item(0);
 
         $this->assertNotNull($input);
         $this->assertSame('submit', $input->getAttribute('type'));
         $this->assertSame('Test Button', $input->getAttribute('value'));
-        $this->assertStringContainsString('vf__button', $input->getAttribute('class'));
+
+        // Class attribute is a space-separated list; tokenise before asserting membership
+        // so e.g. `vf__button-disabled` can't accidentally satisfy a `vf__button` check.
+        $classTokens = preg_split('/\s+/', (string) $input->getAttribute('class'), -1, PREG_SPLIT_NO_EMPTY);
+        $this->assertContains('vf__button', $classTokens);
     }
 
     #[Test]
@@ -111,6 +117,8 @@ class ButtonTest extends TestCase
         $customButton = new Button("My Button", ["type" => "button"]);
 
         $xpath = $this->parseHtml($customButton->toHtml());
+        // `//input` — every <input> element in the fragment. A button must render as
+        // exactly one <input>, so the length check doubles as a "nothing extra leaked".
         $inputs = $xpath->query('//input');
 
         $this->assertSame(1, $inputs->length);

@@ -294,6 +294,7 @@ class FieldsetTest extends TestCase
 
         $xpath = $this->parseHtml($fieldset->toHtml());
 
+        // `//fieldset` — every <fieldset> element anywhere in the document.
         $this->assertSame(1, $xpath->query('//fieldset')->length);
     }
 
@@ -303,6 +304,7 @@ class FieldsetTest extends TestCase
         $fieldset = new Fieldset();
 
         $xpath = $this->parseHtml($fieldset->toHtml());
+        // `//fieldset` — the single <fieldset> element anywhere in the document.
         $node = $xpath->query('//fieldset')->item(0);
 
         $this->assertNotNull($node);
@@ -316,11 +318,13 @@ class FieldsetTest extends TestCase
         $fieldset = new Fieldset('Personal Information');
 
         $xpath = $this->parseHtml($fieldset->toHtml());
+        // `//fieldset/legend` — <legend> as a *direct* child of <fieldset> (single slash).
         $legends = $xpath->query('//fieldset/legend');
 
         $this->assertSame(1, $legends->length, 'Expected exactly one <legend> directly under <fieldset>');
 
-        // Header text is wrapped in a <span> inside the legend.
+        // `//fieldset/legend/span` — <span> inside the legend inside the fieldset.
+        // Fieldset wraps the header text in a <span> inside the <legend>, so drill one more level down.
         $span = $xpath->query('//fieldset/legend/span')->item(0);
         $this->assertNotNull($span);
         $this->assertSame('Personal Information', $span->textContent);
@@ -333,6 +337,7 @@ class FieldsetTest extends TestCase
 
         $xpath = $this->parseHtml($fieldset->toHtml());
 
+        // `//fieldset/legend` — expect zero direct <legend> children of <fieldset>.
         $this->assertSame(0, $xpath->query('//fieldset/legend')->length);
     }
 
@@ -343,14 +348,20 @@ class FieldsetTest extends TestCase
 
         $xpath = $this->parseHtml($fieldset->toHtml());
 
-        // The Note renders as <div class="vf__notes"> with <h4>header</h4> and <p>body</p>.
+        // `//fieldset/div[contains(concat(" ", normalize-space(@class), " "), " vf__notes ")]`
+        // — a direct <div> child of <fieldset> whose class list contains the token `vf__notes`.
+        // XPath 1.0 has no native "class contains token" predicate, so we use the canonical
+        // workaround: pad the class attribute with spaces on both sides and search for the
+        // token surrounded by spaces. That way `vf__notes-extra` won't match `vf__notes`.
         $note = $xpath->query('//fieldset/div[contains(concat(" ", normalize-space(@class), " "), " vf__notes ")]')->item(0);
         $this->assertNotNull($note, 'Expected vf__notes div directly under <fieldset>');
 
+        // `./h4` (relative to $note) — direct <h4> child of the note div.
         $h4 = $xpath->query('./h4', $note)->item(0);
         $this->assertNotNull($h4);
         $this->assertSame('Note Header', $h4->textContent);
 
+        // `./p` (relative to $note) — direct <p> child of the note div.
         $p = $xpath->query('./p', $note)->item(0);
         $this->assertNotNull($p);
         $this->assertSame('Note body', $p->textContent);
@@ -363,6 +374,7 @@ class FieldsetTest extends TestCase
 
         $xpath = $this->parseHtml($fieldset->toHtml());
 
+        // Same `vf__notes`-in-class-list predicate as above; expect zero matches.
         $this->assertSame(
             0,
             $xpath->query('//fieldset/div[contains(concat(" ", normalize-space(@class), " "), " vf__notes ")]')->length
@@ -377,6 +389,9 @@ class FieldsetTest extends TestCase
         $fieldset->addField(new Text('marker-two', ValidForm::VFORM_STRING, 'Two'));
 
         $xpath = $this->parseHtml($fieldset->toHtml());
+        // `//fieldset//input[@type="text"]` — every <input type="text"> anywhere *inside* a
+        // <fieldset> (double slash = descendant-or-self, any depth). Text fields are rendered
+        // inside a wrapping <div class="vf__optional">, so we can't use a single-slash path.
         $inputs = $xpath->query('//fieldset//input[@type="text"]');
 
         $this->assertSame(2, $inputs->length, 'Expected exactly two text inputs inside the fieldset');
@@ -397,6 +412,8 @@ class FieldsetTest extends TestCase
         $fieldset->addField(new Text('third', ValidForm::VFORM_STRING, 'Third'));
 
         $xpath = $this->parseHtml($fieldset->toHtml());
+        // Same descendant-or-self query as above; DOMXPath preserves document order,
+        // so item(0)/item(1)/item(2) correspond to the order fields were added.
         $inputs = $xpath->query('//fieldset//input[@type="text"]');
 
         $this->assertSame(3, $inputs->length);
@@ -414,6 +431,8 @@ class FieldsetTest extends TestCase
         $fieldset->addField(new Text('email', ValidForm::VFORM_EMAIL, 'Email Address'));
 
         $xpath = $this->parseHtml($fieldset->toHtml());
+        // `//fieldset//label[@for="email"]` — a <label for="email"> anywhere inside <fieldset>.
+        // The @for predicate matches against the attribute value.
         $label = $xpath->query('//fieldset//label[@for="email"]')->item(0);
 
         $this->assertNotNull($label);

@@ -87,6 +87,7 @@ class CheckboxTest extends TestCase
         $_REQUEST['submitted-checkbox'] = 'on';
 
         $xpath = $this->parseHtml($checkbox->toHtml(true));
+        // `//input[@type="checkbox"]` — the first (and only) checkbox <input> in the fragment.
         $input = $xpath->query('//input[@type="checkbox"]')->item(0);
 
         $this->assertNotNull($input);
@@ -108,6 +109,8 @@ class CheckboxTest extends TestCase
         );
 
         $xpath = $this->parseHtml($requiredCheckbox->toHtml(true));
+        // `//div` — Checkbox wraps its label+input in a single outer <div> whose class
+        // reflects the state (vf__optional / vf__required / vf__error); grab that wrapper.
         $wrapper = $xpath->query('//div')->item(0);
 
         $this->assertNotNull($wrapper);
@@ -145,10 +148,13 @@ class CheckboxTest extends TestCase
     {
         $xpath = $this->parseHtml($this->checkbox->toHtml());
 
+        // `//input[@type="checkbox"]` — the single checkbox <input> in the fragment.
         $input = $xpath->query('//input[@type="checkbox"]')->item(0);
         $this->assertNotNull($input);
         $this->assertSame('checkbox-name', $input->getAttribute('name'));
 
+        // `//label[@for="checkbox-name"]` — the <label> tied to this specific checkbox by
+        // its for attribute (not just any label in the fragment).
         $label = $xpath->query('//label[@for="checkbox-name"]')->item(0);
         $this->assertNotNull($label);
         $this->assertSame('Test Checkbox', trim($label->textContent));
@@ -166,6 +172,7 @@ class CheckboxTest extends TestCase
         $_REQUEST['checked-via-method'] = 'on';
 
         $xpath = $this->parseHtml($checkboxChecked->toHtml(true));
+        // `//input[@type="checkbox"]` — the single checkbox <input> in the fragment.
         $input = $xpath->query('//input[@type="checkbox"]')->item(0);
 
         $this->assertNotNull($input);
@@ -187,6 +194,10 @@ class CheckboxTest extends TestCase
         );
 
         $xpath = $this->parseHtml($checkbox->toHtml());
+        // `//small[contains(concat(" ", normalize-space(@class), " "), " vf__tip ")]`
+        // — any <small> element whose class list contains the token `vf__tip`. XPath 1.0
+        // has no native "class list contains" predicate; the pad-and-contains trick ensures
+        // we match the whole token, not e.g. `vf__tip-extra`.
         $tip = $xpath->query('//small[contains(concat(" ", normalize-space(@class), " "), " vf__tip ")]')->item(0);
 
         $this->assertNotNull($tip);
@@ -204,6 +215,7 @@ class CheckboxTest extends TestCase
         );
 
         $xpath = $this->parseHtml($required->toHtml());
+        // `//div` — the outer wrapper <div> whose class reflects the checkbox state.
         $wrapper = $xpath->query('//div')->item(0);
 
         $this->assertNotNull($wrapper);
@@ -222,13 +234,16 @@ class CheckboxTest extends TestCase
         );
 
         $xpath = $this->parseHtml($required->toHtml(true));
+        // `//div` — the outer state wrapper div.
         $wrapper = $xpath->query('//div')->item(0);
 
         $this->assertNotNull($wrapper);
         $classTokens = preg_split('/\s+/', (string) $wrapper->getAttribute('class'), -1, PREG_SPLIT_NO_EMPTY);
         $this->assertContains('vf__error', $classTokens);
 
-        // Error message paragraph should also be present inside the wrapper.
+        // `//div/p[contains(concat(" ", normalize-space(@class), " "), " vf__error ")]`
+        // — a direct <p> child of the wrapper <div> whose class list contains the token
+        // `vf__error`. Same pad-and-contains trick as above for whole-token matching.
         $errorMessage = $xpath->query('//div/p[contains(concat(" ", normalize-space(@class), " "), " vf__error ")]')->item(0);
         $this->assertNotNull($errorMessage);
     }

@@ -87,6 +87,7 @@ class AreaTest extends TestCase
         //   </fieldset>
         $xpath = $this->parseHtml($this->area->toHtml());
 
+        // `//fieldset` — the single <fieldset> element rendered by Area::toHtml().
         $fieldset = $xpath->query('//fieldset')->item(0);
         $this->assertNotNull($fieldset);
         $this->assertSame('test-area_wrapper', $fieldset->getAttribute('id'));
@@ -95,8 +96,12 @@ class AreaTest extends TestCase
         $this->assertContains('vf__area', $classTokens);
         $this->assertContains('vf__disabled', $classTokens);
 
-        // Legend exists and contains a label wrapping a checkbox input.
+        // `//fieldset/legend` — <legend> as a direct child of <fieldset>; expect exactly one.
         $this->assertSame(1, $xpath->query('//fieldset/legend')->length);
+
+        // `//fieldset/legend/label/input[@type="checkbox"]` — walk the direct-child chain
+        // fieldset → legend → label → input, and match only inputs whose type attribute is
+        // "checkbox". This is the active-area toggle that Area renders inside its legend.
         $checkbox = $xpath->query('//fieldset/legend/label/input[@type="checkbox"]')->item(0);
         $this->assertNotNull($checkbox);
         $this->assertSame('test-area', $checkbox->getAttribute('name'));
@@ -111,11 +116,14 @@ class AreaTest extends TestCase
         $area = new Area("Test Area");
         $xpath = $this->parseHtml($area->toHtml());
 
+        // `//fieldset/legend` — <legend> as a direct child of <fieldset>.
         $legend = $xpath->query('//fieldset/legend')->item(0);
         $this->assertNotNull($legend);
         $this->assertSame('Test Area', trim($legend->textContent));
 
-        // No checkbox inside the legend for an inactive area.
+        // `//fieldset/legend//input[@type="checkbox"]` — any <input type="checkbox"> *anywhere*
+        // inside <legend> (double slash = descendant-or-self, any depth). Expect zero matches
+        // for an inactive area.
         $this->assertSame(0, $xpath->query('//fieldset/legend//input[@type="checkbox"]')->length);
     }
 
