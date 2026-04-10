@@ -148,7 +148,7 @@ class Checkbox extends Element
     /**
      * Get checkbox value
      *
-     * See {@link \ValidFormBuilder\Element::getValue()}
+     * See {@see \ValidFormBuilder\Element::getValue()}
      *
      * @see \ValidFormBuilder\Element::getValue()
      */
@@ -160,7 +160,7 @@ class Checkbox extends Element
 
     /**
      * Get default value
-     * See {@link \ValidFormBuilder\Element::getDefault()}
+     * See {@see \ValidFormBuilder\Element::getDefault()}
      *
      * @see \ValidFormBuilder\Element::getDefault()
      */

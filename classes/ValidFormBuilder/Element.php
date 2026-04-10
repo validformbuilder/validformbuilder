@@ -315,7 +315,7 @@ class Element extends Base
      * Validate the current field.
      * This is a wrapper method to call the Validator->validate() method.
      * Although you could validate fields on a per-field basis with this method, this is mostly used internally.
-     * For instance, when {@link \ValidFormBuilder\ValidForm::validate()} is called, it loops trough it's elements
+     * For instance, when {@see \ValidFormBuilder\ValidForm::validate()} is called, it loops through its elements
      * collection and calls this method for each element it finds.
      *
      * @see \ValidFormBuilder\Validator::validate()

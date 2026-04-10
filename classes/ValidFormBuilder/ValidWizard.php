@@ -129,7 +129,7 @@ class ValidWizard extends ValidForm
     /**
      * Check if the wizard is submitted
      *
-     * See {@link \ValidFormBuilder\ValidForm::isSubmitted()}
+     * See {@see \ValidFormBuilder\ValidForm::isSubmitted()}
      *
      * @param boolean $blnForce Fake isSubmitted to true to force field values.
      * @return bool
@@ -156,7 +156,7 @@ class ValidWizard extends ValidForm
     /**
      * Add multifield
      *
-     * See {@link \ValidFormBuilder\ValidForm::addMultiField()}
+     * See {@see \ValidFormBuilder\ValidForm::addMultiField()}
      * @see \ValidFormBuilder\ValidForm::addMultiField()
      *
      * @param string $label
@@ -215,7 +215,7 @@ class ValidWizard extends ValidForm
     /**
      * Add a page to the wizard
      *
-     * See {@link \ValidFormBuilder\Page}
+     * See {@see \ValidFormBuilder\Page}
      *
      * @param string $id Page ID
      * @param string $header Page title
@@ -268,7 +268,7 @@ class ValidWizard extends ValidForm
     /**
      * Add a field
      *
-     * See {@link \ValidFormBuilder\ValidForm::addField()}
+     * See {@see \ValidFormBuilder\ValidForm::addField()}
      *
      * @see \ValidFormBuilder\ValidForm::addField()
      *
@@ -306,7 +306,7 @@ class ValidWizard extends ValidForm
     /**
      * Add a fieldset
      *
-     * See {@link \ValidFormBuilder\ValidForm::addFieldset()}
+     * See {@see \ValidFormBuilder\ValidForm::addFieldset()}
      *
      * @see \ValidFormBuilder\ValidForm::addFieldset()
      *
@@ -334,7 +334,7 @@ class ValidWizard extends ValidForm
     /**
      * Generate valuesAsHtml overview
      *
-     * See {@link \ValidFormBuilder\ValidForm::valuesAsHtml()}
+     * See {@see \ValidFormBuilder\ValidForm::valuesAsHtml()}
      * @see \ValidFormBuilder\ValidForm::valuesAsHtml()
      *
      * @param boolean $hideEmpty Set to true to hide empty field values from the overview. Defaults to false.
@@ -398,7 +398,7 @@ class ValidWizard extends ValidForm
     /**
      * Generate Javascript code
      *
-     * See {@link \ValidFormBuilder\ValidForm::toJs()}
+     * See {@see \ValidFormBuilder\ValidForm::toJs()}
      *
      * @param string $strCustomJs Optional custom javascript code to be executed at the same
      * time the form is initialized
@@ -579,7 +579,7 @@ class ValidWizard extends ValidForm
     }
 
     /**
-     * See {@link \ValidFormBuilder\ValidForm::isValid()}
+     * See {@see \ValidFormBuilder\ValidForm::isValid()}
      * @see \ValidFormBuilder\ValidForm::isValid()
      * @param null $strPageId Optional. If page ID is given, only that page will be validated.
      * @return bool True if successful, false if one of the fields contains an error.

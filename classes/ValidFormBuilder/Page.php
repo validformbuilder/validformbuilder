@@ -87,7 +87,7 @@ class Page extends Base
     /**
      * Generate HTML
      *
-     * See {@link \ValidFormBuilder\ValidForm::toHtml()}
+     * See {@see \ValidFormBuilder\ValidForm::toHtml()}
      *
      * @return string
      */
@@ -115,7 +115,7 @@ class Page extends Base
     /**
      * Add a field object
      *
-     * See {@link \ValidFormBuilder\Fieldset::addField()}
+     * See {@see \ValidFormBuilder\Fieldset::addField()}
      *
      * @param Element $objField
      */
@@ -152,7 +152,7 @@ class Page extends Base
     /**
      * Generate javascript
      *
-     * See {@link \ValidFormBuilder\Base::toJS()}
+     * See {@see \ValidFormBuilder\Base::toJS()}
      * @see \ValidFormBuilder\Base::toJS()
      */
     public function toJS($intDynamicPosition = 0)

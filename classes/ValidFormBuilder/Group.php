@@ -62,7 +62,7 @@ class Group extends Element
     /**
      * Construct new Group element
      *
-     * See {@link \ValidFormBuilder\Base::addField()}
+     * See {@see \ValidFormBuilder\Base::addField()}
      *
      * @param string $name
      * @param integer $type
@@ -81,7 +81,7 @@ class Group extends Element
     /**
      * Generate HTML output
      *
-     * See {@link \ValidFormBuilder\Element::toHtml()}
+     * See {@see \ValidFormBuilder\Element::toHtml()}
      *
      * @see \ValidFormBuilder\Element::toHtml()
      */
@@ -100,7 +100,7 @@ class Group extends Element
     /**
      * Generate HTML output
      *
-     * See {@link \ValidFormBuilder\Element::__toHtml()}
+     * See {@see \ValidFormBuilder\Element::__toHtml()}
      *
      * @see \ValidFormBuilder\Element::__toHtml()
      */
@@ -180,7 +180,7 @@ class Group extends Element
     /**
      * Generate Javascript output
      *
-     * See {@link \ValidFormBuilder\Element::toJS()}
+     * See {@see \ValidFormBuilder\Element::toJS()}
      *
      * @see \ValidFormBuilder\Element::toJS()
      */

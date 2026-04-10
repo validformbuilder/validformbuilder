@@ -35,7 +35,7 @@ use Volnix\CSRF\CSRF;
  * ```
  *
  * #### Example 2; Add a field
- * *Check out the constants section starting with {@link \ValidFormBuilder\ValidForm::VFORM_BOOLEAN} for more
+ * *Check out the constants section starting with {@see \ValidFormBuilder\ValidForm::VFORM_BOOLEAN} for more
  * field types*
  * ```php
  * $objForm->addField(
@@ -53,7 +53,7 @@ use Volnix\CSRF\CSRF;
  * );
  * ```
  *
- * #### Example 3; Using {@link \ValidFormBuilder\ValidForm::setDefaults()} to set default values on form fields
+* #### Example 3; Using {@see \ValidFormBuilder\ValidForm::setDefaults()} to set default values on form fields
  * ```php
  * //*** Add a checklist
  * $objCheck = $objForm->addField("cool", "Cool checklist", ValidForm::VFORM_CHECK_LIST);
@@ -91,7 +91,7 @@ use Volnix\CSRF\CSRF;
  * @method void setJsEvents() setJsEvents(array $arrJsEvents) Overwrites the value of `$__jsevents`.
  * @method bool getDisplayErrors() getDisplayErrors() Returns the value of `$__displayerrors`
  * @method void setDisplayErrors() setDisplayErrors(bool $arrJsEvents) Overwrites the value of `$__displayerrors`.
- * **Not recommended** use {@link ValidForm::addJsEvent()} instead.
+* **Not recommended** use {@see \ValidFormBuilder\ValidForm::addJsEvent()} instead.
  * @method Collection getElements() getElements() Returns the internal elements collection
  * @method void setElements() setElements(Collection $objCollection) Overwrites the internal elements collection.
  * @method string getName() getName() Returns the name of this ValidForm instance
@@ -626,8 +626,8 @@ class ValidForm extends ClassDynamic
      * influence the fact that you're creating a hidden field. This is only used for validation of the hidden field's
      * content.
      * @param array $meta Optional meta array
-     * @param boolean $blnJustRender If true, only create a {@link \ValidFormBuilder\Hidden} instance and return it.
-     * When false, this {@link \ValidFormBuilder\Hidden} instance is added to the internal `elements` collection
+     * @param boolean $blnJustRender If true, only create a {@see \ValidFormBuilder\Hidden} instance and return it.
+     * When false, this {@see \ValidFormBuilder\Hidden} instance is added to the internal `elements` collection
      * and will be parsed when `toHtml()` is called.
      *
      * @return \ValidFormBuilder\Hidden
@@ -791,7 +791,7 @@ class ValidForm extends ClassDynamic
     /**
      * Adds a <button> element to the internal fields collection.
      *
-     * For an example; see {@link \ValidFormBuilder\Button}
+     * For an example; see {@see \ValidFormBuilder\Button}
      *
      * @param string $strLabel The button's label
      * @param array $arrMeta The meta array
@@ -811,7 +811,7 @@ class ValidForm extends ClassDynamic
     /**
      * Add an area to the internal elements collection.
      *
-     * See {@link \ValidFormBuilder\Area} for examples
+     * See {@see \ValidFormBuilder\Area} for examples
      *
      * @param string $label The title of this area
      * @param bool $active If `true`, the title has a checkbox which can enable or disable all child elements
@@ -1722,7 +1722,7 @@ class ValidForm extends ClassDynamic
      * This sets the internal $__uniqueid parameter. Used internally.
      *
      * @param string $strId Optional unique ID. If not set, a unique ID will be
-     * generated with {@link ValidForm::generateId}
+     * generated with {@see \ValidFormBuilder\ValidForm::generateId}
      */
     protected function __setUniqueId($strId = "")
     {

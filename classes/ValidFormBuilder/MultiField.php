@@ -116,7 +116,7 @@ class MultiField extends Base
     /**
      * Create a new MultiField instance
      *
-     * See {@link \ValidFormBuilder\MultiField top of this page} for examples
+     * See {@see \ValidFormBuilder\MultiField} for examples near the top of this page
      *
      * @param string $label The multifield's label
      * @param array $meta The meta array
@@ -140,7 +140,7 @@ class MultiField extends Base
     /**
      * Add a field to the MultiField collection.
      *
-     * Same as {@link \ValidFormBuilder\ValidForm::addField()} with the only difference that the `MultiField::addField()`
+     * Same as {@see \ValidFormBuilder\ValidForm::addField()} with the only difference that the `MultiField::addField()`
      * does not take a field label since that's already set when initialising the `MultiField`.
      *
      * @param string $name Field name
@@ -186,7 +186,7 @@ class MultiField extends Base
     /**
      * Add text to the multifield.
      *
-     * Same as {@link \ValidFormBuilder\ValidForm::addText()}
+     * Same as {@see \ValidFormBuilder\ValidForm::addText()}
      *
      * @param string $strText The text to add (can be HTML as well)
      * @param array $meta The meta array
@@ -203,7 +203,7 @@ class MultiField extends Base
     }
 
     /**
-     * See {@link \ValidFormBuilder\Base::toHtml()}
+     * See {@see \ValidFormBuilder\Base::toHtml()}
      *
      * @param boolean $submitted
      * @param boolean $blnSimpleLayout
@@ -224,7 +224,7 @@ class MultiField extends Base
     }
 
     /**
-     * See {@link \ValidFormBuilder\Base::__toHtml()}
+     * See {@see \ValidFormBuilder\Base::__toHtml()}
      *
      * @param boolean $submitted
      * @param boolean $blnSimpleLayout
@@ -537,7 +537,7 @@ class MultiField extends Base
     /**
      * Store data in the current object.
      *
-     * See {@link \ValidFormBuilder\Base::setData()} for a full description
+     * See {@see \ValidFormBuilder\Base::setData()} for a full description
      *
      * @param string $strKey The key for this storage
      * @param mixed $varValue The value to store
@@ -559,7 +559,7 @@ class MultiField extends Base
     /**
      * Get a value from the internal data array.
      *
-     * See {@link \ValidFormBuilder\Base::getData()} for a full description
+     * See {@see \ValidFormBuilder\Base::getData()} for a full description
      *
      * @param string $key The key of the data attribute to return
      * @return mixed If a key is provided, return it's value. If no key provided, return the whole data array.

@@ -81,7 +81,7 @@ class Paragraph extends Base
     /**
      * Render paragraph HTML
      *
-     * See {@link \ValidFormBuilder\Base::toHtml()}
+     * See {@see \ValidFormBuilder\Base::toHtml()}
      *
      * @param boolean $submitted
      * @param boolean $blnSimpleLayout
@@ -119,7 +119,7 @@ class Paragraph extends Base
     /**
      * Generate javascript
      *
-     * See {@link \ValidFormBuilder\Base::toJS()}
+     * See {@see \ValidFormBuilder\Base::toJS()}
      *
      * @see \ValidFormBuilder\Base::toJS()
      */

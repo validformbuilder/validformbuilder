@@ -25,7 +25,7 @@ namespace ValidFormBuilder;
  * Condition class
  *
  * A condition object is a set of one or more comparisons. Don't use the Condition object as a standalone, rather
- * use the element's {@link \ValidFormBuilder\Base::addCondition()} method.
+ * use the element's {@see \ValidFormBuilder\Base::addCondition()} method.
  *
  * #### Example; Basic yes-no condition
  * ```php
