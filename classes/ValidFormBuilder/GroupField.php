@@ -124,9 +124,16 @@ class GroupField extends Element
                 break;
         }
 
+        // Escape both value (attribute context) and label (text-node context) to prevent
+        // XSS via crafted option data. Every other Element subclass already does this;
+        // GroupField was the only outlier.
+        // See https://github.com/validformbuilder/validformbuilder/issues/202
+        $strValue = htmlspecialchars((string) $this->__value, ENT_QUOTES);
+        $strLabel = htmlspecialchars((string) $this->__label, ENT_QUOTES);
+
         $strOutput = "<label for=\"{$strId}\"{$this->__getLabelMetaString()}>\n";
-        $strOutput .= "<input type=\"{$type}\" value=\"{$this->__value}\" name=\"{$strName}\"
-                        id=\"{$strId}\"{$this->__getFieldMetaString()}/>{$this->__label}\n";
+        $strOutput .= "<input type=\"{$type}\" value=\"{$strValue}\" name=\"{$strName}\"
+                        id=\"{$strId}\"{$this->__getFieldMetaString()}/>{$strLabel}\n";
         $strOutput .= "</label>\n";
 
         return $strOutput;

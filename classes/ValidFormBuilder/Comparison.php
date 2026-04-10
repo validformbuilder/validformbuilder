@@ -180,8 +180,14 @@ class Comparison extends ClassDynamic
             case ValidForm::VFORM_COMPARISON_CONTAINS:
                 $blnReturn = (strpos($strLowerValue, $strCompareAgainst) !== false);
                 break;
+            case ValidForm::VFORM_COMPARISON_DOES_NOT_CONTAIN:
+                $blnReturn = (strpos($strLowerValue, $strCompareAgainst) === false);
+                break;
             case ValidForm::VFORM_COMPARISON_REGEX:
-                $blnReturn = preg_match($this->__value, $strValue);
+                // preg_match() returns int (1/0) or false; cast to bool so __verify
+                // honours its documented boolean return type.
+                // See https://github.com/validformbuilder/validformbuilder/issues/197
+                $blnReturn = (bool) preg_match($this->__value, $strValue);
                 break;
             case ValidForm::VFORM_COMPARISON_IN_ARRAY:
                 $blnReturn = in_array($strValue, $this->__value);

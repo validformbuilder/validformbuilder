@@ -46,7 +46,12 @@ class Validator
         ValidForm::VFORM_SIMPLEURL => '/^[-A-Z0-9]+\.[-A-Z0-9]+/i',
         ValidForm::VFORM_URL => '/^(http(s)?:\/\/)*[a-z0-9-]+(.[a-z0-9-]+)*(:[0-9]+)?(\/.*)?$/i',
         ValidForm::VFORM_FILE => '/^[-a-zàáâãäåāæçèéêẽëēìíîïĩīðñòóôõöōøùúûũüūýß0-9.\':"\\\\_–\/ ]*$/iu',
-        ValidForm::VFORM_BOOLEAN => '/^[on]*$/i',
+        // `(on)?` matches the literal word "on" zero or one times — i.e. "" (unchecked)
+        // or "on" (checked), the two values a standard HTML checkbox can submit.
+        // Previously this was `[on]*`, a character class that accepted any sequence of
+        // `o`/`n` characters (including `ono`, `nooo`, `nnn`).
+        // See https://github.com/validformbuilder/validformbuilder/issues/200
+        ValidForm::VFORM_BOOLEAN => '/^(on)?$/i',
         ValidForm::VFORM_RADIO_LIST => '',
         ValidForm::VFORM_CHECK_LIST => '',
         ValidForm::VFORM_SELECT_LIST => '',
@@ -75,8 +80,11 @@ class Validator
                     foreach ($arrValues as $value) {
                         $blnSub = preg_match(self::$checks[$checkType], $value);
                         if (! $blnSub) {
-                            // *** At least 1 value is not valid, skip the rest and return false;
-                            exit();
+                            // *** At least 1 value is not valid, skip the rest and return false.
+                            // Historically this called exit(), which terminated the entire PHP
+                            // request and turned any array-valued field into a one-POST DoS vector.
+                            // See https://github.com/validformbuilder/validformbuilder/issues/199
+                            return false;
                         }
                     }
 
