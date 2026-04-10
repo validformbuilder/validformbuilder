@@ -442,7 +442,11 @@ class ElementTest extends TestCase
     {
         $element = new Element('bare', ValidForm::VFORM_STRING, 'Label');
 
-        $this->assertStringContainsString('alert(', $element->toJS());
-        $this->assertStringContainsString('bare', $element->toJS());
+        // Element::toJS() is a placeholder for subclasses; the exact text is part
+        // of the contract because user-visible JS surfaces it.
+        $this->assertSame(
+            "alert('Field type of field bare not defined.');\n",
+            $element->toJS()
+        );
     }
 }

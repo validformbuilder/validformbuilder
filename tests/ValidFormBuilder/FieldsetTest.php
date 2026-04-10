@@ -254,66 +254,138 @@ class FieldsetTest extends TestCase
     }
 
     // --------------------------------------------------------------
-    // toHtml
+    // toHtml — structural assertions via DOMXPath
     // --------------------------------------------------------------
 
-    public function testToHtmlWrapsContentInFieldsetTag(): void
+    public function testToHtmlRendersExactlyOneFieldsetElement(): void
     {
         $fieldset = new Fieldset();
 
-        $html = $fieldset->toHtml();
+        $xpath = $this->parseHtml($fieldset->toHtml());
 
-        $this->assertStringStartsWith('<fieldset', $html);
-        $this->assertStringContainsString('</fieldset>', $html);
+        $this->assertSame(1, $xpath->query('//fieldset')->length);
     }
 
-    public function testToHtmlRendersLegendWhenHeaderSet(): void
+    public function testToHtmlFieldsetCarriesGeneratedIdAttribute(): void
+    {
+        $fieldset = new Fieldset();
+
+        $xpath = $this->parseHtml($fieldset->toHtml());
+        $node = $xpath->query('//fieldset')->item(0);
+
+        $this->assertNotNull($node);
+        $this->assertNotEmpty($node->getAttribute('id'));
+        $this->assertStringStartsWith('fieldset_', $node->getAttribute('id'));
+    }
+
+    public function testToHtmlRendersLegendWithHeaderAsChildOfFieldset(): void
     {
         $fieldset = new Fieldset('Personal Information');
 
-        $html = $fieldset->toHtml();
+        $xpath = $this->parseHtml($fieldset->toHtml());
+        $legends = $xpath->query('//fieldset/legend');
 
-        $this->assertStringContainsString('<legend>', $html);
-        $this->assertStringContainsString('Personal Information', $html);
+        $this->assertSame(1, $legends->length, 'Expected exactly one <legend> directly under <fieldset>');
+
+        // Header text is wrapped in a <span> inside the legend.
+        $span = $xpath->query('//fieldset/legend/span')->item(0);
+        $this->assertNotNull($span);
+        $this->assertSame('Personal Information', $span->textContent);
     }
 
-    public function testToHtmlSkipsLegendWhenNoHeader(): void
+    public function testToHtmlDoesNotRenderLegendWhenHeaderIsMissing(): void
     {
         $fieldset = new Fieldset();
 
-        $html = $fieldset->toHtml();
+        $xpath = $this->parseHtml($fieldset->toHtml());
 
-        $this->assertStringNotContainsString('<legend>', $html);
+        $this->assertSame(0, $xpath->query('//fieldset/legend')->length);
     }
 
-    public function testToHtmlIncludesNoteOutputWhenNotePresent(): void
+    public function testToHtmlEmbedsNoteAsChildOfFieldsetWithCorrectStructure(): void
     {
         $fieldset = new Fieldset('Title', 'Note Header', 'Note body');
 
-        $html = $fieldset->toHtml();
+        $xpath = $this->parseHtml($fieldset->toHtml());
 
-        $this->assertStringContainsString('Note Header', $html);
-        $this->assertStringContainsString('Note body', $html);
+        // The Note renders as <div class="vf__notes"> with <h4>header</h4> and <p>body</p>.
+        $note = $xpath->query('//fieldset/div[contains(concat(" ", normalize-space(@class), " "), " vf__notes ")]')->item(0);
+        $this->assertNotNull($note, 'Expected vf__notes div directly under <fieldset>');
+
+        $h4 = $xpath->query('./h4', $note)->item(0);
+        $this->assertNotNull($h4);
+        $this->assertSame('Note Header', $h4->textContent);
+
+        $p = $xpath->query('./p', $note)->item(0);
+        $this->assertNotNull($p);
+        $this->assertSame('Note body', $p->textContent);
     }
 
-    public function testToHtmlConcatenatesChildFieldOutput(): void
+    public function testToHtmlDoesNotEmbedNoteWhenNoteArgsAreEmpty(): void
+    {
+        $fieldset = new Fieldset('Title');
+
+        $xpath = $this->parseHtml($fieldset->toHtml());
+
+        $this->assertSame(
+            0,
+            $xpath->query('//fieldset/div[contains(concat(" ", normalize-space(@class), " "), " vf__notes ")]')->length
+        );
+    }
+
+    public function testToHtmlRendersEachChildFieldAsInputDescendantOfFieldset(): void
     {
         $fieldset = new Fieldset();
         $fieldset->addField(new Text('marker-one', ValidForm::VFORM_STRING, 'One'));
         $fieldset->addField(new Text('marker-two', ValidForm::VFORM_STRING, 'Two'));
 
-        $html = $fieldset->toHtml();
+        $xpath = $this->parseHtml($fieldset->toHtml());
+        $inputs = $xpath->query('//fieldset//input[@type="text"]');
 
-        // Field names appear in the rendered HTML inputs.
-        $this->assertStringContainsString('marker-one', $html);
-        $this->assertStringContainsString('marker-two', $html);
+        $this->assertSame(2, $inputs->length, 'Expected exactly two text inputs inside the fieldset');
+
+        // Verify name + id attributes match the field definitions, not just stray substrings.
+        $this->assertSame('marker-one', $inputs->item(0)->getAttribute('name'));
+        $this->assertSame('marker-one', $inputs->item(0)->getAttribute('id'));
+        $this->assertSame('marker-two', $inputs->item(1)->getAttribute('name'));
+        $this->assertSame('marker-two', $inputs->item(1)->getAttribute('id'));
+    }
+
+    public function testToHtmlPreservesChildOrder(): void
+    {
+        $fieldset = new Fieldset();
+        $fieldset->addField(new Text('first', ValidForm::VFORM_STRING, 'First'));
+        $fieldset->addField(new Text('second', ValidForm::VFORM_STRING, 'Second'));
+        $fieldset->addField(new Text('third', ValidForm::VFORM_STRING, 'Third'));
+
+        $xpath = $this->parseHtml($fieldset->toHtml());
+        $inputs = $xpath->query('//fieldset//input[@type="text"]');
+
+        $this->assertSame(3, $inputs->length);
+        $this->assertSame(['first', 'second', 'third'], [
+            $inputs->item(0)->getAttribute('name'),
+            $inputs->item(1)->getAttribute('name'),
+            $inputs->item(2)->getAttribute('name'),
+        ]);
+    }
+
+    public function testToHtmlRendersChildLabelsLinkedToInputs(): void
+    {
+        $fieldset = new Fieldset();
+        $fieldset->addField(new Text('email', ValidForm::VFORM_EMAIL, 'Email Address'));
+
+        $xpath = $this->parseHtml($fieldset->toHtml());
+        $label = $xpath->query('//fieldset//label[@for="email"]')->item(0);
+
+        $this->assertNotNull($label);
+        $this->assertSame('Email Address', $label->textContent);
     }
 
     // --------------------------------------------------------------
     // toJS
     // --------------------------------------------------------------
 
-    public function testToJsConcatenatesChildJsOutput(): void
+    public function testToJsEmitsAddElementCallForEachChild(): void
     {
         $fieldset = new Fieldset();
         $fieldset->addField(new Text('alpha', ValidForm::VFORM_STRING, 'Alpha'));
@@ -321,16 +393,53 @@ class FieldsetTest extends TestCase
 
         $js = $fieldset->toJS();
 
-        // Each child contributes its JS — both field names should appear.
-        $this->assertStringContainsString('alpha', $js);
-        $this->assertStringContainsString('beta', $js);
+        // Each Text child emits exactly one objForm.addElement('<name>', ...) call.
+        $this->assertSame(1, substr_count($js, "objForm.addElement('alpha'"));
+        $this->assertSame(1, substr_count($js, "objForm.addElement('beta'"));
     }
 
-    public function testToJsForEmptyFieldsetIsString(): void
+    public function testToJsPreservesChildOrder(): void
+    {
+        $fieldset = new Fieldset();
+        $fieldset->addField(new Text('alpha', ValidForm::VFORM_STRING, 'Alpha'));
+        $fieldset->addField(new Text('beta', ValidForm::VFORM_STRING, 'Beta'));
+
+        $js = $fieldset->toJS();
+
+        $this->assertLessThan(
+            strpos($js, "objForm.addElement('beta'"),
+            strpos($js, "objForm.addElement('alpha'"),
+            'Expected alpha to be emitted before beta'
+        );
+    }
+
+    public function testToJsForEmptyFieldsetReturnsEmptyString(): void
     {
         $fieldset = new Fieldset();
 
-        $this->assertIsString($fieldset->toJS());
+        $this->assertSame('', $fieldset->toJS());
+    }
+
+    // --------------------------------------------------------------
+    // Helpers
+    // --------------------------------------------------------------
+
+    /**
+     * Parse a Fieldset HTML fragment into a DOMXPath instance.
+     *
+     * The fragment is wrapped in a root element so DOMDocument has a single
+     * root, and libxml errors are swallowed because the fragment is HTML5
+     * (self-closed inputs etc.) rather than strict XML.
+     */
+    private function parseHtml(string $html): \DOMXPath
+    {
+        $previous = libxml_use_internal_errors(true);
+        $doc = new \DOMDocument();
+        $doc->loadHTML('<?xml encoding="utf-8"?><root>' . $html . '</root>', LIBXML_NOERROR | LIBXML_NOWARNING);
+        libxml_clear_errors();
+        libxml_use_internal_errors($previous);
+
+        return new \DOMXPath($doc);
     }
 
     // --------------------------------------------------------------
