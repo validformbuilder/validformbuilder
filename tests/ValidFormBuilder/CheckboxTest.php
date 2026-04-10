@@ -9,6 +9,8 @@ use ValidFormBuilder\ValidForm;
 
 class CheckboxTest extends TestCase
 {
+    use HtmlAssertionsTrait;
+
     protected Checkbox $checkbox;
     protected ValidForm $form;
 
@@ -73,39 +75,46 @@ class CheckboxTest extends TestCase
     }
 
     #[Test]
-    public function getValueWithSubmission(): void
+    public function submittedCheckboxRendersCheckedAttributeOnInput(): void
     {
-        // Create a checkbox with a name we'll use for submission
         $checkbox = new Checkbox(
             'submitted-checkbox',
             ValidForm::VFORM_BOOLEAN,
             'Submitted Checkbox'
         );
 
-        // Simulate submission by setting the value in $_REQUEST
+        // Simulate submission by setting the value in $_REQUEST.
         $_REQUEST['submitted-checkbox'] = 'on';
 
-        // Call toHtml with submitted=true to force the checkbox to read from $_REQUEST
-        $html = $checkbox->toHtml(true);
+        $xpath = $this->parseHtml($checkbox->toHtml(true));
+        $input = $xpath->query('//input[@type="checkbox"]')->item(0);
 
-        // The HTML should include the checked attribute
-        $this->assertStringContainsString('checked', $html,
-            "Checkbox should be checked when the value is in the REQUEST");
+        $this->assertNotNull($input);
+        $this->assertSame('checked', $input->getAttribute('checked'));
 
-        // We can verify submission was detected by checking if the error class is not present
-        // (since the checkbox is required but was checked in the submission)
+        unset($_REQUEST['submitted-checkbox']);
+    }
+
+    #[Test]
+    public function requiredCheckboxSubmittedCheckedDoesNotHaveErrorClassOnWrapper(): void
+    {
+        $_REQUEST['submitted-checkbox'] = 'on';
+
         $requiredCheckbox = new Checkbox(
-            'submitted-checkbox',  // Same name to reuse the $_REQUEST value
+            'submitted-checkbox',
             ValidForm::VFORM_BOOLEAN,
             'Required Submitted Checkbox',
             ['required' => true]
         );
 
-        $htmlRequired = $requiredCheckbox->toHtml(true);
+        $xpath = $this->parseHtml($requiredCheckbox->toHtml(true));
+        $wrapper = $xpath->query('//div')->item(0);
 
-        // If submission was properly detected, there should be no error class
-        $this->assertStringNotContainsString('vf__error', $htmlRequired,
-            "Required checkbox should not show an error when checked in the submission");
+        $this->assertNotNull($wrapper);
+        $classTokens = preg_split('/\s+/', (string) $wrapper->getAttribute('class'), -1, PREG_SPLIT_NO_EMPTY);
+        $this->assertNotContains('vf__error', $classTokens);
+
+        unset($_REQUEST['submitted-checkbox']);
     }
 
     #[Test]
@@ -132,33 +141,41 @@ class CheckboxTest extends TestCase
     }
 
     #[Test]
-    public function toHtml(): void
+    public function toHtmlRendersCheckboxInputWithLabelText(): void
     {
-        $html = $this->checkbox->toHtml();
+        $xpath = $this->parseHtml($this->checkbox->toHtml());
 
-        // Should include input type checkbox
-        $this->assertStringContainsString('<input type="checkbox"', $html);
+        $input = $xpath->query('//input[@type="checkbox"]')->item(0);
+        $this->assertNotNull($input);
+        $this->assertSame('checkbox-name', $input->getAttribute('name'));
 
-        // Should include label
-        $this->assertStringContainsString('Test Checkbox', $html);
+        $label = $xpath->query('//label[@for="checkbox-name"]')->item(0);
+        $this->assertNotNull($label);
+        $this->assertSame('Test Checkbox', trim($label->textContent));
+    }
 
-        // Create a checkbox that's checked via direct setValue method
+    #[Test]
+    public function toHtmlReflectsSubmittedValueAsCheckedAttribute(): void
+    {
         $checkboxChecked = new Checkbox(
             'checked-via-method',
             ValidForm::VFORM_BOOLEAN,
             'Checked Via Method'
         );
 
-        // Set the value programmatically instead of using meta['default']
         $_REQUEST['checked-via-method'] = 'on';
 
-        $htmlChecked = $checkboxChecked->toHtml(true); // true for submitted
-        $this->assertStringContainsString('checked', $htmlChecked,
-            "Checkbox should be checked when the value is in the REQUEST");
+        $xpath = $this->parseHtml($checkboxChecked->toHtml(true));
+        $input = $xpath->query('//input[@type="checkbox"]')->item(0);
+
+        $this->assertNotNull($input);
+        $this->assertSame('checked', $input->getAttribute('checked'));
+
+        unset($_REQUEST['checked-via-method']);
     }
 
     #[Test]
-    public function toHtmlWithTip(): void
+    public function toHtmlWithTipAppendsSmallTipElement(): void
     {
         $checkbox = new Checkbox(
             'tip-checkbox',
@@ -169,17 +186,16 @@ class CheckboxTest extends TestCase
             ['tip' => 'Helpful tip text']
         );
 
-        $html = $checkbox->toHtml();
+        $xpath = $this->parseHtml($checkbox->toHtml());
+        $tip = $xpath->query('//small[contains(concat(" ", normalize-space(@class), " "), " vf__tip ")]')->item(0);
 
-        // Should include tip text
-        $this->assertStringContainsString('Helpful tip text', $html);
-        $this->assertStringContainsString('vf__tip', $html);
+        $this->assertNotNull($tip);
+        $this->assertSame('Helpful tip text', trim($tip->textContent));
     }
 
     #[Test]
-    public function toHtmlRequired(): void
+    public function toHtmlRequiredWrapsCheckboxInRequiredDiv(): void
     {
-        // Create required checkbox
         $required = new Checkbox(
             'required-checkbox',
             ValidForm::VFORM_BOOLEAN,
@@ -187,16 +203,17 @@ class CheckboxTest extends TestCase
             ['required' => true]
         );
 
-        $html = $required->toHtml();
+        $xpath = $this->parseHtml($required->toHtml());
+        $wrapper = $xpath->query('//div')->item(0);
 
-        // Should include required indicator
-        $this->assertStringContainsString('vf__required', $html);
+        $this->assertNotNull($wrapper);
+        $classTokens = preg_split('/\s+/', (string) $wrapper->getAttribute('class'), -1, PREG_SPLIT_NO_EMPTY);
+        $this->assertContains('vf__required', $classTokens);
     }
 
     #[Test]
-    public function toHtmlWithError(): void
+    public function toHtmlRequiredSubmittedEmptyRendersErrorClassAndMessage(): void
     {
-        // Create a required checkbox and simulate submission
         $required = new Checkbox(
             'required-checkbox',
             ValidForm::VFORM_BOOLEAN,
@@ -204,15 +221,20 @@ class CheckboxTest extends TestCase
             ['required' => true]
         );
 
-        // Simulate submitted without being checked
-        $html = $required->toHtml(true);
+        $xpath = $this->parseHtml($required->toHtml(true));
+        $wrapper = $xpath->query('//div')->item(0);
 
-        // Should include error class
-        $this->assertStringContainsString('vf__error', $html);
+        $this->assertNotNull($wrapper);
+        $classTokens = preg_split('/\s+/', (string) $wrapper->getAttribute('class'), -1, PREG_SPLIT_NO_EMPTY);
+        $this->assertContains('vf__error', $classTokens);
+
+        // Error message paragraph should also be present inside the wrapper.
+        $errorMessage = $xpath->query('//div/p[contains(concat(" ", normalize-space(@class), " "), " vf__error ")]')->item(0);
+        $this->assertNotNull($errorMessage);
     }
 
     #[Test]
-    public function toJS(): void
+    public function toJsEmitsAddElementCallForCheckboxWithRequiredFlag(): void
     {
         $checkbox = new Checkbox(
             'js-checkbox',
@@ -223,12 +245,19 @@ class CheckboxTest extends TestCase
 
         $js = $checkbox->toJS();
 
-        // Should contain form validation code
-        $this->assertStringContainsString('objForm.addElement', $js);
-        $this->assertStringContainsString($checkbox->getId(), $js);
+        // Exactly one objForm.addElement(...) call.
+        $this->assertSame(1, substr_count($js, 'objForm.addElement'));
 
-        // Should check for required validation value
-        $this->assertStringContainsString(', true,', $js);
+        // The call starts with the field id twice (name, id) and has the required
+        // flag (`true`) in the fourth positional slot.
+        $this->assertMatchesRegularExpression(
+            "/objForm\\.addElement\\('"
+                . preg_quote($checkbox->getId(), '/')
+                . "',\\s*'"
+                . preg_quote($checkbox->getId(), '/')
+                . "',[^,]+,\\s*true,/",
+            $js
+        );
     }
 
     #[Test]

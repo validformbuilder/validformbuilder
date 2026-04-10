@@ -13,6 +13,8 @@ use ValidFormBuilder\ValidForm;
 
 class AreaTest extends TestCase
 {
+    use HtmlAssertionsTrait;
+
     private Area $area;
 
     protected function setUp(): void
@@ -70,39 +72,51 @@ class AreaTest extends TestCase
     }
 
     #[Test]
-    public function toHtml(): void
+    public function activeAreaRendersFieldsetWithCheckboxInLegend(): void
     {
-        /**
-         * The default $this->area is an active area with a default checked value of true.
-         * Expected HTML output:
-         *
-         * <fieldset class="vf__area vf__disabled" id="test-area_wrapper">
-         * <legend><label for="test-area"><input type="checkbox" name="test-area" id="test-area" /> Test Area</label></legend>
-         * </fieldset>
-         */
-        $htmlOutput = $this->area->toHtml();
-        $this->assertIsString($htmlOutput);
-        // This is an active area with a default checked value of false, it should render the vf__disabled class
-        $this->assertStringContainsString("<fieldset class=\"vf__area vf__disabled\" id=\"test-area_wrapper\">", $htmlOutput);
-        $this->assertStringContainsString("</fieldset>", $htmlOutput);
-        $this->assertStringContainsString("<legend>", $htmlOutput);
-        $this->assertStringContainsString("</legend>", $htmlOutput);
+        // The default $this->area is an active area (second ctor arg = true) with
+        // a default checked value of false. Expected structure:
+        //
+        //   <fieldset class="vf__area vf__disabled" id="test-area_wrapper">
+        //     <legend>
+        //       <label for="test-area">
+        //         <input type="checkbox" name="test-area" id="test-area" />
+        //         Test Area
+        //       </label>
+        //     </legend>
+        //   </fieldset>
+        $xpath = $this->parseHtml($this->area->toHtml());
 
-        // It should also render a checkbox to enable this area
-        $this->assertStringContainsString("<label for=\"test-area\"><input type=\"checkbox\" name=\"test-area\" id=\"test-area\" />", $htmlOutput);
+        $fieldset = $xpath->query('//fieldset')->item(0);
+        $this->assertNotNull($fieldset);
+        $this->assertSame('test-area_wrapper', $fieldset->getAttribute('id'));
 
-        /**
-         * Now let's test against the default values of the Area class
-         * Expected output:
-         *
-         * <fieldset class="vf__area" id="area_[random number]_wrapper">
-         * <legend>Test Area</legend>
-         * </fieldset>
-         */
+        $classTokens = preg_split('/\s+/', (string) $fieldset->getAttribute('class'), -1, PREG_SPLIT_NO_EMPTY);
+        $this->assertContains('vf__area', $classTokens);
+        $this->assertContains('vf__disabled', $classTokens);
+
+        // Legend exists and contains a label wrapping a checkbox input.
+        $this->assertSame(1, $xpath->query('//fieldset/legend')->length);
+        $checkbox = $xpath->query('//fieldset/legend/label/input[@type="checkbox"]')->item(0);
+        $this->assertNotNull($checkbox);
+        $this->assertSame('test-area', $checkbox->getAttribute('name'));
+        $this->assertSame('test-area', $checkbox->getAttribute('id'));
+    }
+
+    #[Test]
+    public function inactiveAreaRendersLegendWithPlainHeader(): void
+    {
+        // Default-constructed Area is inactive, so the legend contains plain text,
+        // not a wrapping checkbox.
         $area = new Area("Test Area");
-        $htmlOutput = $area->toHtml();
-        $this->assertIsString($htmlOutput);
-        $this->assertStringContainsString("<legend>Test Area</legend>", $htmlOutput);
+        $xpath = $this->parseHtml($area->toHtml());
+
+        $legend = $xpath->query('//fieldset/legend')->item(0);
+        $this->assertNotNull($legend);
+        $this->assertSame('Test Area', trim($legend->textContent));
+
+        // No checkbox inside the legend for an inactive area.
+        $this->assertSame(0, $xpath->query('//fieldset/legend//input[@type="checkbox"]')->length);
     }
 
     #[Test]

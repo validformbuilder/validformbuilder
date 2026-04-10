@@ -8,6 +8,8 @@ use ValidFormBuilder\Button;
 
 class ButtonTest extends TestCase
 {
+    use HtmlAssertionsTrait;
+
     protected Button $button;
 
     protected function setUp(): void
@@ -29,16 +31,16 @@ class ButtonTest extends TestCase
     }
 
     #[Test]
-    public function getType(): void
+    public function customTypeIsReflectedInInputAttribute(): void
     {
-        // Use a button with a custom type
-        $customButton = new Button("Test Button", [
-            "type" => "button"
-        ]);
+        $customButton = new Button("Test Button", ["type" => "button"]);
         $this->assertSame("button", $customButton->getType());
 
-        $html = $customButton->toHtml();
-        $this->assertStringContainsString('type="button"', $html);
+        $xpath = $this->parseHtml($customButton->toHtml());
+        $input = $xpath->query('//input')->item(0);
+
+        $this->assertNotNull($input);
+        $this->assertSame('button', $input->getAttribute('type'));
     }
 
     #[Test]
@@ -49,15 +51,19 @@ class ButtonTest extends TestCase
         $this->assertSame($customId, $this->button->getId());
     }
 
-    public function test__construct(): void
+    #[Test]
+    public function defaultConstructedButtonRendersAsSubmitInputWithButtonClass(): void
     {
         // Make sure it has a default generated ID
         $this->assertNotEmpty($this->button->getId());
 
-        $html = $this->button->toHtml();
-        $this->assertStringContainsString("vf__button", $html);
-        $this->assertStringContainsString('type="submit"', $html);
-        $this->assertStringContainsString('value="Test Button"', $html);
+        $xpath = $this->parseHtml($this->button->toHtml());
+        $input = $xpath->query('//input')->item(0);
+
+        $this->assertNotNull($input);
+        $this->assertSame('submit', $input->getAttribute('type'));
+        $this->assertSame('Test Button', $input->getAttribute('value'));
+        $this->assertStringContainsString('vf__button', $input->getAttribute('class'));
     }
 
     #[Test]
@@ -100,15 +106,15 @@ class ButtonTest extends TestCase
     }
 
     #[Test]
-    public function toHtml(): void
+    public function toHtmlRendersSingleInputWithTypeAndValue(): void
     {
-        $customButton = new Button("My Button", [
-            "type" => "button"
-        ]);
-        $html = $customButton->toHtml();
+        $customButton = new Button("My Button", ["type" => "button"]);
 
-        $this->assertStringStartsWith("<input", $html);
-        $this->assertStringContainsString('type="button"', $html);
-        $this->assertStringContainsString('value="My Button"', $html);
+        $xpath = $this->parseHtml($customButton->toHtml());
+        $inputs = $xpath->query('//input');
+
+        $this->assertSame(1, $inputs->length);
+        $this->assertSame('button', $inputs->item(0)->getAttribute('type'));
+        $this->assertSame('My Button', $inputs->item(0)->getAttribute('value'));
     }
 }
