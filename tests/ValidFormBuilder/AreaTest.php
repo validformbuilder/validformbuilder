@@ -209,4 +209,45 @@ class AreaTest extends TestCase
         $this->area->addField("test-field", "Test Field", ValidForm::VFORM_STRING);
         $this->assertTrue($this->area->hasFields());
     }
+
+    // --------------------------------------------------------------
+    // hasContent — with submitted data
+    // --------------------------------------------------------------
+
+    #[Test]
+    public function hasContentReturnsTrueWhenFieldHasSubmittedValue(): void
+    {
+        $area = new Area("Content Area", false, "content-area");
+        $area->addField("filled", "Filled", ValidForm::VFORM_STRING);
+
+        $_REQUEST['filled'] = 'hello';
+
+        $this->assertTrue($area->hasContent());
+
+        unset($_REQUEST['filled']);
+    }
+
+    // --------------------------------------------------------------
+    // toJS
+    // --------------------------------------------------------------
+
+    #[Test]
+    public function toJsReturnsEmptyStringForEmptyArea(): void
+    {
+        $area = new Area("Empty Area");
+
+        $this->assertSame('', $area->toJS());
+    }
+
+    #[Test]
+    public function toJsRendersChildFieldJavascript(): void
+    {
+        $area = new Area("JS Area", false, "js-area");
+        $area->addField("js-field", "JS Field", ValidForm::VFORM_STRING);
+
+        $js = $area->toJS();
+
+        // The child Text field generates an addElement call.
+        $this->assertStringContainsString('objForm.addElement', $js);
+    }
 }

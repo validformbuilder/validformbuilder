@@ -504,4 +504,250 @@ class ValidFormTest extends TestCase
         $this->assertNotNull($dispatch);
         $this->assertSame('my-form', $dispatch->getAttribute('value'));
     }
+
+    // --------------------------------------------------------------
+    // getLastFieldset
+    // --------------------------------------------------------------
+
+    #[Test]
+    public function getLastFieldsetReturnsExistingFieldset(): void
+    {
+        $form = new ValidForm('test');
+        $fieldset = $form->addFieldset('Contact');
+        $form->addFieldset('Extra');
+
+        // getLastFieldset returns the most recently added fieldset.
+        $last = $form->getLastFieldset();
+        $this->assertInstanceOf(Fieldset::class, $last);
+    }
+
+    #[Test]
+    public function getLastFieldsetCreatesOneWhenFormIsEmpty(): void
+    {
+        $form = new ValidForm('test');
+
+        // No fieldsets added — getLastFieldset should auto-create one.
+        $fieldset = $form->getLastFieldset();
+        $this->assertInstanceOf(Fieldset::class, $fieldset);
+    }
+
+    // --------------------------------------------------------------
+    // setAutoComplete
+    // --------------------------------------------------------------
+
+    #[Test]
+    public function setAutoCompleteToggle(): void
+    {
+        $_SERVER['PHP_SELF'] = '/test.php';
+        $form = new ValidForm('test');
+        $form->setAutoComplete(false);
+        $form->addField('name', 'Name', ValidForm::VFORM_STRING);
+
+        $xpath = $this->parseHtml($form->toHtml(false));
+
+        // `//form` — check autocomplete attribute is set to "off".
+        $formEl = $xpath->query('//form')->item(0);
+        $this->assertNotNull($formEl);
+        $this->assertSame('off', $formEl->getAttribute('autocomplete'));
+    }
+
+    // --------------------------------------------------------------
+    // generateId
+    // --------------------------------------------------------------
+
+    #[Test]
+    public function generateIdReturnsStringOfRequestedLength(): void
+    {
+        $form = new ValidForm('test');
+
+        $this->assertSame(8, strlen($form->generateId()));
+        $this->assertSame(16, strlen($form->generateId(16)));
+    }
+
+    #[Test]
+    public function generateIdReturnsAlphanumericCharacters(): void
+    {
+        $form = new ValidForm('test');
+
+        $this->assertMatchesRegularExpression('/^[a-zA-Z0-9]+$/', $form->generateId(32));
+    }
+
+    // --------------------------------------------------------------
+    // getInvalidFields
+    // --------------------------------------------------------------
+
+    #[Test]
+    public function getInvalidFieldsReturnsEmptyArrayWhenAllValid(): void
+    {
+        $form = new ValidForm('test');
+        $form->addField('name', 'Name', ValidForm::VFORM_STRING);
+
+        $this->assertSame([], $form->getInvalidFields());
+    }
+
+    #[Test]
+    public function getInvalidFieldsReturnsFieldNamesWithErrors(): void
+    {
+        $form = new ValidForm('test');
+        $form->addField('name', 'Name', ValidForm::VFORM_STRING, ['required' => true]);
+
+        $invalid = $form->getInvalidFields();
+
+        $this->assertNotEmpty($invalid);
+        $this->assertArrayHasKey('name', $invalid[0]);
+    }
+
+    // --------------------------------------------------------------
+    // addJSEvent
+    // --------------------------------------------------------------
+
+    #[Test]
+    public function addJSEventRegistersEventCallback(): void
+    {
+        $form = new ValidForm('test');
+        $form->addJSEvent('beforeSubmit', 'myCallback');
+
+        // JS events are rendered in the JS output; verify the callback
+        // appears in the generated javascript.
+        $form->addField('name', 'Name', ValidForm::VFORM_STRING);
+
+        $js = $form->toJs();
+        $this->assertStringContainsString('myCallback', $js);
+        $this->assertStringContainsString('beforeSubmit', $js);
+    }
+
+    // --------------------------------------------------------------
+    // elementsToJs
+    // --------------------------------------------------------------
+
+    #[Test]
+    public function elementsToJsReturnsScriptBlockByDefault(): void
+    {
+        $form = new ValidForm('test');
+        $form->addField('name', 'Name', ValidForm::VFORM_STRING);
+
+        $js = $form->elementsToJs();
+
+        $this->assertStringContainsString('<script', $js);
+        $this->assertStringContainsString('objForm.addElement', $js);
+        $this->assertStringContainsString('objForm.initialize()', $js);
+    }
+
+    #[Test]
+    public function elementsToJsRawOmitsScriptTags(): void
+    {
+        $form = new ValidForm('test');
+        $form->addField('name', 'Name', ValidForm::VFORM_STRING);
+
+        $js = $form->elementsToJs(true);
+
+        $this->assertStringNotContainsString('<script', $js);
+        $this->assertStringContainsString('objForm.addElement', $js);
+    }
+
+    // --------------------------------------------------------------
+    // toJs
+    // --------------------------------------------------------------
+
+    #[Test]
+    public function toJsGeneratesRawJavascriptOutput(): void
+    {
+        $form = new ValidForm('test');
+        $form->addField('email', 'Email', ValidForm::VFORM_EMAIL);
+
+        $js = $form->toJs();
+
+        $this->assertStringContainsString('objForm', $js);
+    }
+
+    // --------------------------------------------------------------
+    // serialize / unserialize
+    // --------------------------------------------------------------
+
+    #[Test]
+    public function serializeAndUnserializeRoundTrip(): void
+    {
+        $form = new ValidForm('test');
+        $form->addField('name', 'Name', ValidForm::VFORM_STRING);
+
+        $serialized = $form->serialize(false);
+
+        // Serialized output is a non-empty base64 string.
+        $this->assertNotEmpty($serialized);
+        $this->assertMatchesRegularExpression('/^[A-Za-z0-9+\/=]+$/', $serialized);
+
+        // Round-trip: unserialize should produce a ValidForm instance.
+        $restored = ValidForm::unserialize($serialized);
+        $this->assertInstanceOf(ValidForm::class, $restored);
+        $this->assertSame('test', $restored->getName());
+    }
+
+    // --------------------------------------------------------------
+    // getCachedFields
+    // --------------------------------------------------------------
+
+    #[Test]
+    public function getCachedFieldsReturnsFieldCollectionWithoutPriorCache(): void
+    {
+        $form = new ValidForm('test');
+        $form->addField('name', 'Name', ValidForm::VFORM_STRING);
+
+        $cached = $form->getCachedFields();
+
+        $this->assertInstanceOf(Collection::class, $cached);
+        $this->assertGreaterThan(0, $cached->count());
+    }
+
+    // --------------------------------------------------------------
+    // valuesAsHtml
+    // --------------------------------------------------------------
+
+    #[Test]
+    public function valuesAsHtmlRendersTableWithSubmittedValues(): void
+    {
+        $form = new ValidForm('test');
+        $form->addField('name', 'Name', ValidForm::VFORM_STRING);
+        $_REQUEST['name'] = 'Robin';
+        $form->isValid();
+
+        $html = $form->valuesAsHtml();
+
+        $xpath = $this->parseHtml($html);
+
+        // `//table` — the values overview table.
+        $table = $xpath->query('//table')->item(0);
+        $this->assertNotNull($table);
+    }
+
+    #[Test]
+    public function valuesAsHtmlReturnsEmptyStringWhenNoValues(): void
+    {
+        $form = new ValidForm('test');
+
+        $html = $form->valuesAsHtml();
+
+        $this->assertSame('', $html);
+    }
+
+    // --------------------------------------------------------------
+    // fieldsToHtml
+    // --------------------------------------------------------------
+
+    #[Test]
+    public function fieldsToHtmlRendersAllFields(): void
+    {
+        $_SERVER['PHP_SELF'] = '/test.php';
+        $form = new ValidForm('test');
+        $form->addField('name', 'Name', ValidForm::VFORM_STRING);
+        $form->addField('email', 'Email', ValidForm::VFORM_EMAIL);
+
+        $html = $form->fieldsToHtml();
+
+        $xpath = $this->parseHtml($html);
+
+        // `//input[@name="name"]` — the name field should be rendered.
+        $this->assertSame(1, $xpath->query('//input[@name="name"]')->length);
+        // `//input[@name="email"]` — the email field should be rendered.
+        $this->assertSame(1, $xpath->query('//input[@name="email"]')->length);
+    }
 }
