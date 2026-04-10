@@ -427,17 +427,21 @@ class FieldsetTest extends TestCase
     /**
      * Parse a Fieldset HTML fragment into a DOMXPath instance.
      *
-     * LIBXML_HTML_NOIMPLIED skips the implicit <html>/<body> wrap and
-     * LIBXML_HTML_NODEFDTD skips the implicit <!DOCTYPE>, so the fragment
-     * sits at the top of the document and XPath queries like //fieldset
-     * match it directly. libxml errors are swallowed because the fragment
-     * is HTML5 (self-closed inputs etc.) rather than strict XML.
+     * The fragment is wrapped in a minimal HTML5 document with a UTF-8
+     * meta charset so DOMDocument parses it as HTML5 instead of falling
+     * back to ISO-8859-1. libxml errors are swallowed because the
+     * fragment is HTML5 (self-closed inputs etc.) rather than strict XML.
+     * XPath queries use // (descendant-anywhere) so the implicit
+     * <html>/<body> wrap is irrelevant.
      */
     private function parseHtml(string $html): \DOMXPath
     {
         $previous = libxml_use_internal_errors(true);
         $doc = new \DOMDocument();
-        $doc->loadHTML($html, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+        $doc->loadHTML(
+            '<!DOCTYPE html><html><head><meta charset="utf-8"></head><body>' . $html . '</body></html>',
+            LIBXML_NOERROR | LIBXML_NOWARNING
+        );
         libxml_clear_errors();
         libxml_use_internal_errors($previous);
 
