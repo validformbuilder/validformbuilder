@@ -2,6 +2,7 @@
 
 namespace ValidFormBuilder;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -107,9 +108,7 @@ class ElementTest extends TestCase
     // setClass() — CSS class mapping
     // --------------------------------------------------------------
 
-    /**
-     * @dataProvider cssClassTypeProvider
-     */
+    #[DataProvider('cssClassTypeProvider')]
     public function testSetClassAppliesTypeSpecificCssClasses(int $type, array $expectedClassTokens): void
     {
         $field = $this->form->addField('css-field', 'Label', $type);

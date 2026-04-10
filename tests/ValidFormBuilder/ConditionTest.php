@@ -6,6 +6,7 @@ use ValidFormBuilder\Comparison;
 use ValidFormBuilder\Condition;
 use ValidFormBuilder\Element;
 use ValidFormBuilder\ValidForm;
+use PHPUnit\Framework\Attributes\Depends;
 use PHPUnit\Framework\TestCase;
 
 class ConditionTest extends TestCase
@@ -296,9 +297,7 @@ class ConditionTest extends TestCase
         return $result;
     }
 
-    /**
-     * @depends testJsonSerialize
-     */
+    #[Depends('testJsonSerialize')]
     public function testJsonSerializeStructure(array $result): void
     {
         $this->assertEquals('text-field', $result['subject']);
