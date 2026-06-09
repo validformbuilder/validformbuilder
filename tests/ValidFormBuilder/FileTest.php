@@ -45,7 +45,7 @@ class FileTest extends TestCase
 
     protected function tearDown(): void
     {
-        foreach (['logo', 'document', 'upload', 'tampered'] as $key) {
+        foreach (['logo', 'logo_dynamic', 'document', 'upload', 'tampered'] as $key) {
             unset($_REQUEST[$key], $_FILES[$key]);
         }
     }
@@ -218,6 +218,64 @@ class FileTest extends TestCase
         $this->assertSame('previous.png', $hidden->item(0)->getAttribute('value'));
     }
 
+    #[Test]
+    public function toHtmlWithoutLabelAddsNolabelClassAndOmitsLabel(): void
+    {
+        $field = $this->form->addField('logo', 'Upload logo', ValidForm::VFORM_FILE);
+
+        $xpath = $this->parseHtml($field->toHtml(false, false, false));
+        // `//div` — the outer state wrapper div.
+        $wrapper = $xpath->query('//div')->item(0);
+
+        $this->assertNotNull($wrapper);
+        $classTokens = preg_split('/\s+/', (string) $wrapper->getAttribute('class'), -1, PREG_SPLIT_NO_EMPTY);
+        $this->assertContains('vf__nolabel', $classTokens);
+
+        // `//label` — no label is rendered when $blnLabel is false.
+        $this->assertSame(0, $xpath->query('//label')->length);
+    }
+
+    #[Test]
+    public function toHtmlSimpleLayoutAddsMultifielditemClassAndOmitsLabel(): void
+    {
+        $field = $this->form->addField('logo', 'Upload logo', ValidForm::VFORM_FILE);
+
+        $xpath = $this->parseHtml($field->toHtml(false, true));
+        // `//div` — the simple-layout wrapper div.
+        $wrapper = $xpath->query('//div')->item(0);
+
+        $this->assertNotNull($wrapper);
+        $classTokens = preg_split('/\s+/', (string) $wrapper->getAttribute('class'), -1, PREG_SPLIT_NO_EMPTY);
+        $this->assertContains('vf__multifielditem', $classTokens);
+
+        // `//label` — simple layout never renders a label.
+        $this->assertSame(0, $xpath->query('//label')->length);
+
+        // `//input[@type="file"]` — the file input is still rendered.
+        $this->assertSame(1, $xpath->query('//input[@type="file"]')->length);
+    }
+
+    #[Test]
+    public function toHtmlSimpleLayoutRequiredSubmittedEmptyAddsErrorClass(): void
+    {
+        $field = $this->form->addField(
+            'logo',
+            'Upload logo',
+            ValidForm::VFORM_FILE,
+            ['required' => true]
+        );
+
+        // Submitted without a value in $_REQUEST/$_FILES — the required check fails.
+        $xpath = $this->parseHtml($field->toHtml(true, true));
+        // `//div` — the simple-layout wrapper div.
+        $wrapper = $xpath->query('//div')->item(0);
+
+        $this->assertNotNull($wrapper);
+        $classTokens = preg_split('/\s+/', (string) $wrapper->getAttribute('class'), -1, PREG_SPLIT_NO_EMPTY);
+        $this->assertContains('vf__error', $classTokens);
+        $this->assertContains('vf__multifielditem', $classTokens);
+    }
+
     // --------------------------------------------------------------
     // toJS
     // --------------------------------------------------------------
@@ -261,6 +319,38 @@ class FileTest extends TestCase
 
         $this->assertMatchesRegularExpression(
             "/objForm\\.addElement\\('logo',\\s*'logo',[^,]+,\\s*false,/",
+            $js
+        );
+    }
+
+    #[Test]
+    public function toJsDynamicFileEmitsAddElementCallPerDynamicCount(): void
+    {
+        $field = $this->form->addField(
+            'logo',
+            'Upload logo',
+            ValidForm::VFORM_FILE,
+            ['required' => true],
+            [],
+            ['dynamic' => true, 'dynamicLabel' => 'Add another file']
+        );
+
+        // Simulate a submission where the client-side duplicated the field once.
+        $_REQUEST['logo_dynamic'] = '1';
+
+        $js = $field->toJS();
+
+        // One addElement call for the original and one for the clone.
+        $this->assertSame(2, substr_count($js, 'objForm.addElement'));
+
+        // As soon as clones exist, the required flag (fourth positional slot)
+        // is forced to false — for the clone as well as the original.
+        $this->assertMatchesRegularExpression(
+            "/objForm\\.addElement\\('logo',\\s*'logo',[^,]+,\\s*false,/",
+            $js
+        );
+        $this->assertMatchesRegularExpression(
+            "/objForm\\.addElement\\('logo_1',\\s*'logo_1',[^,]+,\\s*false,/",
             $js
         );
     }

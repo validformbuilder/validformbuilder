@@ -50,7 +50,7 @@ class MultiFieldTest extends TestCase
 
     protected function tearDown(): void
     {
-        foreach (['first-name', 'last-name', 'required-field'] as $key) {
+        foreach (['first-name', 'last-name', 'required-field', 'phone', 'phone_dynamic'] as $key) {
             unset($_REQUEST[$key]);
         }
     }
@@ -377,6 +377,150 @@ class MultiFieldTest extends TestCase
         $this->assertContains('vf__required', $classTokens);
     }
 
+    #[Test]
+    public function toHtmlRendersErrorParagraphsWhenSubmittedInvalid(): void
+    {
+        $multi = $this->form->addMultiField('Full name');
+        $multi->addField(
+            'first-name',
+            ValidForm::VFORM_STRING,
+            ['required' => true],
+            ['required' => 'This field is required']
+        );
+        $multi->addField(
+            'last-name',
+            ValidForm::VFORM_STRING,
+            ['required' => true],
+            ['required' => 'This field is required']
+        );
+
+        // Submitted with no values: both required children fail validation.
+        $xpath = $this->parseHtml($multi->toHtml(true));
+
+        // The wrapper picks up the vf__error class.
+        $wrapper = $xpath->query('//div[contains(concat(" ", normalize-space(@class), " "), " vf__multifield ")]')->item(0);
+        $this->assertNotNull($wrapper);
+        $classTokens = preg_split('/\s+/', (string) $wrapper->getAttribute('class'), -1, PREG_SPLIT_NO_EMPTY);
+        $this->assertContains('vf__error', $classTokens);
+
+        // `//p[@class="vf__error"]` — identical error messages are de-duplicated,
+        // so two failing children with the same message render a single paragraph.
+        $errors = $xpath->query('//p[@class="vf__error"]');
+        $this->assertSame(1, $errors->length);
+        $this->assertSame('This field is required', trim($errors->item(0)->textContent));
+    }
+
+    #[Test]
+    public function toHtmlRendersRemoveLabelWhenRemovable(): void
+    {
+        $multi = new MultiField('Phone numbers', [
+            'dynamic' => true,
+            'dynamicLabel' => 'Add another phone',
+            'dynamicRemoveLabel' => 'Remove this phone',
+        ], 'phones');
+        $multi->addField('phone', ValidForm::VFORM_STRING);
+
+        $xpath = $this->parseHtml($multi->toHtml());
+
+        // The wrapper carries the vf__removable class.
+        $wrapper = $xpath->query('//div[contains(concat(" ", normalize-space(@class), " "), " vf__multifield ")]')->item(0);
+        $this->assertNotNull($wrapper);
+        $classTokens = preg_split('/\s+/', (string) $wrapper->getAttribute('class'), -1, PREG_SPLIT_NO_EMPTY);
+        $this->assertContains('vf__removable', $classTokens);
+
+        // `//a[@class="vf__removeLabel"]` — the remove anchor inside the wrapper.
+        $removeAnchor = $xpath->query('//a[@class="vf__removeLabel"]')->item(0);
+        $this->assertNotNull($removeAnchor);
+        $this->assertSame('Remove this phone', trim($removeAnchor->textContent));
+    }
+
+    #[Test]
+    public function toHtmlRendersTipElementWhenTipPropertySet(): void
+    {
+        // NOTE: MultiField::__toHtml() reads $this->__tip, but neither MultiField
+        // nor Base declares a $__tip property (only Element does). Because
+        // ClassDynamic has no __isset(), `empty($this->__tip)` is always true for
+        // a plain MultiField and setTip() throws BadMethodCallException — the tip
+        // branch is unreachable through the public API. A subclass declaring the
+        // property is the only way to exercise (and use) it.
+        // The explicit name matters: a MultiField's id is its name, and the
+        // generated fallback embeds the anonymous class name (which contains a
+        // NUL byte and a file path) — libxml on some platforms refuses to parse
+        // the malformed attribute.
+        $multi = new class ('Full name', [], 'full-name-multifield') extends MultiField {
+            protected $__tip = 'Enter both names';
+        };
+        $multi->addField('first-name', ValidForm::VFORM_STRING);
+
+        $xpath = $this->parseHtml($multi->toHtml());
+
+        // `//small[@class="vf__tip"]` — the tip element after the child fields.
+        $tip = $xpath->query('//small[@class="vf__tip"]')->item(0);
+        $this->assertNotNull($tip);
+        $this->assertSame('Enter both names', trim($tip->textContent));
+    }
+
+    // --------------------------------------------------------------
+    // toHtml — dynamic rendering (original + clones)
+    // --------------------------------------------------------------
+
+    #[Test]
+    public function dynamicMultiFieldRendersOriginalAndCloneWrappers(): void
+    {
+        $multi = new MultiField('Phone numbers', [
+            'dynamic' => true,
+            'dynamicLabel' => 'Add another phone',
+        ], 'phones');
+        $multi->addField('phone', ValidForm::VFORM_STRING);
+
+        // Simulate a submission where the user duplicated the multifield once.
+        $_REQUEST['phone_dynamic'] = '1';
+
+        $xpath = $this->parseHtml($multi->toHtml());
+
+        // `//div[@id="phones"]` / `//div[@id="phones_1"]` — original and clone wrappers.
+        $original = $xpath->query('//div[@id="phones"]')->item(0);
+        $clone = $xpath->query('//div[@id="phones_1"]')->item(0);
+        $this->assertNotNull($original);
+        $this->assertNotNull($clone);
+
+        $this->assertSame('original', $original->getAttribute('data-dynamic'));
+        $this->assertSame('clone', $clone->getAttribute('data-dynamic'));
+
+        $cloneClassTokens = preg_split('/\s+/', (string) $clone->getAttribute('class'), -1, PREG_SPLIT_NO_EMPTY);
+        $this->assertContains('vf__clone', $cloneClassTokens);
+
+        // The clone renders the child field with the _1 suffix.
+        $this->assertSame(1, $xpath->query('//input[@name="phone_1"]')->length);
+
+        // The hidden dynamic counter renders exactly once (skipped in clones).
+        $this->assertSame(1, $xpath->query('//input[@name="phone_dynamic"]')->length);
+
+        // The duplication trigger lists the child field (counter excluded).
+        // `//div[@class="vf__dynamic"]/a` — the 'add another' anchor.
+        $anchor = $xpath->query('//div[@class="vf__dynamic"]/a')->item(0);
+        $this->assertNotNull($anchor);
+        $this->assertSame('phone', $anchor->getAttribute('data-target-id'));
+        $this->assertSame('phone', $anchor->getAttribute('data-target-name'));
+        $this->assertSame('Add another phone', trim($anchor->textContent));
+    }
+
+    #[Test]
+    public function getDynamicCountReadsSubmittedCounterValue(): void
+    {
+        $multi = new MultiField('Phone numbers', [
+            'dynamic' => true,
+            'dynamicLabel' => 'Add another phone',
+        ], 'phones');
+        $multi->addField('phone', ValidForm::VFORM_STRING);
+
+        $_REQUEST['phone_dynamic'] = '2';
+
+        // NOTE: like Area (and unlike Element), MultiField::getDynamicCount()
+        // does not cast — the raw request string leaks through.
+        $this->assertSame('2', $multi->getDynamicCount());
+    }
+
     // --------------------------------------------------------------
     // toJS
     // --------------------------------------------------------------
@@ -394,6 +538,25 @@ class MultiFieldTest extends TestCase
         $this->assertSame(2, substr_count($js, 'objForm.addElement'));
         $this->assertStringContainsString("'first-name'", $js);
         $this->assertStringContainsString("'last-name'", $js);
+    }
+
+    #[Test]
+    public function toJsEmitsAddElementPerDynamicPositionForDynamicMultiField(): void
+    {
+        $multi = new MultiField('Phone numbers', [
+            'dynamic' => true,
+            'dynamicLabel' => 'Add another phone',
+        ], 'phones');
+        $multi->addField('phone', ValidForm::VFORM_STRING);
+
+        $_REQUEST['phone_dynamic'] = '1';
+
+        $js = $multi->toJS();
+
+        // The dynamic child registers itself once per dynamic position.
+        $this->assertSame(2, substr_count($js, 'objForm.addElement'));
+        $this->assertStringContainsString("'phone'", $js);
+        $this->assertStringContainsString("'phone_1'", $js);
     }
 
     // --------------------------------------------------------------

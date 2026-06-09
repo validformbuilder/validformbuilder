@@ -51,7 +51,7 @@ class ComparisonTest extends TestCase
     protected function tearDown(): void
     {
         // Clean up any $_REQUEST keys tests may have set.
-        foreach (['text-field', 'email-field', 'numeric-field', 'text-field_1', 'text-field_2'] as $key) {
+        foreach (['text-field', 'email-field', 'numeric-field', 'text-field_1', 'text-field_2', 'check-field'] as $key) {
             unset($_REQUEST[$key]);
         }
     }
@@ -299,6 +299,38 @@ class ComparisonTest extends TestCase
     }
 
     #[Test]
+    public function emptyComparisonTrueForFalsyValue(): void
+    {
+        // '0' passes validation (non-empty string) but is empty() per PHP
+        // semantics, so the VFORM_COMPARISON_EMPTY branch reports true.
+        $_REQUEST['text-field'] = '0';
+        $comparison = new Comparison($this->textField, ValidForm::VFORM_COMPARISON_EMPTY);
+
+        $this->assertTrue($comparison->check());
+    }
+
+    #[Test]
+    public function emptyComparisonFalseForNonEmptyValue(): void
+    {
+        $_REQUEST['text-field'] = 'hello';
+        $comparison = new Comparison($this->textField, ValidForm::VFORM_COMPARISON_EMPTY);
+
+        $this->assertFalse($comparison->check());
+    }
+
+    #[Test]
+    public function emptyComparisonFalseForEmptyStringBecauseValueResolvesToNull(): void
+    {
+        // Counter-intuitive but long-standing behavior: the validator unsets
+        // its cached value for an empty submission, so check() resolves the
+        // subject value to null and bails out before __verify() ever runs.
+        $_REQUEST['text-field'] = '';
+        $comparison = new Comparison($this->textField, ValidForm::VFORM_COMPARISON_EMPTY);
+
+        $this->assertFalse($comparison->check());
+    }
+
+    #[Test]
     public function startsWithComparisonMatches(): void
     {
         $_REQUEST['text-field'] = 'hello world';
@@ -494,6 +526,25 @@ class ComparisonTest extends TestCase
         $this->assertFalse($first->check(2));
         $this->assertTrue($second->check(2));
         $this->assertFalse($second->check(1));
+    }
+
+    #[Test]
+    public function checkPicksPositionedValueFromArraySubjectValue(): void
+    {
+        // A check list submits an array; check() must compare against the
+        // value at the requested dynamic position instead of the whole array.
+        $checkList = $this->form->addField('check-field', 'Checks', ValidForm::VFORM_CHECK_LIST);
+        $checkList->addField('Red', 'red');
+        $checkList->addField('Blue', 'blue');
+
+        $_REQUEST['check-field'] = ['red', 'blue'];
+
+        $matching = new Comparison($checkList, ValidForm::VFORM_COMPARISON_EQUAL, 'red');
+        $nonMatching = new Comparison($checkList, ValidForm::VFORM_COMPARISON_EQUAL, 'blue');
+
+        // At position 0, the positioned value 'red' is extracted from the array.
+        $this->assertTrue($matching->check());
+        $this->assertFalse($nonMatching->check());
     }
 
     // --------------------------------------------------------------

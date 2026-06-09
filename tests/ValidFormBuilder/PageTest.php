@@ -6,6 +6,7 @@ use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use ValidFormBuilder\Collection;
 use ValidFormBuilder\Fieldset;
+use ValidFormBuilder\Hidden;
 use ValidFormBuilder\Page;
 use ValidFormBuilder\Text;
 use ValidFormBuilder\ValidForm;
@@ -136,6 +137,24 @@ class PageTest extends TestCase
         $this->assertSame(2, $autoFieldset->getFields()->count());
     }
 
+    #[Test]
+    public function addFieldInjectsDynamicCounterForDynamicField(): void
+    {
+        $page = new Page('p1');
+        $field = new Text('dyn-field', ValidForm::VFORM_STRING, 'Dynamic', [], [], ['dynamic' => true]);
+
+        $page->addField($field);
+
+        // The dynamic field gets a hidden counter sibling inside the auto-created fieldset.
+        $autoFieldset = $page->getFields()->getFirst();
+        $this->assertSame(2, $autoFieldset->getFields()->count());
+
+        $counter = $autoFieldset->getFields()->getLast();
+        $this->assertInstanceOf(Hidden::class, $counter);
+        $this->assertSame('dyn-field_dynamic', $counter->getName());
+        $this->assertTrue((bool) $counter->isDynamicCounter());
+    }
+
     // --------------------------------------------------------------
     // toHtml
     // --------------------------------------------------------------
@@ -216,6 +235,18 @@ class PageTest extends TestCase
         $this->assertStringContainsString("objForm.addPage('step-1')", $js);
     }
 
+    #[Test]
+    public function toJsIncludesChildElementJs(): void
+    {
+        $page = new Page('step-1');
+        $page->addField(new Text('name-field', ValidForm::VFORM_STRING, 'Name'));
+
+        $js = $page->toJS();
+
+        $this->assertStringContainsString("objForm.addPage('step-1');\n", $js);
+        $this->assertStringContainsString("'name-field'", $js);
+    }
+
     // --------------------------------------------------------------
     // isValid / hasFields / isDynamic / getShortHeader
     // --------------------------------------------------------------
@@ -286,5 +317,25 @@ class PageTest extends TestCase
         $page = new Page('p1', 'Full Header');
 
         $this->assertSame('Full Header', $page->getShortHeader());
+    }
+
+    #[Test]
+    public function getShortHeaderReturnsSummaryLabelSetViaSetMeta(): void
+    {
+        // The constructor never stores its meta array (see the known-bug test
+        // above), but setMeta() after construction does populate __meta, so
+        // the summaryLabel branch of getShortHeader() is reachable this way.
+        $page = new Page('p1', 'Long Page Title');
+        $page->setMeta('summaryLabel', 'Short');
+
+        $this->assertSame('Short', $page->getShortHeader());
+    }
+
+    #[Test]
+    public function getRandomIdReplacesBracketSyntaxWithRandomSuffix(): void
+    {
+        $page = new Page('p1');
+
+        $this->assertMatchesRegularExpression('/^items_\d{6}$/', $page->getRandomId('items[]'));
     }
 }

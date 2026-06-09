@@ -4,6 +4,7 @@ namespace ValidFormBuilder\Tests;
 
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
+use ValidFormBuilder\Area;
 use ValidFormBuilder\FieldValidator;
 use ValidFormBuilder\Text;
 use ValidFormBuilder\ValidForm;
@@ -885,5 +886,509 @@ class FieldValidatorTest extends TestCase
             'The input is not in the list of possible values.',
             $select->getValidator()->getError()
         );
+    }
+
+    #[Test]
+    public function validateEnforcesOnlyListItemsAgainstRadioGroupFields(): void
+    {
+        // Same tamper-protection as the select-list variant above, but through
+        // the GroupField branch: radio/check lists collect their fixed values
+        // via getFields() + __getValue() instead of getOptions().
+        $form = new ValidForm('radio-form');
+        $radio = $form->addField(
+            'colour-radio',
+            'Colour',
+            ValidForm::VFORM_RADIO_LIST,
+            ['onlyListItems' => true]
+        );
+        $radio->addField('Red', 'red');
+        $radio->addField('Green', 'green');
+
+        // Allowed option — passes.
+        $_REQUEST['colour-radio'] = 'red';
+        $this->assertTrue($radio->getValidator()->validate());
+
+        // Tampered option — must fail.
+        $_REQUEST['colour-radio'] = 'purple';
+        $this->assertFalse($radio->getValidator()->validate());
+        $this->assertSame(
+            'The input is not in the list of possible values.',
+            $radio->getValidator()->getError()
+        );
+    }
+
+    // --------------------------------------------------------------
+    // getValue — override errors and array defaults
+    // --------------------------------------------------------------
+
+    #[Test]
+    public function getValueReturnsNullWhenOverrideErrorIsSetButEmpty(): void
+    {
+        // setError("") marks the position as "overridden with an empty error".
+        // getValue() treats that as "no usable value" and short-circuits to null,
+        // even when a submitted value is present in the request.
+        $field = new Text('name', ValidForm::VFORM_STRING, 'Name');
+        $_REQUEST['name'] = 'submitted';
+
+        $field->getValidator()->setError('');
+
+        $this->assertNull($field->getValidator()->getValue());
+    }
+
+    #[Test]
+    public function getValuePicksDynamicPositionFromArrayDefault(): void
+    {
+        // When the default is an array, getValue() must select the entry that
+        // belongs to the requested dynamic position.
+        $field = new Text(
+            'phone',
+            ValidForm::VFORM_STRING,
+            'Phone',
+            [],
+            [],
+            ['default' => ['zero', 'one']]
+        );
+
+        $this->assertSame('zero', $field->getValidator()->getValue(0));
+        $this->assertSame('one', $field->getValidator()->getValue(1));
+    }
+
+    // --------------------------------------------------------------
+    // validate() — conditional required / enabled / visible
+    // --------------------------------------------------------------
+
+    #[Test]
+    public function validateAppliesRequiredConditionWhenMet(): void
+    {
+        // An optional field becomes required as soon as the condition is met.
+        $trigger = new Text('trigger', ValidForm::VFORM_STRING, 'Trigger');
+        $field = new Text('target', ValidForm::VFORM_STRING, 'Target');
+        $field->addCondition('required', true, [
+            [$trigger, ValidForm::VFORM_COMPARISON_EQUAL, 'yes'],
+        ]);
+
+        $_REQUEST['trigger'] = 'yes';
+
+        // Condition met → required → empty submission fails.
+        $this->assertFalse($field->getValidator()->validate());
+        $this->assertSame('This field is required.', $field->getValidator()->getError());
+    }
+
+    #[Test]
+    public function validateInvertsRequiredConditionWhenNotMet(): void
+    {
+        // A required field becomes optional when the "required" condition is
+        // NOT met: __required is set to the inverse of the condition value.
+        $trigger = new Text('trigger', ValidForm::VFORM_STRING, 'Trigger');
+        $field = new Text(
+            'target',
+            ValidForm::VFORM_STRING,
+            'Target',
+            ['required' => true]
+        );
+        $field->addCondition('required', true, [
+            [$trigger, ValidForm::VFORM_COMPARISON_EQUAL, 'yes'],
+        ]);
+
+        $_REQUEST['trigger'] = 'no';
+
+        // Condition not met → not required → empty submission passes.
+        $this->assertTrue($field->getValidator()->validate());
+    }
+
+    #[Test]
+    public function validateKeepsRequiredWhenEnabledConditionIsMet(): void
+    {
+        // "enabled => true" condition met: the field stays enabled, so its
+        // original required state is preserved.
+        $trigger = new Text('trigger', ValidForm::VFORM_STRING, 'Trigger');
+        $field = new Text(
+            'target',
+            ValidForm::VFORM_STRING,
+            'Target',
+            ['required' => true]
+        );
+        $field->addCondition('enabled', true, [
+            [$trigger, ValidForm::VFORM_COMPARISON_EQUAL, 'yes'],
+        ]);
+
+        $_REQUEST['trigger'] = 'yes';
+
+        $this->assertFalse($field->getValidator()->validate());
+        $this->assertSame('This field is required.', $field->getValidator()->getError());
+    }
+
+    #[Test]
+    public function validateDropsRequiredWhenEnabledConditionIsNotMet(): void
+    {
+        // "enabled => true" condition NOT met: the field counts as disabled
+        // and must not be validated as required.
+        $trigger = new Text('trigger', ValidForm::VFORM_STRING, 'Trigger');
+        $field = new Text(
+            'target',
+            ValidForm::VFORM_STRING,
+            'Target',
+            ['required' => true]
+        );
+        $field->addCondition('enabled', true, [
+            [$trigger, ValidForm::VFORM_COMPARISON_EQUAL, 'yes'],
+        ]);
+
+        $_REQUEST['trigger'] = 'no';
+
+        $this->assertTrue($field->getValidator()->validate());
+    }
+
+    #[Test]
+    public function validateKeepsRequiredWhenVisibleConditionIsMet(): void
+    {
+        // "visible => true" condition met: the field is shown, so the original
+        // required state stands.
+        $trigger = new Text('trigger', ValidForm::VFORM_STRING, 'Trigger');
+        $field = new Text(
+            'target',
+            ValidForm::VFORM_STRING,
+            'Target',
+            ['required' => true]
+        );
+        $field->addCondition('visible', true, [
+            [$trigger, ValidForm::VFORM_COMPARISON_EQUAL, 'yes'],
+        ]);
+
+        $_REQUEST['trigger'] = 'yes';
+
+        $this->assertFalse($field->getValidator()->validate());
+        $this->assertSame('This field is required.', $field->getValidator()->getError());
+    }
+
+    #[Test]
+    public function validateDropsRequiredWhenVisibleConditionIsNotMet(): void
+    {
+        // "visible => true" condition NOT met: a hidden field must never block
+        // submission on its required rule.
+        $trigger = new Text('trigger', ValidForm::VFORM_STRING, 'Trigger');
+        $field = new Text(
+            'target',
+            ValidForm::VFORM_STRING,
+            'Target',
+            ['required' => true]
+        );
+        $field->addCondition('visible', true, [
+            [$trigger, ValidForm::VFORM_COMPARISON_EQUAL, 'yes'],
+        ]);
+
+        $_REQUEST['trigger'] = 'no';
+
+        $this->assertTrue($field->getValidator()->validate());
+    }
+
+    // --------------------------------------------------------------
+    // validate() — active area parent
+    // --------------------------------------------------------------
+
+    #[Test]
+    public function validateSkipsRequiredCheckInsideUncheckedActiveArea(): void
+    {
+        // An "active" area renders a toggle checkbox. When that checkbox is
+        // not submitted, the whole area is collapsed and its children must
+        // not be validated as required.
+        $area = new Area('Details', true, 'details');
+        $field = $area->addField(
+            'inner',
+            'Inner',
+            ValidForm::VFORM_STRING,
+            ['required' => true]
+        );
+
+        // Neither 'details' (the area toggle) nor 'inner' is submitted.
+        $this->assertTrue($field->getValidator()->validate());
+        $this->assertSame('', $field->getValidator()->getError());
+    }
+
+    // --------------------------------------------------------------
+    // validate() — array submissions and required state
+    // --------------------------------------------------------------
+
+    #[Test]
+    public function validateScansPastEmptyArrayItemsToFindNonEmptyValue(): void
+    {
+        // The required check walks the array until it finds a non-empty item.
+        // A leading empty item must not mark the whole submission as empty.
+        $field = new Text(
+            'tags[]',
+            ValidForm::VFORM_STRING,
+            'Tags',
+            ['required' => true]
+        );
+        $_REQUEST['tags'] = ['', 'second'];
+
+        $this->assertTrue($field->getValidator()->validate());
+    }
+
+    #[Test]
+    public function validateFailsRequiredFieldWhenArraySubmissionIsAllEmpty(): void
+    {
+        $field = new Text(
+            'tags[]',
+            ValidForm::VFORM_STRING,
+            'Tags',
+            ['required' => true]
+        );
+        $_REQUEST['tags'] = ['', ''];
+
+        $this->assertFalse($field->getValidator()->validate());
+        $this->assertSame('This field is required.', $field->getValidator()->getError());
+    }
+
+    #[Test]
+    public function validateAcceptsAllEmptyArrayOnOptionalFieldAndCachesEmptyString(): void
+    {
+        $field = new Text('tags[]', ValidForm::VFORM_STRING, 'Tags');
+        $_REQUEST['tags'] = ['', ''];
+
+        $this->assertTrue($field->getValidator()->validate());
+        $this->assertSame('', $field->getValidator()->getValidValue());
+    }
+
+    #[Test]
+    public function validateAllEmptyArrayOnOptionalFieldStillFailsWithOverrideError(): void
+    {
+        // Even when the optional-empty shortcut applies, a custom error set via
+        // setError() must win and fail the validation.
+        $field = new Text('tags[]', ValidForm::VFORM_STRING, 'Tags');
+        $_REQUEST['tags'] = ['', ''];
+
+        $field->getValidator()->setError('Externally flagged.');
+
+        $this->assertFalse($field->getValidator()->validate());
+        $this->assertSame('Externally flagged.', $field->getValidator()->getError());
+    }
+
+    #[Test]
+    public function validateFailsWhenArrayHasFewerItemsThanMinLength(): void
+    {
+        // For array submissions minLength counts items, not characters.
+        $field = new Text(
+            'tags[]',
+            ValidForm::VFORM_STRING,
+            'Tags',
+            ['minLength' => 2]
+        );
+        $_REQUEST['tags'] = ['only-one'];
+
+        $this->assertFalse($field->getValidator()->validate());
+        $this->assertStringContainsString('minimum is 2', $field->getValidator()->getError());
+    }
+
+    #[Test]
+    public function validateFailsWhenArrayHasMoreItemsThanMaxLength(): void
+    {
+        // For array submissions maxLength counts items, not characters.
+        $field = new Text(
+            'tags[]',
+            ValidForm::VFORM_STRING,
+            'Tags',
+            ['maxLength' => 2]
+        );
+        $_REQUEST['tags'] = ['one', 'two', 'three'];
+
+        $this->assertFalse($field->getValidator()->validate());
+        $this->assertStringContainsString('maximum is 2', $field->getValidator()->getError());
+    }
+
+    // --------------------------------------------------------------
+    // validate() — matchWith edge cases
+    // --------------------------------------------------------------
+
+    #[Test]
+    public function validateFailsWhenMatchWithSubjectIsEmptyButFieldHasValue(): void
+    {
+        // The matched field is empty (normalised to null) while this field
+        // carries a value — that's a mismatch.
+        $password = new Text('password', ValidForm::VFORM_STRING, 'Password');
+        $confirm = new Text(
+            'password-confirm',
+            ValidForm::VFORM_STRING,
+            'Confirm',
+            ['matchWith' => $password]
+        );
+
+        $_REQUEST['password'] = '';
+        $_REQUEST['password-confirm'] = 'secret';
+
+        $this->assertFalse($confirm->getValidator()->validate());
+        $this->assertSame('The values do not match.', $confirm->getValidator()->getError());
+    }
+
+    #[Test]
+    public function validateTreatsBothEmptyMatchWithValuesAsValid(): void
+    {
+        // Both sides empty → both normalised to null → equal → valid for an
+        // optional pair.
+        $password = new Text('password', ValidForm::VFORM_STRING, 'Password');
+        $confirm = new Text(
+            'password-confirm',
+            ValidForm::VFORM_STRING,
+            'Confirm',
+            ['matchWith' => $password]
+        );
+
+        $_REQUEST['password'] = '';
+        $_REQUEST['password-confirm'] = '';
+
+        $this->assertTrue($confirm->getValidator()->validate());
+    }
+
+    #[Test]
+    public function validateBothEmptyMatchWithStillFailsWithOverrideError(): void
+    {
+        // The empty-match shortcut must still honour a custom override error.
+        $password = new Text('password', ValidForm::VFORM_STRING, 'Password');
+        $confirm = new Text(
+            'password-confirm',
+            ValidForm::VFORM_STRING,
+            'Confirm',
+            ['matchWith' => $password]
+        );
+
+        $_REQUEST['password'] = '';
+        $_REQUEST['password-confirm'] = '';
+
+        $confirm->getValidator()->setError('Externally flagged.');
+
+        $this->assertFalse($confirm->getValidator()->validate());
+        $this->assertSame('Externally flagged.', $confirm->getValidator()->getError());
+    }
+
+    #[Test]
+    public function validateReturnsTrueForUnsubmittedOptionalFieldWithMatchWith(): void
+    {
+        // Nothing submitted at all (value is null, not ""): an optional field
+        // with a matchWith rule short-circuits to valid.
+        $password = new Text('password', ValidForm::VFORM_STRING, 'Password');
+        $confirm = new Text(
+            'password-confirm',
+            ValidForm::VFORM_STRING,
+            'Confirm',
+            ['matchWith' => $password]
+        );
+
+        $this->assertTrue($confirm->getValidator()->validate());
+    }
+
+    #[Test]
+    public function validateUnsubmittedOptionalFieldWithMatchWithStillFailsWithOverrideError(): void
+    {
+        // The null-value shortcut must still honour a custom override error.
+        $password = new Text('password', ValidForm::VFORM_STRING, 'Password');
+        $confirm = new Text(
+            'password-confirm',
+            ValidForm::VFORM_STRING,
+            'Confirm',
+            ['matchWith' => $password]
+        );
+
+        $confirm->getValidator()->setError('Externally flagged.');
+
+        $this->assertFalse($confirm->getValidator()->validate());
+        $this->assertSame('Externally flagged.', $confirm->getValidator()->getError());
+    }
+
+    // --------------------------------------------------------------
+    // validate() — hint + override error
+    // --------------------------------------------------------------
+
+    #[Test]
+    public function validateHintValueOnOptionalFieldStillFailsWithOverrideError(): void
+    {
+        // The optional-hint shortcut (hint value treated as "no input") must
+        // still honour a custom override error.
+        $field = new Text(
+            'name',
+            ValidForm::VFORM_STRING,
+            'Name',
+            [],
+            [],
+            ['hint' => 'enter your name']
+        );
+        $_REQUEST['name'] = 'enter your name';
+
+        $field->getValidator()->setError('Externally flagged.');
+
+        $this->assertFalse($field->getValidator()->validate());
+        $this->assertSame('Externally flagged.', $field->getValidator()->getError());
+    }
+
+    // --------------------------------------------------------------
+    // validate() — custom validation regex and nested arrays
+    // --------------------------------------------------------------
+
+    #[Test]
+    public function validateUsesCustomValidationRegexInsteadOfTypeRegex(): void
+    {
+        // A custom 'validation' rule replaces the type-derived regex entirely.
+        $field = new Text(
+            'code',
+            ValidForm::VFORM_STRING,
+            'Code',
+            ['validation' => '/^[a-z]+$/'],
+            ['type' => 'Lowercase letters only.']
+        );
+
+        $_REQUEST['code'] = 'abc';
+        $this->assertTrue($field->getValidator()->validate());
+
+        // 'ABC123' would pass the VFORM_STRING type regex — only the custom
+        // rule rejects it, proving the custom branch ran.
+        $_REQUEST['code'] = 'ABC123';
+        $this->assertFalse($field->getValidator()->validate());
+        $this->assertSame('Lowercase letters only.', $field->getValidator()->getError());
+    }
+
+    #[Test]
+    public function validateStoresNestedArraySubmissionDirectlyAsValidValues(): void
+    {
+        // Dynamic check lists submit a nested array (one sub-array per dynamic
+        // position). validate() must store that array as the complete
+        // valid-values set instead of caching it at a single position.
+        $form = new ValidForm('nested-form');
+        $group = $form->addField('fruit', 'Fruit', ValidForm::VFORM_CHECK_LIST);
+        $group->addField('Apple', 'apple');
+        $group->addField('Banana', 'banana');
+
+        $_REQUEST['fruit'] = [['apple', 'banana'], ['banana']];
+
+        // The required-state scan casts each sub-array to string, which raises
+        // an E_WARNING ("Array to string conversion") on PHP 8. Mute it so the
+        // nested-array storage behaviour itself can be asserted.
+        set_error_handler(static fn (): bool => true, E_WARNING);
+        try {
+            $blnResult = $group->getValidator()->validate();
+        } finally {
+            restore_error_handler();
+        }
+
+        $this->assertTrue($blnResult);
+        $this->assertSame(['apple', 'banana'], $group->getValidator()->getValidValue(0));
+        $this->assertSame(['banana'], $group->getValidator()->getValidValue(1));
+    }
+
+    // --------------------------------------------------------------
+    // validate() — override error after successful checks
+    // --------------------------------------------------------------
+
+    #[Test]
+    public function validateClearsValidValueWhenOverrideErrorSetOnValidSubmission(): void
+    {
+        // A perfectly valid submission must still fail when an override error
+        // was set, and the cached valid value must be discarded.
+        $field = new Text('name', ValidForm::VFORM_STRING, 'Name');
+        $_REQUEST['name'] = 'hello';
+
+        $field->getValidator()->setError('Manually rejected.');
+
+        $this->assertFalse($field->getValidator()->validate());
+        $this->assertSame('Manually rejected.', $field->getValidator()->getError());
+        $this->assertNull($field->getValidator()->getValidValue());
     }
 }

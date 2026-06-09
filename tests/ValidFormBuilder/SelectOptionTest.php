@@ -4,6 +4,7 @@ namespace ValidFormBuilder\Tests;
 
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
+use ValidFormBuilder\FieldValidator;
 use ValidFormBuilder\SelectOption;
 
 /**
@@ -94,6 +95,47 @@ class SelectOptionTest extends TestCase
         // getValue() on SelectOption always returns its own value,
         // regardless of dynamic position.
         $this->assertSame('red', $option->getValue(5));
+    }
+
+    // --------------------------------------------------------------
+    // __getValue
+    // --------------------------------------------------------------
+
+    #[Test]
+    public function internalGetValueFallsBackToOwnValueWhenParentReturnsNull(): void
+    {
+        // SelectOption skips the Element constructor, so it has no validator
+        // by default. Attach one (as Element does) so the inherited
+        // __getValue() implementation can run.
+        $option = $this->createOptionWithValidator('Red', 'red');
+
+        // No submitted value, no default, no hint — the parent returns null
+        // and SelectOption falls back to its own value.
+        $this->assertSame('red', $option->__getValue());
+    }
+
+    #[Test]
+    public function internalGetValueReturnsParentValueWhenDefaultIsSet(): void
+    {
+        $option = $this->createOptionWithValidator('Red', 'red');
+        $option->setDefault('blue');
+
+        // The parent resolves the default value, so the fallback to the
+        // option's own value is skipped.
+        $this->assertSame('blue', $option->__getValue());
+    }
+
+    /**
+     * Build a SelectOption with a name and FieldValidator attached, mirroring
+     * what Element::__construct() does for regular fields.
+     */
+    private function createOptionWithValidator(string $label, string $value): SelectOption
+    {
+        $option = new SelectOption($label, $value);
+        $option->setName('option-' . $value);
+        $option->setValidator(new FieldValidator($option));
+
+        return $option;
     }
 
     // --------------------------------------------------------------

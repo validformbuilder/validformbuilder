@@ -4,6 +4,7 @@ namespace ValidFormBuilder\Tests;
 
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
+use ValidFormBuilder\Comparison;
 use ValidFormBuilder\Paragraph;
 use ValidFormBuilder\ValidForm;
 
@@ -105,6 +106,53 @@ class ParagraphTest extends TestCase
     public function isDynamicReturnsFalse(): void
     {
         $this->assertFalse((new Paragraph())->isDynamic());
+    }
+
+    #[Test]
+    public function magicToHtmlDelegatesToToHtml(): void
+    {
+        $p = new Paragraph('Title', 'Body text');
+        $xpath = $this->parseHtml($p->__toHtml());
+
+        // `//div/h3` and `//div/p` — __toHtml() renders through toHtml() with defaults.
+        $this->assertNotNull($xpath->query('//div/h3')->item(0));
+        $this->assertNotNull($xpath->query('//div/p')->item(0));
+    }
+
+    #[Test]
+    public function toJsEmitsAddElementCallUsingMetaId(): void
+    {
+        $p = new Paragraph('Title', 'Body');
+
+        // The constructor stores the auto-generated name as the 'id' meta;
+        // toJS() registers the paragraph under that id.
+        $id = $p->getMeta('id');
+
+        $this->assertSame("objForm.addElement('{$id}', '{$id}');\n", $p->toJS());
+    }
+
+    #[Test]
+    public function toJsAppendsConditionLogic(): void
+    {
+        $form = new ValidForm('paragraph-js-form');
+        $field = $form->addField('trigger-field', 'Trigger', ValidForm::VFORM_STRING);
+        $p = $form->addParagraph('Body', 'Header');
+
+        $p->addCondition('visible', true, [
+            new Comparison($field, ValidForm::VFORM_COMPARISON_EQUAL, 'show'),
+        ]);
+
+        $js = $p->toJS();
+
+        $this->assertStringContainsString('objForm.addElement(', $js);
+        $this->assertStringContainsString('objForm.addCondition(', $js);
+        $this->assertStringContainsString('"property":"visible"', $js);
+    }
+
+    #[Test]
+    public function getFieldsReturnsEmptyArray(): void
+    {
+        $this->assertSame([], (new Paragraph())->getFields());
     }
 
     #[Test]

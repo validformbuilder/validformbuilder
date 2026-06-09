@@ -112,6 +112,30 @@ class ButtonTest extends TestCase
     }
 
     #[Test]
+    public function disabledButtonRendersDisabledAttribute(): void
+    {
+        // NOTE: Button::toHtml() checks $this->__disabled, but no class in the
+        // hierarchy declares a $__disabled property. Because ClassDynamic has no
+        // __isset(), `empty($this->__disabled)` is always true for a plain Button
+        // and setDisabled() throws BadMethodCallException — the disabled branch
+        // is unreachable through the public API. A subclass declaring the
+        // property is the only way to exercise (and use) it.
+        // The explicit fieldid matters: without it, the generated id embeds the
+        // anonymous class name (which contains a NUL byte and a file path), and
+        // libxml on some platforms refuses to parse the malformed attribute.
+        $button = new class ("Disabled Button", ["fieldid" => "disabled-button"]) extends Button {
+            protected $__disabled = true;
+        };
+
+        $xpath = $this->parseHtml($button->toHtml());
+        // `//input` — the single <input> element; it must carry disabled="disabled".
+        $input = $xpath->query('//input')->item(0);
+
+        $this->assertNotNull($input);
+        $this->assertSame('disabled', $input->getAttribute('disabled'));
+    }
+
+    #[Test]
     public function toHtmlRendersSingleInputWithTypeAndValue(): void
     {
         $customButton = new Button("My Button", ["type" => "button"]);

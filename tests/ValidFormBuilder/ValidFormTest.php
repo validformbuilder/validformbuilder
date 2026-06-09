@@ -9,6 +9,8 @@ use ValidFormBuilder\Area;
 use ValidFormBuilder\Button;
 use ValidFormBuilder\Checkbox;
 use ValidFormBuilder\Collection;
+use ValidFormBuilder\Comparison;
+use ValidFormBuilder\Element;
 use ValidFormBuilder\Fieldset;
 use ValidFormBuilder\File;
 use ValidFormBuilder\Group;
@@ -22,6 +24,7 @@ use ValidFormBuilder\StaticText;
 use ValidFormBuilder\Text;
 use ValidFormBuilder\Textarea;
 use ValidFormBuilder\ValidForm;
+use Volnix\CSRF\CSRF;
 
 /**
  * Coverage for {@link \ValidFormBuilder\ValidForm}.
@@ -60,6 +63,13 @@ class ValidFormTest extends TestCase
         foreach (array_keys($_REQUEST) as $key) {
             unset($_REQUEST[$key]);
         }
+
+        foreach (array_keys($_POST) as $key) {
+            unset($_POST[$key]);
+        }
+
+        unset($_SERVER['REQUEST_URI']);
+        unset($_SESSION[CSRF::TOKEN_NAME]);
     }
 
     // --------------------------------------------------------------
@@ -749,5 +759,704 @@ class ValidFormTest extends TestCase
         $this->assertSame(1, $xpath->query('//input[@name="name"]')->length);
         // `//input[@name="email"]` — the email field should be rendered.
         $this->assertSame(1, $xpath->query('//input[@name="email"]')->length);
+    }
+
+    // --------------------------------------------------------------
+    // Constructor — action derived from REQUEST_URI
+    // --------------------------------------------------------------
+
+    #[Test]
+    public function constructorDerivesActionFromRequestUriPath(): void
+    {
+        // When no action is given and REQUEST_URI is available, the action
+        // is the *path* component of REQUEST_URI (query string stripped).
+        $_SERVER['PHP_SELF'] = '/fallback.php';
+        $_SERVER['REQUEST_URI'] = '/contact/form?utm_source=test';
+
+        $form = new ValidForm('test');
+
+        $this->assertSame('/contact/form', $form->getAction());
+    }
+
+    // --------------------------------------------------------------
+    // setDefaults — invalid argument
+    // --------------------------------------------------------------
+
+    #[Test]
+    public function setDefaultsThrowsInvalidArgumentExceptionForNonArray(): void
+    {
+        $form = new ValidForm('test');
+
+        $this->expectException(\InvalidArgumentException::class);
+
+        $form->setDefaults('not-an-array');
+    }
+
+    // --------------------------------------------------------------
+    // renderField — unknown type fallback
+    // --------------------------------------------------------------
+
+    #[Test]
+    public function renderFieldFallsBackToGenericElementForUnknownType(): void
+    {
+        // An unrecognized type constant falls through to the default case
+        // and yields a bare Element instance.
+        $field = ValidForm::renderField('mystery', 'Mystery', 999, [], [], []);
+
+        $this->assertSame(Element::class, get_class($field));
+    }
+
+    // --------------------------------------------------------------
+    // toHtml — client-side javascript, meta class, main alert, data attrs
+    // --------------------------------------------------------------
+
+    #[Test]
+    public function toHtmlIncludesClientSideJavascriptByDefault(): void
+    {
+        $_SERVER['PHP_SELF'] = '/test.php';
+        $form = new ValidForm('js-form');
+        $form->addField('name', 'Name', ValidForm::VFORM_STRING);
+
+        $html = $form->toHtml();
+
+        // The default $blnClientSide = true prepends a <script> block with
+        // the form's init function before the <form> element.
+        $this->assertStringContainsString('<script type="text/javascript">', $html);
+        $this->assertStringContainsString('function js_form_init() {', $html);
+        $this->assertStringContainsString('// ]]>', $html);
+        $this->assertStringContainsString('</script>', $html);
+    }
+
+    #[Test]
+    public function toHtmlAppendsCustomClassFromMeta(): void
+    {
+        $_SERVER['PHP_SELF'] = '/test.php';
+        $form = new ValidForm('test', null, null, ['class' => 'my-custom-class']);
+        $form->addField('name', 'Name', ValidForm::VFORM_STRING);
+
+        $xpath = $this->parseHtml($form->toHtml(false));
+
+        // `//form` — the meta class is appended to the default 'validform' class.
+        $formEl = $xpath->query('//form')->item(0);
+        $this->assertNotNull($formEl);
+        $this->assertSame('validform my-custom-class', $formEl->getAttribute('class'));
+    }
+
+    #[Test]
+    public function toHtmlRendersMainAlertWhenForceSubmitted(): void
+    {
+        $_SERVER['PHP_SELF'] = '/test.php';
+        $form = new ValidForm('test');
+        $form->setMainAlert('Something went wrong');
+        $form->addField('name', 'Name', ValidForm::VFORM_STRING);
+
+        $xpath = $this->parseHtml($form->toHtml(false, true));
+
+        // `//div[@class="vf__main_error"]/p` — the main alert paragraph.
+        $alert = $xpath->query('//div[@class="vf__main_error"]/p')->item(0);
+        $this->assertNotNull($alert);
+        $this->assertSame('Something went wrong', $alert->textContent);
+    }
+
+    #[Test]
+    public function toHtmlRendersDataAttributesFromMeta(): void
+    {
+        $_SERVER['PHP_SELF'] = '/test.php';
+        $form = new ValidForm('test', null, null, ['data' => ['FooBar' => 'baz', 'other' => 'qux']]);
+        $form->addField('name', 'Name', ValidForm::VFORM_STRING);
+
+        $xpath = $this->parseHtml($form->toHtml(false));
+
+        // `//form` — data keys are lowercased into data-* attributes.
+        $formEl = $xpath->query('//form')->item(0);
+        $this->assertNotNull($formEl);
+        $this->assertSame('baz', $formEl->getAttribute('data-foobar'));
+        $this->assertSame('qux', $formEl->getAttribute('data-other'));
+    }
+
+    // --------------------------------------------------------------
+    // fieldsToHtml — dynamic defaults and navigation flag
+    // --------------------------------------------------------------
+
+    #[Test]
+    public function fieldsToHtmlDerivesDynamicCounterDefaultFromArrayDefault(): void
+    {
+        // When an array of defaults is set on a dynamic field and no
+        // explicit '<name>_dynamic' counter default is given, the counter
+        // default is derived from the array length (zero-based).
+        $form = new ValidForm('test');
+        $form->addField('colors', 'Colors', ValidForm::VFORM_STRING, [], [], [
+            'dynamic' => true,
+            'dynamicLabel' => 'Add another color',
+        ]);
+        $form->setDefaults(['colors' => ['red', 'blue']]);
+
+        $html = $form->fieldsToHtml();
+
+        $this->assertSame(1, $form->getDefaults()['colors_dynamic']);
+
+        $xpath = $this->parseHtml($html);
+
+        // `//input[@name="colors_1"]` — the dynamic duplicate is rendered
+        // because the derived counter default is 1.
+        $duplicate = $xpath->query('//input[@name="colors_1"]')->item(0);
+        $this->assertNotNull($duplicate);
+        $this->assertSame('blue', $duplicate->getAttribute('value'));
+    }
+
+    #[Test]
+    public function fieldsToHtmlReportsNavigationThroughReferenceParameter(): void
+    {
+        $form = new ValidForm('test');
+        $form->addField('name', 'Name', ValidForm::VFORM_STRING);
+        $form->addNavigation();
+
+        $blnNavigation = false;
+        $form->fieldsToHtml(false, $blnNavigation);
+
+        // The by-reference flag tells toHtml() not to render the default
+        // submit button navigation block.
+        $this->assertTrue($blnNavigation);
+    }
+
+    // --------------------------------------------------------------
+    // isSubmitted — CSRF token validation
+    // --------------------------------------------------------------
+
+    #[Test]
+    public function isSubmittedReturnsFalseWithoutValidCsrfToken(): void
+    {
+        // SECURITY: with CSRF protection enabled (the default), a matching
+        // dispatch key alone is not enough — the request must also carry a
+        // valid CSRF token in $_POST. Without one, isSubmitted() is false.
+        $form = new ValidForm('csrf-form');
+        $_REQUEST['vf__dispatch'] = 'csrf-form';
+
+        $this->assertFalse($form->isSubmitted());
+    }
+
+    #[Test]
+    public function isSubmittedReturnsTrueWithValidCsrfToken(): void
+    {
+        // SECURITY: the happy path — the session token matches the posted
+        // token, so the submission is accepted.
+        $form = new ValidForm('csrf-form');
+        $_REQUEST['vf__dispatch'] = 'csrf-form';
+        $_POST[CSRF::TOKEN_NAME] = CSRF::getToken();
+
+        $this->assertTrue($form->isSubmitted());
+    }
+
+    // --------------------------------------------------------------
+    // getFields — nested containers and empty fieldsets
+    // --------------------------------------------------------------
+
+    #[Test]
+    public function getFieldsCollectsActiveAreasAndNestedContainers(): void
+    {
+        $form = new ValidForm('test');
+
+        // Active area directly inside the fieldset; the area itself is
+        // added to the flat collection because it's active.
+        $outerArea = $form->addArea('Outer', true, 'outer');
+        $outerArea->addField('outer-text', 'Outer text', ValidForm::VFORM_STRING);
+
+        // A multifield inside the area: its children are collected too.
+        $multi = $outerArea->addMultiField('Inner multifield');
+        $multi->addField('multi-sub', ValidForm::VFORM_STRING);
+
+        // An active area nested inside another area. This isn't reachable
+        // through the factory methods, but getFields() supports it for
+        // subclasses and manual collection manipulation.
+        $innerArea = new Area('Inner', true, 'inner');
+        $innerArea->addField('deep-field', 'Deep', ValidForm::VFORM_STRING);
+        $outerArea->getFields()->addObject($innerArea);
+
+        $fields = $form->getFields();
+
+        $names = [];
+        foreach ($fields as $field) {
+            $names[] = $field->getName();
+        }
+
+        $this->assertContains('outer', $names);
+        $this->assertContains('outer-text', $names);
+        $this->assertContains('multi-sub', $names);
+        $this->assertContains('inner', $names);
+        $this->assertContains('deep-field', $names);
+    }
+
+    #[Test]
+    public function getFieldsAddsFieldlessTopLevelElementToCollection(): void
+    {
+        // Top-level elements without child fields (like StaticText added
+        // through addHtml) are added to the flat collection as-is.
+        $form = new ValidForm('test');
+        $html = $form->addHtml('<p>Static content</p>');
+
+        $fields = $form->getFields();
+
+        $this->assertSame(1, $fields->count());
+
+        foreach ($fields as $field) {
+            $this->assertSame($html, $field);
+        }
+    }
+
+    // --------------------------------------------------------------
+    // getValidField — lookup by name fallback
+    // --------------------------------------------------------------
+
+    #[Test]
+    public function getValidFieldFallsBackToNameLookupForChecklistFields(): void
+    {
+        // A checklist named with [] gets a randomized internal id, so the
+        // first lookup pass (by id) fails and the second pass matches the
+        // field by its name instead.
+        $form = new ValidForm('test');
+        $field = $form->addField('interests[]', 'Interests', ValidForm::VFORM_CHECK_LIST);
+
+        $this->assertSame($field, $form->getValidField('interests[]'));
+    }
+
+    // --------------------------------------------------------------
+    // valuesAsHtml — no-values message and conditions
+    // --------------------------------------------------------------
+
+    #[Test]
+    public function valuesAsHtmlShowsNoValuesMessageWhenFormIsEmpty(): void
+    {
+        $form = new ValidForm('test');
+        $form->setNoValuesMessage('Nothing was submitted');
+        $form->addField('name', 'Name', ValidForm::VFORM_STRING);
+
+        $html = $form->valuesAsHtml();
+
+        $this->assertStringContainsString('<table', $html);
+        $this->assertStringContainsString('Nothing was submitted', $html);
+    }
+
+    #[Test]
+    public function valuesAsHtmlSkipsFieldsetHiddenByVisibleCondition(): void
+    {
+        // The trigger field lives in the first fieldset; the second fieldset
+        // is only visible when trigger equals 'show'. The trigger is not
+        // submitted, so the condition is not met and the fieldset (and its
+        // submitted child value) is omitted from the overview.
+        $form = new ValidForm('test');
+        $trigger = $form->addField('trigger', 'Trigger', ValidForm::VFORM_STRING);
+
+        $fieldset = $form->addFieldset('Hidden section');
+        $fieldset->addCondition('visible', true, [
+            new Comparison($trigger, ValidForm::VFORM_COMPARISON_EQUAL, 'show'),
+        ]);
+        $form->addField('secret', 'Secret', ValidForm::VFORM_STRING);
+
+        $_REQUEST['secret'] = 'classified';
+        $form->isValid();
+
+        $this->assertStringNotContainsString('classified', $form->valuesAsHtml());
+    }
+
+    #[Test]
+    public function valuesAsHtmlSkipsFieldHiddenByMetVisibleCondition(): void
+    {
+        // visible=false when trigger equals 'hide'; the trigger IS submitted
+        // with 'hide', so the condition is met and the field is hidden.
+        $form = new ValidForm('test');
+        $trigger = $form->addField('trigger', 'Trigger', ValidForm::VFORM_STRING);
+        $target = $form->addField('target', 'Target', ValidForm::VFORM_STRING);
+        $target->addCondition('visible', false, [
+            new Comparison($trigger, ValidForm::VFORM_COMPARISON_EQUAL, 'hide'),
+        ]);
+
+        $_REQUEST['trigger'] = 'hide';
+        $_REQUEST['target'] = 'invisible-value';
+        $form->isValid();
+
+        $html = $form->valuesAsHtml();
+
+        $this->assertStringContainsString('hide', $html);
+        $this->assertStringNotContainsString('invisible-value', $html);
+    }
+
+    #[Test]
+    public function valuesAsHtmlSkipsMultiFieldHiddenByVisibleCondition(): void
+    {
+        $form = new ValidForm('test');
+        $trigger = $form->addField('trigger', 'Trigger', ValidForm::VFORM_STRING);
+
+        $multi = $form->addMultiField('Full name');
+        $multi->addField('first-name', ValidForm::VFORM_STRING);
+        $multi->addCondition('visible', true, [
+            new Comparison($trigger, ValidForm::VFORM_COMPARISON_EQUAL, 'show'),
+        ]);
+
+        $_REQUEST['first-name'] = 'Robin';
+        $form->isValid();
+
+        $this->assertStringNotContainsString('Robin', $form->valuesAsHtml());
+    }
+
+    // --------------------------------------------------------------
+    // valuesAsHtml — field rendering variations
+    // --------------------------------------------------------------
+
+    #[Test]
+    public function valuesAsHtmlRendersFieldsetHeaderRow(): void
+    {
+        $form = new ValidForm('test');
+        $form->addFieldset('Personal details');
+        $form->addField('name', 'Name', ValidForm::VFORM_STRING);
+
+        $_REQUEST['name'] = 'Robin';
+        $form->isValid();
+
+        $html = $form->valuesAsHtml();
+
+        $this->assertStringContainsString('<b>Personal details</b>', $html);
+        $this->assertStringContainsString('Robin', $html);
+    }
+
+    #[Test]
+    public function valuesAsHtmlImplodesChecklistValues(): void
+    {
+        $form = new ValidForm('test');
+        $checklist = $form->addField('interests[]', 'Interests', ValidForm::VFORM_CHECK_LIST);
+        $checklist->addField('Option 1', 'opt1');
+        $checklist->addField('Option 2', 'opt2');
+
+        $_REQUEST['interests'] = ['opt1', 'opt2'];
+        $form->isValid();
+
+        $html = $form->valuesAsHtml();
+
+        // Array values are joined with ', ' in the overview.
+        $this->assertStringContainsString('opt1, opt2', $html);
+    }
+
+    #[Test]
+    public function valuesAsHtmlRendersBooleanFieldAsYes(): void
+    {
+        $form = new ValidForm('test');
+        $form->addField('agree', 'Agree to terms', ValidForm::VFORM_BOOLEAN);
+
+        $_REQUEST['agree'] = 'on';
+        $form->isValid();
+
+        $html = $form->valuesAsHtml();
+
+        $this->assertStringContainsString('Agree to terms', $html);
+        $this->assertStringContainsString('<strong>yes</strong>', $html);
+    }
+
+    #[Test]
+    public function valuesAsHtmlRendersDynamicFieldDuplicates(): void
+    {
+        // Dynamic fields get _1, _2 etc. suffixed clones client-side. The
+        // overview renders the base value plus every dynamic duplicate.
+        $form = new ValidForm('test');
+        $form->addField('phone', 'Phone', ValidForm::VFORM_STRING, [], [], [
+            'dynamic' => true,
+            'dynamicLabel' => 'Add phone number',
+        ]);
+
+        $_REQUEST['phone'] = '555-0001';
+        $_REQUEST['phone_1'] = '555-0002';
+        $_REQUEST['phone_dynamic'] = '1';
+        $form->isValid();
+
+        $html = $form->valuesAsHtml();
+
+        $this->assertStringContainsString('555-0001', $html);
+        $this->assertStringContainsString('555-0002', $html);
+    }
+
+    // --------------------------------------------------------------
+    // valuesAsHtml — areas
+    // --------------------------------------------------------------
+
+    #[Test]
+    public function valuesAsHtmlRendersAreaWithHeaderAndChildValues(): void
+    {
+        $form = new ValidForm('test');
+        $area = $form->addArea('Shipping address', false, 'shipping');
+        $area->addField('city', 'City', ValidForm::VFORM_STRING);
+        $area->addParagraph('Paragraphs are skipped in the overview.');
+
+        $_REQUEST['city'] = 'Amsterdam';
+        $form->isValid();
+
+        $html = $form->valuesAsHtml();
+
+        $this->assertStringContainsString('<h3>Shipping address</h3>', $html);
+        $this->assertStringContainsString('Amsterdam', $html);
+        $this->assertStringNotContainsString('Paragraphs are skipped', $html);
+    }
+
+    #[Test]
+    public function valuesAsHtmlRendersMultiFieldNestedInsideArea(): void
+    {
+        $form = new ValidForm('test');
+        $area = $form->addArea('Personal', false, 'personal');
+        $multi = $area->addMultiField('Full name');
+        $multi->addField('first-name', ValidForm::VFORM_STRING);
+        $multi->addField('last-name', ValidForm::VFORM_STRING);
+
+        $_REQUEST['first-name'] = 'Robin';
+        $_REQUEST['last-name'] = 'van Baalen';
+        $form->isValid();
+
+        $html = $form->valuesAsHtml();
+
+        $this->assertStringContainsString('<h3>Personal</h3>', $html);
+        $this->assertStringContainsString('<strong>Robin van Baalen</strong>', $html);
+    }
+
+    #[Test]
+    public function valuesAsHtmlShowsNoValuesMessageForEmptyActiveArea(): void
+    {
+        // An active (checked) area without any submitted child values shows
+        // the no-values message under the area header.
+        $form = new ValidForm('test');
+        $form->setNoValuesMessage('No values entered');
+        $area = $form->addArea('Optional info', true, 'optional');
+        $area->addField('comment', 'Comment', ValidForm::VFORM_STRING);
+
+        $_REQUEST['optional'] = '1';
+        $form->isValid();
+
+        $html = $form->valuesAsHtml();
+
+        $this->assertStringContainsString('<h3>Optional info</h3>', $html);
+        $this->assertStringContainsString('No values entered', $html);
+    }
+
+    #[Test]
+    public function valuesAsHtmlReturnsEmptyStringForAreaWithoutContent(): void
+    {
+        // A non-active area without submitted child values and without a
+        // no-values message produces no overview output at all.
+        $form = new ValidForm('test');
+        $area = $form->addArea('Empty area', false, 'empty-area');
+        $area->addField('city', 'City', ValidForm::VFORM_STRING);
+
+        $form->isValid();
+
+        $this->assertSame('', $form->valuesAsHtml());
+    }
+
+    #[Test]
+    public function valuesAsHtmlRendersDynamicAreaDuplicates(): void
+    {
+        // A dynamic area renders one block per dynamic count. The hidden
+        // dynamic counter fields inside the area are skipped.
+        $form = new ValidForm('test');
+        $area = $form->addArea('Addresses', false, 'addresses', false, [
+            'dynamic' => true,
+            'dynamicLabel' => 'Add address',
+        ]);
+        $area->addField('street', 'Street', ValidForm::VFORM_STRING);
+
+        $_REQUEST['street'] = 'Main Street 1';
+        $_REQUEST['street_1'] = 'Second Street 2';
+        $_REQUEST['street_dynamic'] = '1';
+        $form->isValid();
+
+        $html = $form->valuesAsHtml();
+
+        $this->assertStringContainsString('Main Street 1', $html);
+        $this->assertStringContainsString('Second Street 2', $html);
+        // The dynamic counter value must not leak into the overview.
+        $this->assertStringNotContainsString('street_dynamic', $html);
+    }
+
+    #[Test]
+    public function valuesAsHtmlRendersNestedDynamicFieldInsideArea(): void
+    {
+        // A static area containing a dynamic child field renders the base
+        // value plus all dynamic duplicates of that child.
+        $form = new ValidForm('test');
+        $area = $form->addArea('Contact', false, 'contact-area');
+        $area->addField('email', 'Email', ValidForm::VFORM_EMAIL, [], [], [
+            'dynamic' => true,
+            'dynamicLabel' => 'Add email',
+        ]);
+
+        $_REQUEST['email'] = 'first@example.com';
+        $_REQUEST['email_1'] = 'second@example.com';
+        $_REQUEST['email_dynamic'] = '1';
+        $form->isValid();
+
+        $html = $form->valuesAsHtml();
+
+        $this->assertStringContainsString('first@example.com', $html);
+        $this->assertStringContainsString('second@example.com', $html);
+    }
+
+    // --------------------------------------------------------------
+    // valuesAsHtml — multifields
+    // --------------------------------------------------------------
+
+    #[Test]
+    public function valuesAsHtmlRendersMultiFieldValuesOnOneRow(): void
+    {
+        $form = new ValidForm('test');
+        $multi = $form->addMultiField('Full name');
+        $multi->addField('first-name', ValidForm::VFORM_STRING);
+        $multi->addField('last-name', ValidForm::VFORM_STRING);
+
+        $_REQUEST['first-name'] = 'Robin';
+        $_REQUEST['last-name'] = 'van Baalen';
+        $form->isValid();
+
+        $html = $form->valuesAsHtml();
+
+        // Sub-values are joined with a space on a single overview row.
+        $this->assertStringContainsString('Full name', $html);
+        $this->assertStringContainsString('<strong>Robin van Baalen</strong>', $html);
+    }
+
+    #[Test]
+    public function valuesAsHtmlRendersDynamicMultiFieldDuplicates(): void
+    {
+        // A dynamic multifield renders one row per dynamic count and skips
+        // its internal hidden dynamic counter fields.
+        $form = new ValidForm('test');
+        $multi = $form->addMultiField('Full name', [
+            'dynamic' => true,
+            'dynamicLabel' => 'Add person',
+        ]);
+        $multi->addField('first-name', ValidForm::VFORM_STRING);
+        $multi->addField('last-name', ValidForm::VFORM_STRING);
+
+        $_REQUEST['first-name'] = 'John';
+        $_REQUEST['last-name'] = 'Doe';
+        $_REQUEST['first-name_1'] = 'Jane';
+        $_REQUEST['last-name_1'] = 'Roe';
+        $_REQUEST['first-name_dynamic'] = '1';
+        $_REQUEST['last-name_dynamic'] = '1';
+        $form->isValid();
+
+        $html = $form->valuesAsHtml();
+
+        $this->assertStringContainsString('<strong>John Doe</strong>', $html);
+        $this->assertStringContainsString('<strong>Jane Roe</strong>', $html);
+    }
+
+    // --------------------------------------------------------------
+    // valuesAsHtml — XSS hardening
+    // --------------------------------------------------------------
+
+    #[Test]
+    public function valuesAsHtmlEscapesSubmittedFieldValues(): void
+    {
+        // SECURITY: submitted values are escaped with htmlspecialchars
+        // (ENT_QUOTES) before being echoed into the overview table, so an
+        // injected payload is rendered inert. VFORM_STRING already rejects
+        // angle brackets at validation time (defense in depth), so use
+        // VFORM_HTML — the only type that allows them through validation.
+        $form = new ValidForm('test');
+        $form->addField('name', 'Name', ValidForm::VFORM_HTML);
+
+        $_REQUEST['name'] = '<script>alert("xss")</script>';
+        $form->isValid();
+
+        $html = $form->valuesAsHtml();
+
+        $this->assertStringNotContainsString('<script>alert', $html);
+        $this->assertStringContainsString('&lt;script&gt;alert(&quot;xss&quot;)&lt;/script&gt;', $html);
+    }
+
+    #[Test]
+    public function valuesAsHtmlEscapesSubmittedMultiFieldValues(): void
+    {
+        // SECURITY: multifield values go through the same htmlspecialchars
+        // (ENT_QUOTES) escaping as regular field values. VFORM_HTML is used
+        // because it's the only type whose validation allows angle brackets.
+        $form = new ValidForm('test');
+        $multi = $form->addMultiField('Full name');
+        $multi->addField('first-name', ValidForm::VFORM_HTML);
+
+        $_REQUEST['first-name'] = '<img src=x onerror=alert(1)>';
+        $form->isValid();
+
+        $html = $form->valuesAsHtml();
+
+        $this->assertStringNotContainsString('<img src=x', $html);
+        $this->assertStringContainsString('&lt;img src=x onerror=alert(1)&gt;', $html);
+    }
+
+    // --------------------------------------------------------------
+    // toJs — custom javascript and subclass initialization
+    // --------------------------------------------------------------
+
+    #[Test]
+    public function toJsAppendsCustomJavascript(): void
+    {
+        $form = new ValidForm('test');
+        $form->addField('name', 'Name', ValidForm::VFORM_STRING);
+
+        $js = $form->toJs("console.log('custom');");
+
+        $this->assertStringContainsString("console.log('custom');", $js);
+    }
+
+    #[Test]
+    public function toJsInitializesSubclassNameClientSide(): void
+    {
+        // When ValidForm is extended, the generated javascript tries to
+        // initialize a client-side class with the same name and falls back
+        // to ValidForm when it doesn't exist.
+        $form = new ValidFormJsSubclass('subclass-form');
+        $form->addField('name', 'Name', ValidForm::VFORM_STRING);
+
+        $js = $form->renderRawJs();
+
+        $this->assertStringContainsString('typeof ValidFormJsSubclass !== "undefined"', $js);
+        $this->assertStringContainsString('new ValidFormJsSubclass("subclass-form", "")', $js);
+        $this->assertStringContainsString('new ValidForm("subclass-form", "");', $js);
+    }
+
+    #[Test]
+    public function toJsPassesInitArgumentsAsJson(): void
+    {
+        // Custom client-side classes can receive extra constructor
+        // arguments, JSON encoded after the name and main alert.
+        $form = new ValidFormJsSubclass('subclass-form');
+        $form->addField('name', 'Name', ValidForm::VFORM_STRING);
+
+        $js = $form->renderRawJs(['first-argument', 2]);
+
+        $this->assertStringContainsString(
+            'new ValidFormJsSubclass("subclass-form", "", ["first-argument",2])',
+            $js
+        );
+    }
+
+    // --------------------------------------------------------------
+    // getStrippedClassName — input without namespace
+    // --------------------------------------------------------------
+
+    #[Test]
+    public function getStrippedClassNameReturnsPlainClassNameUnchanged(): void
+    {
+        $this->assertSame('ValidForm', ValidForm::getStrippedClassName('ValidForm'));
+    }
+}
+
+/**
+ * Test-only ValidForm subclass.
+ *
+ * Exposes the protected {@link \ValidFormBuilder\ValidForm::__toJS()} method
+ * so the subclass-detection and init-arguments code paths can be exercised.
+ * The class name (with the test namespace stripped) ends up in the generated
+ * javascript output.
+ */
+class ValidFormJsSubclass extends ValidForm
+{
+    public function renderRawJs(array $arrInitArguments = []): string
+    {
+        return $this->__toJS('', $arrInitArguments, true);
     }
 }

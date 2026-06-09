@@ -44,7 +44,7 @@ class GroupTest extends TestCase
 
     protected function tearDown(): void
     {
-        foreach (['color', 'fruit', 'fruit[]', 'xss-group', 'xss-group[]'] as $key) {
+        foreach (['color', 'fruit', 'fruit[]', 'xss-group', 'xss-group[]', 'color_dynamic'] as $key) {
             unset($_REQUEST[$key]);
         }
     }
@@ -352,6 +352,117 @@ class GroupTest extends TestCase
         $this->assertSame('fruit[]', $checks->item(1)->getAttribute('name'));
     }
 
+    #[Test]
+    public function toHtmlRendersErrorParagraphWhenSubmittedInvalid(): void
+    {
+        $group = $this->form->addField(
+            'color',
+            'Color',
+            ValidForm::VFORM_RADIO_LIST,
+            ['required' => true],
+            ['required' => 'Please pick a color']
+        );
+        $group->addField('Red', 'red');
+
+        // Submitted with no value: the required check fails.
+        $xpath = $this->parseHtml($group->toHtml(true));
+
+        // `//div` — the outer wrapper picks up the vf__error class.
+        $wrapper = $xpath->query('//div')->item(0);
+        $classTokens = preg_split('/\s+/', (string) $wrapper->getAttribute('class'), -1, PREG_SPLIT_NO_EMPTY);
+        $this->assertContains('vf__error', $classTokens);
+
+        // `//div/p[@class="vf__error"]` — the error message paragraph before the label.
+        $error = $xpath->query('//div/p[@class="vf__error"]')->item(0);
+        $this->assertNotNull($error);
+        $this->assertSame('Please pick a color', trim($error->textContent));
+    }
+
+    #[Test]
+    public function toHtmlRendersNoLabelClassWhenLabelDisabled(): void
+    {
+        $group = $this->form->addField('color', 'Color', ValidForm::VFORM_RADIO_LIST);
+        $group->addField('Red', 'red');
+
+        // toHtml($submitted, $blnSimpleLayout, $blnLabel) — disable the label.
+        $xpath = $this->parseHtml($group->toHtml(false, false, false));
+
+        // `//div` — the wrapper gets the vf__nolabel class instead of a label.
+        $wrapper = $xpath->query('//div')->item(0);
+        $classTokens = preg_split('/\s+/', (string) $wrapper->getAttribute('class'), -1, PREG_SPLIT_NO_EMPTY);
+        $this->assertContains('vf__nolabel', $classTokens);
+
+        // `//div/label` — no group label rendered.
+        $this->assertSame(0, $xpath->query('//div/label')->length);
+    }
+
+    #[Test]
+    public function toHtmlSimpleLayoutRendersMultiFieldItemWrapper(): void
+    {
+        $group = $this->form->addField('color', 'Color', ValidForm::VFORM_RADIO_LIST);
+        $group->addField('Red', 'red');
+
+        // Simple layout is used when the group lives inside a MultiField.
+        $xpath = $this->parseHtml($group->toHtml(false, true));
+
+        // `//div` — the wrapper uses vf__multifielditem instead of vf__optional.
+        $wrapper = $xpath->query('//div')->item(0);
+        $classTokens = preg_split('/\s+/', (string) $wrapper->getAttribute('class'), -1, PREG_SPLIT_NO_EMPTY);
+        $this->assertContains('vf__multifielditem', $classTokens);
+        $this->assertNotContains('vf__optional', $classTokens);
+
+        // No group label in simple layout.
+        $this->assertSame(0, $xpath->query('//div/label')->length);
+
+        // The option still renders inside the fieldset.
+        $this->assertSame(1, $xpath->query('//fieldset//input[@type="radio"]')->length);
+    }
+
+    #[Test]
+    public function toHtmlSimpleLayoutRendersErrorClassWhenSubmittedInvalid(): void
+    {
+        $group = $this->form->addField(
+            'color',
+            'Color',
+            ValidForm::VFORM_RADIO_LIST,
+            ['required' => true],
+            ['required' => 'Please pick a color']
+        );
+        $group->addField('Red', 'red');
+
+        // Submitted + invalid in simple layout: error class only, no <p> message
+        // (the parent MultiField renders the message).
+        $xpath = $this->parseHtml($group->toHtml(true, true));
+
+        $wrapper = $xpath->query('//div')->item(0);
+        $classTokens = preg_split('/\s+/', (string) $wrapper->getAttribute('class'), -1, PREG_SPLIT_NO_EMPTY);
+        $this->assertContains('vf__error', $classTokens);
+        $this->assertContains('vf__multifielditem', $classTokens);
+
+        $this->assertSame(0, $xpath->query('//p[@class="vf__error"]')->length);
+    }
+
+    #[Test]
+    public function toHtmlRendersTipElement(): void
+    {
+        $group = $this->form->addField(
+            'color',
+            'Color',
+            ValidForm::VFORM_RADIO_LIST,
+            [],
+            [],
+            ['tip' => 'Choose wisely']
+        );
+        $group->addField('Red', 'red');
+
+        $xpath = $this->parseHtml($group->toHtml());
+
+        // `//small[@class="vf__tip"]` — the tip element after the fieldset.
+        $tip = $xpath->query('//small[@class="vf__tip"]')->item(0);
+        $this->assertNotNull($tip);
+        $this->assertSame('Choose wisely', trim($tip->textContent));
+    }
+
     // --------------------------------------------------------------
     // toJS
     // --------------------------------------------------------------
@@ -380,6 +491,34 @@ class GroupTest extends TestCase
             "/objForm\\.addElement\\('color',\\s*'color',/",
             $js
         );
+    }
+
+    #[Test]
+    public function toJsEmitsSuffixedAddElementCallsForDynamicGroup(): void
+    {
+        $group = $this->form->addField(
+            'color',
+            'Color',
+            ValidForm::VFORM_RADIO_LIST,
+            ['required' => true],
+            ['required' => 'Please pick a color'],
+            ['dynamic' => true, 'dynamicLabel' => 'Add another color']
+        );
+        $group->addField('Red', 'red');
+
+        // Simulate a submission where the user duplicated the group once.
+        $_REQUEST['color_dynamic'] = '1';
+
+        $js = $group->toJS();
+
+        // One addElement call per dynamic position, with _1 suffixed id/name.
+        $this->assertSame(2, substr_count($js, 'objForm.addElement'));
+        $this->assertStringContainsString("objForm.addElement('color', 'color',", $js);
+        $this->assertStringContainsString("objForm.addElement('color_1', 'color_1',", $js);
+
+        // Dynamic clones are never required: with a dynamic count > 0, required
+        // is forced to false for every position.
+        $this->assertSame(0, substr_count($js, 'true'));
     }
 
     // --------------------------------------------------------------

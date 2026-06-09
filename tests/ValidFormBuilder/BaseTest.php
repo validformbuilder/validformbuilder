@@ -6,6 +6,9 @@ use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use ValidFormBuilder\Area;
 use ValidFormBuilder\Base;
+use ValidFormBuilder\Comparison;
+use ValidFormBuilder\Condition;
+use ValidFormBuilder\Element;
 use ValidFormBuilder\ValidForm;
 
 /**
@@ -22,6 +25,36 @@ class BaseTest extends TestCase
     protected function setUp(): void
     {
         $this->base = new Base();
+    }
+
+    protected function tearDown(): void
+    {
+        // Clean up any request variables we might have set
+        if (isset($_REQUEST['base-trigger'])) {
+            unset($_REQUEST['base-trigger']);
+        }
+    }
+
+    /**
+     * Build a form with a trigger field and a subject field where the subject
+     * has a condition of type $property which is met as soon as the trigger
+     * field is not empty.
+     */
+    private function buildConditionSubject(string $property, bool $value, ?string $triggerValue = null): Element
+    {
+        $form = new ValidForm('base-condition-form');
+        $trigger = $form->addField('base-trigger', 'Trigger', ValidForm::VFORM_STRING);
+        $subject = $form->addField('base-subject', 'Subject', ValidForm::VFORM_STRING);
+
+        $subject->addCondition($property, $value, [
+            new Comparison($trigger, ValidForm::VFORM_COMPARISON_NOT_EMPTY)
+        ]);
+
+        if (!is_null($triggerValue)) {
+            $_REQUEST['base-trigger'] = $triggerValue;
+        }
+
+        return $subject;
     }
 
     #[Test]
@@ -439,5 +472,446 @@ class BaseTest extends TestCase
     public function toJsReturnsEmptyStringByDefault(): void
     {
         $this->assertSame('', $this->base->toJS());
+    }
+
+    // --------------------------------------------------------------
+    // addCondition
+    // --------------------------------------------------------------
+
+    #[Test]
+    public function addConditionAddsNewConditionToElement(): void
+    {
+        $subject = $this->buildConditionSubject('visible', true);
+
+        $this->assertTrue($subject->hasCondition('visible'));
+        $this->assertFalse($subject->hasCondition('enabled'));
+        $this->assertTrue($subject->hasConditions());
+        $this->assertCount(1, $subject->getConditions());
+        $this->assertInstanceOf(Condition::class, $subject->getCondition('visible'));
+    }
+
+    #[Test]
+    public function addConditionAcceptsComparisonAsArray(): void
+    {
+        $form = new ValidForm('base-condition-form');
+        $trigger = $form->addField('base-trigger', 'Trigger', ValidForm::VFORM_STRING);
+        $subject = $form->addField('base-subject', 'Subject', ValidForm::VFORM_STRING);
+
+        $subject->addCondition('visible', true, [
+            [$trigger, ValidForm::VFORM_COMPARISON_EQUAL, 'yes']
+        ]);
+
+        $condition = $subject->getCondition('visible');
+        $this->assertInstanceOf(Condition::class, $condition);
+        $this->assertCount(1, $condition->getComparisons());
+    }
+
+    #[Test]
+    public function addConditionReusesExistingConditionOfSameType(): void
+    {
+        $form = new ValidForm('base-condition-form');
+        $trigger = $form->addField('base-trigger', 'Trigger', ValidForm::VFORM_STRING);
+        $subject = $form->addField('base-subject', 'Subject', ValidForm::VFORM_STRING);
+
+        $subject->addCondition('visible', true, [
+            new Comparison($trigger, ValidForm::VFORM_COMPARISON_NOT_EMPTY)
+        ]);
+        $subject->addCondition('visible', true, [
+            new Comparison($trigger, ValidForm::VFORM_COMPARISON_EQUAL, 'yes')
+        ]);
+
+        // The second call re-uses the existing Condition object and only adds
+        // the new comparison to it. Note: the same condition instance is
+        // pushed onto the internal conditions array again.
+        $conditions = $subject->getConditions();
+        $this->assertCount(2, $conditions);
+        $this->assertSame($conditions[0], $conditions[1]);
+        $this->assertCount(2, $conditions[0]->getComparisons());
+    }
+
+    #[Test]
+    public function addConditionThrowsOnInvalidComparisonObject(): void
+    {
+        $subject = $this->buildConditionSubject('visible', true);
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Invalid or no comparison(s) supplied.');
+
+        $subject->addCondition('enabled', true, [new \stdClass()]);
+    }
+
+    #[Test]
+    public function addConditionThrowsOnEmptyComparisonsArray(): void
+    {
+        $subject = $this->buildConditionSubject('visible', true);
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Invalid or no comparison(s) supplied.');
+
+        $subject->addCondition('enabled', true, []);
+    }
+
+    // --------------------------------------------------------------
+    // getCondition / getMetCondition / getConditionRecursive
+    // --------------------------------------------------------------
+
+    #[Test]
+    public function getConditionReturnsMatchingCondition(): void
+    {
+        $subject = $this->buildConditionSubject('visible', true);
+
+        $condition = $subject->getCondition('visible');
+
+        $this->assertInstanceOf(Condition::class, $condition);
+        $this->assertSame('visible', $condition->getProperty());
+    }
+
+    #[Test]
+    public function getConditionFallsBackToParentCondition(): void
+    {
+        $subject = $this->buildConditionSubject('visible', true);
+
+        $this->base->setParent($subject);
+
+        $this->assertSame($subject->getCondition('visible'), $this->base->getCondition('visible'));
+    }
+
+    #[Test]
+    public function getMetConditionReturnsConditionWhenMet(): void
+    {
+        $subject = $this->buildConditionSubject('visible', true, 'not empty');
+
+        $condition = $subject->getMetCondition('visible');
+
+        $this->assertInstanceOf(Condition::class, $condition);
+        $this->assertSame($subject->getCondition('visible'), $condition);
+    }
+
+    #[Test]
+    public function getMetConditionReturnsNullWhenConditionNotMet(): void
+    {
+        // The trigger field is left empty, so the condition is not met.
+        $subject = $this->buildConditionSubject('visible', true);
+
+        $this->assertNull($subject->getMetCondition('visible'));
+    }
+
+    #[Test]
+    public function getMetConditionFallsBackToParentCondition(): void
+    {
+        $subject = $this->buildConditionSubject('visible', true, 'not empty');
+
+        $this->base->setParent($subject);
+
+        $this->assertSame($subject->getCondition('visible'), $this->base->getMetCondition('visible'));
+    }
+
+    #[Test]
+    public function getConditionRecursiveReturnsOwnCondition(): void
+    {
+        $subject = $this->buildConditionSubject('visible', true);
+
+        $this->assertSame($subject->getCondition('visible'), $subject->getConditionRecursive('visible'));
+    }
+
+    // --------------------------------------------------------------
+    // getDynamicButtonMeta
+    // --------------------------------------------------------------
+
+    #[Test]
+    public function getDynamicButtonMetaReturnsEmptyStringWithoutVisibleCondition(): void
+    {
+        $this->assertSame('', $this->base->getDynamicButtonMeta());
+    }
+
+    #[Test]
+    public function getDynamicButtonMetaShowsButtonWhenMetConditionValueIsTrue(): void
+    {
+        $subject = $this->buildConditionSubject('visible', true, 'not empty');
+
+        $this->assertSame('', $subject->getDynamicButtonMeta());
+    }
+
+    #[Test]
+    public function getDynamicButtonMetaHidesButtonWhenMetConditionValueIsFalse(): void
+    {
+        $subject = $this->buildConditionSubject('visible', false, 'not empty');
+
+        $this->assertSame(' style="display:none;"', $subject->getDynamicButtonMeta());
+    }
+
+    #[Test]
+    public function getDynamicButtonMetaHidesButtonWhenUnmetConditionValueIsTrue(): void
+    {
+        $subject = $this->buildConditionSubject('visible', true);
+
+        $this->assertSame(' style="display:none;"', $subject->getDynamicButtonMeta());
+    }
+
+    #[Test]
+    public function getDynamicButtonMetaShowsButtonWhenUnmetConditionValueIsFalse(): void
+    {
+        $subject = $this->buildConditionSubject('visible', false);
+
+        $this->assertSame('', $subject->getDynamicButtonMeta());
+    }
+
+    // --------------------------------------------------------------
+    // setConditionalMeta
+    // --------------------------------------------------------------
+
+    #[Test]
+    public function setConditionalMetaSetsDisplayBlockWhenMetVisibleConditionIsTrue(): void
+    {
+        $subject = $this->buildConditionSubject('visible', true, 'not empty');
+
+        $subject->setConditionalMeta();
+
+        $this->assertSame('display: block;', $subject->getMeta('style'));
+    }
+
+    #[Test]
+    public function setConditionalMetaSetsDisplayNoneWhenMetVisibleConditionIsFalse(): void
+    {
+        $subject = $this->buildConditionSubject('visible', false, 'not empty');
+
+        $subject->setConditionalMeta();
+
+        $this->assertSame('display: none;', $subject->getMeta('style'));
+    }
+
+    #[Test]
+    public function setConditionalMetaSetsDisplayNoneWhenUnmetVisibleConditionIsTrue(): void
+    {
+        $subject = $this->buildConditionSubject('visible', true);
+
+        $subject->setConditionalMeta();
+
+        $this->assertSame('display: none;', $subject->getMeta('style'));
+    }
+
+    #[Test]
+    public function setConditionalMetaSetsDisplayBlockWhenUnmetVisibleConditionIsFalse(): void
+    {
+        $subject = $this->buildConditionSubject('visible', false);
+
+        $subject->setConditionalMeta();
+
+        $this->assertSame('display: block;', $subject->getMeta('style'));
+    }
+
+    #[Test]
+    public function setConditionalMetaEnablesFieldWhenMetEnabledConditionIsTrue(): void
+    {
+        $subject = $this->buildConditionSubject('enabled', true, 'not empty');
+        $subject->setFieldMeta('disabled', 'disabled', true);
+
+        $subject->setConditionalMeta();
+
+        // The 'disabled' attribute is removed again.
+        $this->assertSame('', $subject->getFieldMeta('disabled'));
+    }
+
+    #[Test]
+    public function setConditionalMetaDisablesFieldWhenMetEnabledConditionIsFalse(): void
+    {
+        $subject = $this->buildConditionSubject('enabled', false, 'not empty');
+
+        $subject->setConditionalMeta();
+
+        $this->assertSame('disabled', $subject->getFieldMeta('disabled'));
+    }
+
+    #[Test]
+    public function setConditionalMetaDisablesFieldWhenUnmetEnabledConditionIsTrue(): void
+    {
+        $subject = $this->buildConditionSubject('enabled', true);
+
+        $subject->setConditionalMeta();
+
+        $this->assertSame('disabled', $subject->getFieldMeta('disabled'));
+    }
+
+    #[Test]
+    public function setConditionalMetaEnablesFieldWhenUnmetEnabledConditionIsFalse(): void
+    {
+        $subject = $this->buildConditionSubject('enabled', false);
+        $subject->setFieldMeta('disabled', 'disabled', true);
+
+        $subject->setConditionalMeta();
+
+        $this->assertSame('', $subject->getFieldMeta('disabled'));
+    }
+
+    // --------------------------------------------------------------
+    // conditionsToJs / matchWithToJs
+    // --------------------------------------------------------------
+
+    #[Test]
+    public function conditionsToJsEmitsAddConditionCall(): void
+    {
+        $subject = $this->buildConditionSubject('visible', true);
+
+        $js = $subject->toJS();
+
+        $this->assertStringContainsString('objForm.addCondition(', $js);
+        $this->assertStringContainsString('"property":"visible"', $js);
+    }
+
+    #[Test]
+    public function conditionsToJsEncodesComparisonValuesAsJson(): void
+    {
+        // SECURITY: condition data is serialized with json_encode(), so
+        // comparison values cannot break out of the generated javascript.
+        $form = new ValidForm('base-condition-form');
+        $trigger = $form->addField('base-trigger', 'Trigger', ValidForm::VFORM_STRING);
+        $subject = $form->addField('base-subject', 'Subject', ValidForm::VFORM_STRING);
+
+        $subject->addCondition('visible', true, [
+            new Comparison($trigger, ValidForm::VFORM_COMPARISON_EQUAL, 'a"b</script>')
+        ]);
+
+        $js = $subject->toJS();
+
+        $this->assertStringContainsString('a\"b<\/script>', $js);
+        $this->assertStringNotContainsString('a"b</script>', $js);
+    }
+
+    #[Test]
+    public function matchWithToJsEmitsMatchfieldsCall(): void
+    {
+        $form = new ValidForm('base-match-form');
+        $password = $form->addField('base-password', 'Password', ValidForm::VFORM_PASSWORD);
+        $confirm = $form->addField(
+            'base-password-confirm',
+            'Confirm password',
+            ValidForm::VFORM_PASSWORD,
+            ['matchWith' => $password]
+        );
+
+        $js = $confirm->toJS();
+
+        $this->assertStringContainsString('objForm.matchfields(', $js);
+        $this->assertStringContainsString("'base-password'", $js);
+    }
+
+    // --------------------------------------------------------------
+    // getCountersRecursive (via Area::getDynamicCount)
+    // --------------------------------------------------------------
+
+    #[Test]
+    public function getDynamicCountCollectsDynamicCountersRecursively(): void
+    {
+        $form = new ValidForm('base-counters-form');
+        $area = $form->addArea('Dynamic area', false, 'base-area', false, [
+            'dynamic' => true,
+            'dynamicLabel' => 'Add another'
+        ]);
+
+        // Adding a field to a dynamic area also adds a hidden dynamic counter.
+        $area->addField('base-area-field', 'Area field', ValidForm::VFORM_STRING);
+
+        // A multifield inside the area forces getCountersRecursive() to recurse.
+        $multiField = $area->addMultiField('Multi');
+        $multiField->addField('base-multi-field', ValidForm::VFORM_STRING);
+
+        // No submission, so the counter values default to zero.
+        $this->assertSame(0, $area->getDynamicCount());
+    }
+
+    // --------------------------------------------------------------
+    // getRemoveLabelHtml / dynamic (remove) label meta strings
+    // --------------------------------------------------------------
+
+    #[Test]
+    public function getRemoveLabelHtmlRendersAnchorWithDynamicRemoveLabelMeta(): void
+    {
+        $this->base->setDynamicRemoveLabelMeta('class', 'vf__removeLabel');
+
+        $ref = new \ReflectionMethod($this->base, 'getRemoveLabelHtml');
+        $ref->setAccessible(true);
+
+        $this->assertSame(
+            "<a class=\"vf__removeLabel\" href='#'>Remove me</a>",
+            $ref->invoke($this->base, 'Remove me')
+        );
+    }
+
+    #[Test]
+    public function getRemoveLabelHtmlFallsBackToDynamicRemoveLabelProperty(): void
+    {
+        $ref = new \ReflectionMethod($this->base, 'getRemoveLabelHtml');
+        $ref->setAccessible(true);
+
+        // No label argument and no __dynamicRemoveLabel set; renders an empty anchor.
+        $this->assertSame("<a href='#'></a>", $ref->invoke($this->base));
+    }
+
+    #[Test]
+    public function dynamicLabelMetaIsRenderedOnDynamicAnchor(): void
+    {
+        $form = new ValidForm('base-dynamic-form');
+        $field = $form->addField('base-dynamic-field', 'Dynamic field', ValidForm::VFORM_STRING, [], [], [
+            'dynamic' => true,
+            'dynamicLabel' => 'Add another',
+            'dynamicLabelClass' => 'add-button'
+        ]);
+
+        $html = $field->toHtml();
+
+        $this->assertStringContainsString('class="add-button"', $html);
+        $this->assertStringContainsString('Add another', $html);
+    }
+
+    #[Test]
+    public function labelMetaIsRenderedOnLabelElement(): void
+    {
+        $form = new ValidForm('base-label-form');
+        $field = $form->addField('base-labeled-field', 'Labeled field', ValidForm::VFORM_STRING, [], [], [
+            'labelClass' => 'fancy-label'
+        ]);
+
+        $html = $field->toHtml();
+
+        $this->assertStringContainsString('class="fancy-label"', $html);
+    }
+
+    // --------------------------------------------------------------
+    // __initializeMeta / __setMeta internals
+    // --------------------------------------------------------------
+
+    #[Test]
+    public function initializeMetaPrefixesReservedLabelMetaKeys(): void
+    {
+        // Base itself defines no reserved label meta keys; subclasses can.
+        $base = new class extends Base {
+            protected $__reservedlabelmeta = ['range'];
+        };
+
+        $base->setMeta('range', '1-10');
+
+        $ref = new \ReflectionMethod($base, '__initializeMeta');
+        $ref->setAccessible(true);
+        $ref->invoke($base);
+
+        $this->assertSame('1-10', $base->getLabelMeta('range'));
+    }
+
+    #[Test]
+    public function setMetaKeepsExistingIdWhenNotOverwriting(): void
+    {
+        $this->base->setMeta('id', 'original');
+
+        $this->assertSame('original', $this->base->setMeta('id', 'ignored'));
+        $this->assertSame('original', $this->base->getMeta('id'));
+    }
+
+    #[Test]
+    public function setMetaAppendsStyleWithSemicolonDelimiter(): void
+    {
+        $this->base->setMeta('style', 'color: red;');
+        $this->base->setMeta('style', 'width: 10px;');
+
+        $this->assertSame('color: red;width: 10px;', $this->base->getMeta('style'));
     }
 }

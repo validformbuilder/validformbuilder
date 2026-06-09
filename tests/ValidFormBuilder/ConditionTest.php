@@ -5,6 +5,7 @@ namespace ValidFormBuilder\Tests;
 use ValidFormBuilder\Comparison;
 use ValidFormBuilder\Condition;
 use ValidFormBuilder\Element;
+use ValidFormBuilder\StaticText;
 use ValidFormBuilder\ValidForm;
 use PHPUnit\Framework\Attributes\Depends;
 use PHPUnit\Framework\Attributes\Test;
@@ -85,6 +86,15 @@ class ConditionTest extends TestCase
     }
 
     #[Test]
+    public function constructorThrowsWhenSubjectIsNotAnObject(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessageMatches('/No valid object passed/');
+
+        new Condition('not-an-object', 'visible', true);
+    }
+
+    #[Test]
     public function invalidConditionProperty(): void
     {
         $this->expectException(\InvalidArgumentException::class);
@@ -141,6 +151,27 @@ class ConditionTest extends TestCase
         $this->expectException(\InvalidArgumentException::class);
 
         $condition->addComparison("not a valid comparison");
+    }
+
+    #[Test]
+    public function addComparisonWrapsConstructorFailureInException(): void
+    {
+        $condition = new Condition(
+            $this->textField,
+            'visible',
+            true
+        );
+
+        // VFORM_COMPARISON_EQUAL requires a value; the Comparison constructor
+        // throws, which addComparison() catches and rethrows as \Exception.
+        //
+        // Note: the `else` branch after newInstanceArgs() in addComparison()
+        // (Condition.php line 254) is unreachable dead code — newInstanceArgs()
+        // either returns an object or throws into the catch covered here.
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessageMatches('/Failed to add Comparison/');
+
+        $condition->addComparison([$this->textField, ValidForm::VFORM_COMPARISON_EQUAL]);
     }
 
     #[Test]
@@ -318,5 +349,45 @@ class ConditionTest extends TestCase
         $this->assertEquals(false, $result['value']);
         $this->assertEquals(ValidForm::VFORM_MATCH_ALL, $result['comparisonType']);
         $this->assertCount(1, $result['comparisons']);
+    }
+
+    #[Test]
+    public function jsonSerializeUsesIdForGroupFieldSubject(): void
+    {
+        $radio = $this->form->addField('color', 'Color', ValidForm::VFORM_RADIO_LIST);
+        $redOption = $radio->addField('Red', 'red');
+
+        $condition = new Condition($redOption, 'visible', true);
+
+        $this->assertSame($redOption->getId(), $condition->jsonSerialize()['subject']);
+    }
+
+    #[Test]
+    public function jsonSerializeUsesIdForAreaSubject(): void
+    {
+        $area = $this->form->addArea('My Area');
+
+        $condition = new Condition($area, 'visible', true);
+
+        $this->assertSame($area->getId(), $condition->jsonSerialize()['subject']);
+    }
+
+    #[Test]
+    public function jsonSerializeUsesMetaIdForStaticTextSubject(): void
+    {
+        $static = new StaticText('Some text', ['id' => 'static-subject']);
+
+        $condition = new Condition($static, 'visible', true);
+
+        $this->assertSame('static-subject', $condition->jsonSerialize()['subject']);
+    }
+
+    #[Test]
+    public function jsonSerializeAppendsDynamicPositionToElementSubject(): void
+    {
+        $condition = new Condition($this->textField, 'visible', true);
+
+        $this->assertSame('text-field_2', $condition->jsonSerialize(2)['subject']);
+        $this->assertSame('text-field', $condition->jsonSerialize(0)['subject']);
     }
 }

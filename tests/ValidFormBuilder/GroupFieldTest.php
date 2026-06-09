@@ -210,6 +210,28 @@ class GroupFieldTest extends TestCase
     }
 
     #[Test]
+    public function submittedArrayValueClearsCheckedOnRadioMismatch(): void
+    {
+        // Edge case: a radio list receiving an *array* value (e.g. a tampered
+        // submission or an array default). On mismatch, the radio variant must
+        // actively remove any previously set checked attribute so only the
+        // matching option ends up checked.
+        $group = $this->form->addField('color', 'Color', ValidForm::VFORM_RADIO_LIST);
+        $red = $group->addField('Red', 'red', true);
+
+        // Render once with the default so the checked field meta is set...
+        $red->toHtmlInternal(null, false);
+
+        // ...then re-render with a non-matching array value.
+        $xpath = $this->parseHtml($red->toHtmlInternal(['blue'], true));
+
+        // `//input[@type="radio"]` — the previously checked option must be unchecked.
+        $input = $xpath->query('//input[@type="radio"]')->item(0);
+        $this->assertNotNull($input);
+        $this->assertSame('', $input->getAttribute('checked'));
+    }
+
+    #[Test]
     public function dynamicCountSuffixesNameAndIdForRadio(): void
     {
         $group = $this->form->addField('color', 'Color', ValidForm::VFORM_RADIO_LIST);

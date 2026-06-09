@@ -7,6 +7,7 @@ use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use ValidFormBuilder\Element;
 use ValidFormBuilder\FieldValidator;
+use ValidFormBuilder\Hidden;
 use ValidFormBuilder\ValidForm;
 
 /**
@@ -43,7 +44,18 @@ class ElementTest extends TestCase
 
     protected function tearDown(): void
     {
-        foreach (['text-field', 'required-field', 'default-field', 'hint-field'] as $key) {
+        $keys = [
+            'text-field',
+            'required-field',
+            'default-field',
+            'hint-field',
+            'dyn-field',
+            'dyn-field_dynamic',
+            'dyn-html-field',
+            'dyn-html-field_dynamic',
+        ];
+
+        foreach ($keys as $key) {
             unset($_REQUEST[$key]);
         }
     }
@@ -447,6 +459,71 @@ class ElementTest extends TestCase
         $this->assertSame('submitted value', $field->__getValue(true));
     }
 
+    #[Test]
+    public function privateGetValueDynamicFieldWithArrayDefaultReturnsPositionedValue(): void
+    {
+        $field = $this->form->addField(
+            'default-field',
+            'Label',
+            ValidForm::VFORM_STRING,
+            [],
+            [],
+            [
+                'dynamic' => true,
+                'default' => ['first value', 'second value'],
+            ]
+        );
+
+        $this->assertSame('first value', $field->__getValue(false, 0));
+        $this->assertSame('second value', $field->__getValue(false, 1));
+    }
+
+    #[Test]
+    public function privateGetValueDynamicFieldWithArrayDefaultReturnsNullForMissingPosition(): void
+    {
+        $field = $this->form->addField(
+            'default-field',
+            'Label',
+            ValidForm::VFORM_STRING,
+            [],
+            [],
+            [
+                'dynamic' => true,
+                'default' => ['first value'],
+            ]
+        );
+
+        $this->assertNull($field->__getValue(false, 5));
+    }
+
+    #[Test]
+    public function privateGetValueNonDynamicFieldWithArrayDefaultReturnsWholeArray(): void
+    {
+        $field = $this->form->addField(
+            'default-field',
+            'Label',
+            ValidForm::VFORM_STRING,
+            [],
+            [],
+            ['default' => ['a', 'b']]
+        );
+
+        $this->assertSame(['a', 'b'], $field->__getValue(false));
+    }
+
+    #[Test]
+    public function privateGetValueReturnsIntZeroForDynamicCounterHiddenWithoutValue(): void
+    {
+        $counter = new Hidden('counter-field', ValidForm::VFORM_INTEGER, [
+            'default' => 0,
+            'dynamicCounter' => true,
+        ]);
+
+        // The string default "0" is falsy, so the dynamic counter fallback
+        // kicks in and returns a real integer zero.
+        $this->assertSame(0, $counter->__getValue(false));
+    }
+
     // --------------------------------------------------------------
     // getDynamicCount
     // --------------------------------------------------------------
@@ -457,6 +534,52 @@ class ElementTest extends TestCase
         $field = $this->form->addField('text-field', 'Label', ValidForm::VFORM_STRING);
 
         $this->assertSame(0, $field->getDynamicCount());
+    }
+
+    #[Test]
+    public function getDynamicCountReadsValueFromDynamicCounterField(): void
+    {
+        // addField() with dynamic meta wires a hidden "<name>_dynamic" counter
+        // sibling (see Fieldset::addField); getDynamicCount() reads its value.
+        $field = $this->form->addField(
+            'dyn-field',
+            'Dynamic',
+            ValidForm::VFORM_STRING,
+            [],
+            [],
+            ['dynamic' => true]
+        );
+
+        $_REQUEST['dyn-field_dynamic'] = '2';
+
+        $this->assertSame(2, $field->getDynamicCount());
+    }
+
+    // --------------------------------------------------------------
+    // getDynamicHtml (via Text::toHtml)
+    // --------------------------------------------------------------
+
+    #[Test]
+    public function toHtmlAppendsDynamicAnchorForDynamicFieldWithLabel(): void
+    {
+        $field = $this->form->addField(
+            'dyn-html-field',
+            'Label',
+            ValidForm::VFORM_STRING,
+            [],
+            [],
+            [
+                'dynamic' => true,
+                'dynamicLabel' => 'Add another',
+            ]
+        );
+
+        $html = $field->toHtml();
+
+        $this->assertStringContainsString('class="vf__dynamic"', $html);
+        $this->assertStringContainsString('data-target-id="dyn-html-field"', $html);
+        $this->assertStringContainsString('data-target-name="dyn-html-field"', $html);
+        $this->assertStringContainsString('>Add another</a>', $html);
     }
 
     // --------------------------------------------------------------
@@ -471,6 +594,14 @@ class ElementTest extends TestCase
         $element = new Element('bare', ValidForm::VFORM_STRING, 'Label');
 
         $this->assertSame('Field type not defined.', $element->toHtml());
+    }
+
+    #[Test]
+    public function bareElementMagicToHtmlDelegatesToPlaceholderToHtml(): void
+    {
+        $element = new Element('bare', ValidForm::VFORM_STRING, 'Label');
+
+        $this->assertSame('Field type not defined.', $element->__toHtml());
     }
 
     #[Test]

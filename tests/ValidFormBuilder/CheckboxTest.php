@@ -249,6 +249,97 @@ class CheckboxTest extends TestCase
     }
 
     #[Test]
+    public function toHtmlWithoutLabelAddsNolabelClassAndOmitsLabel(): void
+    {
+        $checkbox = new Checkbox(
+            'nolabel-checkbox',
+            ValidForm::VFORM_BOOLEAN,
+            'No Label Checkbox'
+        );
+
+        $xpath = $this->parseHtml($checkbox->toHtml(false, false, false));
+        // `//div` — the outer state wrapper div.
+        $wrapper = $xpath->query('//div')->item(0);
+
+        $this->assertNotNull($wrapper);
+        $classTokens = preg_split('/\s+/', (string) $wrapper->getAttribute('class'), -1, PREG_SPLIT_NO_EMPTY);
+        $this->assertContains('vf__nolabel', $classTokens);
+
+        // `//label` — no label is rendered when $blnLabel is false.
+        $this->assertSame(0, $xpath->query('//label')->length);
+    }
+
+    #[Test]
+    public function toHtmlSimpleLayoutAddsMultifielditemClassAndOmitsLabel(): void
+    {
+        $checkbox = new Checkbox(
+            'simple-checkbox',
+            ValidForm::VFORM_BOOLEAN,
+            'Simple Checkbox'
+        );
+
+        $xpath = $this->parseHtml($checkbox->toHtml(false, true));
+        // `//div` — the simple-layout wrapper div.
+        $wrapper = $xpath->query('//div')->item(0);
+
+        $this->assertNotNull($wrapper);
+        $classTokens = preg_split('/\s+/', (string) $wrapper->getAttribute('class'), -1, PREG_SPLIT_NO_EMPTY);
+        $this->assertContains('vf__multifielditem', $classTokens);
+
+        // `//label` — simple layout never renders a label.
+        $this->assertSame(0, $xpath->query('//label')->length);
+
+        // `//input[@type="checkbox"]` — unchecked: no checked attribute.
+        $input = $xpath->query('//input[@type="checkbox"]')->item(0);
+        $this->assertNotNull($input);
+        $this->assertSame('', $input->getAttribute('checked'));
+    }
+
+    #[Test]
+    public function toHtmlSimpleLayoutSubmittedCheckedRendersCheckedAttribute(): void
+    {
+        $checkbox = new Checkbox(
+            'simple-checked',
+            ValidForm::VFORM_BOOLEAN,
+            'Simple Checked'
+        );
+
+        $_REQUEST['simple-checked'] = 'on';
+
+        $xpath = $this->parseHtml($checkbox->toHtml(true, true));
+        // `//input[@type="checkbox"]` — the single checkbox input.
+        $input = $xpath->query('//input[@type="checkbox"]')->item(0);
+
+        $this->assertNotNull($input);
+        $this->assertSame('checked', $input->getAttribute('checked'));
+
+        unset($_REQUEST['simple-checked']);
+    }
+
+    #[Test]
+    public function toHtmlSimpleLayoutRequiredSubmittedEmptyAddsErrorClass(): void
+    {
+        $required = new Checkbox(
+            'simple-required',
+            ValidForm::VFORM_BOOLEAN,
+            'Simple Required',
+            ['required' => true]
+        );
+
+        $xpath = $this->parseHtml($required->toHtml(true, true));
+        // `//div` — the simple-layout wrapper div.
+        $wrapper = $xpath->query('//div')->item(0);
+
+        $this->assertNotNull($wrapper);
+        $classTokens = preg_split('/\s+/', (string) $wrapper->getAttribute('class'), -1, PREG_SPLIT_NO_EMPTY);
+        $this->assertContains('vf__error', $classTokens);
+        $this->assertContains('vf__multifielditem', $classTokens);
+
+        // Simple layout renders the error as a wrapper class only — no <p> message.
+        $this->assertSame(0, $xpath->query('//p')->length);
+    }
+
+    #[Test]
     public function toJsEmitsAddElementCallForCheckboxWithRequiredFlag(): void
     {
         $checkbox = new Checkbox(

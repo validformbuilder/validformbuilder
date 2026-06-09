@@ -4,7 +4,9 @@ namespace ValidFormBuilder\Tests;
 
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
+use ValidFormBuilder\Comparison;
 use ValidFormBuilder\StaticText;
+use ValidFormBuilder\ValidForm;
 
 /**
  * Coverage for {@link \ValidFormBuilder\StaticText}.
@@ -81,6 +83,62 @@ class StaticTextTest extends TestCase
     public function isDynamicReturnsFalse(): void
     {
         $this->assertFalse((new StaticText('x'))->isDynamic());
+    }
+
+    #[Test]
+    public function toJsReturnsEmptyStringWithoutIdMeta(): void
+    {
+        $this->assertSame('', (new StaticText('x'))->toJS());
+    }
+
+    #[Test]
+    public function toJsEmitsAddElementCallWhenIdMetaIsSet(): void
+    {
+        $st = new StaticText('x', ['id' => 'static-1']);
+
+        $this->assertSame("objForm.addElement('static-1', 'static-1');\n", $st->toJS());
+    }
+
+    #[Test]
+    public function toJsAppendsConditionLogic(): void
+    {
+        $form = new ValidForm('static-text-js-form');
+        $field = $form->addField('trigger-field', 'Trigger', ValidForm::VFORM_STRING);
+
+        $st = new StaticText('Conditional text', ['id' => 'static-2']);
+        $st->addCondition('visible', true, [
+            new Comparison($field, ValidForm::VFORM_COMPARISON_EQUAL, 'sho"w</script>'),
+        ]);
+
+        $js = $st->toJS();
+
+        $this->assertStringContainsString("objForm.addElement('static-2', 'static-2');", $js);
+        $this->assertStringContainsString('objForm.addCondition(', $js);
+        $this->assertStringContainsString('"subject":"static-2"', $js);
+
+        // The condition payload goes through json_encode(), so a comparison
+        // value containing quotes and tags is emitted JSON-escaped instead of
+        // breaking out of the script context.
+        $this->assertStringContainsString('"value":"sho\"w<\/script>"', $js);
+        $this->assertStringNotContainsString('</script>', $js);
+    }
+
+    #[Test]
+    public function getValueReturnsNull(): void
+    {
+        $this->assertNull((new StaticText('x'))->getValue());
+    }
+
+    #[Test]
+    public function getNameReturnsNull(): void
+    {
+        $this->assertNull((new StaticText('x'))->getName());
+    }
+
+    #[Test]
+    public function getDataReturnsNull(): void
+    {
+        $this->assertNull((new StaticText('x'))->getData('any-key'));
     }
 
     #[Test]

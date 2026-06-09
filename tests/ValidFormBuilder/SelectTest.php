@@ -35,7 +35,7 @@ class SelectTest extends TestCase
 
     protected function tearDown(): void
     {
-        unset($_REQUEST['colour']);
+        unset($_REQUEST['colour'], $_REQUEST['colour_dynamic'], $_REQUEST['rating']);
     }
 
     // --------------------------------------------------------------
@@ -173,6 +173,378 @@ class SelectTest extends TestCase
         $this->assertSame('Colour', trim($label->textContent));
     }
 
+    #[Test]
+    public function toHtmlRequiredSelectWrapperHasRequiredClassToken(): void
+    {
+        $select = $this->form->addField(
+            'colour',
+            'Colour',
+            ValidForm::VFORM_SELECT_LIST,
+            ['required' => true]
+        );
+        $select->addField('Red', 'red');
+
+        $xpath = $this->parseHtml($select->toHtml());
+
+        // `//div` — the outer wrapper <div> whose class reflects the field state.
+        $wrapper = $xpath->query('//div')->item(0);
+        $this->assertNotNull($wrapper);
+        $classTokens = preg_split('/\s+/', (string) $wrapper->getAttribute('class'), -1, PREG_SPLIT_NO_EMPTY);
+        $this->assertContains('vf__required', $classTokens);
+    }
+
+    #[Test]
+    public function toHtmlRequiredSubmittedEmptyRendersErrorClassAndMessage(): void
+    {
+        $select = $this->form->addField(
+            'colour',
+            'Colour',
+            ValidForm::VFORM_SELECT_LIST,
+            ['required' => true],
+            ['required' => 'Colour is required']
+        );
+        $select->addField('Red', 'red');
+
+        // Submitted without a value in $_REQUEST — the required check fails.
+        $xpath = $this->parseHtml($select->toHtml(true));
+
+        // `//div` — the outer state wrapper div.
+        $wrapper = $xpath->query('//div')->item(0);
+        $this->assertNotNull($wrapper);
+        $classTokens = preg_split('/\s+/', (string) $wrapper->getAttribute('class'), -1, PREG_SPLIT_NO_EMPTY);
+        $this->assertContains('vf__error', $classTokens);
+
+        // `//div/p[contains(concat(" ", normalize-space(@class), " "), " vf__error ")]`
+        // — the error <p> rendered inside the wrapper, matched on the whole
+        // `vf__error` class token.
+        $error = $xpath->query('//div/p[contains(concat(" ", normalize-space(@class), " "), " vf__error ")]')->item(0);
+        $this->assertNotNull($error);
+        $this->assertSame('Colour is required', trim($error->textContent));
+    }
+
+    #[Test]
+    public function toHtmlWithoutLabelAddsNolabelClass(): void
+    {
+        $select = $this->form->addField('colour', 'Colour', ValidForm::VFORM_SELECT_LIST);
+        $select->addField('Red', 'red');
+
+        $xpath = $this->parseHtml($select->toHtml(false, false, false));
+
+        // `//div` — the outer wrapper carries the vf__nolabel token.
+        $wrapper = $xpath->query('//div')->item(0);
+        $this->assertNotNull($wrapper);
+        $classTokens = preg_split('/\s+/', (string) $wrapper->getAttribute('class'), -1, PREG_SPLIT_NO_EMPTY);
+        $this->assertContains('vf__nolabel', $classTokens);
+
+        // QUIRK: unlike Checkbox and File, Select still renders the <label>
+        // element when $blnLabel is false — only the wrapper class changes.
+        // This locks in the current behaviour.
+        $this->assertSame(1, $xpath->query('//label[@for="colour"]')->length);
+    }
+
+    #[Test]
+    public function toHtmlWithTipAppendsSmallTipElement(): void
+    {
+        $select = $this->form->addField(
+            'colour',
+            'Colour',
+            ValidForm::VFORM_SELECT_LIST,
+            [],
+            [],
+            ['tip' => 'Pick your favourite']
+        );
+        $select->addField('Red', 'red');
+
+        $xpath = $this->parseHtml($select->toHtml());
+
+        // `//small[contains(concat(" ", normalize-space(@class), " "), " vf__tip ")]`
+        // — a <small> whose class list contains the whole `vf__tip` token.
+        $tip = $xpath->query('//small[contains(concat(" ", normalize-space(@class), " "), " vf__tip ")]')->item(0);
+        $this->assertNotNull($tip);
+        $this->assertSame('Pick your favourite', trim($tip->textContent));
+    }
+
+    #[Test]
+    public function toHtmlParsesRangesAtRenderTimeWhenOptionsCollectionIsEmpty(): void
+    {
+        $select = $this->form->addField(
+            'rating',
+            'Rating',
+            ValidForm::VFORM_SELECT_LIST,
+            [],
+            [],
+            ['start' => 1, 'end' => 3]
+        );
+
+        // The constructor already parsed the ranges; empty the collection again
+        // so __toHtml() has to re-parse them at render time.
+        $ref = new \ReflectionProperty(Select::class, '__options');
+        $ref->setAccessible(true);
+        $ref->setValue($select, new Collection());
+
+        $xpath = $this->parseHtml($select->toHtml());
+
+        // `//select/option` — the range was re-parsed into three options.
+        $options = $xpath->query('//select/option');
+        $this->assertSame(3, $options->length);
+        $this->assertSame('1', $options->item(0)->getAttribute('value'));
+    }
+
+    // --------------------------------------------------------------
+    // Range parsing (__parseRanges)
+    // --------------------------------------------------------------
+
+    #[Test]
+    public function labelRangeWithMatchingValueRangePairsLabelsToValues(): void
+    {
+        $select = $this->form->addField(
+            'rating',
+            'Rating',
+            ValidForm::VFORM_SELECT_LIST,
+            [],
+            [],
+            [
+                'labelRange' => ['Bad', 'Okay', 'Great'],
+                'valueRange' => [1, 2, 3],
+            ]
+        );
+
+        $xpath = $this->parseHtml($select->toHtml());
+
+        // `//select/option` — three options pairing each label to its value.
+        $options = $xpath->query('//select/option');
+        $this->assertSame(3, $options->length);
+        $this->assertSame('1', $options->item(0)->getAttribute('value'));
+        $this->assertSame('Bad', trim($options->item(0)->textContent));
+        $this->assertSame('3', $options->item(2)->getAttribute('value'));
+        $this->assertSame('Great', trim($options->item(2)->textContent));
+    }
+
+    #[Test]
+    public function labelRangeWithoutValueRangeUsesLabelsAsValues(): void
+    {
+        $select = $this->form->addField(
+            'rating',
+            'Rating',
+            ValidForm::VFORM_SELECT_LIST,
+            [],
+            [],
+            ['labelRange' => ['Bad', 'Great']]
+        );
+
+        $xpath = $this->parseHtml($select->toHtml());
+
+        // `//select/option` — each label doubles as its own value.
+        $options = $xpath->query('//select/option');
+        $this->assertSame(2, $options->length);
+        $this->assertSame('Bad', $options->item(0)->getAttribute('value'));
+        $this->assertSame('Bad', trim($options->item(0)->textContent));
+        $this->assertSame('Great', $options->item(1)->getAttribute('value'));
+    }
+
+    #[Test]
+    public function startEndMetaGeneratesAscendingNumericOptions(): void
+    {
+        $select = $this->form->addField(
+            'rating',
+            'Rating',
+            ValidForm::VFORM_SELECT_LIST,
+            [],
+            [],
+            ['start' => 1, 'end' => 4]
+        );
+
+        $xpath = $this->parseHtml($select->toHtml());
+
+        // `//select/option` — values 1 through 4 in ascending order.
+        $options = $xpath->query('//select/option');
+        $this->assertSame(4, $options->length);
+        $this->assertSame('1', $options->item(0)->getAttribute('value'));
+        $this->assertSame('4', $options->item(3)->getAttribute('value'));
+    }
+
+    #[Test]
+    public function startEndMetaGeneratesDescendingNumericOptionsWhenStartIsLarger(): void
+    {
+        $select = $this->form->addField(
+            'rating',
+            'Rating',
+            ValidForm::VFORM_SELECT_LIST,
+            [],
+            [],
+            ['start' => 3, 'end' => 1]
+        );
+
+        $xpath = $this->parseHtml($select->toHtml());
+
+        // `//select/option` — values 3 down to 1 in descending order.
+        $options = $xpath->query('//select/option');
+        $this->assertSame(3, $options->length);
+        $this->assertSame('3', $options->item(0)->getAttribute('value'));
+        $this->assertSame('1', $options->item(2)->getAttribute('value'));
+    }
+
+    // --------------------------------------------------------------
+    // Dynamic fields
+    // --------------------------------------------------------------
+
+    #[Test]
+    public function toHtmlDynamicSelectRendersOriginalAndCloneWithDataAttributes(): void
+    {
+        $select = $this->form->addField(
+            'colour',
+            'Colour',
+            ValidForm::VFORM_SELECT_LIST,
+            [],
+            [],
+            ['dynamic' => true, 'dynamicLabel' => 'Add another colour']
+        );
+        $select->addField('Red', 'red');
+
+        // Simulate a submission where the client-side duplicated the field once.
+        $_REQUEST['colour_dynamic'] = '1';
+
+        $xpath = $this->parseHtml($select->toHtml());
+
+        // `//select[@name="colour"]` / `//select[@name="colour_1"]` — original + clone.
+        $this->assertSame(1, $xpath->query('//select[@name="colour"]')->length);
+        $this->assertSame(1, $xpath->query('//select[@name="colour_1"]')->length);
+
+        // `//div[@data-dynamic="original"]` — the original wrapper is marked as such.
+        $this->assertSame(1, $xpath->query('//div[@data-dynamic="original"]')->length);
+
+        // `//div[@data-dynamic="clone"]` — the clone wrapper carries the vf__clone token.
+        $clone = $xpath->query('//div[@data-dynamic="clone"]')->item(0);
+        $this->assertNotNull($clone);
+        $classTokens = preg_split('/\s+/', (string) $clone->getAttribute('class'), -1, PREG_SPLIT_NO_EMPTY);
+        $this->assertContains('vf__clone', $classTokens);
+
+        // `//div[@class="vf__dynamic"]/a` — the "add another" anchor after the last clone.
+        $anchor = $xpath->query('//div[@class="vf__dynamic"]/a')->item(0);
+        $this->assertNotNull($anchor);
+        $this->assertSame('Add another colour', trim($anchor->textContent));
+        $this->assertSame('colour', $anchor->getAttribute('data-target-name'));
+    }
+
+    #[Test]
+    public function toHtmlRemovableSelectRendersRemoveLabelAnchor(): void
+    {
+        $select = $this->form->addField(
+            'colour',
+            'Colour',
+            ValidForm::VFORM_SELECT_LIST,
+            [],
+            [],
+            ['dynamic' => true, 'dynamicRemoveLabel' => 'Remove colour']
+        );
+        $select->addField('Red', 'red');
+
+        $xpath = $this->parseHtml($select->toHtml());
+
+        // `//div` — the wrapper carries the vf__removable token.
+        $wrapper = $xpath->query('//div')->item(0);
+        $this->assertNotNull($wrapper);
+        $classTokens = preg_split('/\s+/', (string) $wrapper->getAttribute('class'), -1, PREG_SPLIT_NO_EMPTY);
+        $this->assertContains('vf__removable', $classTokens);
+
+        // `//a[contains(concat(" ", normalize-space(@class), " "), " vf__removeLabel ")]`
+        // — the remove anchor with its dedicated class token.
+        $anchor = $xpath->query('//a[contains(concat(" ", normalize-space(@class), " "), " vf__removeLabel ")]')->item(0);
+        $this->assertNotNull($anchor);
+        $this->assertSame('Remove colour', trim($anchor->textContent));
+    }
+
+    // --------------------------------------------------------------
+    // Simple layout (MultiField item rendering)
+    // --------------------------------------------------------------
+
+    #[Test]
+    public function toHtmlSimpleLayoutAddsMultifielditemClassAndOmitsLabel(): void
+    {
+        $select = $this->form->addField('colour', 'Colour', ValidForm::VFORM_SELECT_LIST);
+        $select->addField('Red', 'red');
+
+        $xpath = $this->parseHtml($select->toHtml(false, true));
+
+        // `//div` — the simple-layout wrapper.
+        $wrapper = $xpath->query('//div')->item(0);
+        $this->assertNotNull($wrapper);
+        $classTokens = preg_split('/\s+/', (string) $wrapper->getAttribute('class'), -1, PREG_SPLIT_NO_EMPTY);
+        $this->assertContains('vf__multifielditem', $classTokens);
+
+        // `//label` — simple layout never renders a label.
+        $this->assertSame(0, $xpath->query('//label')->length);
+    }
+
+    #[Test]
+    public function toHtmlSimpleLayoutSubmittedEmptyAddsErrorClass(): void
+    {
+        $select = $this->form->addField(
+            'colour',
+            'Colour',
+            ValidForm::VFORM_SELECT_LIST,
+            ['required' => true]
+        );
+        $select->addField('Red', 'red');
+
+        $xpath = $this->parseHtml($select->toHtml(true, true));
+
+        // `//div` — the simple-layout wrapper carries the vf__error token.
+        $wrapper = $xpath->query('//div')->item(0);
+        $this->assertNotNull($wrapper);
+        $classTokens = preg_split('/\s+/', (string) $wrapper->getAttribute('class'), -1, PREG_SPLIT_NO_EMPTY);
+        $this->assertContains('vf__error', $classTokens);
+    }
+
+    #[Test]
+    public function toHtmlSimpleLayoutRemovableAddsRemovableClass(): void
+    {
+        $select = $this->form->addField(
+            'colour',
+            'Colour',
+            ValidForm::VFORM_SELECT_LIST,
+            [],
+            [],
+            ['dynamic' => true, 'dynamicRemoveLabel' => 'Remove colour']
+        );
+        $select->addField('Red', 'red');
+
+        $xpath = $this->parseHtml($select->toHtml(false, true));
+
+        // `//div` — the simple-layout wrapper carries the vf__removable token.
+        $wrapper = $xpath->query('//div')->item(0);
+        $this->assertNotNull($wrapper);
+        $classTokens = preg_split('/\s+/', (string) $wrapper->getAttribute('class'), -1, PREG_SPLIT_NO_EMPTY);
+        $this->assertContains('vf__removable', $classTokens);
+    }
+
+    #[Test]
+    public function toHtmlSimpleLayoutDynamicRendersOriginalAndCloneWrappers(): void
+    {
+        $select = $this->form->addField(
+            'colour',
+            'Colour',
+            ValidForm::VFORM_SELECT_LIST,
+            [],
+            [],
+            ['dynamic' => true, 'dynamicLabel' => 'Add another colour']
+        );
+        $select->addField('Red', 'red');
+
+        $_REQUEST['colour_dynamic'] = '1';
+
+        $xpath = $this->parseHtml($select->toHtml(false, true));
+
+        // `//div[@data-dynamic="original"]` — the original simple-layout wrapper.
+        $this->assertSame(1, $xpath->query('//div[@data-dynamic="original"]')->length);
+
+        // `//div[@data-dynamic="clone"]` — the clone wrapper with the vf__clone token.
+        $clone = $xpath->query('//div[@data-dynamic="clone"]')->item(0);
+        $this->assertNotNull($clone);
+        $classTokens = preg_split('/\s+/', (string) $clone->getAttribute('class'), -1, PREG_SPLIT_NO_EMPTY);
+        $this->assertContains('vf__clone', $classTokens);
+    }
+
     // --------------------------------------------------------------
     // toJS
     // --------------------------------------------------------------
@@ -187,6 +559,41 @@ class SelectTest extends TestCase
 
         $this->assertSame(1, substr_count($js, 'objForm.addElement'));
         $this->assertStringContainsString("'colour'", $js);
+    }
+
+    #[Test]
+    public function toJsDynamicSelectEmitsAddElementCallPerDynamicCount(): void
+    {
+        $select = $this->form->addField(
+            'colour',
+            'Colour',
+            ValidForm::VFORM_SELECT_LIST,
+            ['required' => true],
+            [],
+            ['dynamic' => true, 'dynamicLabel' => 'Add another colour']
+        );
+        $select->addField('Red', 'red');
+
+        // Simulate a submission where the client-side duplicated the field once.
+        $_REQUEST['colour_dynamic'] = '1';
+
+        $js = $select->toJS();
+
+        // One addElement call for the original and one for the clone.
+        $this->assertSame(2, substr_count($js, 'objForm.addElement'));
+        $this->assertStringContainsString("'colour'", $js);
+        $this->assertStringContainsString("'colour_1'", $js);
+
+        // As soon as clones exist, the required flag (fourth positional slot)
+        // is forced to false — for the clone as well as the original.
+        $this->assertMatchesRegularExpression(
+            "/objForm\\.addElement\\('colour',\\s*'colour',[^,]+,\\s*false,/",
+            $js
+        );
+        $this->assertMatchesRegularExpression(
+            "/objForm\\.addElement\\('colour_1',\\s*'colour_1',[^,]+,\\s*false,/",
+            $js
+        );
     }
 
     // --------------------------------------------------------------
