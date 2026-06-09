@@ -292,9 +292,14 @@ class Base extends ClassDynamic
                 if (is_array($varComparison) || get_class($varComparison) === "ValidFormBuilder\\Comparison") {
                     try {
                         $objCondition->addComparison($varComparison);
+                        // @codeCoverageIgnoreStart
+                        // Unreachable: addComparison() rethrows construction failures as
+                        // plain \Exception, and its InvalidArgumentException path requires
+                        // non-array/non-Comparison input, which is filtered out above.
                     } catch (\InvalidArgumentException $e) {
                         throw new \Exception("Could not set condition: " . $e->getMessage(), 1);
                     }
+                    // @codeCoverageIgnoreEnd
                 } else {
                     throw new \InvalidArgumentException("Invalid or no comparison(s) supplied.", 1);
                 }

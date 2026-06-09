@@ -251,7 +251,11 @@ class Condition extends ClassDynamic
             if (is_object($objComparison)) {
                 array_push($this->__comparisons, $objComparison);
             } else {
+                // @codeCoverageIgnoreStart
+                // Unreachable: newInstanceArgs() either returns an object or throws,
+                // which is caught and rethrown above.
                 throw new \InvalidArgumentException("No valid comparison data supplied in addComparison() method.", 1);
+                // @codeCoverageIgnoreEnd
             }
         } elseif (is_object($varComparison) && get_class($varComparison) === "ValidFormBuilder\\Comparison") {
             array_push($this->__comparisons, $varComparison);
