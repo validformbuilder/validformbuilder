@@ -6,3 +6,7 @@ This is the root folder of this project.
 1. `AGENTS.md` - Contains command syntax and tool usage requirements
 
 Do not execute any commands (especially `gh`, test runners, or build tools) until you have read these files.
+
+## Testing conventions
+
+- Prefer `assertSame` over `assertEquals` in PHPUnit tests. Strict comparison catches type bugs that loose comparison silently allows.
