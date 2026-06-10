@@ -60,8 +60,7 @@ class SelectGroup extends Base
      */
     public function toHtmlInternal($value = null)
     {
-        // Escape label (attribute context) to prevent XSS via crafted group label.
-        // See https://github.com/validformbuilder/validformbuilder/issues/206
+        // Escape label (attribute context) to prevent XSS.
         $strLabel = htmlspecialchars((string) $this->__label, ENT_QUOTES);
 
         $strOutput = "<optgroup label=\"{$strLabel}\">\n";

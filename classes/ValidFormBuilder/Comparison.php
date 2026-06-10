@@ -184,9 +184,7 @@ class Comparison extends ClassDynamic
                 $blnReturn = (strpos($strLowerValue, $strCompareAgainst) === false);
                 break;
             case ValidForm::VFORM_COMPARISON_REGEX:
-                // preg_match() returns int (1/0) or false; cast to bool so __verify
-                // honours its documented boolean return type.
-                // See https://github.com/validformbuilder/validformbuilder/issues/197
+                // preg_match() returns int|false; cast to bool to honour the documented return type.
                 $blnReturn = (bool) preg_match($this->__value, $strValue);
                 break;
             case ValidForm::VFORM_COMPARISON_IN_ARRAY:

@@ -124,10 +124,7 @@ class GroupField extends Element
                 break;
         }
 
-        // Escape both value (attribute context) and label (text-node context) to prevent
-        // XSS via crafted option data. Every other Element subclass already does this;
-        // GroupField was the only outlier.
-        // See https://github.com/validformbuilder/validformbuilder/issues/202
+        // Escape value (attribute context) and label (text-node context) to prevent XSS.
         $strValue = htmlspecialchars((string) $this->__value, ENT_QUOTES);
         $strLabel = htmlspecialchars((string) $this->__label, ENT_QUOTES);
 

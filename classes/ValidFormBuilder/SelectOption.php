@@ -88,9 +88,7 @@ class SelectOption extends Element
             $strSelected = " selected=\"selected\"";
         }
 
-        // Escape value (attribute context) and label (text-node context) to prevent
-        // XSS via crafted option data from an external data source.
-        // See https://github.com/validformbuilder/validformbuilder/issues/206
+        // Escape value (attribute context) and label (text-node context) to prevent XSS.
         $strValue = htmlspecialchars((string) $this->__value, ENT_QUOTES);
         $strLabel = htmlspecialchars((string) $this->__label, ENT_QUOTES);
 

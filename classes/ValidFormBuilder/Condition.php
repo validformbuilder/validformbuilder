@@ -230,18 +230,13 @@ class Condition extends ClassDynamic
         $objComparison = null;
 
         if (is_array($varComparison)) {
-            // array_values() normalizes both positional and associative arrays
-            // to a 0-indexed list that ReflectionClass::newInstanceArgs() can forward
-            // to the Comparison constructor positionally. Using array_keys() here
-            // would pass the integer keys ([0, 1, 2]) as constructor arguments.
-            // See https://github.com/validformbuilder/validformbuilder/issues/196
+            // Normalize positional and associative arrays to a 0-indexed list of
+            // values for newInstanceArgs().
             $varArguments = array_values($varComparison);
 
             try {
-                // Use the fully qualified class name — an unqualified string
-                // (e.g. "Comparison") would be resolved against the global namespace
-                // by ReflectionClass and fail with "Class 'Comparison' does not exist".
-                // See https://github.com/validformbuilder/validformbuilder/issues/196
+                // Fully qualified — ReflectionClass resolves an unqualified string
+                // against the global namespace.
                 $objReflection = new \ReflectionClass(Comparison::class);
                 $objComparison = $objReflection->newInstanceArgs($varArguments);
             } catch (\Exception $e) {

@@ -126,10 +126,6 @@ class Collection implements \Iterator
     {
         if (is_numeric($intPosition) && $intPosition < count($this->collection)) {
             reset($this->collection);
-            // Advance the internal pointer while the current key is still below
-            // the target. Historically this condition was reversed, which meant
-            // seek() never advanced the pointer past position 0.
-            // See https://github.com/validformbuilder/validformbuilder/issues/198
             while (key($this->collection) < $intPosition) {
                 next($this->collection);
             }
@@ -341,10 +337,8 @@ class Collection implements \Iterator
     public function inCollection($varValue, $blnReturnKey = false)
     {
         $varReturn = false;
-        // Capture the key directly from foreach. Relying on $this->key() after the
-        // loop returns the stale internal pointer (foreach does not advance it in
-        // PHP 7+), so inCollection() would otherwise report key 0 for every match.
-        // See https://github.com/validformbuilder/validformbuilder/issues/198
+        // foreach does not advance the internal pointer (PHP 7+), so $this->key()
+        // would be stale here — capture the key from the loop instead.
         foreach ($this->collection as $intKey => $object) {
             if ($object == $varValue || $varValue === get_class($object)) {
                 $varReturn = ($blnReturnKey) ? $intKey : true;
