@@ -656,17 +656,16 @@ class FieldValidatorTest extends TestCase
     {
         // SECURITY: if a single invalid element in an array submission causes
         // the process to exit(), a maliciously crafted request can terminate
-        // the entire PHP request mid-response. This test asserts that we
-        // reach the next line after validation — i.e. the process survived.
+        // the entire PHP request mid-response. Reaching the assertion proves
+        // the process survived (an exit() would abort the PHPUnit run), and
+        // the invalid element must fail validation rather than die.
         $field = new Text('tags[]', ValidForm::VFORM_INTEGER, 'Tags');
         $_REQUEST['tags'] = ['123', 'not-a-number', '456'];
 
-        // We don't care about the return value here; we just care that
-        // execution continues past validate(). If exit() is called, PHPUnit
-        // will report the test as "Risky" / "no assertions ran" or abort.
-        $field->getValidator()->validate();
-
-        $this->assertTrue(true, 'Process survived array validation with invalid element');
+        $this->assertFalse(
+            $field->getValidator()->validate(),
+            'Array with an invalid element must fail validation without exiting'
+        );
     }
 
     // ----- VFORM_BOOLEAN regression suite (issue #200) -----

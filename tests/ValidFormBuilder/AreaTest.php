@@ -23,6 +23,15 @@ class AreaTest extends TestCase
         $this->area = new Area("Test Area", true, "test-area", false, []);
     }
 
+    protected function tearDown(): void
+    {
+        // Runs even when a test fails mid-way, so a failing assertion can't
+        // leak submitted values into the next test.
+        foreach (['filled', 'mf-first-name', 'act-field', 'phone_dynamic'] as $key) {
+            unset($_REQUEST[$key]);
+        }
+    }
+
     #[Test]
     public function getLabel(): void
     {
@@ -223,10 +232,7 @@ class AreaTest extends TestCase
 
         $_REQUEST['filled'] = 'hello';
 
-        $this->assertTrue($area->hasContent());
-
-        unset($_REQUEST['filled']);
-    }
+        $this->assertTrue($area->hasContent());    }
 
     // --------------------------------------------------------------
     // toJS
@@ -319,10 +325,7 @@ class AreaTest extends TestCase
         $_REQUEST['mf-first-name'] = 'Robin';
 
         // The MultiField branch of hasContent() delegates to MultiField::hasContent().
-        $this->assertTrue($area->hasContent());
-
-        unset($_REQUEST['mf-first-name']);
-    }
+        $this->assertTrue($area->hasContent());    }
 
     // --------------------------------------------------------------
     // toHtml — active area checked states
@@ -366,10 +369,7 @@ class AreaTest extends TestCase
         // The child field renders inside the fieldset with the submitted value.
         $input = $xpath->query('//fieldset//input[@name="act-field"]')->item(0);
         $this->assertNotNull($input);
-        $this->assertSame('some value', $input->getAttribute('value'));
-
-        unset($_REQUEST['act-field']);
-    }
+        $this->assertSame('some value', $input->getAttribute('value'));    }
 
     // --------------------------------------------------------------
     // toHtml — dynamic area rendering (original + clones)
@@ -415,10 +415,7 @@ class AreaTest extends TestCase
         $this->assertNotNull($anchor);
         $this->assertSame('phone', $anchor->getAttribute('data-target-id'));
         $this->assertSame('phone', $anchor->getAttribute('data-target-name'));
-        $this->assertSame('Add another', trim($anchor->textContent));
-
-        unset($_REQUEST['phone_dynamic']);
-    }
+        $this->assertSame('Add another', trim($anchor->textContent));    }
 
     #[Test]
     public function dynamicActiveAreaIncludesCheckboxInDynamicTargets(): void
@@ -524,8 +521,5 @@ class AreaTest extends TestCase
         // The submitted counter value drives the dynamic count. NOTE: unlike
         // Element::getDynamicCount(), Area::getDynamicCount() does not cast to
         // int — the raw request string leaks through (docblock promises integer).
-        $this->assertSame('3', $area->getDynamicCount());
-
-        unset($_REQUEST['phone_dynamic']);
-    }
+        $this->assertSame('3', $area->getDynamicCount());    }
 }

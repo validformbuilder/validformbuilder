@@ -102,10 +102,21 @@ class BaseTest extends TestCase
     }
 
     #[Test]
-    public function setConditions(): void
+    public function setConditionsOverwritesExistingConditions(): void
     {
-        // TODO: This method should be marked deprecated and/or removed from the Base class, as per #157
-        $this->assertTrue(true);
+        // setConditions() resolves through ClassDynamic::__call and overwrites
+        // the full $__conditions array, unlike addCondition() which appends.
+        // Pins the current magic behavior until #157 deprecates/removes it.
+        $subject = $this->buildConditionSubject('visible', true);
+        $this->assertCount(1, $subject->getConditions());
+
+        $condition = $subject->getConditions()[0];
+
+        $subject->setConditions([]);
+        $this->assertSame([], $subject->getConditions());
+
+        $subject->setConditions([$condition]);
+        $this->assertSame([$condition], $subject->getConditions());
     }
 
     #[Test]
@@ -227,20 +238,6 @@ class BaseTest extends TestCase
         foreach ($reservedMetaList as $metaKey) {
             $this->assertContains($metaKey, $reservedMeta, "Missing expected meta key: $metaKey");
         }
-    }
-
-    #[Test]
-    public function hasFields(): void
-    {
-        // Placeholder, these should be removed once issue #155 is accepted
-        $this->assertTrue(true);
-    }
-
-    #[Test]
-    public function getFields(): void
-    {
-        // Placeholder, these should be removed once issue #155 is accepted
-        $this->assertTrue(true);
     }
 
     // --------------------------------------------------------------

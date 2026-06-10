@@ -27,6 +27,15 @@ class CheckboxTest extends TestCase
         );
     }
 
+    protected function tearDown(): void
+    {
+        // Runs even when a test fails mid-way, so a failing assertion can't
+        // leak submitted values into the next test.
+        foreach (['submitted-checkbox', 'checked-via-method', 'simple-checked'] as $key) {
+            unset($_REQUEST[$key]);
+        }
+    }
+
     #[Test]
     public function construct(): void
     {
@@ -91,10 +100,7 @@ class CheckboxTest extends TestCase
         $input = $xpath->query('//input[@type="checkbox"]')->item(0);
 
         $this->assertNotNull($input);
-        $this->assertSame('checked', $input->getAttribute('checked'));
-
-        unset($_REQUEST['submitted-checkbox']);
-    }
+        $this->assertSame('checked', $input->getAttribute('checked'));    }
 
     #[Test]
     public function requiredCheckboxSubmittedCheckedDoesNotHaveErrorClassOnWrapper(): void
@@ -115,10 +121,7 @@ class CheckboxTest extends TestCase
 
         $this->assertNotNull($wrapper);
         $classTokens = preg_split('/\s+/', (string) $wrapper->getAttribute('class'), -1, PREG_SPLIT_NO_EMPTY);
-        $this->assertNotContains('vf__error', $classTokens);
-
-        unset($_REQUEST['submitted-checkbox']);
-    }
+        $this->assertNotContains('vf__error', $classTokens);    }
 
     #[Test]
     public function getDefault(): void
@@ -176,10 +179,7 @@ class CheckboxTest extends TestCase
         $input = $xpath->query('//input[@type="checkbox"]')->item(0);
 
         $this->assertNotNull($input);
-        $this->assertSame('checked', $input->getAttribute('checked'));
-
-        unset($_REQUEST['checked-via-method']);
-    }
+        $this->assertSame('checked', $input->getAttribute('checked'));    }
 
     #[Test]
     public function toHtmlWithTipAppendsSmallTipElement(): void
@@ -311,10 +311,7 @@ class CheckboxTest extends TestCase
         $input = $xpath->query('//input[@type="checkbox"]')->item(0);
 
         $this->assertNotNull($input);
-        $this->assertSame('checked', $input->getAttribute('checked'));
-
-        unset($_REQUEST['simple-checked']);
-    }
+        $this->assertSame('checked', $input->getAttribute('checked'));    }
 
     #[Test]
     public function toHtmlSimpleLayoutRequiredSubmittedEmptyAddsErrorClass(): void
