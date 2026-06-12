@@ -46,7 +46,8 @@ class Validator
         ValidForm::VFORM_SIMPLEURL => '/^[-A-Z0-9]+\.[-A-Z0-9]+/i',
         ValidForm::VFORM_URL => '/^(http(s)?:\/\/)*[a-z0-9-]+(.[a-z0-9-]+)*(:[0-9]+)?(\/.*)?$/i',
         ValidForm::VFORM_FILE => '/^[-a-zàáâãäåāæçèéêẽëēìíîïĩīðñòóôõöōøùúûũüūýß0-9.\':"\\\\_–\/ ]*$/iu',
-        ValidForm::VFORM_BOOLEAN => '/^[on]*$/i',
+        // "" (unchecked) or "on" (checked) — the two values an HTML checkbox can submit.
+        ValidForm::VFORM_BOOLEAN => '/^(on)?$/i',
         ValidForm::VFORM_RADIO_LIST => '',
         ValidForm::VFORM_CHECK_LIST => '',
         ValidForm::VFORM_SELECT_LIST => '',
@@ -75,8 +76,8 @@ class Validator
                     foreach ($arrValues as $value) {
                         $blnSub = preg_match(self::$checks[$checkType], $value);
                         if (! $blnSub) {
-                            // *** At least 1 value is not valid, skip the rest and return false;
-                            exit();
+                            // *** At least 1 value is not valid, skip the rest and return false.
+                            return false;
                         }
                     }
 

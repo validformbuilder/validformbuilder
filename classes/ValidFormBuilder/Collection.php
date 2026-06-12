@@ -126,7 +126,7 @@ class Collection implements \Iterator
     {
         if (is_numeric($intPosition) && $intPosition < count($this->collection)) {
             reset($this->collection);
-            while ($intPosition < key($this->collection)) {
+            while (key($this->collection) < $intPosition) {
                 next($this->collection);
             }
         }
@@ -337,9 +337,11 @@ class Collection implements \Iterator
     public function inCollection($varValue, $blnReturnKey = false)
     {
         $varReturn = false;
-        foreach ($this->collection as $object) {
+        // foreach does not advance the internal pointer (PHP 7+), so $this->key()
+        // would be stale here — capture the key from the loop instead.
+        foreach ($this->collection as $intKey => $object) {
             if ($object == $varValue || $varValue === get_class($object)) {
-                $varReturn = ($blnReturnKey) ? $this->key() : true;
+                $varReturn = ($blnReturnKey) ? $intKey : true;
                 break;
             }
         }

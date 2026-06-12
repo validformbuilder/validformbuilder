@@ -49,7 +49,9 @@ vendor/bin/phpdoc
 ```
 
 ### Linting / Testing
-- There is no PHPUnit suite. Validate changes by running relevant examples in `examples/` or exercising affected classes directly.
+- Run the PHPUnit suite with `vendor/bin/phpunit` (configuration in `phpunit.xml`, tests in `tests/ValidFormBuilder/`).
+- Prefer `assertSame` over `assertEquals` in tests; match the style of the existing test files.
+- Local PHP (Herd) has no coverage driver. Generate coverage via Docker: `docker run --rm -v "$PWD":/app -w /app vfb-coverage php vendor/bin/phpunit --coverage-text` (the `vfb-coverage` image is `php:8.4-cli` with pcov; CI uses pcov on PHP 8.4 as well).
 - Use `php -l <file>` for fast syntax checks when editing PHP files.
 - When touching JavaScript (e.g., `js/validform-webcomponents.js`), open the example pages to verify behavior manually.
 

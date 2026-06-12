@@ -1,0 +1,44 @@
+name: PHPUnit tests
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  pull-requests: write
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php-version: ['8.2', '8.3', '8.4']
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-version }}
+          coverage: ${{ matrix.php-version == '8.4' && 'pcov' || 'none' }}
+
+      - name: Install dependencies
+        run: composer install --no-interaction --prefer-dist
+
+      - name: Run tests
+        if: matrix.php-version != '8.4'
+        run: vendor/bin/phpunit --configuration phpunit.xml
+
+      - name: Run tests with coverage
+        if: matrix.php-version == '8.4'
+        run: vendor/bin/phpunit --configuration phpunit.xml --coverage-clover coverage.xml --coverage-text --colors=never
+
+      - name: Coverage summary as PR comment
+        if: matrix.php-version == '8.4' && github.event_name == 'pull_request'
+        uses: lucassabreu/comment-coverage-clover@main
+        with:
+          file: coverage.xml
+          min-line-coverage: 70
+          min-method-coverage: 70

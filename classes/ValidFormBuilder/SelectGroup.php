@@ -60,7 +60,10 @@ class SelectGroup extends Base
      */
     public function toHtmlInternal($value = null)
     {
-        $strOutput = "<optgroup label=\"{$this->__label}\">\n";
+        // Escape label (attribute context) to prevent XSS.
+        $strLabel = htmlspecialchars((string) $this->__label, ENT_QUOTES);
+
+        $strOutput = "<optgroup label=\"{$strLabel}\">\n";
         foreach ($this->__options as $option) {
             $strOutput .= $option->toHtmlInternal($value);
         }

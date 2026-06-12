@@ -284,12 +284,13 @@ class FieldValidator extends ClassDynamic
      * @param Element $objField
      * @param array $arrValidationRules
      * @param array $arrErrorHandlers
+     * @param ?array $arrSanitizationRules
      */
     public function __construct(
         Element $objField,
         array $arrValidationRules = array(),
         array $arrErrorHandlers = array(),
-        array $arrSanitizationRules = null
+        ?array $arrSanitizationRules = null
     ) {
         foreach ($arrValidationRules as $key => $value) {
             $property = strtolower("__" . $key);

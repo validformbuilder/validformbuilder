@@ -208,7 +208,20 @@ class Condition extends ClassDynamic
     /**
      * Add new comparison to Condition
      *
-     * @param Comparison|array $varComparison Comparison array or Comparison object
+     * Accepts either a pre-built {@link \ValidFormBuilder\Comparison} instance or
+     * an array of constructor arguments that will be forwarded to the Comparison
+     * constructor via reflection. Both positional and associative arrays (keyed by
+     * `subject`, `comparison`, `value`) are supported.
+     *
+     * ```php
+     * // Object form
+     * $condition->addComparison(new Comparison($field, ValidForm::VFORM_COMPARISON_EQUAL, 'yes'));
+     *
+     * // Array (positional) form
+     * $condition->addComparison([$field, ValidForm::VFORM_COMPARISON_EQUAL, 'yes']);
+     * ```
+     *
+     * @param Comparison|array $varComparison Comparison object or array of constructor arguments
      * @throws \Exception if Reflection couldn't initialize new Comparison object
      * @throws \InvalidArgumentException if no valid Comparison data is supplied
      */
@@ -217,15 +230,14 @@ class Condition extends ClassDynamic
         $objComparison = null;
 
         if (is_array($varComparison)) {
-            $varArguments = array_keys($varComparison);
-            if (isset($varComparison["subject"])) {
-                // Apparently, this is an associative array
-                $varArguments = array_values($varComparison);
-            }
+            // Normalize positional and associative arrays to a 0-indexed list of
+            // values for newInstanceArgs().
+            $varArguments = array_values($varComparison);
 
             try {
-                // @todo Replace Reflection with call_user_func_array()
-                $objReflection = new \ReflectionClass("Comparison");
+                // Fully qualified — ReflectionClass resolves an unqualified string
+                // against the global namespace.
+                $objReflection = new \ReflectionClass(Comparison::class);
                 $objComparison = $objReflection->newInstanceArgs($varArguments);
             } catch (\Exception $e) {
                 throw new \Exception("Failed to add Comparison: " . $e->getMessage(), 1);
@@ -234,6 +246,9 @@ class Condition extends ClassDynamic
             if (is_object($objComparison)) {
                 array_push($this->__comparisons, $objComparison);
             } else {
+                // This branch can never be reached: newInstanceArgs() either returns
+                // an object or throws, which is caught and rethrown above. Might be
+                // considered for deletion.
                 throw new \InvalidArgumentException("No valid comparison data supplied in addComparison() method.", 1);
             }
         } elseif (is_object($varComparison) && get_class($varComparison) === "ValidFormBuilder\\Comparison") {

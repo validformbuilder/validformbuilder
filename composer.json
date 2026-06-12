@@ -21,9 +21,17 @@
         "ext-mbstring": "*"
     },
     "autoload": {
-        "psr-0": {"ValidFormBuilder": "classes/"}
+        "psr-0": {
+            "ValidFormBuilder": "classes/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "ValidFormBuilder\\Tests\\": "tests/ValidFormBuilder"
+        }
     },
     "require-dev": {
+        "phpunit/phpunit": "^11.5",
         "phpdocumentor/shim": "^3.8"
     },
     "config": {
@@ -31,7 +39,7 @@
             "phpdocumentor/shim": true
         },
         "platform": {
-            "php": "8.0.0"
+            "php": "8.2.0"
         }
     }
 }
