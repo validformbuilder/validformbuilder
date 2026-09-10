@@ -54,10 +54,22 @@ namespace ValidFormBuilder;
 class Textarea extends Element
 {
     /**
-     * Create new Textarea object
+     * Create new Textarea element, a `<textarea>` carrying the label,
+     * validation and meta handling shared by every Element, sized by
+     * default at 5 rows by 21 columns.
+     *
+     * @param string $name Field name
+     * @param integer $type Field type
+     * @param string $label Field label
+     * @param array $validationRules Validation rules
+     * @param array $errorHandlers Error rules
+     * @param array $meta The meta array
      */
     public function __construct($name, $type, $label = "", $validationRules = array(), $errorHandlers = array(), $meta = array())
     {
+        // $meta is not read until the parent runs, so the defaults must follow it.
+        parent::__construct($name, $type, $label, $validationRules, $errorHandlers, $meta);
+
         $varRows = $this->getFieldMeta("rows", null);
         if (is_null($varRows)) {
             $this->setFieldMeta("rows", "5");
@@ -66,8 +78,6 @@ class Textarea extends Element
         if (is_null($varCols)) {
             $this->setFieldMeta("cols", "21");
         }
-
-        parent::__construct($name, $type, $label, $validationRules, $errorHandlers, $meta);
     }
 
     /**
