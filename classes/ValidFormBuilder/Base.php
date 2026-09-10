@@ -881,7 +881,7 @@ class Base extends ClassDynamic
         $strOutput = "";
 
         foreach ($this->__meta as $key => $value) {
-            if (! in_array($key, array_merge($this->__reservedmeta, $this->__fieldmeta))) {
+            if (! in_array($key, $this->__reservedmeta)) {
                 $strOutput .= " {$key}=\"{$value}\"";
             }
         }
@@ -985,17 +985,22 @@ class Base extends ClassDynamic
     }
 
     /**
-     * Filter out special field or label specific meta tags from the main
-     * meta array and add them to the designated meta arrays __fieldmeta or __labelmeta.
-     * Example: `$meta["labelstyle"] = "width: 20px";` will become `$__fieldmeta["style"] = "width: 20px;"`
-     * Any meta key that starts with 'label' or 'field' will be assigned to it's
-     * corresponding internal meta array.
+     * Move keys that start with 'label' or 'field' out of the main meta array
+     * and into __labelmeta or __fieldmeta. The reserved field meta keys are
+     * routed the same way without needing the prefix.
      *
      * @return void
+     *
+     * @example
+     *   $meta["labelstyle"] = "width: 20px" becomes $__labelmeta["style"] = "width: 20px"
      */
     protected function __initializeMeta()
     {
         foreach ($this->__meta as $key => $value) {
+            // Reserved keys are renamed below; the unset at the end needs the name
+            // they are actually stored under.
+            $strOriginalKey = $key;
+
             if (in_array($key, $this->__reservedfieldmeta)) {
                 $key = "field" . $key;
             }
@@ -1018,7 +1023,7 @@ class Base extends ClassDynamic
                 $strMethod = "set" . ucfirst($strMagicKey) . "Meta";
                 $this->$strMethod(strtolower(substr($key, - (strlen((string)$key) - strlen((string)$strMagicKey)))), $value);
 
-                unset($this->__meta[$key]);
+                unset($this->__meta[$strOriginalKey]);
             }
         }
     }
