@@ -10,8 +10,8 @@ use ValidFormBuilder\ValidForm;
 /**
  * Coverage for {@link \ValidFormBuilder\Textarea}.
  *
- * Textarea extends Element and renders `<textarea>`. It sets default
- * rows=5 and cols=21 in its constructor before delegating to Element.
+ * Textarea extends Element and renders `<textarea>`. It applies default
+ * rows=5 and cols=21 only when the author supplies neither.
  *
  * Security audit:
  * - Value is properly escaped with htmlspecialchars(ENT_QUOTES) ✓
@@ -78,17 +78,10 @@ class TextareaTest extends TestCase
     }
 
     #[Test]
-    public function customRowsAndColsFromMetaAppendToDefaultsDueToSetMetaBehaviour(): void
+    public function customRowsAndColsFromMetaOverrideDefaults(): void
     {
-        // KNOWN LIMITATION: Textarea::__construct() sets default rows/cols via
-        // setFieldMeta BEFORE calling parent::__construct(). The parent's
-        // __initializeMeta() then processes meta['fieldrows'] and calls
-        // setFieldMeta('rows', 10) — which APPENDS (not overwrites) because
-        // $blnOverwrite defaults to false. Result: rows="5 10" instead of "10".
-        //
-        // This is a pre-existing meta-system limitation, not a rendering bug.
-        // Browsers parse "5 10" as "5" (first valid int) so the custom value
-        // is silently ignored.
+        // rows and cols each take a single integer; a browser reads only the
+        // leading digits, so an appended default would discard the author's value.
         $field = $this->form->addField(
             'bio',
             'Bio',
@@ -104,9 +97,32 @@ class TextareaTest extends TestCase
         $textarea = $xpath->query('//textarea')->item(0);
         $this->assertNotNull($textarea);
 
-        // Documenting current (broken) behaviour: defaults get appended with custom values.
-        $this->assertSame('5 10', $textarea->getAttribute('rows'));
-        $this->assertSame('21 80', $textarea->getAttribute('cols'));
+        $this->assertSame('10', $textarea->getAttribute('rows'));
+        $this->assertSame('80', $textarea->getAttribute('cols'));
+    }
+
+    #[Test]
+    public function unprefixedRowsAndColsFromMetaOverrideDefaults(): void
+    {
+        // The class docblock documents the unprefixed form; __initializeMeta routes
+        // it through the same reserved-field-meta path as fieldrows/fieldcols.
+        $field = $this->form->addField(
+            'bio',
+            'Bio',
+            ValidForm::VFORM_TEXT,
+            [],
+            [],
+            ['cols' => 30, 'rows' => 4]
+        );
+
+        $xpath = $this->parseHtml($field->toHtml());
+
+        // `//textarea` — the textarea element.
+        $textarea = $xpath->query('//textarea')->item(0);
+        $this->assertNotNull($textarea);
+
+        $this->assertSame('4', $textarea->getAttribute('rows'));
+        $this->assertSame('30', $textarea->getAttribute('cols'));
     }
 
     #[Test]
