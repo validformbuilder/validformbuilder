@@ -35,6 +35,8 @@ use ValidFormBuilder\ValidForm;
  */
 class ElementTest extends TestCase
 {
+    use HtmlAssertionsTrait;
+
     private ValidForm $form;
 
     protected function setUp(): void
@@ -183,6 +185,34 @@ class ElementTest extends TestCase
         $tokens = preg_split('/\s+/', (string) $field->getFieldMeta('class', ''), -1, PREG_SPLIT_NO_EMPTY);
         $this->assertContains('vf__multiple', $tokens);
         $this->assertContains('vf__select', $tokens);
+    }
+
+    #[Test]
+    public function wrapperAttributesSurviveAFieldMetaValueMatchingTheirName(): void
+    {
+        // __getMetaString() filters wrapper keys against the reserved list only.
+        // Field meta values must not take part in that comparison.
+        $field = $this->form->addField(
+            'nickname',
+            'Nickname',
+            ValidForm::VFORM_STRING,
+            [],
+            [],
+            ['fieldplaceholder' => 'class']
+        );
+
+        $xpath = $this->parseHtml($field->toHtml());
+
+        // `//div` — the outer wrapper keeps its own class.
+        $wrapper = $xpath->query('//div')->item(0);
+        $this->assertNotNull($wrapper);
+        $classTokens = preg_split('/\s+/', (string) $wrapper->getAttribute('class'), -1, PREG_SPLIT_NO_EMPTY);
+        $this->assertContains('vf__optional', $classTokens);
+
+        // `//input` — the placeholder still lands on the input.
+        $input = $xpath->query('//input')->item(0);
+        $this->assertNotNull($input);
+        $this->assertSame('class', $input->getAttribute('placeholder'));
     }
 
     // --------------------------------------------------------------

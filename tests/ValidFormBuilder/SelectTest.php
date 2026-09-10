@@ -194,6 +194,34 @@ class SelectTest extends TestCase
     }
 
     #[Test]
+    public function multipleMetaStaysOffTheWrapper(): void
+    {
+        // multiple is reserved field meta: it belongs on the select only, and is
+        // not a valid attribute on a div.
+        $select = $this->form->addField(
+            'colour',
+            'Colour',
+            ValidForm::VFORM_SELECT_LIST,
+            [],
+            [],
+            ['multiple' => true]
+        );
+        $select->addField('Red', 'red');
+
+        $xpath = $this->parseHtml($select->toHtml());
+
+        // `//div` — the outer wrapper.
+        $wrapper = $xpath->query('//div')->item(0);
+        $this->assertNotNull($wrapper);
+        $this->assertSame('', $wrapper->getAttribute('multiple'));
+
+        // `//select` — the attribute still reaches the input it was meant for.
+        $selectNode = $xpath->query('//select')->item(0);
+        $this->assertNotNull($selectNode);
+        $this->assertNotSame('', $selectNode->getAttribute('multiple'));
+    }
+
+    #[Test]
     public function toHtmlRequiredSubmittedEmptyRendersErrorClassAndMessage(): void
     {
         $select = $this->form->addField(

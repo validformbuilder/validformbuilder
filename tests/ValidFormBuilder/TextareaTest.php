@@ -181,6 +181,36 @@ class TextareaTest extends TestCase
     }
 
     #[Test]
+    public function unprefixedRowsAndColsStayOffTheWrapper(): void
+    {
+        // rows and cols are reserved field meta: they belong on the textarea only,
+        // and are not valid attributes on a div.
+        $field = $this->form->addField(
+            'bio',
+            'Bio',
+            ValidForm::VFORM_TEXT,
+            [],
+            [],
+            ['cols' => 30, 'rows' => 4]
+        );
+
+        $xpath = $this->parseHtml($field->toHtml());
+
+        // `//div` — the outer wrapper.
+        $wrapper = $xpath->query('//div')->item(0);
+        $this->assertNotNull($wrapper);
+        $this->assertSame('', $wrapper->getAttribute('rows'));
+        $this->assertSame('', $wrapper->getAttribute('cols'));
+
+        // `//textarea` — routing still happens; the exact attribute value is
+        // asserted by the custom rows/cols test above.
+        $textarea = $xpath->query('//textarea')->item(0);
+        $this->assertNotNull($textarea);
+        $this->assertStringContainsString('4', $textarea->getAttribute('rows'));
+        $this->assertStringContainsString('30', $textarea->getAttribute('cols'));
+    }
+
+    #[Test]
     public function toHtmlRendersErrorParagraphWhenSubmittedInvalid(): void
     {
         $field = $this->form->addField(
