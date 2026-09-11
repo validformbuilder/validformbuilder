@@ -276,6 +276,19 @@ class FileTest extends TestCase
         $this->assertContains('vf__multifielditem', $classTokens);
     }
 
+    #[Test]
+    public function toHtmlSimpleLayoutWrapperDivIsWellFormed(): void
+    {
+        $field = $this->form->addField('logo', 'Upload logo', ValidForm::VFORM_FILE);
+
+        $html = $field->toHtml(false, true);
+
+        // The wrapper must open as `<div class="...">` with no stray quote
+        // after the meta string (`<div class="..."">`).
+        $this->assertStringNotContainsString('"">', $html);
+        $this->assertMatchesRegularExpression('/^<div class="[^"]+">\n/', $html);
+    }
+
     // --------------------------------------------------------------
     // toJS
     // --------------------------------------------------------------
