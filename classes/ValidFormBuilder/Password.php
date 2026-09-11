@@ -164,7 +164,7 @@ class Password extends Element
             // Call this right before __getMetaString();
             $this->setConditionalMeta();
 
-            $strOutput = "<div{$this->__getMetaString()}\">\n";
+            $strOutput = "<div{$this->__getMetaString()}>\n";
         }
 
         // *** Add maxlength attribute to the meta array. This is being read by the getMetaString method.

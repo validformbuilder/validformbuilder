@@ -21,9 +21,6 @@ use ValidFormBuilder\ValidForm;
  * - No new XSS vectors found. Label, tip, error and dynamicRemoveLabel
  *   strings render unescaped, but those are developer-supplied, not
  *   user input.
- * - KNOWN BUG: the simple-layout branch of __toHtml() emits a stray `"`
- *   after the wrapper div's meta string (`<div class="..."">`). Documented
- *   in simpleLayoutRendersHintAndMultifielditemClasses().
  */
 class PasswordTest extends TestCase
 {
@@ -307,16 +304,7 @@ class PasswordTest extends TestCase
             ['hint' => 'Choose wisely']
         );
 
-        $html = $field->__toHtml(false, true);
-
-        // KNOWN BUG (documented, not fixed): Password's simple layout emits
-        // `<div{$this->__getMetaString()}\">` — note the stray escaped quote —
-        // producing malformed markup like `<div class="..."">`. Text and
-        // Textarea do not have this typo. libxml recovers, so DOM assertions
-        // below still work.
-        $this->assertStringContainsString("\">\n", $html);
-
-        $xpath = $this->parseHtml($html);
+        $xpath = $this->parseHtml($field->__toHtml(false, true));
 
         // `//label` — simple layout never renders a label.
         $this->assertSame(0, $xpath->query('//label')->length);
@@ -328,6 +316,19 @@ class PasswordTest extends TestCase
         $classTokens = preg_split('/\s+/', (string) $wrapper->getAttribute('class'), -1, PREG_SPLIT_NO_EMPTY);
         $this->assertContains('vf__hint', $classTokens);
         $this->assertContains('vf__multifielditem', $classTokens);
+    }
+
+    #[Test]
+    public function simpleLayoutWrapperDivIsWellFormed(): void
+    {
+        $field = $this->form->addField('password', 'Password', ValidForm::VFORM_PASSWORD);
+
+        $html = $field->__toHtml(false, true);
+
+        // The wrapper must open as `<div class="...">` with no stray quote
+        // after the meta string (`<div class="..."">`).
+        $this->assertStringNotContainsString('"">', $html);
+        $this->assertMatchesRegularExpression('/^<div class="[^"]+">\n/', $html);
     }
 
     #[Test]

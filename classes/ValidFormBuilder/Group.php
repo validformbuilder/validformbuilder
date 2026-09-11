@@ -150,7 +150,7 @@ class Group extends Element
             // Call this right before __getMetaString();
             $this->setConditionalMeta();
 
-            $strOutput = "<div{$this->__getMetaString()}\">\n";
+            $strOutput = "<div{$this->__getMetaString()}>\n";
         }
 
         $strOutput .= "<fieldset{$this->__getFieldMetaString()}>\n";

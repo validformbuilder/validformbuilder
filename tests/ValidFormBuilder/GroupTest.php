@@ -443,6 +443,20 @@ class GroupTest extends TestCase
     }
 
     #[Test]
+    public function toHtmlSimpleLayoutWrapperDivIsWellFormed(): void
+    {
+        $group = $this->form->addField('color', 'Color', ValidForm::VFORM_RADIO_LIST);
+        $group->addField('Red', 'red');
+
+        $html = $group->toHtml(false, true);
+
+        // The wrapper must open as `<div class="...">` with no stray quote
+        // after the meta string (`<div class="..."">`).
+        $this->assertStringNotContainsString('"">', $html);
+        $this->assertMatchesRegularExpression('/^<div class="[^"]+">\n/', $html);
+    }
+
+    #[Test]
     public function toHtmlRendersTipElement(): void
     {
         $group = $this->form->addField(
