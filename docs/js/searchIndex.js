@@ -1068,7 +1068,7 @@ Search.appendIndex(
         },                {
             "fqsen": "\\ValidFormBuilder\\Textarea\u003A\u003A__construct\u0028\u0029",
             "name": "__construct",
-            "summary": "Create\u0020new\u0020Textarea\u0020object",
+            "summary": "Create\u0020new\u0020Textarea\u0020element,\u0020a\u0020\u0060\u003Ctextarea\u003E\u0060\u0020carrying\u0020the\u0020label,\nvalidation\u0020and\u0020meta\u0020handling\u0020shared\u0020by\u0020every\u0020Element,\u0020sized\u0020by\ndefault\u0020at\u00205\u0020rows\u0020by\u002021\u0020columns.",
             "url": "classes/ValidFormBuilder-Textarea.html#method___construct"
         },                {
             "fqsen": "\\ValidFormBuilder\\Textarea\u003A\u003AtoHtml\u0028\u0029",
