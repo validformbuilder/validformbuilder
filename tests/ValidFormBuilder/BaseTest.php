@@ -697,6 +697,29 @@ class BaseTest extends TestCase
     }
 
     #[Test]
+    public function setConditionalMetaKeepsCallerStyleWhenMetVisibleConditionIsFalse(): void
+    {
+        $subject = $this->buildConditionSubject('visible', false, 'not empty');
+        $subject->setMeta('style', 'margin-left: 30px;');
+
+        $subject->setConditionalMeta();
+
+        $this->assertSame('margin-left: 30px;display: none;', $subject->getMeta('style'));
+    }
+
+    #[Test]
+    public function setConditionalMetaDoesNotStackDisplayNoneWhenElementStaysHidden(): void
+    {
+        $subject = $this->buildConditionSubject('visible', true);
+
+        // The trigger is empty on both evaluations, so the subject stays hidden.
+        $subject->setConditionalMeta();
+        $subject->setConditionalMeta();
+
+        $this->assertSame('display: none;', $subject->getMeta('style'));
+    }
+
+    #[Test]
     public function setConditionalMetaSetsDisplayNoneWhenMetVisibleConditionIsFalse(): void
     {
         $subject = $this->buildConditionSubject('visible', false, 'not empty');
