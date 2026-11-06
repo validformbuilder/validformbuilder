@@ -658,13 +658,42 @@ class BaseTest extends TestCase
     // --------------------------------------------------------------
 
     #[Test]
-    public function setConditionalMetaSetsDisplayBlockWhenMetVisibleConditionIsTrue(): void
+    public function setConditionalMetaLeavesDisplayToTheStylesheetWhenMetVisibleConditionIsTrue(): void
     {
         $subject = $this->buildConditionSubject('visible', true, 'not empty');
 
         $subject->setConditionalMeta();
 
-        $this->assertSame('display: block;', $subject->getMeta('style'));
+        // A shown element takes the display its stylesheet gives it (block, grid, flex, ...),
+        // so no inline display declaration may override that.
+        $this->assertStringNotContainsString('display', (string) $subject->getMeta('style'));
+    }
+
+    #[Test]
+    public function setConditionalMetaKeepsCallerStyleWhenMetVisibleConditionIsTrue(): void
+    {
+        $subject = $this->buildConditionSubject('visible', true, 'not empty');
+        $subject->setMeta('style', 'margin-left: 30px;');
+
+        $subject->setConditionalMeta();
+
+        $this->assertSame('margin-left: 30px;', $subject->getMeta('style'));
+    }
+
+    #[Test]
+    public function setConditionalMetaClearsAnEarlierDisplayNoneWhenMetVisibleConditionIsTrue(): void
+    {
+        $subject = $this->buildConditionSubject('visible', true);
+
+        // First evaluation: the trigger is empty, so the subject is hidden.
+        $subject->setConditionalMeta();
+        $this->assertSame('display: none;', $subject->getMeta('style'));
+
+        // Second evaluation: the trigger is filled, so the subject shows again.
+        $_REQUEST['base-trigger'] = 'not empty';
+        $subject->setConditionalMeta();
+
+        $this->assertStringNotContainsString('display', (string) $subject->getMeta('style'));
     }
 
     #[Test]
@@ -688,13 +717,13 @@ class BaseTest extends TestCase
     }
 
     #[Test]
-    public function setConditionalMetaSetsDisplayBlockWhenUnmetVisibleConditionIsFalse(): void
+    public function setConditionalMetaLeavesDisplayToTheStylesheetWhenUnmetVisibleConditionIsFalse(): void
     {
         $subject = $this->buildConditionSubject('visible', false);
 
         $subject->setConditionalMeta();
 
-        $this->assertSame('display: block;', $subject->getMeta('style'));
+        $this->assertStringNotContainsString('display', (string) $subject->getMeta('style'));
     }
 
     #[Test]
