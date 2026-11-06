@@ -474,18 +474,14 @@ class Base extends ClassDynamic
             switch ($objCondition->getProperty()) {
                 case "visible":
                     // This can be applied on all sorts of subjects.
-                    if ($blnResult) {
-                        if ($objCondition->getValue()) {
-                            $this->setMeta("style", "display: block;");
-                        } else {
-                            $this->setMeta("style", "display: none;");
-                        }
-                    } else {
-                        if ($objCondition->getValue()) {
-                            $this->setMeta("style", "display: none;");
-                        } else {
-                            $this->setMeta("style", "display: block;");
-                        }
+                    // A shown element keeps the display its stylesheet gives it (block, grid, flex, ...);
+                    // only a hidden element gets an inline display.
+                    $blnShown = ($blnResult) ? (bool) $objCondition->getValue() : ! $objCondition->getValue();
+
+                    $this->__removeStyleDeclaration("display");
+
+                    if (! $blnShown) {
+                        $this->setMeta("style", "display: none;");
                     }
                 // Continueing to the required property.
                 case "required":
@@ -1026,6 +1022,32 @@ class Base extends ClassDynamic
                 unset($this->__meta[$strOriginalKey]);
             }
         }
+    }
+
+    /**
+     * Remove one CSS declaration from the element's style meta, keeping every other declaration.
+     * @param string $strProperty The CSS property to remove, e.g. "display"
+     * @return void
+     */
+    protected function __removeStyleDeclaration($strProperty)
+    {
+        if (! isset($this->__meta["style"])) {
+            return;
+        }
+
+        $arrDeclarations = array_filter(
+            explode(";", (string) $this->__meta["style"]),
+            function ($strDeclaration) use ($strProperty) {
+                $strDeclaration = trim($strDeclaration);
+
+                return $strDeclaration !== ""
+                    && ! preg_match("/^" . preg_quote($strProperty, "/") . "\\s*:/i", $strDeclaration);
+            }
+        );
+
+        $strStyle = (count($arrDeclarations) > 0) ? implode(";", $arrDeclarations) . ";" : "";
+
+        $this->__setMeta("style", $strStyle, true);
     }
 
     /**
